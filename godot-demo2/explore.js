@@ -33,6 +33,7 @@ class ExploreScene extends Phaser.Scene {
 
     // Stage 1: 預載所有 asset 後進入第二階段
     this.load.image("village_ground", "../" + config.background + "?v=2");
+    this.load.spritesheet("river", "../godot-demo2/river.jpg?v=3", { frameWidth: 768, frameHeight: 666 });
     config.buildings.forEach(b => {
       if (b.sprite && b.sprite.image) {
         if (!this.textures.exists(b.sprite.image)) {
@@ -101,6 +102,12 @@ class ExploreScene extends Phaser.Scene {
 
     // 1. 背景
     this.add.image(0, this.WORLD_OFFSET_Y, "village_ground").setOrigin(0, 0).setDepth(0);
+    // 河流流動：疊在背景河流位置(0,814)，持續慢流（扭曲晃動）
+    const river = this.add.sprite(0, this.WORLD_OFFSET_Y + 814, "river", 0).setOrigin(0, 0).setDepth(0.5);
+    if (!this.anims.exists("river_flow")) {
+      this.anims.create({ key: "river_flow", frames: this.anims.generateFrameNumbers("river", { start: 0, end: 15 }), frameRate: 6, repeat: -1 });
+    }
+    river.play("river_flow");
 
     // 1b. 水珠紋理（Phaser Graphics 即時畫，給粒子噴泉用）
     if (!this.textures.exists("water_drop")) {

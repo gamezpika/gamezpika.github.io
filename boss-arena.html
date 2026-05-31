@@ -480,7 +480,7 @@ const JOB_VFX_MOTION = {
 function spawnHeroVfx(jobKey) {
     if (!jobKey) return;
     const motion = JOB_VFX_MOTION[jobKey] || "expand";
-    const url = `assets/images/hero_vfx/${jobKey}.webp?v=1`;
+    const url = `assets/images/hero_vfx/${jobKey}.webp?v=2`;
 
     // 在魔王身上爆 (boss 中心)
     const bossRect = boss.getBoundingClientRect();
@@ -1284,7 +1284,7 @@ async function startArena() {
     ].filter(Boolean);
     // 派派 5/24：預載目前職業的 hero VFX 圖（避免第一次攻擊載入延遲）
     if (playerSetup.jobKey) {
-        framesToPreload.push(`hero_vfx/${playerSetup.jobKey}.webp?v=1`);
+        framesToPreload.push(`hero_vfx/${playerSetup.jobKey}.webp?v=2`);
     }
 
     // setup 畫面顯示「準備戰場中…」spinner，等所有圖載完才切戰場

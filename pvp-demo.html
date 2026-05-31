@@ -627,7 +627,7 @@ const JOB_VFX_MOTION = {
 function spawnHeroVfx(jobKey) {
     if (!jobKey) return;
     const motion = JOB_VFX_MOTION[jobKey] || "expand";
-    const url = `assets/images/hero_vfx/${jobKey}.webp?v=1`;
+    const url = `assets/images/hero_vfx/${jobKey}.webp?v=2`;
 
     // 在魔王身上爆 (boss 中心)
     const bossRect = boss.getBoundingClientRect();
@@ -950,7 +950,7 @@ async function getHitByBoss() {
 function spawnOpponentVfx(jobKey) {
     if (!jobKey) return;
     const motion = (typeof JOB_VFX_MOTION !== 'undefined' && JOB_VFX_MOTION[jobKey]) || "expand";
-    const url = `assets/images/hero_vfx/${jobKey}.webp?v=1`;
+    const url = `assets/images/hero_vfx/${jobKey}.webp?v=2`;
     const heroRect = hero.getBoundingClientRect();
     const stageRect = stage.getBoundingClientRect();
     const cx = heroRect.left - stageRect.left + heroRect.width / 2;
@@ -1510,7 +1510,7 @@ async function startArena() {
     ];
     if (PVP_MODE && state.opponentJobKey) {
         framesToPreload.push(`arena/hero_job_${state.opponentJobKey}.png?v=4`);
-        framesToPreload.push(`hero_vfx/${state.opponentJobKey}.webp?v=1`);
+        framesToPreload.push(`hero_vfx/${state.opponentJobKey}.webp?v=2`);
     } else {
         framesToPreload.push(
             `${tierData.sprite}?v=3`,
@@ -1523,7 +1523,7 @@ async function startArena() {
     }
     // 派派 5/24：預載目前職業的 hero VFX 圖（避免第一次攻擊載入延遲）
     if (playerSetup.jobKey) {
-        framesToPreload.push(`hero_vfx/${playerSetup.jobKey}.webp?v=1`);
+        framesToPreload.push(`hero_vfx/${playerSetup.jobKey}.webp?v=2`);
     }
 
     // setup 畫面顯示「準備戰場中…」spinner，等所有圖載完才切戰場

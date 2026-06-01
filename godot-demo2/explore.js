@@ -33,7 +33,7 @@ class ExploreScene extends Phaser.Scene {
 
     // Stage 1: 預載所有 asset 後進入第二階段
     this.load.image("village_ground", "../" + config.background + "?v=3");
-    this.load.spritesheet("river", "../godot-demo2/river.jpg?v=3", { frameWidth: 768, frameHeight: 666 });
+    this.load.spritesheet("river", "../godot-demo2/river.webp?v=3", { frameWidth: 768, frameHeight: 666 });
     config.buildings.forEach(b => {
       if (b.sprite && b.sprite.image) {
         if (!this.textures.exists(b.sprite.image)) {

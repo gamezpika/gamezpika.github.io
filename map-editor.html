@@ -593,7 +593,7 @@ const FALLBACK_PROJECTS = [
         name: '🏘️ 村莊 Demo (fallback)',
         engine: 'phaser_iso',
         config_path: 'assets/village_config.json',
-        background_path: 'godot-demo2/village_ground.jpg',
+        background_path: 'godot-demo2/village_ground.webp',
         sprite_base: 'godot-demo2/',
         preview_url: 'godot-demo2/',
         sprite_library: [],
@@ -824,22 +824,22 @@ function autoSave() {
 // 已知壓縮後的 sprite frame size — 載入草稿 + server config 都會 normalize 到這值
 // 避免派派 localStorage 草稿黏著舊 frame size，推回 server 時把正確值蓋掉
 const SPRITE_FRAME_SIZE = {
-    'cowwalk.png':    { w: 384, h: 337 },
-    'cowwalk2.png':   { w: 377, h: 353 },
-    'player1.png':    { w: 221, h: 500 },
-    'player2.png':    { w: 218, h: 498 },
-    'player3.png':    { w: 234, h: 457 },
-    'hero_walk.png':  { w: 139, h: 230 },
-    'hero_walk2.png': { w: 151, h: 206 },
-    'hero_walk3.png': { w: 96,  h: 173 },
-    'girl1.png':      { w: 281, h: 491 },
-    'girl2.png':      { w: 269, h: 486 },
-    'girl3.png':      { w: 234, h: 464 },
-    'fountain_flow.png': { w: 269, h: 331 },
-    'clothes.png':    { w: 301, h: 296 },
-    'shop.png':       { w: 269, h: 304 },
-    'bird.png':       { w: 518, h: 250 },
-    'dog_side.png':   { w: 204, h: 204 },
+    'cowwalk.webp':    { w: 384, h: 337 },
+    'cowwalk2.webp':   { w: 377, h: 353 },
+    'player1.webp':    { w: 221, h: 500 },
+    'player2.webp':    { w: 218, h: 498 },
+    'player3.webp':    { w: 234, h: 457 },
+    'hero_walk.webp':  { w: 139, h: 230 },
+    'hero_walk2.webp': { w: 151, h: 206 },
+    'hero_walk3.webp': { w: 96,  h: 173 },
+    'girl1.webp':      { w: 281, h: 491 },
+    'girl2.webp':      { w: 269, h: 486 },
+    'girl3.webp':      { w: 234, h: 464 },
+    'fountain_flow.webp': { w: 269, h: 331 },
+    'clothes.webp':    { w: 301, h: 296 },
+    'shop.webp':       { w: 269, h: 304 },
+    'bird.webp':       { w: 518, h: 250 },
+    'dog_side.webp':   { w: 204, h: 204 },
 };
 function normalizeSpriteFrames(cfg) {
     if (!cfg) return;
@@ -858,6 +858,23 @@ function normalizeSpriteFrames(cfg) {
     // 也 normalize buildings 的 sprite（噴泉 spritesheet 用）
     (cfg.buildings || []).forEach(b => fix(b.sprite));
 }
+// WebP 遷移：轉檔前的 localStorage 舊草稿圖片副檔名還是 .png/.jpg，
+// 載入時統一改成 .webp，避免推送時把舊圖片引用寫回 config 害載入又變肥。
+// 只對 godot-demo2 村莊專案生效，不動其他地圖。
+function migrateVillageImageExt(cfg) {
+    if (!cfg || !ACTIVE_PROJECT || ACTIVE_PROJECT.sprite_base !== 'godot-demo2/') return;
+    const toWebp = (s) => (typeof s === 'string') ? s.replace(/\.(png|jpe?g)$/i, '.webp') : s;
+    const fix = (d) => { if (d && d.image) d.image = toWebp(d.image); };
+    if (cfg.background) cfg.background = toWebp(cfg.background);
+    if (cfg.player && cfg.player.sprites) Object.values(cfg.player.sprites).forEach(fix);
+    (cfg.npcs || []).forEach(npc => {
+        const s = npc.sprite;
+        if (!s) return;
+        fix(s);
+        if (s.sprites) Object.values(s.sprites).forEach(fix);
+    });
+    (cfg.buildings || []).forEach(b => fix(b.sprite));
+}
 // 從 image 實際尺寸 + grid_cols/grid_rows 算正確 frame size — 根治草稿黏舊值
 // 比硬編碼 SPRITE_FRAME_SIZE table 可靠：新 sprite 不在 table 也能 normalize
 const _imageDimCache = new Map();
@@ -874,7 +891,7 @@ function _loadImageDim(image) {
     return p;
 }
 // 天空 sprite 推之前自動補 depth_override（派派從編輯器拖完不會丟）
-const AERIAL_NPC_IMAGES = new Set(['bird.png']);
+const AERIAL_NPC_IMAGES = new Set(['bird.webp']);
 function preserveAerialNpcDepth(cfg) {
     if (!cfg) return;
     (cfg.npcs || []).forEach(npc => {
@@ -970,6 +987,8 @@ function loadServerMap(useCachedConfig) {
             });
             if (!Array.isArray(serverConfig.objects)) serverConfig.objects = [];
             mapConfig = useCachedConfig || serverConfig;
+            // 舊草稿圖片副檔名 .png/.jpg → .webp（村莊專案），擋住推送時回寫舊引用
+            migrateVillageImageExt(mapConfig);
             // sprite frame size：localStorage 草稿可能黏舊值，強制 normalize
             normalizeSpriteFrames(mapConfig);
             // NPC id 撞了會讓 path mode 點哪個都 highlight 第一個
@@ -1842,7 +1861,7 @@ function placeSpriteAt(libIdx, normX, normY) {
         mapConfig.npcs.push(newNpc);
     } else {
         if (!Array.isArray(mapConfig.buildings)) mapConfig.buildings = [];
-        const id = item.image.replace(/\.png$/, '') + '_' + (mapConfig.buildings.length + 1);
+        const id = item.image.replace(/\.(png|jpe?g|webp)$/, '') + '_' + (mapConfig.buildings.length + 1);
         // 從顯示名 ("🌳 綠樹") 去掉開頭 emoji+空白，從第一個中/英/數開始截
         const cleanName = (s) => {
             const m = (s || '').match(/[一-鿿A-Za-z0-9].*/);

@@ -5,7 +5,7 @@
       "name": "🏘️ 村莊 Demo (godot-demo2)",
       "engine": "phaser_iso",
       "config_path": "assets/village_config.json",
-      "background_path": "godot-demo2/village_ground.jpg",
+      "background_path": "godot-demo2/village_ground.webp",
       "sprite_base": "godot-demo2/",
       "preview_url": "godot-demo2/",
       "image_dimensions": {
@@ -15,7 +15,7 @@
       "world_offset_y": -400,
       "sprite_library": [
         {
-          "image": "shop.png",
+          "image": "shop.webp",
           "name": "🛒 蔬果攤",
           "type": "building",
           "scale": 0.74,
@@ -30,7 +30,7 @@
           "frame_rate": 4
         },
         {
-          "image": "clothes.png",
+          "image": "clothes.webp",
           "name": "👗 服裝店",
           "type": "building",
           "scale": 0.74,
@@ -45,7 +45,7 @@
           "frame_rate": 4
         },
         {
-          "image": "house_blue.png",
+          "image": "house_blue.webp",
           "name": "🏠 藍屋",
           "type": "building",
           "scale": 0.74,
@@ -54,7 +54,7 @@
           "bbox_h_norm": 0.054
         },
         {
-          "image": "house_green.png",
+          "image": "house_green.webp",
           "name": "🏠 綠屋",
           "type": "building",
           "scale": 0.74,
@@ -63,7 +63,7 @@
           "bbox_h_norm": 0.054
         },
         {
-          "image": "house_yellow.png",
+          "image": "house_yellow.webp",
           "name": "🏠 黃屋",
           "type": "building",
           "scale": 0.74,
@@ -72,7 +72,7 @@
           "bbox_h_norm": 0.054
         },
         {
-          "image": "fountain_flow.png",
+          "image": "fountain_flow.webp",
           "name": "⛲ 噴泉",
           "type": "decoration",
           "scale": 0.9,
@@ -87,7 +87,7 @@
           "frame_rate": 6
         },
         {
-          "image": "tree_green.png",
+          "image": "tree_green.webp",
           "name": "🌳 綠樹",
           "type": "decoration",
           "scale": 0.36,
@@ -103,7 +103,7 @@
           "default_greeting": "你好～",
           "sprites": {
             "side": {
-              "image": "hero_walk2.png",
+              "image": "hero_walk2.webp",
               "frame_width": 151,
               "frame_height": 206,
               "frames": 9,
@@ -111,14 +111,14 @@
               "facing": "left"
             },
             "down": {
-              "image": "hero_walk.png",
+              "image": "hero_walk.webp",
               "frame_width": 139,
               "frame_height": 230,
               "frames": 25,
               "frame_rate": 14
             },
             "up": {
-              "image": "hero_walk3.png",
+              "image": "hero_walk3.webp",
               "frame_width": 96,
               "frame_height": 173,
               "frames": 16,
@@ -134,7 +134,7 @@
           "default_greeting": "哞～",
           "sprites": {
             "side": {
-              "image": "cowwalk.png",
+              "image": "cowwalk.webp",
               "frame_width": 384,
               "frame_height": 337,
               "grid_cols": 3,
@@ -144,7 +144,7 @@
               "facing": "left"
             },
             "up": {
-              "image": "cowwalk2.png",
+              "image": "cowwalk2.webp",
               "frame_width": 377,
               "frame_height": 353,
               "grid_cols": 3,
@@ -162,7 +162,7 @@
           "default_greeting": "嗨～",
           "sprites": {
             "side": {
-              "image": "girl3.png",
+              "image": "girl3.webp",
               "frame_width": 234,
               "frame_height": 464,
               "grid_cols": 3,
@@ -172,7 +172,7 @@
               "facing": "right"
             },
             "down": {
-              "image": "girl1.png",
+              "image": "girl1.webp",
               "frame_width": 281,
               "frame_height": 491,
               "grid_cols": 3,
@@ -181,7 +181,7 @@
               "frame_rate": 6
             },
             "up": {
-              "image": "girl2.png",
+              "image": "girl2.webp",
               "frame_width": 269,
               "frame_height": 486,
               "grid_cols": 3,
@@ -199,7 +199,7 @@
           "default_greeting": "啾啾～",
           "sprites": {
             "side": {
-              "image": "bird.png",
+              "image": "bird.webp",
               "frame_width": 518,
               "frame_height": 250,
               "grid_cols": 3,
@@ -219,7 +219,7 @@
           "default_greeting": "汪～",
           "sprites": {
             "side": {
-              "image": "dog_side.png",
+              "image": "dog_side.webp",
               "frame_width": 256,
               "frame_height": 256,
               "grid_cols": 4,

@@ -8,7 +8,7 @@
       "world_height": 1080,
       "world_offset_y": -400
     },
-    "background": "godot-demo2/village_ground.jpg",
+    "background": "godot-demo2/village_ground.webp",
     "asset_base": "godot-demo2/",
     "player": {
       "spawn": {
@@ -19,7 +19,7 @@
       "speed": 220,
       "sprites": {
         "side": {
-          "image": "player3.png",
+          "image": "player3.webp",
           "frame_width": 234,
           "frame_height": 457,
           "frames": 9,
@@ -27,14 +27,14 @@
           "facing": "left"
         },
         "down": {
-          "image": "player1.png",
+          "image": "player1.webp",
           "frame_width": 221,
           "frame_height": 500,
           "frames": 9,
           "frame_rate": 6
         },
         "up": {
-          "image": "player2.png",
+          "image": "player2.webp",
           "frame_width": 218,
           "frame_height": 498,
           "frames": 9,
@@ -52,7 +52,7 @@
         "name": "蔬果攤",
         "category": "house",
         "sprite": {
-          "image": "shop.png",
+          "image": "shop.webp",
           "scale": 1.15,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -127,7 +127,7 @@
         "name": "服裝店",
         "category": "house",
         "sprite": {
-          "image": "clothes.png",
+          "image": "clothes.webp",
           "scale": 1.1,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -222,7 +222,7 @@
         "name": "藍屋",
         "category": "house",
         "sprite": {
-          "image": "house_blue.png",
+          "image": "house_blue.webp",
           "scale": 0.74,
           "anchor_x": 0.5,
           "anchor_y": 1
@@ -283,7 +283,7 @@
         "name": "綠屋",
         "category": "house",
         "sprite": {
-          "image": "house_green.png",
+          "image": "house_green.webp",
           "scale": 0.74,
           "anchor_x": 0.5,
           "anchor_y": 1
@@ -356,7 +356,7 @@
         "name": "黃屋",
         "category": "house",
         "sprite": {
-          "image": "house_yellow.png",
+          "image": "house_yellow.webp",
           "scale": 0.74,
           "anchor_x": 0.5,
           "anchor_y": 1
@@ -417,7 +417,7 @@
         "name": "噴泉",
         "category": "decoration",
         "sprite": {
-          "image": "fountain_flow.png",
+          "image": "fountain_flow.webp",
           "scale": 0.9,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -503,7 +503,7 @@
         "name": "樹1",
         "category": "decoration",
         "sprite": {
-          "image": "tree_green.png",
+          "image": "tree_green.webp",
           "scale": 0.36,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -557,7 +557,7 @@
         "name": "樹2",
         "category": "decoration",
         "sprite": {
-          "image": "tree_green.png",
+          "image": "tree_green.webp",
           "scale": 0.36,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -631,7 +631,7 @@
         "name": "樹3",
         "category": "decoration",
         "sprite": {
-          "image": "tree_green.png",
+          "image": "tree_green.webp",
           "scale": 0.36,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -685,7 +685,7 @@
         "name": "樹4",
         "category": "decoration",
         "sprite": {
-          "image": "tree_green.png",
+          "image": "tree_green.webp",
           "scale": 0.36,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -743,7 +743,7 @@
         "name": "樹5",
         "category": "decoration",
         "sprite": {
-          "image": "tree_green.png",
+          "image": "tree_green.webp",
           "scale": 0.36,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -813,7 +813,7 @@
         "name": "樹6",
         "category": "decoration",
         "sprite": {
-          "image": "tree_green.png",
+          "image": "tree_green.webp",
           "scale": 0.36,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -867,7 +867,7 @@
         "name": "樹7",
         "category": "decoration",
         "sprite": {
-          "image": "tree_green.png",
+          "image": "tree_green.webp",
           "scale": 0.36,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -937,7 +937,7 @@
         "name": "樹8",
         "category": "decoration",
         "sprite": {
-          "image": "tree_green.png",
+          "image": "tree_green.webp",
           "scale": 0.36,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -991,7 +991,7 @@
         "name": "樹9",
         "category": "decoration",
         "sprite": {
-          "image": "tree_green.png",
+          "image": "tree_green.webp",
           "scale": 0.36,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -1061,7 +1061,7 @@
         "name": "樹10",
         "category": "decoration",
         "sprite": {
-          "image": "tree_green.png",
+          "image": "tree_green.webp",
           "scale": 0.36,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -1139,7 +1139,7 @@
         "name": "樹11",
         "category": "decoration",
         "sprite": {
-          "image": "tree_green.png",
+          "image": "tree_green.webp",
           "scale": 0.36,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -1217,7 +1217,7 @@
         "name": "樹12",
         "category": "decoration",
         "sprite": {
-          "image": "tree_green.png",
+          "image": "tree_green.webp",
           "scale": 0.36,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -1299,7 +1299,7 @@
         "name": "綠樹",
         "category": "decoration",
         "sprite": {
-          "image": "tree_green.png",
+          "image": "tree_green.webp",
           "scale": 0.36,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -1369,7 +1369,7 @@
         "name": "綠樹",
         "category": "decoration",
         "sprite": {
-          "image": "tree_green.png",
+          "image": "tree_green.webp",
           "scale": 0.36,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -1439,7 +1439,7 @@
         "name": "綠樹",
         "category": "decoration",
         "sprite": {
-          "image": "tree_green.png",
+          "image": "tree_green.webp",
           "scale": 0.36,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -1509,7 +1509,7 @@
         "name": "農場",
         "category": "house",
         "sprite": {
-          "image": "farm.png",
+          "image": "farm.webp",
           "scale": 0.35,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -1580,7 +1580,7 @@
         "name": "公布欄",
         "category": "prop",
         "sprite": {
-          "image": "bulletin.png",
+          "image": "bulletin.webp",
           "scale": 0.6,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -1876,7 +1876,7 @@
           "scale": 0.45,
           "sprites": {
             "side": {
-              "image": "hero_walk2.png",
+              "image": "hero_walk2.webp",
               "frame_width": 151,
               "frame_height": 206,
               "frames": 9,
@@ -1884,14 +1884,14 @@
               "facing": "left"
             },
             "down": {
-              "image": "hero_walk.png",
+              "image": "hero_walk.webp",
               "frame_width": 139,
               "frame_height": 230,
               "frames": 25,
               "frame_rate": 14
             },
             "up": {
-              "image": "hero_walk3.png",
+              "image": "hero_walk3.webp",
               "frame_width": 96,
               "frame_height": 173,
               "frames": 16,
@@ -1941,7 +1941,7 @@
           "scale": 0.2,
           "sprites": {
             "side": {
-              "image": "cowwalk.png",
+              "image": "cowwalk.webp",
               "frame_width": 384,
               "frame_height": 337,
               "grid_cols": 3,
@@ -2006,7 +2006,7 @@
           "scale": 0.25,
           "sprites": {
             "side": {
-              "image": "girl3.png",
+              "image": "girl3.webp",
               "frame_width": 234,
               "frame_height": 464,
               "grid_cols": 3,
@@ -2016,7 +2016,7 @@
               "facing": "right"
             },
             "down": {
-              "image": "girl1.png",
+              "image": "girl1.webp",
               "frame_width": 281,
               "frame_height": 491,
               "grid_cols": 3,
@@ -2025,7 +2025,7 @@
               "frame_rate": 6
             },
             "up": {
-              "image": "girl2.png",
+              "image": "girl2.webp",
               "frame_width": 269,
               "frame_height": 486,
               "grid_cols": 3,
@@ -2102,7 +2102,7 @@
           "scale": 0.7,
           "sprites": {
             "side": {
-              "image": "bird.png",
+              "image": "bird.webp",
               "frame_width": 518,
               "frame_height": 250,
               "grid_cols": 3,
@@ -2152,7 +2152,7 @@
           "scale": 0.36,
           "sprites": {
             "side": {
-              "image": "dog_side.png",
+              "image": "dog_side.webp",
               "frame_width": 256,
               "frame_height": 256,
               "grid_cols": 4,
@@ -2204,7 +2204,7 @@
           "scale": 0.11,
           "sprites": {
             "side": {
-              "image": "chick_walk.png",
+              "image": "chick_walk.webp",
               "frame_width": 512,
               "frame_height": 512,
               "grid_cols": 6,

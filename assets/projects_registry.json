@@ -231,6 +231,21 @@
           }
         }
       ]
+    },
+    {
+      "id": "island",
+      "name": "🏝️ 海島 Demo (godot-demo2)",
+      "engine": "phaser_iso",
+      "config_path": "assets/island_config.json",
+      "background_path": "godot-demo2/beach_ground.webp",
+      "sprite_base": "godot-demo2/",
+      "preview_url": "godot-demo2/?map=island",
+      "image_dimensions": {
+        "width": 1536,
+        "height": 1024
+      },
+      "world_offset_y": 0,
+      "sprite_library": []
     }
   ]
 }

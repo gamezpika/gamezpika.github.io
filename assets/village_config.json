@@ -46,6 +46,33 @@
       "sky_pad": 400,
       "view_base_width": 1200
     },
+    "river": {
+      "image": "river.webp",
+      "frame_width": 768,
+      "frame_height": 666,
+      "frames": 16,
+      "frame_rate": 6,
+      "x": 0,
+      "y": 814
+    },
+    "portals": [
+      {
+        "id": "to_island_bridge",
+        "anchor": { "x": 0.1, "y": 0.88 },
+        "radius": 120,
+        "target_map": "island",
+        "target_spawn": { "x": 0.3, "y": 0.25 },
+        "label": "前往海島"
+      },
+      {
+        "id": "to_island_mainroad",
+        "anchor": { "x": 0.5, "y": 0.93 },
+        "radius": 120,
+        "target_map": "island",
+        "target_spawn": { "x": 0.5, "y": 0.82 },
+        "label": "前往海島"
+      }
+    ],
     "buildings": [
       {
         "id": "house_red",

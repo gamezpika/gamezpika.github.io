@@ -2,39 +2,92 @@
 // 全部 driven by /assets/village_config.json
 // 派派用 map-editor.html?map=village 編輯 → 推 GitHub → 自動上線
 
-const CONFIG_URL = "../assets/village_config.json";
+const REGISTRY_URL = "../assets/projects_registry.json";
 const DPR = Math.max(1, window.devicePixelRatio || 1);
+
+function _qParam(name) {
+  try { return new URLSearchParams(window.location.search).get(name); } catch (e) { return null; }
+}
 
 class ExploreScene extends Phaser.Scene {
   constructor() { super("explore"); }
+
+  // 進入點：第一次啟動 data 為空 → 看 ?map= 或預設 village；
+  // 走 portal 切地圖時 scene.restart({mapId, spawn}) 會把資料帶進來
+  init(data) {
+    this.mapId = (data && data.mapId) || _qParam("map") || "village";
+    this.spawnOverride = (data && data.spawn) || null;
+    this.facingOverride = (data && data.facing) || null;
+    this._transitioning = false;
+    // 清掉上一張地圖的物件參考：restart 後它們已被 Phaser 銷毀，
+    // 趁新地圖 asset 還在載時 update()/外部讀取要被 `if(!this.player) return` 擋住，
+    // 不能讀到「殘留但已銷毀」的 player.body / obstacles
+    this.player = null;
+    this.obstacles = null;
+    this.portals = [];
+    this.npcs = [];
+    this.interactables = [];
+    this._proxAnims = null;   // 靠近才搖的樹清單，換地圖要清掉舊 sprite 參考
+    this._nearPortal = null;
+    this._nearShop = null;
+  }
+
   // backbuffer 是 css × dpr，UI/zoom 計算要用 CSS 尺寸（除以 dpr）
   get cssW() { return this.scale.width / DPR; }
   get cssH() { return this.scale.height / DPR; }
 
+  // Stage 0：先載專案註冊表（map id → config 路徑，跟 map-editor 同一份真相）
   preload() {
-    this.load.json("village", CONFIG_URL + "?v=" + Date.now());
+    this.load.json("registry", REGISTRY_URL + "?v=" + Date.now());
   }
 
+  // Stage 1：依 mapId 從 registry 找到 config 路徑，載入該地圖的 config
   create() {
-    const config = this.cache.json.get("village").map_config;
+    let configPath = "assets/" + this.mapId + "_config.json";  // fallback
+    const reg = this.cache.json.get("registry");
+    if (reg && Array.isArray(reg.projects)) {
+      const entry = reg.projects.find(p => p.id === this.mapId);
+      if (entry && entry.config_path) configPath = entry.config_path;
+    }
+    const cfgKey = "mapcfg_" + this.mapId;
+    this.load.json(cfgKey, "../" + configPath + "?v=" + Date.now());
+    // 跟 Stage 2 一樣防「空佇列 complete 不 fire」：有排到檔才等 complete，否則直接進下一步
+    if (this.load.list.size > 0) {
+      this.load.once("complete", () => this._loadAssets(cfgKey));
+      this.load.start();
+    } else {
+      this._loadAssets(cfgKey);
+    }
+  }
+
+  // Stage 2：讀 config → 載入該地圖所有 asset（已 cache 的跳過）→ 建場景
+  _loadAssets(cfgKey) {
+    const config = this.cache.json.get(cfgKey).map_config;
     this.config = config;
     const dim = config.dimensions;
     this.IMG_W = dim.image_width;
     this.IMG_H = dim.image_height;
     this.WORLD_W = dim.world_width;
     this.WORLD_H = dim.world_height;
-    this.WORLD_OFFSET_Y = dim.world_offset_y;  // ground 放在 (0, -400)
-    this.SKY_PAD = (config.camera && config.camera.sky_pad) || 400;
+    this.WORLD_OFFSET_Y = dim.world_offset_y || 0;  // 村莊 ground 放在 (0, -400)，海島為 0
+    this.SKY_PAD = (config.camera && config.camera.sky_pad) || 0;
     this.VIEW_BASE_WIDTH = (config.camera && config.camera.view_base_width) || 1200;
 
     // asset_base 是相對 repo 根的路徑 (e.g. "godot-demo2/")
     // 從 godot-demo2/index.html 出發要 "../" 跳到 repo 根
     this.assetBase = "../" + (config.asset_base || "");
 
-    // Stage 1: 預載所有 asset 後進入第二階段
-    this.load.image("village_ground", "../" + config.background + "?v=3");
-    this.load.spritesheet("river", "../godot-demo2/river.webp?v=3", { frameWidth: 768, frameHeight: 666 });
-    config.buildings.forEach(b => {
+    // 背景（每張地圖一個 texture key，第一次切過去才下載 → 不拖累初始載入）
+    this.bgKey = "bg_" + this.mapId;
+    if (!this.textures.exists(this.bgKey)) {
+      this.load.image(this.bgKey, "../" + config.background + "?v=3");
+    }
+    // 河流（config.river 驅動，海島沒有就不載）
+    if (config.river && !this.textures.exists("river")) {
+      this.load.spritesheet("river", this.assetBase + config.river.image + "?v=3",
+        { frameWidth: config.river.frame_width, frameHeight: config.river.frame_height });
+    }
+    (config.buildings || []).forEach(b => {
       if (b.sprite && b.sprite.image) {
         if (!this.textures.exists(b.sprite.image)) {
           // 有 frame_width = spritesheet 動畫（噴泉），否則靜態圖
@@ -47,11 +100,11 @@ class ExploreScene extends Phaser.Scene {
         }
       }
     });
-    // Player sprites（3 方向）
+    // Player sprites（3 方向，所有地圖共用同一個玩家 → 用固定 key、已載就跳過）
     const ps = config.player.sprites;
-    this.load.spritesheet("hero",      this.assetBase + ps.side.image + "?v=3", { frameWidth: ps.side.frame_width, frameHeight: ps.side.frame_height });
-    this.load.spritesheet("hero_down", this.assetBase + ps.down.image + "?v=3", { frameWidth: ps.down.frame_width, frameHeight: ps.down.frame_height });
-    this.load.spritesheet("hero_up",   this.assetBase + ps.up.image   + "?v=3", { frameWidth: ps.up.frame_width,   frameHeight: ps.up.frame_height });
+    if (!this.textures.exists("hero"))      this.load.spritesheet("hero",      this.assetBase + ps.side.image + "?v=3", { frameWidth: ps.side.frame_width, frameHeight: ps.side.frame_height });
+    if (!this.textures.exists("hero_down")) this.load.spritesheet("hero_down", this.assetBase + ps.down.image + "?v=3", { frameWidth: ps.down.frame_width, frameHeight: ps.down.frame_height });
+    if (!this.textures.exists("hero_up"))   this.load.spritesheet("hero_up",   this.assetBase + ps.up.image   + "?v=3", { frameWidth: ps.up.frame_width,   frameHeight: ps.up.frame_height });
 
     // NPC sprites（每隻 NPC 可帶自己的 side/down/up；沒給就 fallback 用 hero）
     if (Array.isArray(config.npcs)) {
@@ -70,20 +123,31 @@ class ExploreScene extends Phaser.Scene {
       });
     }
 
-    // Loading progress UI（圖檔大、手機網路慢時不會看到一片綠）
-    const sw = this.scale.width, sh = this.scale.height;
-    const loadText = this.add.text(sw / 2, sh / 2, "載入中 0%", {
-      fontFamily: '-apple-system, "PingFang TC", sans-serif',
-      fontSize: 24 * DPR, color: "#ffffff",
-      backgroundColor: "#1a2412",
-      padding: { x: 16 * DPR, y: 10 * DPR },
-    }).setOrigin(0.5).setDepth(99999);
-    this.load.on("progress", (p) => loadText.setText(`載入中 ${Math.floor(p * 100)}%`));
-    this.load.on("loaderror", (file) => {
-      loadText.setText(`載入失敗：${file.key || file.src}`).setColor("#ff7070");
-    });
-    this.load.once("complete", () => { loadText.destroy(); this._buildScene(); });
-    this.load.start();
+    // 有東西要載才顯示進度條；全部已 cache（例如走回村莊）就直接建場景
+    // （loader 佇列空時 'complete' 不一定會 fire，故手動分流避免卡黑屏）
+    if (this.load.list.size > 0) {
+      const sw = this.scale.width, sh = this.scale.height;
+      const loadText = this.add.text(sw / 2, sh / 2, "載入中 0%", {
+        fontFamily: '-apple-system, "PingFang TC", sans-serif',
+        fontSize: 24 * DPR, color: "#ffffff",
+        backgroundColor: "#1a2412",
+        padding: { x: 16 * DPR, y: 10 * DPR },
+      }).setOrigin(0.5).setDepth(99999);
+      const onProgress = (p) => loadText.setText(`載入中 ${Math.floor(p * 100)}%`);
+      const onLoadErr = (file) => { loadText.setText(`載入失敗：${file.key || file.src}`).setColor("#ff7070"); };
+      this.load.on("progress", onProgress);
+      this.load.on("loaderror", onLoadErr);
+      this.load.once("complete", () => {
+        // 移除這兩個 listener，避免跨 restart 殘留呼叫到已銷毀的 loadText
+        this.load.off("progress", onProgress);
+        this.load.off("loaderror", onLoadErr);
+        loadText.destroy();
+        this._buildScene();
+      });
+      this.load.start();
+    } else {
+      this._buildScene();
+    }
   }
 
   // 把 normalized image coord (0-1) 轉成 world coord
@@ -101,13 +165,17 @@ class ExploreScene extends Phaser.Scene {
     const config = this.config;
 
     // 1. 背景
-    this.add.image(0, this.WORLD_OFFSET_Y, "village_ground").setOrigin(0, 0).setDepth(0);
-    // 河流流動：疊在背景河流位置(0,814)，持續慢流（扭曲晃動）
-    const river = this.add.sprite(0, this.WORLD_OFFSET_Y + 814, "river", 0).setOrigin(0, 0).setDepth(0.5);
-    if (!this.anims.exists("river_flow")) {
-      this.anims.create({ key: "river_flow", frames: this.anims.generateFrameNumbers("river", { start: 0, end: 15 }), frameRate: 6, repeat: -1 });
+    this.add.image(0, this.WORLD_OFFSET_Y, this.bgKey).setOrigin(0, 0).setDepth(0);
+    // 河流流動（config.river 驅動，海島沒有 river 就略過）
+    if (config.river && this.textures.exists("river")) {
+      const rc = config.river;
+      const river = this.add.sprite(rc.x || 0, this.WORLD_OFFSET_Y + (rc.y || 0), "river", 0).setOrigin(0, 0).setDepth(0.5);
+      const rFrames = rc.frames || 16;
+      if (!this.anims.exists("river_flow")) {
+        this.anims.create({ key: "river_flow", frames: this.anims.generateFrameNumbers("river", { start: 0, end: rFrames - 1 }), frameRate: rc.frame_rate || 6, repeat: -1 });
+      }
+      river.play("river_flow");
     }
-    river.play("river_flow");
 
     // 1b. 水珠紋理（Phaser Graphics 即時畫，給粒子噴泉用）
     if (!this.textures.exists("water_drop")) {
@@ -123,7 +191,7 @@ class ExploreScene extends Phaser.Scene {
     // 2. Buildings：sprite + collision + interaction
     this.interactables = [];
     this.obstacles = this.physics.add.staticGroup();
-    config.buildings.forEach(b => {
+    (config.buildings || []).forEach(b => {
       // Sprite
       if (b.sprite && b.sprite.image && this.textures.exists(b.sprite.image)) {
         const anchor = { x: this._nx(b.anchor.x), y: this._ny(b.anchor.y) };
@@ -198,9 +266,10 @@ class ExploreScene extends Phaser.Scene {
       });
     }
 
-    // 4. Player
+    // 4. Player（spawnOverride 來自 portal 指定的落點，沒有就用 config 預設出生點）
     const p = config.player;
-    const PX = this._nx(p.spawn.x), PY = this._ny(p.spawn.y);
+    const spawnPt = this.spawnOverride || p.spawn;
+    const PX = this._nx(spawnPt.x), PY = this._ny(spawnPt.y);
     this.PLAYER_SPEED = p.speed || 220;
     this.playerShadow = this.add.ellipse(PX, PY + 12, 56, 16, 0x000000, 0.4);
     this.player = this.add.rectangle(PX, PY, 22, 22, 0xffffff, 0).setVisible(false);
@@ -211,11 +280,11 @@ class ExploreScene extends Phaser.Scene {
     this.playerSprite.setOrigin(0.5, 1);
     this.playerSprite.setScale(p.scale || 0.66);
 
-    // 5. 動畫
-    this.anims.create({ key: "hero_walk",      frames: this.anims.generateFrameNumbers("hero",      { start: 0, end: (p.sprites.side.frames || 9) - 1  }), frameRate: p.sprites.side.frame_rate || 12, repeat: -1 });
-    this.anims.create({ key: "hero_walk_down", frames: this.anims.generateFrameNumbers("hero_down", { start: 0, end: (p.sprites.down.frames || 25) - 1 }), frameRate: p.sprites.down.frame_rate || 14, repeat: -1 });
-    this.anims.create({ key: "hero_walk_up",   frames: this.anims.generateFrameNumbers("hero_up",   { start: 0, end: (p.sprites.up.frames   || 16) - 1 }), frameRate: p.sprites.up.frame_rate || 14, repeat: -1 });
-    this.anims.create({ key: "hero_idle",      frames: [{ key: "hero_down", frame: 0 }],                                                                  frameRate: 1                                });
+    // 5. 動畫（anims 是 game 全域、scene.restart 後仍在 → 用 exists 擋重複建立）
+    if (!this.anims.exists("hero_walk"))      this.anims.create({ key: "hero_walk",      frames: this.anims.generateFrameNumbers("hero",      { start: 0, end: (p.sprites.side.frames || 9) - 1  }), frameRate: p.sprites.side.frame_rate || 12, repeat: -1 });
+    if (!this.anims.exists("hero_walk_down")) this.anims.create({ key: "hero_walk_down", frames: this.anims.generateFrameNumbers("hero_down", { start: 0, end: (p.sprites.down.frames || 25) - 1 }), frameRate: p.sprites.down.frame_rate || 14, repeat: -1 });
+    if (!this.anims.exists("hero_walk_up"))   this.anims.create({ key: "hero_walk_up",   frames: this.anims.generateFrameNumbers("hero_up",   { start: 0, end: (p.sprites.up.frames   || 16) - 1 }), frameRate: p.sprites.up.frame_rate || 14, repeat: -1 });
+    if (!this.anims.exists("hero_idle"))      this.anims.create({ key: "hero_idle",      frames: [{ key: "hero_down", frame: 0 }],                                                                  frameRate: 1                                });
     this.playerSprite.play("hero_idle");
 
     this.physics.add.collider(this.player, this.obstacles);
@@ -315,16 +384,54 @@ class ExploreScene extends Phaser.Scene {
 
     // 9. 點地圖走過去（取代搖桿/A 按鈕）
     this._setupTapToMove();
-    this.scale.on("resize", () => this._onResize());
+    // ScaleManager 是全域、跨 scene.restart 不重置 → 只綁一次，避免換地圖累積重複 resize handler
+    if (!this._resizeBound) { this.scale.on("resize", () => this._onResize()); this._resizeBound = true; }
 
     // 9b. 「進入」按鈕用 HTML 元素（Phaser 物件會被相機 zoom 推出畫面 → 手機看不到）
     this.enterEl = document.getElementById("enter-shop");
     if (this.enterEl) this.enterEl.onclick = () => this._enterNearShop();
     this._nearShop = null;
+    this.portalEl = document.getElementById("enter-portal");
+    if (this.portalEl) this.portalEl.onclick = () => { if (this._nearPortal) this._enterPortal(this._nearPortal); };
+    this._hideEnter(); this._hidePortalBtn();
+
+    // 9c. 傳送門（走到路口 → 跳新地圖）
+    this.portals = [];
+    if (Array.isArray(config.portals)) {
+      config.portals.forEach(pt => {
+        if (!pt.anchor) return;
+        const cx = this._nx(pt.anchor.x), cy = this._ny(pt.anchor.y);
+        // 地面脈動光圈：讓玩家看到出口在哪
+        const ring = this.add.ellipse(cx, cy, 90, 50, 0x66ccff, 0.32)
+          .setStrokeStyle(4, 0xffffff, 0.85).setDepth(cy - 6);
+        this.tweens.add({
+          targets: ring, scaleX: { from: 0.8, to: 1.25 }, scaleY: { from: 0.8, to: 1.25 },
+          alpha: { from: 0.45, to: 0.12 }, duration: 1100, yoyo: true, repeat: -1,
+        });
+        this.add.text(cx, cy - 64, (pt.label || "前往") + " →", {
+          fontFamily: '"PingFang TC","Microsoft JhengHei",sans-serif', fontSize: "20px",
+          color: "#ffffff", backgroundColor: "#2a7fd0", padding: { x: 10, y: 6 }, fontStyle: "bold",
+        }).setOrigin(0.5, 1).setDepth(cy + 2);
+        this.portals.push({
+          id: pt.id, cx, cy, radius: pt.radius || 130,
+          target_map: pt.target_map, target_spawn: pt.target_spawn, facing: pt.facing,
+          label: pt.label || "前往",
+        });
+      });
+    }
+    this._nearPortal = null;
+    // 落地先解除武裝：玩家可能正好出生在「返回」傳送門圈內，要等他離開圈一次才重新啟用，
+    // 否則一落地就被彈回去 → 無限迴圈
+    this._portalArmed = false;
 
     // 10. State
     this.currentInteractable = null;
     this.modalOpen = false;
+
+    // 11. 轉場淡入：用 DOM 黑幕（跨 scene.restart 穩定，蓋住換圖的載入閃爍）
+    this._transitioning = false;
+    const fade = document.getElementById("map-fade");
+    if (fade) this.time.delayedCall(30, () => fade.classList.remove("show"));
   }
 
   _showEnter(label) {
@@ -338,6 +445,39 @@ class ExploreScene extends Phaser.Scene {
     this.modalOpen = true;
     this._hideEnter();
     window.openShop(id, () => { this.modalOpen = false; });
+  }
+
+  _showPortalBtn(label) {
+    if (this.portalEl) { this.portalEl.textContent = (label || "前往") + " →"; this.portalEl.classList.add("show"); }
+  }
+  _hidePortalBtn() { if (this.portalEl) this.portalEl.classList.remove("show"); }
+
+  // 走 portal 換地圖：黑幕淡入 → scene.restart（Phaser 自動拆掉舊場景所有 NPC/collider/粒子）→ 新場景淡出黑幕
+  _enterPortal(portal) {
+    if (this._transitioning || this.modalOpen || !portal) return;
+    this._transitioning = true;
+    this._hideEnter(); this._hidePortalBtn();
+    const fade = document.getElementById("map-fade");
+    if (fade) fade.classList.add("show");
+    this.time.delayedCall(300, () => {
+      this.scene.restart({ mapId: portal.target_map, spawn: portal.target_spawn, facing: portal.facing });
+    });
+  }
+
+  _updatePortals() {
+    if (!this.portals || this.portals.length === 0) return;
+    const px = this.player.x, py = this.player.y;
+    let nearest = null, best = Infinity, anyInside = false;
+    for (const pt of this.portals) {
+      const d = Math.hypot(px - pt.cx, py - pt.cy);
+      if (d < pt.radius) { anyInside = true; if (d < best) { best = d; nearest = pt; } }
+    }
+    if (!anyInside) this._portalArmed = true;  // 離開所有傳送門圈後才武裝（防一落地就被彈回）
+    if (this._portalArmed && nearest && !this.modalOpen && !this._transitioning) {
+      this._nearPortal = nearest; this._showPortalBtn(nearest.label);
+    } else {
+      this._nearPortal = null; this._hidePortalBtn();
+    }
   }
 
   _setupTapToMove() {
@@ -355,7 +495,7 @@ class ExploreScene extends Phaser.Scene {
     this._pinchStart = null;  // { dist, zoom } 雙指開始狀態
 
     this.input.on("pointerdown", (pointer) => {
-      if (this.modalOpen) return;
+      if (this.modalOpen || this._transitioning) return;
       // 雙指開始 = pinch zoom，不觸發 tap-to-move
       if (this.input.pointer1.isDown && this.input.pointer2 && this.input.pointer2.isDown) {
         this._beginPinch();
@@ -420,7 +560,8 @@ class ExploreScene extends Phaser.Scene {
   }
 
   _tryInteract() {
-    if (this.modalOpen) return;
+    if (this.modalOpen || this._transitioning) return;
+    if (this._nearPortal) { this._enterPortal(this._nearPortal); return; }
     const item = this.currentInteractable;
     if (!item) return;
     if (item.type === "open_modal") this._showModal(item);
@@ -649,6 +790,8 @@ class ExploreScene extends Phaser.Scene {
 
   update(time, delta) {
     if (!this.player) return;  // scene loading
+    // 轉場中：凍結玩家、不處理輸入（等黑幕淡入後 scene.restart）
+    if (this._transitioning) { if (this.player.body) this.player.body.setVelocity(0, 0); return; }
     let dx = 0, dy = 0;
     if (!this.modalOpen) {
       // 鍵盤輸入（電腦版仍可用方向鍵 / WASD）
@@ -713,6 +856,7 @@ class ExploreScene extends Phaser.Scene {
 
     if (!this.modalOpen) for (const npc of this.npcs) this._updateNPC(npc, delta);
     this._updateInteractable();
+    this._updatePortals();
   }
 }
 
@@ -735,6 +879,8 @@ const game = new Phaser.Game({
   scene: ExploreScene,
   render: { pixelArt: false, antialias: true },
 });
+// 掛到 window 方便除錯 / 自動化驗證取得目前 scene（不影響玩法）
+window.game = game;
 
 // Retina：backbuffer = CSS × dpr，canvas 顯示維持 CSS 尺寸，手機高 dpr 才不糊
 // CSS 尺寸用 visualViewport（iOS Safari 真實可見高度），fallback innerWidth/Height

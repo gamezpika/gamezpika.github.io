@@ -150,3 +150,29 @@
   0%, 100% { box-shadow: 0 5px 0 #7a4715, 0 8px 18px rgba(0,0,0,.35); }
   50%      { box-shadow: 0 5px 0 #7a4715, 0 0 22px 5px rgba(255,210,120,.95); }
 }
+
+/* 「前往新地圖」傳送門按鈕 — 比照進入鈕，藍色旅行主題 */
+#enter-portal {
+  position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%);
+  z-index: 4000; display: none;
+  font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-size: 20px; font-weight: 800; color: #eaf6ff; white-space: nowrap;
+  background: linear-gradient(180deg, #3a9bd8, #1f6fa8);
+  border: 3px solid #dff1ff; border-radius: 999px; padding: 13px 28px;
+  cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none;
+  box-shadow: 0 5px 0 #134f78, 0 8px 18px rgba(0,0,0,.35);
+  animation: portal-glow 1.2s ease-in-out infinite;
+}
+#enter-portal.show { display: block; }
+#enter-portal:active { transform: translateX(-50%) translateY(3px); box-shadow: 0 2px 0 #134f78; }
+@keyframes portal-glow {
+  0%, 100% { box-shadow: 0 5px 0 #134f78, 0 8px 18px rgba(0,0,0,.35); }
+  50%      { box-shadow: 0 5px 0 #134f78, 0 0 22px 5px rgba(150,220,255,.95); }
+}
+
+/* 地圖轉場黑幕（DOM 層，跨 Phaser scene.restart 穩定） */
+#map-fade {
+  position: fixed; inset: 0; z-index: 6000; background: #000;
+  opacity: 0; pointer-events: none; transition: opacity 0.28s ease;
+}
+#map-fade.show { opacity: 1; pointer-events: auto; }

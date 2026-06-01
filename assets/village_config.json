@@ -78,7 +78,7 @@
           "shop_id": "grocer",
           "label": "蔬果攤",
           "body": "歡迎光臨蔬果攤",
-          "radius": 130
+          "radius": 250
         },
         "polygon": [
           {
@@ -154,7 +154,7 @@
           "shop_id": "boutique",
           "label": "服裝店",
           "body": "歡迎光臨服裝店",
-          "radius": 130
+          "radius": 250
         },
         "polygon": [
           {

@@ -108,13 +108,25 @@
 }
 @keyframes bought-pop { from { transform: scale(1.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-/* 手機直式：商人移上方變小、商品在下 */
+/* 手機直式：泡泡在上、商人在下，正常排版流不重疊（比照電腦版乾淨觀感） */
 @media (max-width: 560px) {
   .shop-panel { flex-direction: column; height: min(90vh, 680px); }
-  .shop-merchant { flex: 0 0 168px; margin-top: 52px; }
-  .shop-merchant img { max-width: 132px; }
-  .shop-bubble { font-size: 13px; left: 50%; transform: translateX(-50%); width: 78%; right: auto; }
-  .shop-bubble::after { left: 50%; margin-left: -8px; }
+  .shop-merchant {
+    flex: 0 0 auto;            /* 不寫死高度，讓內容撐開、不溢出 */
+    margin-top: 52px;
+    flex-direction: column;    /* 泡泡在上、商人在下 */
+    align-items: center; justify-content: flex-start;
+    gap: 6px; padding: 8px 0 6px;
+  }
+  .shop-bubble {
+    position: relative;        /* 改回正常流，不再 absolute 浮空蓋圖 */
+    top: auto; left: auto; right: auto; transform: none;
+    width: 86%; margin: 0 auto; font-size: 13px;
+  }
+  .shop-bubble::after { left: 50%; margin-left: -8px; }   /* 箭頭置中朝下指商人 */
+  .shop-merchant img {
+    width: auto; max-width: 120px; max-height: 120px;      /* 高度封死，杜絕溢出 */
+  }
   .shop-grid-wrap { margin-top: 0; }
   .shop-grid { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); }
 }

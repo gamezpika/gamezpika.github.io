@@ -118,3 +118,22 @@
   .shop-grid-wrap { margin-top: 0; }
   .shop-grid { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); }
 }
+
+/* 「進入商店」按鈕 — HTML(不受 Phaser 相機 zoom 影響,手機一定看得到) */
+#enter-shop {
+  position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%);
+  z-index: 4000; display: none;
+  font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-size: 20px; font-weight: 800; color: #fff7e6; white-space: nowrap;
+  background: linear-gradient(180deg, #c8843a, #a8631f);
+  border: 3px solid #fff2dd; border-radius: 999px; padding: 13px 28px;
+  cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none;
+  box-shadow: 0 5px 0 #7a4715, 0 8px 18px rgba(0,0,0,.35);
+  animation: enter-glow 1.2s ease-in-out infinite;
+}
+#enter-shop.show { display: block; }
+#enter-shop:active { transform: translateX(-50%) translateY(3px); box-shadow: 0 2px 0 #7a4715; }
+@keyframes enter-glow {
+  0%, 100% { box-shadow: 0 5px 0 #7a4715, 0 8px 18px rgba(0,0,0,.35); }
+  50%      { box-shadow: 0 5px 0 #7a4715, 0 0 22px 5px rgba(255,210,120,.95); }
+}

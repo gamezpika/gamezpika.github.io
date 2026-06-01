@@ -43,14 +43,15 @@
 
 /* 左側商人 */
 .shop-merchant {
-  flex: 0 0 30%;
+  flex: 0 0 40%;
   margin-top: 52px;
   position: relative;
   display: flex; align-items: flex-end; justify-content: center;
   background: radial-gradient(ellipse at 50% 80%, #ffe7b0 0%, transparent 70%);
 }
 .shop-merchant img {
-  width: 100%; max-width: 230px; height: auto;
+  width: 100%; max-width: 360px; height: auto; max-height: 96%;
+  object-fit: contain;
   filter: drop-shadow(0 8px 8px rgba(0,0,0,0.22));
   -webkit-user-drag: none; user-select: none;
 }

@@ -116,7 +116,7 @@
     if (!shop) { console.warn("unknown shop", shopId); release(); return; }
     const ov = buildOverlay();
     ov.querySelector(".shop-title").textContent = shop.title;
-    ov.querySelector(".shop-merchant img").src = shop.merchant + "?v=1";
+    ov.querySelector(".shop-merchant img").src = shop.merchant + "?v=2";
     const g = GREET[shopId] || ["歡迎光臨！"];
     bubble(ov, g[Math.floor(Math.random() * g.length)]);
     renderCats(ov, shop);

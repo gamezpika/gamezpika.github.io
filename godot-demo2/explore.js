@@ -178,6 +178,7 @@ class ExploreScene extends Phaser.Scene {
           type: b.interaction.type,
           label: b.interaction.label || b.name,
           body: b.interaction.body || "",
+          shop_id: b.interaction.shop_id || "",
         });
       }
     });
@@ -316,9 +317,22 @@ class ExploreScene extends Phaser.Scene {
     this._setupTapToMove();
     this.scale.on("resize", () => this._onResize());
 
+    // 9b. 「進入」按鈕（靠近商店時出現，手機/桌面點它都能進店）
+    this.enterBtn = this.add.text(0, 0, "🛒 進入", {
+      fontFamily: '-apple-system, "PingFang TC", sans-serif',
+      fontSize: 22 * DPR, color: "#ffffff", fontStyle: "bold",
+      backgroundColor: "#b5712f", padding: { x: 18 * DPR, y: 10 * DPR },
+    }).setOrigin(0.5, 1).setScrollFactor(0).setDepth(15000).setVisible(false).setInteractive();
+    this.enterBtn.on("pointerdown", () => this._tryInteract());
+    this._positionEnterBtn();
+
     // 10. State
     this.currentInteractable = null;
     this.modalOpen = false;
+  }
+
+  _positionEnterBtn() {
+    if (this.enterBtn) this.enterBtn.setPosition(this.scale.width / 2, this.scale.height - 24 * DPR);
   }
 
   _setupTapToMove() {
@@ -337,6 +351,9 @@ class ExploreScene extends Phaser.Scene {
 
     this.input.on("pointerdown", (pointer) => {
       if (this.modalOpen) return;
+      // 點到「進入」按鈕 → 交給按鈕處理，不要同時走路
+      if (this.enterBtn && this.enterBtn.visible &&
+          this.enterBtn.getBounds().contains(pointer.x, pointer.y)) return;
       // 雙指開始 = pinch zoom，不觸發 tap-to-move
       if (this.input.pointer1.isDown && this.input.pointer2 && this.input.pointer2.isDown) {
         this._beginPinch();
@@ -398,6 +415,7 @@ class ExploreScene extends Phaser.Scene {
 
   _onResize() {
     this._adjustZoom();
+    this._positionEnterBtn();
   }
 
   _tryInteract() {
@@ -406,6 +424,11 @@ class ExploreScene extends Phaser.Scene {
     if (!item) return;
     if (item.type === "open_modal") this._showModal(item);
     else if (item.type === "fountain_splash") this._fountainSplash(item.cx, item.cy - 100);
+    else if (item.type === "open_shop" && window.openShop) {
+      this.modalOpen = true;
+      this.enterBtn.setVisible(false);
+      window.openShop(item.shop_id, () => { this.modalOpen = false; });
+    }
   }
 
   _showModal(item) {
@@ -615,6 +638,13 @@ class ExploreScene extends Phaser.Scene {
       if (npc.bubble) npc.bubble.setVisible(inRange);
     }
 
+    if (this.enterBtn) {
+      if (nearest && nearest.type === "open_shop" && !this.modalOpen) {
+        this.enterBtn.setText("🛒 進入 " + nearest.label).setVisible(true);
+      } else {
+        this.enterBtn.setVisible(false);
+      }
+    }
     this.currentInteractable = nearest;
   }
 

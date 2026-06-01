@@ -74,10 +74,11 @@
           "y_max": 0.44233107674927125
         },
         "interaction": {
-          "type": "open_modal",
+          "type": "open_shop",
+          "shop_id": "grocer",
           "label": "蔬果攤",
           "body": "歡迎光臨蔬果攤",
-          "radius": 110
+          "radius": 130
         },
         "polygon": [
           {
@@ -149,10 +150,11 @@
           "y_max": 0.4133573870100735
         },
         "interaction": {
-          "type": "open_modal",
+          "type": "open_shop",
+          "shop_id": "boutique",
           "label": "服裝店",
           "body": "歡迎光臨服裝店",
-          "radius": 110
+          "radius": 130
         },
         "polygon": [
           {

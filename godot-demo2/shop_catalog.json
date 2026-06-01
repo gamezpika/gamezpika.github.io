@@ -1,0 +1,489 @@
+{
+ "grocer": {
+  "title": "蔬果攤",
+  "merchant": "merchant_grocer_anim.webp",
+  "items": [
+   {
+    "img": "shopitems/broccoli.webp",
+    "name": "花椰菜",
+    "emoji": "🥦",
+    "cat": "蔬菜",
+    "price": 30
+   },
+   {
+    "img": "shopitems/spinach.webp",
+    "name": "菠菜",
+    "emoji": "🥬",
+    "cat": "蔬菜",
+    "price": 25
+   },
+   {
+    "img": "shopitems/carrot.webp",
+    "name": "胡蘿蔔",
+    "emoji": "🥕",
+    "cat": "蔬菜",
+    "price": 25
+   },
+   {
+    "img": "shopitems/tomato.webp",
+    "name": "番茄",
+    "emoji": "🍅",
+    "cat": "蔬菜",
+    "price": 25
+   },
+   {
+    "img": "shopitems/cucumber.webp",
+    "name": "小黃瓜",
+    "emoji": "🥒",
+    "cat": "蔬菜",
+    "price": 20
+   },
+   {
+    "img": "shopitems/cabbage.webp",
+    "name": "高麗菜",
+    "emoji": "🥬",
+    "cat": "蔬菜",
+    "price": 25
+   },
+   {
+    "img": "shopitems/pumpkin.webp",
+    "name": "南瓜",
+    "emoji": "🎃",
+    "cat": "蔬菜",
+    "price": 35
+   },
+   {
+    "img": "shopitems/sweet_potato.webp",
+    "name": "地瓜",
+    "emoji": "🍠",
+    "cat": "蔬菜",
+    "price": 30
+   },
+   {
+    "img": "shopitems/corn.webp",
+    "name": "玉米",
+    "emoji": "🌽",
+    "cat": "蔬菜",
+    "price": 30
+   },
+   {
+    "img": "shopitems/pepper.webp",
+    "name": "青椒",
+    "emoji": "🫑",
+    "cat": "蔬菜",
+    "price": 25
+   },
+   {
+    "img": "shopitems/apple.webp",
+    "name": "蘋果",
+    "emoji": "🍎",
+    "cat": "水果",
+    "price": 30
+   },
+   {
+    "img": "shopitems/banana.webp",
+    "name": "香蕉",
+    "emoji": "🍌",
+    "cat": "水果",
+    "price": 25
+   },
+   {
+    "img": "shopitems/orange.webp",
+    "name": "橘子",
+    "emoji": "🍊",
+    "cat": "水果",
+    "price": 25
+   },
+   {
+    "img": "shopitems/grape.webp",
+    "name": "葡萄",
+    "emoji": "🍇",
+    "cat": "水果",
+    "price": 35
+   },
+   {
+    "img": "shopitems/watermelon.webp",
+    "name": "西瓜",
+    "emoji": "🍉",
+    "cat": "水果",
+    "price": 40
+   },
+   {
+    "img": "shopitems/strawberry.webp",
+    "name": "草莓",
+    "emoji": "🍓",
+    "cat": "水果",
+    "price": 40
+   },
+   {
+    "img": "shopitems/papaya.webp",
+    "name": "木瓜",
+    "emoji": "🫒",
+    "cat": "水果",
+    "price": 35
+   },
+   {
+    "img": "shopitems/kiwi.webp",
+    "name": "奇異果",
+    "emoji": "🥝",
+    "cat": "水果",
+    "price": 35
+   },
+   {
+    "img": "shopitems/rice.webp",
+    "name": "白飯",
+    "emoji": "🍚",
+    "cat": "主食",
+    "price": 20
+   },
+   {
+    "img": "shopitems/brown_rice.webp",
+    "name": "糙米飯",
+    "emoji": "🌾",
+    "cat": "主食",
+    "price": 25
+   },
+   {
+    "img": "shopitems/bread.webp",
+    "name": "全麥麵包",
+    "emoji": "🍞",
+    "cat": "主食",
+    "price": 25
+   },
+   {
+    "img": "shopitems/oatmeal.webp",
+    "name": "燕麥",
+    "emoji": "🥣",
+    "cat": "主食",
+    "price": 30
+   },
+   {
+    "img": "shopitems/egg.webp",
+    "name": "雞蛋",
+    "emoji": "🥚",
+    "cat": "蛋白質",
+    "price": 20
+   },
+   {
+    "img": "shopitems/milk.webp",
+    "name": "牛奶",
+    "emoji": "🥛",
+    "cat": "蛋白質",
+    "price": 25
+   },
+   {
+    "img": "shopitems/tofu.webp",
+    "name": "豆腐",
+    "emoji": "🍢",
+    "cat": "蛋白質",
+    "price": 25
+   },
+   {
+    "img": "shopitems/chicken.webp",
+    "name": "雞肉",
+    "emoji": "🍗",
+    "cat": "肉類",
+    "price": 40
+   },
+   {
+    "img": "shopitems/pork.webp",
+    "name": "豬肉",
+    "emoji": "🥓",
+    "cat": "肉類",
+    "price": 45
+   },
+   {
+    "img": "shopitems/salmon.webp",
+    "name": "鮭魚",
+    "emoji": "🐟",
+    "cat": "海鮮",
+    "price": 50
+   },
+   {
+    "img": "shopitems/tuna.webp",
+    "name": "鮪魚",
+    "emoji": "🐠",
+    "cat": "海鮮",
+    "price": 50
+   },
+   {
+    "img": "shopitems/shrimp.webp",
+    "name": "蝦子",
+    "emoji": "🦐",
+    "cat": "海鮮",
+    "price": 45
+   },
+   {
+    "img": "shopitems/jumping_rope.webp",
+    "name": "跳繩",
+    "emoji": "🪢",
+    "cat": "運動",
+    "price": 40
+   },
+   {
+    "img": "shopitems/swimming.webp",
+    "name": "游泳",
+    "emoji": "🏊",
+    "cat": "運動",
+    "price": 60
+   },
+   {
+    "img": "shopitems/running.webp",
+    "name": "跑步",
+    "emoji": "🏃",
+    "cat": "運動",
+    "price": 35
+   },
+   {
+    "img": "shopitems/cycling.webp",
+    "name": "騎單車",
+    "emoji": "🚴",
+    "cat": "運動",
+    "price": 50
+   },
+   {
+    "img": "shopitems/soccer.webp",
+    "name": "踢足球",
+    "emoji": "⚽",
+    "cat": "運動",
+    "price": 45
+   },
+   {
+    "img": "shopitems/basketball.webp",
+    "name": "打籃球",
+    "emoji": "🏀",
+    "cat": "運動",
+    "price": 45
+   },
+   {
+    "img": "shopitems/stairs.webp",
+    "name": "爬樓梯",
+    "emoji": "🪜",
+    "cat": "運動",
+    "price": 30
+   },
+   {
+    "img": "shopitems/yoga.webp",
+    "name": "瑜伽",
+    "emoji": "🧘",
+    "cat": "運動",
+    "price": 40
+   },
+   {
+    "img": "shopitems/badminton.webp",
+    "name": "羽毛球",
+    "emoji": "🏸",
+    "cat": "運動",
+    "price": 45
+   },
+   {
+    "img": "shopitems/walking.webp",
+    "name": "散步",
+    "emoji": "🚶",
+    "cat": "運動",
+    "price": 25
+   },
+   {
+    "img": "shopitems/early_sleep.webp",
+    "name": "早睡",
+    "emoji": "😴",
+    "cat": "生活習慣",
+    "price": 30
+   },
+   {
+    "img": "shopitems/brush_teeth.webp",
+    "name": "刷牙",
+    "emoji": "🪥",
+    "cat": "生活習慣",
+    "price": 20
+   },
+   {
+    "img": "shopitems/wash_hands.webp",
+    "name": "洗手",
+    "emoji": "🧼",
+    "cat": "生活習慣",
+    "price": 20
+   },
+   {
+    "img": "shopitems/drink_water.webp",
+    "name": "喝水",
+    "emoji": "💧",
+    "cat": "生活習慣",
+    "price": 15
+   },
+   {
+    "img": "shopitems/reading.webp",
+    "name": "閱讀",
+    "emoji": "📖",
+    "cat": "生活習慣",
+    "price": 30
+   }
+  ]
+ },
+ "boutique": {
+  "title": "服裝店",
+  "merchant": "merchant_boutique_anim.webp",
+  "items": [
+   {
+    "img": "outfits/f_academic.webp",
+    "name": "女 學院風",
+    "price": 210
+   },
+   {
+    "img": "outfits/f_angel.webp",
+    "name": "女 天使裝",
+    "price": 210
+   },
+   {
+    "img": "outfits/f_beach.webp",
+    "name": "女 海灘風",
+    "price": 210
+   },
+   {
+    "img": "outfits/f_blackcat.webp",
+    "name": "女 黑貓裝",
+    "price": 210
+   },
+   {
+    "img": "outfits/f_bunny.webp",
+    "name": "女 兔子裝",
+    "price": 210
+   },
+   {
+    "img": "outfits/f_dress.webp",
+    "name": "女 洋裝",
+    "price": 180
+   },
+   {
+    "img": "outfits/f_dress_pearl.webp",
+    "name": "女 珍珠洋裝",
+    "price": 120
+   },
+   {
+    "img": "outfits/f_elf.webp",
+    "name": "女 精靈裝",
+    "price": 210
+   },
+   {
+    "img": "outfits/f_hermes_bag.webp",
+    "name": "女 名牌包",
+    "price": 210
+   },
+   {
+    "img": "outfits/f_kawaii.webp",
+    "name": "女 可愛風",
+    "price": 210
+   },
+   {
+    "img": "outfits/f_lady_full.webp",
+    "name": "女 淑女全套",
+    "price": 120
+   },
+   {
+    "img": "outfits/f_mermaid.webp",
+    "name": "女 美人魚",
+    "price": 210
+   },
+   {
+    "img": "outfits/f_party_dress.webp",
+    "name": "女 派對洋裝",
+    "price": 120
+   },
+   {
+    "img": "outfits/f_pearl_necklace.webp",
+    "name": "女 珍珠項鍊",
+    "price": 120
+   },
+   {
+    "img": "outfits/f_reindeer.webp",
+    "name": "女 馴鹿裝",
+    "price": 210
+   },
+   {
+    "img": "outfits/f_streetwear.webp",
+    "name": "女 街頭風",
+    "price": 210
+   },
+   {
+    "img": "outfits/m_beach.webp",
+    "name": "男 海灘風",
+    "price": 210
+   },
+   {
+    "img": "outfits/m_biker.webp",
+    "name": "男 機車服",
+    "price": 210
+   },
+   {
+    "img": "outfits/m_briefcase.webp",
+    "name": "男 公事包",
+    "price": 210
+   },
+   {
+    "img": "outfits/m_casual.webp",
+    "name": "男 休閒風",
+    "price": 210
+   },
+   {
+    "img": "outfits/m_dino.webp",
+    "name": "男 Dino",
+    "price": 120
+   },
+   {
+    "img": "outfits/m_knight.webp",
+    "name": "男 Knight",
+    "price": 180
+   },
+   {
+    "img": "outfits/m_santa.webp",
+    "name": "男 Santa",
+    "price": 150
+   },
+   {
+    "img": "outfits/m_sports.webp",
+    "name": "男 Sports",
+    "price": 180
+   },
+   {
+    "img": "outfits/m_streetwear.webp",
+    "name": "男 街頭風",
+    "price": 210
+   },
+   {
+    "img": "outfits/m_suit_full.webp",
+    "name": "男 Suit Full",
+    "price": 150
+   },
+   {
+    "img": "outfits/m_suit_jacket.webp",
+    "name": "男 Suit Jacket",
+    "price": 210
+   },
+   {
+    "img": "outfits/m_suit_pants.webp",
+    "name": "男 Suit Pants",
+    "price": 180
+   },
+   {
+    "img": "outfits/m_suit_set.webp",
+    "name": "男 Suit Set",
+    "price": 120
+   },
+   {
+    "img": "outfits/m_superhero.webp",
+    "name": "男 Superhero",
+    "price": 150
+   },
+   {
+    "img": "outfits/m_vampire.webp",
+    "name": "男 Vampire",
+    "price": 210
+   },
+   {
+    "img": "outfits/m_wizard_kid.webp",
+    "name": "男 Wizard Kid",
+    "price": 180
+   }
+  ]
+ }
+}

@@ -91,10 +91,16 @@
         "name": "批發中心",
         "category": "house",
         "sprite": {
-          "image": "wholesale.webp",
+          "image": "wholesale_anim.webp",
           "scale": 0.6,
           "anchor_x": 0.5,
-          "anchor_y": 1
+          "anchor_y": 1,
+          "frame_width": 609,
+          "frame_height": 512,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 10
         },
         "anchor": {
           "x": 0.18751482565035185,
@@ -257,10 +263,16 @@
         "name": "男裝店",
         "category": "house",
         "sprite": {
-          "image": "menswear.webp",
+          "image": "menswear_anim.webp",
           "scale": 0.74,
           "anchor_x": 0.5,
-          "anchor_y": 1
+          "anchor_y": 1,
+          "frame_width": 511,
+          "frame_height": 512,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 10
         },
         "anchor": {
           "x": 0.8175456630030837,

@@ -58,37 +58,43 @@
     "portals": [
       {
         "id": "to_island_bridge",
-        "anchor": { "x": 0.1, "y": 0.88 },
+        "anchor": {
+          "x": 0.1,
+          "y": 0.88
+        },
         "radius": 120,
         "target_map": "island",
-        "target_spawn": { "x": 0.3, "y": 0.25 },
+        "target_spawn": {
+          "x": 0.3,
+          "y": 0.25
+        },
         "label": "前往海島"
       },
       {
         "id": "to_island_mainroad",
-        "anchor": { "x": 0.5, "y": 0.93 },
+        "anchor": {
+          "x": 0.5,
+          "y": 0.93
+        },
         "radius": 120,
         "target_map": "island",
-        "target_spawn": { "x": 0.5, "y": 0.82 },
+        "target_spawn": {
+          "x": 0.5,
+          "y": 0.82
+        },
         "label": "前往海島"
       }
     ],
     "buildings": [
       {
         "id": "house_red",
-        "name": "蔬果攤",
+        "name": "批發中心",
         "category": "house",
         "sprite": {
-          "image": "shop.webp",
-          "scale": 1.15,
+          "image": "wholesale.webp",
+          "scale": 0.6,
           "anchor_x": 0.5,
-          "anchor_y": 1,
-          "frame_width": 269,
-          "frame_height": 304,
-          "grid_cols": 2,
-          "grid_rows": 2,
-          "frames": 4,
-          "frame_rate": 4
+          "anchor_y": 1
         },
         "anchor": {
           "x": 0.18751482565035185,
@@ -103,8 +109,8 @@
         "interaction": {
           "type": "open_shop",
           "shop_id": "grocer",
-          "label": "蔬果攤",
-          "body": "歡迎光臨蔬果攤",
+          "label": "批發中心",
+          "body": "歡迎光臨批發中心",
           "radius": 250
         },
         "polygon": [
@@ -152,7 +158,7 @@
       },
       {
         "id": "house_brown",
-        "name": "服裝店",
+        "name": "女裝店",
         "category": "house",
         "sprite": {
           "image": "clothes.webp",
@@ -179,8 +185,8 @@
         "interaction": {
           "type": "open_shop",
           "shop_id": "boutique",
-          "label": "服裝店",
-          "body": "歡迎光臨服裝店",
+          "label": "女裝店",
+          "body": "歡迎光臨女裝店",
           "radius": 250
         },
         "polygon": [
@@ -248,10 +254,10 @@
       },
       {
         "id": "house_blue",
-        "name": "藍屋",
+        "name": "男裝店",
         "category": "house",
         "sprite": {
-          "image": "house_blue.webp",
+          "image": "menswear.webp",
           "scale": 0.74,
           "anchor_x": 0.5,
           "anchor_y": 1
@@ -267,10 +273,11 @@
           "y_max": 0.46307218874214645
         },
         "interaction": {
-          "type": "open_modal",
-          "label": "藍屋",
-          "body": "歡迎來到藍屋",
-          "radius": 110
+          "type": "open_shop",
+          "label": "男裝店",
+          "body": "歡迎光臨男裝店",
+          "radius": 250,
+          "shop_id": "menswear"
         },
         "polygon": [
           {
@@ -305,7 +312,7 @@
         },
         "mask_color": "#FF3B30",
         "render_order": 500,
-        "interaction_type": "open_modal"
+        "interaction_type": "open_shop"
       },
       {
         "id": "house_green",

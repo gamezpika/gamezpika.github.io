@@ -1,6 +1,6 @@
 {
  "grocer": {
-  "title": "蔬果攤",
+  "title": "批發中心",
   "merchant": "merchant_grocer_anim.webp",
   "items": [
    {
@@ -321,7 +321,7 @@
   ]
  },
  "boutique": {
-  "title": "服裝店",
+  "title": "女裝店",
   "merchant": "merchant_boutique_anim.webp",
   "items": [
    {
@@ -403,7 +403,13 @@
     "img": "outfits/f_streetwear.webp",
     "name": "女 街頭風",
     "price": 210
-   },
+   }
+  ]
+ },
+ "menswear": {
+  "title": "男裝店",
+  "merchant": "merchant_boutique_anim.webp",
+  "items": [
    {
     "img": "outfits/m_beach.webp",
     "name": "男 海灘風",

@@ -11,29 +11,25 @@
   #wrap{ width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; }
   .cap{ font-size:13px; color:#9fb3d1; text-align:center; padding:0 16px; }
   #fit{ position:relative; }
-  /* 固定內部座標 720x480，整塊縮放適配 */
   #stage{ position:relative; width:720px; height:480px; transform-origin:top left;
     background:url('assets/images/worldmap_proof/base_island.jpg?v=1') center/cover no-repeat;
     border-radius:14px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.55); }
 
-  .sprite{ position:absolute; background-repeat:no-repeat; image-rendering:auto;
-    transform-origin:bottom center; will-change:background-position; }
+  .sprite{ position:absolute; background-repeat:no-repeat; transform-origin:bottom center; will-change:background-position; }
 
-  /* 樹（158x150，24 幀，搖幅調小） */
+  /* 樹（158x150，24 幀，搖幅小） */
   .tree{ width:158px; height:150px;
     background-image:url('assets/images/worldmap_proof/tree_sway_sheet.png?v=2');
-    background-size:auto 150px;
-    animation:treePlay 3.4s steps(24) infinite; }
+    background-size:auto 150px; animation:treePlay 3.4s steps(24) infinite; }
   @keyframes treePlay{ to{ background-position-x:-3792px; } }
 
   /* 船（201x200，24 幀） */
   .ferry{ width:201px; height:200px;
     background-image:url('assets/images/worldmap_proof/ferry_bob_sheet.png?v=1');
-    background-size:auto 200px;
-    animation:ferryPlay 2.4s steps(24) infinite; }
+    background-size:auto 200px; animation:ferryPlay 2.4s steps(24) infinite; }
   @keyframes ferryPlay{ to{ background-position-x:-4824px; } }
 
-  /* 水面光：斜向掃光 + 海岸泡沫脈動 */
+  /* 水面（弱） */
   .shimmer{ position:absolute; inset:0; pointer-events:none; mix-blend-mode:screen; opacity:.22;
     background:linear-gradient(115deg, transparent 36%, rgba(190,240,255,.2) 48%, rgba(255,255,255,.28) 50%, rgba(190,240,255,.2) 52%, transparent 64%);
     background-size:260% 260%; animation:sweep 8s linear infinite; }
@@ -43,42 +39,98 @@
     box-shadow:0 0 0 2px rgba(255,255,255,.1), 0 0 18px 6px rgba(255,255,255,.08) inset;
     animation:foam 4.6s ease-in-out infinite; }
   @keyframes foam{ 0%,100%{ transform:translate(-50%,-50%) scale(1); opacity:.28; } 50%{ transform:translate(-50%,-50%) scale(1.03); opacity:.45; } }
-  /* 海面點點波光（弱） */
   .glint{ position:absolute; width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.6);
     pointer-events:none; animation:glint 3.2s ease-in-out infinite; filter:blur(.5px); }
   @keyframes glint{ 0%,100%{ opacity:0; transform:scale(.4); } 50%{ opacity:.5; transform:scale(.9); } }
 
+  /* 鳥（SVG 海鷗剪影 + 拍翅 + 飛過） */
+  .bird{ position:absolute; width:26px; height:13px; pointer-events:none; animation:birdfly linear infinite; opacity:.75; }
+  .bird svg{ width:100%; height:100%; display:block; }
+  @keyframes birdfly{ from{ transform:translateX(-60px); } to{ transform:translateX(800px); } }
+
+  /* 煙囪煙 */
+  .smoke{ position:absolute; pointer-events:none; }
+  .puff{ position:absolute; bottom:0; left:0; width:14px; height:14px; border-radius:50%;
+    background:rgba(255,255,255,.5); filter:blur(3px); animation:rise 3.4s ease-out infinite; }
+  @keyframes rise{ 0%{ transform:translate(0,0) scale(.4); opacity:0; }
+    18%{ opacity:.55; } 100%{ transform:translate(-12px,-54px) scale(1.7); opacity:0; } }
+
+  /* 魚跳 */
+  .fishwrap{ position:absolute; pointer-events:none; }
+  .fish{ width:60px; height:57px; background:url('assets/images/worldmap_proof/fish.png?v=1') center/contain no-repeat;
+    transform-origin:center; opacity:0; animation:jump 6.5s ease-in-out infinite; }
+  @keyframes jump{
+    0%,70%,100%{ opacity:0; transform:translateY(18px) rotate(0deg); }
+    73%{ opacity:1; transform:translateY(0) rotate(-26deg); }
+    80%{ opacity:1; transform:translateY(-48px) rotate(-6deg); }
+    87%{ opacity:1; transform:translateY(0) rotate(26deg); }
+    91%{ opacity:0; transform:translateY(18px) rotate(34deg); } }
+  .splash{ position:absolute; left:14px; top:50px; width:34px; height:9px; border-radius:50%;
+    border:2px solid rgba(255,255,255,.55); opacity:0; animation:splash 6.5s ease-out infinite; }
+  @keyframes splash{ 0%,71%,100%{ opacity:0; transform:scale(.4); } 74%{ opacity:.7; transform:scale(1); }
+    90%{ opacity:.5; transform:scale(1.4); } 93%{ opacity:0; } }
+
+  /* 靠岸進入鈕 */
+  .enterbtn{ position:absolute; left:50%; top:64px; transform:translate(-50%,0) scale(.85); z-index:25;
+    padding:11px 20px; border-radius:999px; background:linear-gradient(135deg,#FFD54F,#FF8C42); color:#2a1c08;
+    font-weight:900; font-size:15px; border:none; box-shadow:0 8px 22px rgba(255,140,66,.5); cursor:pointer;
+    opacity:0; pointer-events:none; transition:opacity .22s, transform .22s; white-space:nowrap; }
+  .enterbtn.show{ opacity:1; pointer-events:auto; transform:translate(-50%,0) scale(1); animation:ebob 1.1s ease-in-out infinite; }
+  @keyframes ebob{ 50%{ transform:translate(-50%,-6px) scale(1); } }
+  #enterFade{ position:absolute; inset:0; background:#fff; opacity:0; pointer-events:none; z-index:40;
+    display:flex; align-items:center; justify-content:center; font-weight:900; color:#FF8C42; font-size:22px; transition:opacity .6s; }
+
   /* 方向鍵 */
-  #dpad{ display:grid; grid-template-columns:repeat(3,52px); grid-template-rows:repeat(3,52px);
-    gap:6px; justify-content:center; }
+  #dpad{ display:grid; grid-template-columns:repeat(3,52px); grid-template-rows:repeat(3,52px); gap:6px; justify-content:center; }
   .db{ border:none; border-radius:12px; background:rgba(255,255,255,.12); color:#cfe0ff; font-size:20px;
-    cursor:pointer; -webkit-user-select:none; user-select:none; touch-action:none;
-    box-shadow:0 2px 8px rgba(0,0,0,.3); transition:background .1s, transform .06s; }
-  .db:active{ background:var(--blue,#00D4FF); color:#062033; transform:scale(.92); }
+    cursor:pointer; -webkit-user-select:none; user-select:none; touch-action:none; box-shadow:0 2px 8px rgba(0,0,0,.3); transition:background .1s, transform .06s; }
+  .db:active{ background:#00D4FF; color:#062033; transform:scale(.92); }
   .db.up{ grid-area:1/2; } .db.left{ grid-area:2/1; } .db.down{ grid-area:3/2; } .db.right{ grid-area:2/3; }
 </style>
 </head>
 <body>
 <div id="wrap">
-  <div class="cap">🏝 分層動畫 proof — 用下方方向鍵（或鍵盤方向鍵/WASD）開船上下左右移動 ⛵</div>
+  <div class="cap">🏝 開船在海上繞（碰不到島）· 靠近碼頭會出現「進入」· 鳥飛/炊煙/魚跳</div>
   <div id="fit">
     <div id="stage">
       <div class="shimmer"></div>
       <div class="foam"></div>
-      <!-- 海面波光 -->
       <div class="glint" style="left:18%; top:74%; animation-delay:.2s"></div>
       <div class="glint" style="left:80%; top:66%; animation-delay:1.1s"></div>
       <div class="glint" style="left:64%; top:86%; animation-delay:1.8s"></div>
       <div class="glint" style="left:30%; top:88%; animation-delay:.7s"></div>
-      <!-- 樹（bottom 錨定：top = 目標y - 150） -->
-      <div class="sprite tree" style="left:60px;  top:62px;  transform:scale(.82)"></div>
-      <div class="sprite tree" style="left:476px; top:54px;  transform:scale(.9); animation-delay:-1.0s"></div>
-      <div class="sprite tree" style="left:250px; top:150px; transform:scale(.62); animation-delay:-.5s"></div>
-      <!-- 船：可由玩家控制移動 -->
+
+      <!-- 鳥 -->
+      <div class="bird" style="top:40px;  animation-duration:14s; animation-delay:0s"></div>
+      <div class="bird" style="top:72px;  animation-duration:18s; animation-delay:-7s; opacity:.6"></div>
+      <div class="bird" style="top:24px;  animation-duration:11s; animation-delay:-4s; opacity:.55"></div>
+
+      <!-- 炊煙（屋頂煙囪） -->
+      <div class="smoke" style="left:322px; top:54px; width:30px; height:60px;">
+        <div class="puff" style="animation-delay:0s"></div>
+        <div class="puff" style="animation-delay:1.1s"></div>
+        <div class="puff" style="animation-delay:2.2s"></div>
+      </div>
+
+      <!-- 魚跳（左側水面） -->
+      <div class="fishwrap" style="left:120px; top:352px;">
+        <div class="splash"></div>
+        <div class="fish"></div>
+      </div>
+
+      <!-- 樹（放島上草地，base 錨定：top=baseY-150, left=baseX-79） -->
+      <div class="sprite tree" style="left:137px; top:52px;  transform:scale(.82)"></div>
+      <div class="sprite tree" style="left:396px; top:42px;  transform:scale(.88); animation-delay:-1.0s"></div>
+      <div class="sprite tree" style="left:209px; top:100px; transform:scale(.64); animation-delay:-.5s"></div>
+
+      <!-- 船（玩家控制，限海域） -->
       <div class="sprite ferry" id="ferry"></div>
+
+      <!-- 靠岸進入 -->
+      <button class="enterbtn" id="enterBtn">⚓ 靠岸 · 進入學園島 ▶</button>
+      <div id="enterFade">🏫 進入學園島…</div>
     </div>
   </div>
-  <!-- 方向鍵 -->
   <div id="dpad">
     <button class="db up"    data-d="up">▲</button>
     <button class="db left"  data-d="left">◀</button>
@@ -86,55 +138,94 @@
     <button class="db right" data-d="right">▶</button>
   </div>
 </div>
+
+<!-- 海鷗 SVG 模板（拍翅） -->
+<svg width="0" height="0" style="position:absolute"><defs>
+  <g id="gull"><path fill="none" stroke="#37475a" stroke-width="2" stroke-linecap="round"
+    d="M2 9 Q7 3 13 9 Q19 3 24 9">
+    <animate attributeName="d" dur="0.5s" repeatCount="indefinite"
+      values="M2 9 Q7 3 13 9 Q19 3 24 9; M2 7 Q7 11 13 7 Q19 11 24 7; M2 9 Q7 3 13 9 Q19 3 24 9"/>
+  </path></g>
+</defs></svg>
+
 <script>
-  // 整塊舞台等比縮放，置中適配
-  const stage=document.getElementById('stage'), fit=document.getElementById('fit'), wrap=document.getElementById('wrap');
+  // 把海鷗塞進每隻 .bird
+  document.querySelectorAll('.bird').forEach(b=>{
+    b.innerHTML='<svg viewBox="0 0 26 13"><use href="#gull"/></svg>';
+  });
+
+  const stage=document.getElementById('stage'), fit=document.getElementById('fit');
   const BW=720, BH=480;
   function resize(){
     const availW=Math.min(window.innerWidth-16, 760);
-    const availH=window.innerHeight-70;
-    const s=Math.min(availW/BW, availH/BH);
+    const availH=window.innerHeight-210;
+    const s=Math.max(.3, Math.min(availW/BW, availH/BH));
     stage.style.transform='scale('+s+')';
     fit.style.width=(BW*s)+'px'; fit.style.height=(BH*s)+'px';
   }
   window.addEventListener('resize',resize); resize();
 
-  // ── 船控制：上下左右移動 ──
+  // ── 水域遮罩 ──
+  let mdata=null, MW=360, MH=240, maskReady=false;
+  (function loadMask(){
+    const img=new Image();
+    img.onload=()=>{ const c=document.createElement('canvas'); c.width=MW; c.height=MH;
+      const cx=c.getContext('2d'); cx.drawImage(img,0,0,MW,MH);
+      mdata=cx.getImageData(0,0,MW,MH).data; maskReady=true; };
+    img.src='assets/images/worldmap_proof/water_mask.png?v=1';
+  })();
+  function isWater(sx,sy){
+    if(!maskReady) return true;
+    let mx=Math.round(sx/BW*MW), my=Math.round(sy/BH*MH);
+    mx=Math.max(0,Math.min(MW-1,mx)); my=Math.max(0,Math.min(MH-1,my));
+    return mdata[(my*MW+mx)*4] > 128;   // 白=水
+  }
+
+  // ── 船控制（限海域）──
   const ferry=document.getElementById('ferry');
-  const SC=0.92, FW=201, FH=200, SPEED=3.4;
+  const SC=0.92, SPEED=3.4, CXo=100, CYo=150;
   let fx=300, fy=258, facing=1;
-  const MINX=-30, MAXX=BW-160, MINY=10, MAXY=BH-200;   // 720x480 內活動範圍
+  const MINX=-30,MAXX=540,MINY=10,MAXY=280;
   const held={up:false,down:false,left:false,right:false};
+  const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
   function apply(){ ferry.style.left=fx+'px'; ferry.style.top=fy+'px';
     ferry.style.transform='scale('+(facing*SC)+','+SC+')'; }
   apply();
+
+  // 碼頭點（進入觸發）
+  const DOCK={x:374,y:392};
+  function checkDock(){
+    const cx=fx+CXo, cy=fy+CYo;
+    const near=Math.hypot(cx-DOCK.x, cy-DOCK.y) < 92;
+    document.getElementById('enterBtn').classList.toggle('show', near);
+  }
   function tick(){
     let dx=(held.right?1:0)-(held.left?1:0), dy=(held.down?1:0)-(held.up?1:0);
     if(dx||dy){
-      if(dx&&dy){ dx*=0.7071; dy*=0.7071; }     // 斜向不加速
-      fx=Math.max(MINX,Math.min(MAXX, fx+dx*SPEED));
-      fy=Math.max(MINY,Math.min(MAXY, fy+dy*SPEED));
-      if(dx<0) facing=-1; else if(dx>0) facing=1;
-      apply();
+      if(dx&&dy){ dx*=0.7071; dy*=0.7071; }
+      if(dx){ const tx=cl(fx+dx*SPEED,MINX,MAXX); if(isWater(tx+CXo, fy+CYo)) fx=tx; if(dx<0)facing=-1; else facing=1; }
+      if(dy){ const ty=cl(fy+dy*SPEED,MINY,MAXY); if(isWater(fx+CXo, ty+CYo)) fy=ty; }
+      apply(); checkDock();
     }
     requestAnimationFrame(tick);
   }
-  requestAnimationFrame(tick);
+  requestAnimationFrame(tick); checkDock();
 
-  // 鍵盤
+  // 鍵盤 + 螢幕方向鍵
   const KEY={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',s:'down',a:'left',d:'right',W:'up',S:'down',A:'left',D:'right'};
   addEventListener('keydown',e=>{ const k=KEY[e.key]; if(k){ held[k]=true; e.preventDefault(); } });
   addEventListener('keyup',  e=>{ const k=KEY[e.key]; if(k){ held[k]=false; e.preventDefault(); } });
-  // 螢幕方向鍵（按住持續）
   document.querySelectorAll('.db').forEach(btn=>{
-    const d=btn.dataset.d;
-    const on =e=>{ e.preventDefault(); held[d]=true; };
-    const off=e=>{ e.preventDefault(); held[d]=false; };
-    btn.addEventListener('pointerdown',on);
-    btn.addEventListener('pointerup',off);
-    btn.addEventListener('pointerleave',off);
-    btn.addEventListener('pointercancel',off);
+    const d=btn.dataset.d, on=e=>{e.preventDefault();held[d]=true;}, off=e=>{e.preventDefault();held[d]=false;};
+    btn.addEventListener('pointerdown',on); btn.addEventListener('pointerup',off);
+    btn.addEventListener('pointerleave',off); btn.addEventListener('pointercancel',off);
   });
+
+  // 進入學園島
+  document.getElementById('enterBtn').onclick=()=>{
+    const f=document.getElementById('enterFade'); f.style.opacity='1';
+    setTimeout(()=>{ location.href='onboarding.html'; }, 750);
+  };
 </script>
 </body>
 </html>

@@ -29,6 +29,16 @@
     background-size:auto 200px; animation:ferryPlay 2.4s steps(24) infinite; }
   @keyframes ferryPlay{ to{ background-position-x:-4824px; } }
 
+  /* 2.5D 圖層 z 順序（島遮罩層 + Y-sort） */
+  .islandcut{ position:absolute; inset:0; pointer-events:none; z-index:5;
+    background:url('assets/images/worldmap_proof/island_cutout.png?v=1') center/cover no-repeat; }
+  .shimmer,.foam,.glint{ z-index:1; }
+  .tree{ z-index:6; }     /* 樹在島上(遮罩之上) */
+  .smoke{ z-index:7; }
+  .fishwrap{ z-index:8; }
+  #ferry{ z-index:8; }    /* 預設前景；JS 依 Y 動態調 4(後)/8(前) */
+  .bird{ z-index:10; }    /* 鳥在最上(天空) */
+
   /* 水面（弱） */
   .shimmer{ position:absolute; inset:0; pointer-events:none; mix-blend-mode:screen; opacity:.22;
     background:linear-gradient(115deg, transparent 36%, rgba(190,240,255,.2) 48%, rgba(255,255,255,.28) 50%, rgba(190,240,255,.2) 52%, transparent 64%);
@@ -123,7 +133,10 @@
       <div class="sprite tree" style="left:396px; top:42px;  transform:scale(.88); animation-delay:-1.0s"></div>
       <div class="sprite tree" style="left:209px; top:100px; transform:scale(.64); animation-delay:-.5s"></div>
 
-      <!-- 船（玩家控制，限海域） -->
+      <!-- 島嶼遮罩層（船在它後面時被擋住 = Y-sort 前後遮擋） -->
+      <div class="islandcut"></div>
+
+      <!-- 船（玩家控制，限海域，依 Y 前後遮擋） -->
       <div class="sprite ferry" id="ferry"></div>
 
       <!-- 靠岸進入 -->
@@ -188,8 +201,10 @@
   const MINX=-30,MAXX=540,MINY=10,MAXY=280;
   const held={up:false,down:false,left:false,right:false};
   const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const FRONT_Y=345;   // 接觸點低於此(更南/更近) = 前景蓋過島；否則被島擋
   function apply(){ ferry.style.left=fx+'px'; ferry.style.top=fy+'px';
-    ferry.style.transform='scale('+(facing*SC)+','+SC+')'; }
+    ferry.style.transform='scale('+(facing*SC)+','+SC+')';
+    ferry.style.zIndex = ((fy+CYo) > FRONT_Y) ? 8 : 4; }
   apply();
 
   // 碼頭點（進入觸發）

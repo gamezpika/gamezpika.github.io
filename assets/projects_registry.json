@@ -25,9 +25,9 @@
           "frame_width": 609,
           "frame_height": 512,
           "grid_cols": 4,
-          "grid_rows": 3,
-          "frames": 12,
-          "frame_rate": 10
+          "grid_rows": 4,
+          "frames": 16,
+          "frame_rate": 12
         },
         {
           "image": "menswear_anim.webp",
@@ -40,9 +40,9 @@
           "frame_width": 511,
           "frame_height": 512,
           "grid_cols": 4,
-          "grid_rows": 3,
-          "frames": 12,
-          "frame_rate": 10
+          "grid_rows": 4,
+          "frames": 16,
+          "frame_rate": 12
         },
         {
           "image": "shop.webp",

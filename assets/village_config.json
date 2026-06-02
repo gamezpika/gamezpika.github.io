@@ -98,9 +98,9 @@
           "frame_width": 609,
           "frame_height": 512,
           "grid_cols": 4,
-          "grid_rows": 3,
-          "frames": 12,
-          "frame_rate": 10
+          "grid_rows": 4,
+          "frames": 16,
+          "frame_rate": 12
         },
         "anchor": {
           "x": 0.18751482565035185,
@@ -270,9 +270,9 @@
           "frame_width": 511,
           "frame_height": 512,
           "grid_cols": 4,
-          "grid_rows": 3,
-          "frames": 12,
-          "frame_rate": 10
+          "grid_rows": 4,
+          "frames": 16,
+          "frame_rate": 12
         },
         "anchor": {
           "x": 0.8175456630030837,

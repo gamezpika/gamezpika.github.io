@@ -246,6 +246,37 @@
       },
       "world_offset_y": 0,
       "sprite_library": []
+    },
+    {
+      "id": "newbie_island",
+      "name": "🐣 新手島 (世界觀)",
+      "engine": "phaser_iso",
+      "config_path": "assets/newbie_island_config.json",
+      "background_path": "assets/images/worldmap_proof/base_island.jpg",
+      "sprite_base": "assets/images/worldmap_proof/",
+      "preview_url": "godot-demo2/?map=newbie_island",
+      "image_dimensions": {
+        "width": 1536,
+        "height": 1024
+      },
+      "world_offset_y": 0,
+      "sprite_library": [
+        {
+          "image": "tree_sway_sheet.png",
+          "name": "🌳 樹 (會搖)",
+          "type": "building",
+          "scale": 1.4,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.04,
+          "frame_width": 158,
+          "frame_height": 150,
+          "grid_cols": 24,
+          "grid_rows": 1,
+          "frames": 24,
+          "frame_rate": 7
+        }
+      ]
     }
   ]
 }

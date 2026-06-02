@@ -1,0 +1,70 @@
+{
+  "map_config": {
+    "version": 1,
+    "dimensions": {
+      "image_width": 1536,
+      "image_height": 1024,
+      "world_width": 1536,
+      "world_height": 1024,
+      "world_offset_y": 0
+    },
+    "camera": {
+      "sky_pad": 0,
+      "view_base_width": 1900
+    },
+    "background": "assets/images/worldmap_proof/base_island.jpg",
+    "asset_base": "assets/images/worldmap_proof/",
+    "player": {
+      "spawn": { "x": 0.52, "y": 0.88 },
+      "scale": 0.7,
+      "speed": 200,
+      "sprites": {
+        "side": { "image": "ferry_bob_sheet.png", "frame_width": 201, "frame_height": 200, "frames": 24, "frame_rate": 12 },
+        "down": { "image": "ferry_bob_sheet.png", "frame_width": 201, "frame_height": 200, "frames": 24, "frame_rate": 12 },
+        "up":   { "image": "ferry_bob_sheet.png", "frame_width": 201, "frame_height": 200, "frames": 24, "frame_rate": 12 }
+      }
+    },
+    "buildings": [
+      {
+        "id": "tree_left", "name": "樹", "category": "tree",
+        "anchor": { "x": 0.30, "y": 0.42 },
+        "sprite": { "image": "tree_sway_sheet.png", "scale": 1.4, "anchor_x": 0.5, "anchor_y": 1.0,
+          "frame_width": 158, "frame_height": 150, "grid_cols": 24, "grid_rows": 1, "frames": 24, "frame_rate": 7 }
+      },
+      {
+        "id": "tree_right", "name": "樹", "category": "tree",
+        "anchor": { "x": 0.66, "y": 0.40 },
+        "sprite": { "image": "tree_sway_sheet.png", "scale": 1.5, "anchor_x": 0.5, "anchor_y": 1.0,
+          "frame_width": 158, "frame_height": 150, "grid_cols": 24, "grid_rows": 1, "frames": 24, "frame_rate": 7 }
+      },
+      {
+        "id": "tree_front", "name": "樹", "category": "tree",
+        "anchor": { "x": 0.40, "y": 0.52 },
+        "sprite": { "image": "tree_sway_sheet.png", "scale": 1.1, "anchor_x": 0.5, "anchor_y": 1.0,
+          "frame_width": 158, "frame_height": 150, "grid_cols": 24, "grid_rows": 1, "frames": 24, "frame_rate": 7 }
+      }
+    ],
+    "obstacle_areas": [
+      {
+        "id": "island", "name": "島嶼(船不能上岸)", "category": "land",
+        "polygon": [
+          {"x":0.8501,"y":0.5125},{"x":0.7807,"y":0.6728},{"x":0.6652,"y":0.7335},{"x":0.5958,"y":0.7985},
+          {"x":0.5265,"y":0.8375},{"x":0.4543,"y":0.7942},{"x":0.3792,"y":0.7898},{"x":0.3012,"y":0.7465},
+          {"x":0.1827,"y":0.6772},{"x":0.1336,"y":0.5125},{"x":0.2376,"y":0.3738},{"x":0.307,"y":0.2828},
+          {"x":0.3734,"y":0.2178},{"x":0.4514,"y":0.1962},{"x":0.5236,"y":0.1962},{"x":0.593,"y":0.2352},
+          {"x":0.6652,"y":0.2915},{"x":0.7432,"y":0.3738}
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "id": "dock_to_academy",
+        "anchor": { "x": 0.52, "y": 0.83 },
+        "radius": 150,
+        "label": "進入學園島",
+        "target_url": "../onboarding.html"
+      }
+    ],
+    "npcs": []
+  }
+}

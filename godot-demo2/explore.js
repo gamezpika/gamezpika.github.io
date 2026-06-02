@@ -415,7 +415,6 @@ class ExploreScene extends Phaser.Scene {
         this.portals.push({
           id: pt.id, cx, cy, radius: pt.radius || 130,
           target_map: pt.target_map, target_spawn: pt.target_spawn, facing: pt.facing,
-          target_url: pt.target_url,
           label: pt.label || "前往",
         });
       });
@@ -461,11 +460,7 @@ class ExploreScene extends Phaser.Scene {
     const fade = document.getElementById("map-fade");
     if (fade) fade.classList.add("show");
     this.time.delayedCall(300, () => {
-      if (portal.target_url) {            // 跳到外部頁面（e.g. 碼頭→onboarding 新手任務）
-        window.location.href = portal.target_url;
-      } else {
-        this.scene.restart({ mapId: portal.target_map, spawn: portal.target_spawn, facing: portal.facing });
-      }
+      this.scene.restart({ mapId: portal.target_map, spawn: portal.target_spawn, facing: portal.facing });
     });
   }
 

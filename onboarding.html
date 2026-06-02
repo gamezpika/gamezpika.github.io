@@ -88,14 +88,10 @@
   .sparkles span{ position:absolute; font-size:18px; animation:twk 2.4s ease-in-out infinite; opacity:.0; }
   @keyframes twk{ 0%,100%{ opacity:0; transform:scale(.6); } 50%{ opacity:1; transform:scale(1.1); } }
 
-  /* ── S1 上學路 ── */
-  .street{ position:absolute; inset:0; background:linear-gradient(180deg,#ffd89b 0%,#ffb774 35%,#c98a5a 60%,#7c5a3a 100%); }
-  .street .sun{ position:absolute; top:60px; left:50%; transform:translateX(-50%); width:90px; height:90px; border-radius:50%;
-    background:radial-gradient(circle,#fff,#ffe79a 60%,transparent); }
-  .street .road{ position:absolute; left:0; right:0; bottom:0; height:42%; background:linear-gradient(180deg,#6b5238,#4a3826);
-    clip-path:polygon(38% 0,62% 0,100% 100%,0 100%); }
-  .street .scen{ position:absolute; bottom:42%; font-size:42px; filter:drop-shadow(0 4px 6px rgba(0,0,0,.3)); }
-  .phone-pickup{ position:absolute; bottom:24%; left:50%; transform:translateX(-50%); font-size:64px; cursor:pointer;
+  /* ── S1 上學路（校園場景）── */
+  #s1 .student{ position:absolute; z-index:6; bottom:19%; left:18%; width:156px;
+    filter:drop-shadow(0 10px 16px rgba(0,0,0,.4)); }
+  .phone-pickup{ position:absolute; bottom:15%; left:58%; transform:translateX(-50%); cursor:pointer; z-index:7;
     animation:phoneGlow 1.6s ease-in-out infinite; }
   @keyframes phoneGlow{ 0%,100%{ filter:drop-shadow(0 0 6px var(--blue)); transform:translateX(-50%) translateY(0) scale(1); }
     50%{ filter:drop-shadow(0 0 26px var(--blue)) drop-shadow(0 0 50px var(--blue)); transform:translateX(-50%) translateY(-6px) scale(1.08); } }
@@ -215,13 +211,9 @@
 
   <!-- S1 上學路撿手機 -->
   <section class="scene" id="s1">
-    <div class="street">
-      <div class="sun"></div>
-      <div class="scen" style="left:14%;"><img class="gi" style="height:56px" src="assets/images/onboarding/tree.png?v=1" alt=""></div>
-      <div class="scen" style="right:12%;"><img class="gi" style="height:64px" src="assets/images/onboarding/school.png?v=1" alt=""></div>
-      <div class="scen" style="left:40%; bottom:46%;"><img class="gi" style="height:38px" src="assets/images/onboarding/tree.png?v=1" alt=""></div>
-    </div>
-    <div class="phone-pickup" id="phonePick" onclick="pickPhone()"><img class="gi" style="height:72px" src="assets/images/onboarding/phone.png?v=1" alt=""></div>
+    <div class="scene-bg" id="streetbg"></div>
+    <img class="student" src="assets/images/onboarding/student_pickup.png?v=1" alt="小學生">
+    <div class="phone-pickup" id="phonePick" onclick="pickPhone()"><img class="gi" style="height:60px" src="assets/images/onboarding/phone.png?v=1" alt=""></div>
   </section>
 
   <!-- S2 穿越漩渦 -->
@@ -291,7 +283,9 @@ function setBg(el, url){
   img.onerror = ()=>{ el.style.backgroundImage = GRAD; };
   img.src = url;
 }
+const STREET = "assets/images/onboarding/street_school_bg.jpg?v=1";
 setBg($('#cabinbg'), CABIN); setBg($('#taskbg'), CABIN); setBg($('#endbg'), CABIN);
+setBg($('#streetbg'), STREET);
 
 function showScene(key){
   Object.values(scenes).forEach(s=>s.classList.remove('on'));

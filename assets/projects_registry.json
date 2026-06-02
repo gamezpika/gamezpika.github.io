@@ -15,7 +15,7 @@
       "world_offset_y": -400,
       "sprite_library": [
         {
-          "image": "wholesale_anim.webp",
+          "image": "wholesale_anim_v2.webp",
           "name": "🏭 批發中心",
           "type": "building",
           "scale": 0.6,
@@ -30,7 +30,7 @@
           "frame_rate": 12
         },
         {
-          "image": "menswear_anim.webp",
+          "image": "menswear_anim_v2.webp",
           "name": "👔 男裝店",
           "type": "building",
           "scale": 0.74,

@@ -91,7 +91,7 @@
         "name": "批發中心",
         "category": "house",
         "sprite": {
-          "image": "wholesale_anim.webp",
+          "image": "wholesale_anim_v2.webp",
           "scale": 0.6,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -263,7 +263,7 @@
         "name": "男裝店",
         "category": "house",
         "sprite": {
-          "image": "menswear_anim.webp",
+          "image": "menswear_anim_v2.webp",
           "scale": 0.74,
           "anchor_x": 0.5,
           "anchor_y": 1,

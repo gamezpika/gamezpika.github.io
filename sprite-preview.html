@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>系統精靈定調稿 — 4 選 1</title>
+<style>
+  :root{ --bg:#16213E; --card:rgba(255,255,255,.06); --blue:#00D4FF; --orange:#FF8C42; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{ font-family:system-ui,"PingFang TC","Microsoft JhengHei",sans-serif;
+        background:var(--bg); color:#fff; padding:20px; min-height:100vh; }
+  h1{ font-size:20px; text-align:center; margin-bottom:6px; }
+  .sub{ text-align:center; color:#9fb3d1; font-size:13px; margin-bottom:16px; }
+  .toggle{ display:flex; justify-content:center; gap:8px; margin-bottom:18px; }
+  .toggle button{ background:var(--card); color:#fff; border:1px solid rgba(255,255,255,.15);
+        padding:7px 16px; border-radius:20px; font-size:13px; cursor:pointer; }
+  .toggle button.on{ background:var(--blue); color:#062033; border-color:var(--blue); font-weight:700; }
+  .grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px; max-width:760px; margin:0 auto; }
+  .card{ background:var(--card); border:1px solid rgba(255,255,255,.1); border-radius:16px;
+        overflow:hidden; display:flex; flex-direction:column; }
+  .card .stage{ aspect-ratio:1/1.2; display:flex; align-items:center; justify-content:center;
+        background:#0d1530; transition:background .2s; }
+  body.white .card .stage{ background:#fff; }
+  .card img{ max-width:92%; max-height:92%; object-fit:contain; }
+  .card .label{ padding:10px 12px; }
+  .card .tag{ display:inline-block; background:var(--orange); color:#3a1c00; font-weight:800;
+        font-size:13px; padding:2px 10px; border-radius:8px; margin-right:8px; }
+  .card .name{ font-size:14px; }
+  .card .note{ color:#9fb3d1; font-size:12px; margin-top:5px; line-height:1.5; }
+  @media(max-width:520px){ .grid{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+  <h1>🧚 系統精靈定調稿 — 4 選 1</h1>
+  <div class="sub">小智學園 onboarding · 都對齊 student_v2 描邊風 · 點下方切換背景看去背效果</div>
+  <div class="toggle">
+    <button id="btn-dark" class="on" onclick="document.body.classList.remove('white');setOn('btn-dark')">深色底</button>
+    <button id="btn-white" onclick="document.body.classList.add('white');setOn('btn-white')">白底</button>
+  </div>
+  <div class="grid">
+    <div class="card"><div class="stage"><img src="assets/images/onboarding/sprite_a.png" alt="A"></div>
+      <div class="label"><span class="tag">A</span><span class="name">小機器人精靈</span>
+      <div class="note">最「系統助手」感、表情生動、識別度高（推薦）</div></div></div>
+    <div class="card"><div class="stage"><img src="assets/images/onboarding/sprite_b.png" alt="B"></div>
+      <div class="label"><span class="tag">B</span><span class="name">光球妖精</span>
+      <div class="note">最輕巧 q彈、最適合飄浮動畫（推薦）</div></div></div>
+    <div class="card"><div class="stage"><img src="assets/images/onboarding/sprite_c.png" alt="C"></div>
+      <div class="label"><span class="tag">C</span><span class="name">手機精靈</span>
+      <div class="note">最貼「手機化身」字面，但做動畫較笨重</div></div></div>
+    <div class="card"><div class="stage"><img src="assets/images/onboarding/sprite_d.png" alt="D"></div>
+      <div class="label"><span class="tag">D</span><span class="name">小龍小獸</span>
+      <div class="note">最萌，但易跟步驟4初始寵物撞臉</div></div></div>
+  </div>
+  <script>
+    function setOn(id){ document.getElementById('btn-dark').classList.remove('on');
+      document.getElementById('btn-white').classList.remove('on');
+      document.getElementById(id).classList.add('on'); }
+  </script>
+</body>
+</html>

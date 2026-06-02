@@ -593,9 +593,9 @@ const FALLBACK_PROJECTS = [
         name: '🏘️ 村莊 Demo (fallback)',
         engine: 'phaser_iso',
         config_path: 'assets/village_config.json',
-        background_path: 'godot-demo2/village_ground.webp',
-        sprite_base: 'godot-demo2/',
-        preview_url: 'godot-demo2/',
+        background_path: 'village-web/village_ground.webp',
+        sprite_base: 'village-web/',
+        preview_url: 'village-web/',
         sprite_library: [],
     },
 ];
@@ -860,9 +860,9 @@ function normalizeSpriteFrames(cfg) {
 }
 // WebP 遷移：轉檔前的 localStorage 舊草稿圖片副檔名還是 .png/.jpg，
 // 載入時統一改成 .webp，避免推送時把舊圖片引用寫回 config 害載入又變肥。
-// 只對 godot-demo2 村莊專案生效，不動其他地圖。
+// 只對 village-web 村莊專案生效，不動其他地圖。
 function migrateVillageImageExt(cfg) {
-    if (!cfg || !ACTIVE_PROJECT || ACTIVE_PROJECT.sprite_base !== 'godot-demo2/') return;
+    if (!cfg || !ACTIVE_PROJECT || ACTIVE_PROJECT.sprite_base !== 'village-web/') return;
     const toWebp = (s) => (typeof s === 'string') ? s.replace(/\.(png|jpe?g)$/i, '.webp') : s;
     const fix = (d) => { if (d && d.image) d.image = toWebp(d.image); };
     if (cfg.background) cfg.background = toWebp(cfg.background);
@@ -884,7 +884,7 @@ function _loadImageDim(image) {
         const img = new Image();
         img.onload = () => resolve({ w: img.naturalWidth, h: img.naturalHeight });
         img.onerror = () => resolve(null);
-        const base = (ACTIVE_PROJECT && ACTIVE_PROJECT.sprite_base) || 'godot-demo2/';
+        const base = (ACTIVE_PROJECT && ACTIVE_PROJECT.sprite_base) || 'village-web/';
         img.src = '../' + base + image + '?dim=' + Date.now();
     });
     _imageDimCache.set(image, p);
@@ -1098,7 +1098,7 @@ document.getElementById('btnNewProject').addEventListener('click', async () => {
     }
     const name = prompt('專案顯示名稱（中文 OK）：', '🗺️ ' + cleanId);
     if (!name) return;
-    const bg = prompt('背景圖路徑（相對 repo 根，e.g. "godot-demo2/new_map.jpg"）：');
+    const bg = prompt('背景圖路徑（相對 repo 根，e.g. "village-web/new_map.jpg"）：');
     if (!bg) return;
     const configPath = prompt('Config JSON 路徑（會建空白）：', 'assets/' + cleanId + '_config.json');
     if (!configPath) return;

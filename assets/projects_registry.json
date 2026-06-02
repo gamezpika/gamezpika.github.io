@@ -2,12 +2,12 @@
   "projects": [
     {
       "id": "village",
-      "name": "🏘️ 村莊 Demo (godot-demo2)",
+      "name": "🏘️ 村莊 Demo (village-web)",
       "engine": "phaser_iso",
       "config_path": "assets/village_config.json",
-      "background_path": "godot-demo2/village_ground.webp",
-      "sprite_base": "godot-demo2/",
-      "preview_url": "godot-demo2/",
+      "background_path": "village-web/village_ground.webp",
+      "sprite_base": "village-web/",
+      "preview_url": "village-web/",
       "image_dimensions": {
         "width": 1920,
         "height": 1480
@@ -234,12 +234,12 @@
     },
     {
       "id": "island",
-      "name": "🏝️ 海島 Demo (godot-demo2)",
+      "name": "🏝️ 海島 Demo (village-web)",
       "engine": "phaser_iso",
       "config_path": "assets/island_config.json",
-      "background_path": "godot-demo2/beach_ground.webp",
-      "sprite_base": "godot-demo2/",
-      "preview_url": "godot-demo2/?map=island",
+      "background_path": "village-web/beach_ground.webp",
+      "sprite_base": "village-web/",
+      "preview_url": "village-web/?map=island",
       "image_dimensions": {
         "width": 1536,
         "height": 1024

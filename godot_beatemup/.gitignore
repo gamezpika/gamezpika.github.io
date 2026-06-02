@@ -1,7 +1,0 @@
-# Godot 4+ ignore
-.godot/
-.import/
-export.cfg
-*.translation
-# 注意：export_presets.cfg 故意 NOT ignored — Railway 部署流程需要這個 preset
-# 跑 `godot --export-release "Web" out.html` 必須在 project 內找到 preset

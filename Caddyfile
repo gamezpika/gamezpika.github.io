@@ -7,9 +7,9 @@
     # 預設靜態資源 cache 短期（10 分鐘），方便派派改檔 cache-bust ?v=N 強刷
     header Cache-Control "public, max-age=600"
 
-    # Godot Web build 需要 SharedArrayBuffer → 必須回 cross-origin isolation headers
+    # Web build 需要 SharedArrayBuffer → 必須回 cross-origin isolation headers
     @godot {
-        path /godot-beatemup/* /godot-demo2/*
+        path /village-web/*
     }
     header @godot {
         Cross-Origin-Opener-Policy "same-origin"
@@ -32,7 +32,7 @@
 
     # 不公開原始檔
     @hidden {
-        path /.git/* /Dockerfile /Caddyfile /.dockerignore /godot_beatemup/* /godot_demo2/*
+        path /.git/* /Dockerfile /Caddyfile /.dockerignore /village-godot/*
     }
     respond @hidden 404
 }

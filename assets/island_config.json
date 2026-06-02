@@ -8,8 +8,8 @@
       "world_height": 1024,
       "world_offset_y": 0
     },
-    "background": "godot-demo2/beach_ground.webp",
-    "asset_base": "godot-demo2/",
+    "background": "village-web/beach_ground.webp",
+    "asset_base": "village-web/",
     "player": {
       "spawn": {
         "x": 0.5,

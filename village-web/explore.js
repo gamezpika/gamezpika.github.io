@@ -223,6 +223,7 @@ class ExploreScene extends Phaser.Scene {
         }
         spr.setOrigin(b.sprite.anchor_x || 0.5, b.sprite.anchor_y || 1.0);
         spr.setScale(b.sprite.scale || 1.0);
+        if (b.sprite.rotation) spr.setRotation(b.sprite.rotation);
         spr.setDepth(anchor.y);
         // 噴泉自動加連續粒子水流（fountain_splash 互動類型，加強動感）
         if (b.interaction && b.interaction.type === "fountain_splash") {

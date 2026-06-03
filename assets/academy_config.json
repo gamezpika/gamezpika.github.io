@@ -3,15 +3,15 @@
     "version": 1,
     "dimensions": {
       "image_width": 1448,
-      "image_height": 2600,
+      "image_height": 1086,
       "world_width": 1448,
-      "world_height": 2600,
+      "world_height": 1086,
       "world_offset_y": 0
     },
-    "background": "village-web/academy_ground_v4.webp",
+    "background": "village-web/academy_ground.webp",
     "asset_base": "village-web/",
     "player": {
-      "spawn": { "x": 0.5, "y": 0.404 },
+      "spawn": { "x": 0.5, "y": 0.27 },
       "scale": 0.2,
       "speed": 220,
       "sprites": {
@@ -41,13 +41,13 @@
     },
     "camera": {
       "sky_pad": 0,
-      "view_base_width": 1000
+      "view_base_width": 1200
     },
     "portals": [
       {
         "id": "back_to_village",
-        "anchor": { "x": 0.5, "y": 0.316 },
-        "radius": 120,
+        "anchor": { "x": 0.5, "y": 0.09 },
+        "radius": 110,
         "target_map": "village",
         "target_spawn": { "x": 0.5, "y": 0.88 },
         "label": "回村莊"
@@ -55,35 +55,11 @@
     ],
     "buildings": [
       { "id": "kongqiu_academy", "name": "孔丘書院", "category": "house",
-        "sprite": { "image": "kongqiu_academy.webp", "scale": 0.40, "anchor_x": 0.5, "anchor_y": 1 },
-        "anchor": { "x": 0.28, "y": 0.42 }, "center": { "x": 0.28, "y": 0.42 },
-        "bounding_box": { "x_min": 0.16, "y_min": 0.375, "x_max": 0.40, "y_max": 0.415 },
-        "interaction": { "type": "open_shop", "shop_id": "chinese_academy", "label": "孔丘書院", "body": "歡迎來到孔丘書院", "radius": 220 },
-        "polygon": [], "path": [], "render_order": 1092 },
-      { "id": "fir_1", "name": "森林樹", "category": "decoration",
-        "sprite": { "image": "fir_green.webp", "scale": 0.42, "anchor_x": 0.5, "anchor_y": 1 },
-        "anchor": { "x": 0.12, "y": 0.80 }, "center": { "x": 0.12, "y": 0.80 },
-        "polygon": [], "path": [], "mask_color": "#FF3B30", "render_order": 500 },
-      { "id": "fir_2", "name": "森林樹", "category": "decoration",
-        "sprite": { "image": "fir_green.webp", "scale": 0.4, "anchor_x": 0.5, "anchor_y": 1 },
-        "anchor": { "x": 0.30, "y": 0.88 }, "center": { "x": 0.30, "y": 0.88 },
-        "polygon": [], "path": [], "mask_color": "#FF3B30", "render_order": 500 },
-      { "id": "fir_3", "name": "森林樹", "category": "decoration",
-        "sprite": { "image": "fir_green.webp", "scale": 0.45, "anchor_x": 0.5, "anchor_y": 1 },
-        "anchor": { "x": 0.50, "y": 0.84 }, "center": { "x": 0.50, "y": 0.84 },
-        "polygon": [], "path": [], "mask_color": "#FF3B30", "render_order": 500 },
-      { "id": "fir_4", "name": "森林樹", "category": "decoration",
-        "sprite": { "image": "fir_green.webp", "scale": 0.4, "anchor_x": 0.5, "anchor_y": 1 },
-        "anchor": { "x": 0.68, "y": 0.90 }, "center": { "x": 0.68, "y": 0.90 },
-        "polygon": [], "path": [], "mask_color": "#FF3B30", "render_order": 500 },
-      { "id": "fir_5", "name": "森林樹", "category": "decoration",
-        "sprite": { "image": "fir_green.webp", "scale": 0.43, "anchor_x": 0.5, "anchor_y": 1 },
-        "anchor": { "x": 0.86, "y": 0.82 }, "center": { "x": 0.86, "y": 0.82 },
-        "polygon": [], "path": [], "mask_color": "#FF3B30", "render_order": 500 },
-      { "id": "fir_6", "name": "森林樹", "category": "decoration",
-        "sprite": { "image": "fir_green.webp", "scale": 0.46, "anchor_x": 0.5, "anchor_y": 1 },
-        "anchor": { "x": 0.42, "y": 0.95 }, "center": { "x": 0.42, "y": 0.95 },
-        "polygon": [], "path": [], "mask_color": "#FF3B30", "render_order": 500 }
+        "sprite": { "image": "kongqiu_academy.webp", "scale": 0.30, "anchor_x": 0.5, "anchor_y": 1 },
+        "anchor": { "x": 0.28, "y": 0.31 }, "center": { "x": 0.28, "y": 0.31 },
+        "bounding_box": { "x_min": 0.18, "y_min": 0.265, "x_max": 0.38, "y_max": 0.31 },
+        "interaction": { "type": "open_shop", "shop_id": "chinese_academy", "label": "孔丘書院", "body": "歡迎來到孔丘書院", "radius": 200 },
+        "polygon": [], "path": [], "render_order": 337 }
     ],
     "obstacle_areas": [],
     "npcs": [
@@ -91,8 +67,8 @@
         "sprite": { "scale": 0.09, "sprites": {
           "side": { "image": "kongqiu_npc_walk.webp", "frame_width": 593, "frame_height": 1264, "frames": 6, "frame_rate": 6, "facing": "left" }
         } },
-        "spawn": { "x": 0.28, "y": 0.47 },
-        "patrol": [ { "x": 0.20, "y": 0.47 }, { "x": 0.38, "y": 0.47 } ],
+        "spawn": { "x": 0.28, "y": 0.43 },
+        "patrol": [ { "x": 0.20, "y": 0.43 }, { "x": 0.38, "y": 0.43 } ],
         "speed": 38,
         "interaction": { "body": "吾乃孔丘，欲修國語者，可入吾書院。" }
       }

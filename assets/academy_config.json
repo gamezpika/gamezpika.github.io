@@ -54,6 +54,12 @@
       }
     ],
     "buildings": [
+      { "id": "kongqiu_academy", "name": "孔丘書院", "category": "house",
+        "sprite": { "image": "kongqiu_academy.webp", "scale": 0.40, "anchor_x": 0.5, "anchor_y": 1 },
+        "anchor": { "x": 0.28, "y": 0.42 }, "center": { "x": 0.28, "y": 0.42 },
+        "bounding_box": { "x_min": 0.16, "y_min": 0.375, "x_max": 0.40, "y_max": 0.415 },
+        "interaction": { "type": "open_shop", "shop_id": "chinese_academy", "label": "孔丘書院", "body": "歡迎來到孔丘書院", "radius": 220 },
+        "polygon": [], "path": [], "render_order": 1092 },
       { "id": "fir_1", "name": "森林樹", "category": "decoration",
         "sprite": { "image": "fir_green.webp", "scale": 0.42, "anchor_x": 0.5, "anchor_y": 1 },
         "anchor": { "x": 0.12, "y": 0.80 }, "center": { "x": 0.12, "y": 0.80 },
@@ -80,7 +86,17 @@
         "polygon": [], "path": [], "mask_color": "#FF3B30", "render_order": 500 }
     ],
     "obstacle_areas": [],
-    "npcs": [],
+    "npcs": [
+      { "id": "kongqiu", "name": "孔丘",
+        "sprite": { "scale": 0.09, "sprites": {
+          "side": { "image": "kongqiu_npc_walk.webp", "frame_width": 593, "frame_height": 1264, "frames": 6, "frame_rate": 6, "facing": "left" }
+        } },
+        "spawn": { "x": 0.28, "y": 0.47 },
+        "patrol": [ { "x": 0.20, "y": 0.47 }, { "x": 0.38, "y": 0.47 } ],
+        "speed": 38,
+        "interaction": { "body": "吾乃孔丘，欲修國語者，可入吾書院。" }
+      }
+    ],
     "objects": []
   }
 }

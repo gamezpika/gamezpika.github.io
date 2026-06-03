@@ -1,0 +1,53 @@
+{
+  "dean": { "name": "孔丘", "title": "孔丘書院 · 院長", "img": "kongqiu_npc.webp" },
+  "lines": [
+    {
+      "id": "skill",
+      "tab": "國語技能",
+      "npc": "孔丘",
+      "intro": "勤學乃立身之本，先把國語基礎練紮實吧！",
+      "quests": [
+        { "icon": "📖", "title": "國語基礎練習 I", "desc": "在國語題庫累積答對 9 顆星", "reward": "1000 金幣", "progress": "0 / 9 ⭐" },
+        { "icon": "📖", "title": "國語基礎練習 II", "desc": "在國語題庫累積答對 18 顆星", "reward": "1500 金幣", "progress": "0 / 18 ⭐" },
+        { "icon": "📖", "title": "國語基礎練習 III", "desc": "在國語題庫累積答對 24 顆星", "reward": "2000 金幣", "progress": "0 / 24 ⭐" },
+        { "icon": "📖", "title": "國語基礎練習 IV", "desc": "在國語題庫累積答對 30 顆星", "reward": "2500 金幣", "progress": "0 / 30 ⭐" }
+      ]
+    },
+    {
+      "id": "forest",
+      "tab": "禁忌森林",
+      "npc": "孔丘",
+      "intro": "禁忌森林危機四伏，唯有真才實學方能通關。",
+      "quests": [
+        { "icon": "🌲", "title": "挑戰禁忌森林 I", "desc": "通關國語禁忌森林 3 次", "reward": "1000 金幣", "progress": "0 / 3 次" },
+        { "icon": "🌲", "title": "挑戰禁忌森林 II", "desc": "通關國語禁忌森林 6 次", "reward": "1500 金幣", "progress": "0 / 6 次" },
+        { "icon": "🌲", "title": "挑戰禁忌森林 III", "desc": "通關國語禁忌森林 9 次", "reward": "2000 金幣", "progress": "0 / 9 次" },
+        { "icon": "🌲", "title": "挑戰禁忌森林 IV", "desc": "通關國語禁忌森林 12 次", "reward": "2500 金幣", "progress": "0 / 12 次" }
+      ]
+    },
+    {
+      "id": "boss",
+      "tab": "字詞魔王",
+      "npc": "孟子",
+      "intro": "字詞魔王來犯！吾乃孟軻，與你並肩討伐這群妖魔。",
+      "quests": [
+        { "icon": "👹", "title": "討伐字詞魔王 I", "desc": "討伐字詞魔王 3 次", "reward": "1000 金幣", "progress": "0 / 3 次" },
+        { "icon": "👹", "title": "討伐字詞魔王 II", "desc": "討伐字詞魔王 6 次", "reward": "1500 金幣", "progress": "0 / 6 次" },
+        { "icon": "👹", "title": "討伐字詞魔王 III", "desc": "討伐字詞魔王 9 次", "reward": "2000 金幣", "progress": "0 / 9 次" },
+        { "icon": "👹", "title": "討伐字詞魔王 IV", "desc": "討伐字詞魔王 12 次", "reward": "2500 金幣", "progress": "0 / 12 次" }
+      ]
+    },
+    {
+      "id": "arena",
+      "tab": "競技場",
+      "npc": "金庸",
+      "intro": "競技場以武會友、以文較高下，盼你成為常勝軍！",
+      "quests": [
+        { "icon": "⚔️", "title": "國語競技場 I", "desc": "通關國語競技場 3 次", "reward": "1000 金幣", "progress": "0 / 3 次" },
+        { "icon": "⚔️", "title": "國語競技場 II", "desc": "通關國語競技場 6 次", "reward": "1500 金幣", "progress": "0 / 6 次" },
+        { "icon": "⚔️", "title": "國語競技場 III", "desc": "通關國語競技場 9 次", "reward": "2000 金幣", "progress": "0 / 9 次" },
+        { "icon": "⚔️", "title": "國語競技場 IV", "desc": "通關國語競技場 12 次", "reward": "2000 金幣", "progress": "0 / 12 次" }
+      ]
+    }
+  ]
+}

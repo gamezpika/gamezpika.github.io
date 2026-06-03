@@ -257,13 +257,13 @@
 }
 
 /* ───────────── 學院辦公室（沿用 .jc-panel 骨架）───────────── */
-#ao-overlay {
+#ao-overlay, #ca-overlay {
   position: fixed; inset: 0; z-index: 5000; display: none;
   background: rgba(20, 14, 8, 0.55); backdrop-filter: blur(2px);
   font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
-#ao-overlay.open { display: flex; align-items: center; justify-content: center; }
+#ao-overlay.open, #ca-overlay.open { display: flex; align-items: center; justify-content: center; }
 /* 更新日誌 */
 .ao-log { background: #fffaf0; border: 3px solid #e3c089; border-radius: 14px;
   padding: 10px 12px; box-shadow: 0 2px 0 #e3c089; }
@@ -343,6 +343,7 @@
 .ao-quest-body { flex: 1; min-width: 0; text-align: left; }
 .ao-quest-title { font-size: 15px; font-weight: 900; color: #5a3a18; }
 .ao-quest-desc { font-size: 12px; color: #7a5a30; line-height: 1.45; margin-top: 2px; }
+.ca-npc { color: #a07a3a; font-weight: 700; margin-left: 4px; white-space: nowrap; }
 .ao-quest-foot { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 5px; }
 .ao-quest-reward { font-size: 12px; color: #c8851a; font-weight: 800; }
 .ao-quest-prog {

@@ -107,6 +107,7 @@
   async function openShop(shopId, onClose) {
     if (shopId === "job_center") { openJobCenter(onClose); return; }
     if (shopId === "academy_office") { openAcademyOffice(onClose); return; }
+    if (shopId === "chinese_academy") { openChineseAcademy(onClose); return; }
     onCloseCb = onClose || null;
     let cat;
     try {
@@ -481,6 +482,91 @@
     release();
   }
   window.openAcademyOffice = openAcademyOffice;
+
+  /* ───────────────────── 孔丘書院（國語學院·院長孔丘，16 主線任務，純展示假領獎）───────────────────── */
+  let CA_CONTENT = null;
+  let caTab = 0;   // 目前任務線 index
+  async function caLoad() {
+    if (CA_CONTENT) return CA_CONTENT;
+    const r = await fetch("chinese_academy.json?v=1");
+    if (!r.ok) throw new Error("chinese academy HTTP " + r.status);
+    CA_CONTENT = await r.json();
+    return CA_CONTENT;
+  }
+  function caBuildOverlay() {
+    let ov = document.getElementById("ca-overlay");
+    if (ov) return ov;
+    ov = el("div"); ov.id = "ca-overlay";
+    ov.innerHTML = `
+      <div class="shop-panel ao-panel">
+        <div class="shop-title">孔丘書院</div>
+        <button class="shop-close" aria-label="關閉">×</button>
+        <div class="ao-principal">
+          <div class="ao-bubble"></div>
+          <img class="ao-principal-img" src="kongqiu_npc.webp?v=1" alt="孔丘書院 院長 孔丘" draggable="false">
+          <div class="ao-owner">👤 孔丘書院 · 院長 孔丘</div>
+        </div>
+        <div class="ao-right">
+          <div class="jc-tabs ao-tabs4"></div>
+          <div class="jc-content ao-content"></div>
+        </div>
+      </div>`;
+    document.body.appendChild(ov);
+    ov.querySelector(".shop-close").addEventListener("click", caClose);
+    ov.addEventListener("click", (e) => { if (e.target === ov) caClose(); });
+    return ov;
+  }
+  function caBubble(ov, txt) { ov.querySelector(".ao-bubble").textContent = txt || ""; }
+
+  function caRender(ov) {
+    const c = CA_CONTENT || { lines: [] };
+    const d = c.dean;
+    if (d) {                                   // 院長資料以 JSON 為準，避免與畫面漂移
+      if (d.img) ov.querySelector(".ao-principal-img").src = d.img + "?v=1";
+      ov.querySelector(".ao-owner").textContent = "👤 " + (d.title || "") + (d.name ? " " + d.name : "");
+    }
+    const lines = c.lines || [];
+    if (caTab >= lines.length) caTab = 0;
+    const tabs = ov.querySelector(".ao-tabs4");
+    tabs.innerHTML = lines.map((ln, i) =>
+      `<button class="jc-tab${i === caTab ? " active" : ""}" data-i="${i}">${aoEsc(ln.tab)}</button>`).join("");
+    tabs.querySelectorAll(".jc-tab").forEach((b) =>
+      b.addEventListener("click", () => { caTab = +b.dataset.i; caRender(ov); }));
+    const ln = lines[caTab] || { quests: [] };
+    caBubble(ov, ln.intro || "");
+    const box = ov.querySelector(".ao-content");
+    box.innerHTML = (ln.quests || []).map((q) => `
+      <div class="ao-quest">
+        <div class="ao-quest-ic">${aoEsc(q.icon || "📜")}</div>
+        <div class="ao-quest-body">
+          <div class="ao-quest-title">${aoEsc(q.title)}</div>
+          <div class="ao-quest-desc">${aoEsc(q.desc)}<span class="ca-npc">· ${aoEsc(ln.npc)}</span></div>
+          <div class="ao-quest-foot"><span class="ao-quest-reward">🎁 ${aoEsc(q.reward)}</span>${q.progress ? `<span class="ao-quest-prog">${aoEsc(q.progress)}</span>` : ""}</div>
+        </div>
+        <button class="jc-act ao-quest-claim">領取</button>
+      </div>`).join("") || `<div class="jc-empty">目前沒有任務</div>`;
+    box.querySelectorAll(".ao-quest-claim").forEach((b) => b.addEventListener("click", function () {
+      if (this.classList.contains("done")) return;
+      this.classList.add("done"); this.textContent = "✓ 已領取";
+      caBubble(ov, "好！學而時習之，這份獎勵你當之無愧。");
+    }));
+  }
+
+  async function openChineseAcademy(onClose) {
+    onCloseCb = onClose || null;
+    const ov = caBuildOverlay();
+    caTab = 0;
+    try { await caLoad(); }
+    catch (e) { console.warn("chinese academy 載入失敗", e); }
+    caRender(ov);
+    ov.classList.add("open");
+  }
+  function caClose() {
+    const ov = document.getElementById("ca-overlay");
+    if (ov) ov.classList.remove("open");
+    release();
+  }
+  window.openChineseAcademy = openChineseAcademy;
 
   /* ───────────────────── 裝備欄（純展示：左=目前造型 / 右=帽子·武器·寵物項圈配件）───────────────────── */
   const EQ_KEY = "village_equip";

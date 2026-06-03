@@ -1321,6 +1321,47 @@ function bboxFromPolygon(poly) {
     return { x_min, y_min, x_max, y_max };
 }
 
+// 大小：以 anchor 為中心同比例縮放 sprite + polygon + bbox（碰撞框跟著變）
+// 回傳 false = 輸入非法（不動任何資料）
+function applyScaleToObj(obj, rawScale) {
+    if (!obj || !obj.sprite) return false;
+    const s = clamp(Number(rawScale), 0.05, 3);
+    if (!Number.isFinite(s) || s <= 0) return false;
+    const old = obj.sprite.scale || 0.74;
+    const r = s / old;
+    obj.sprite.scale = s;
+    if (obj.anchor) {
+        const ax = obj.anchor.x, ay = obj.anchor.y;
+        if (Array.isArray(obj.polygon) && obj.polygon.length) {
+            obj.polygon.forEach(p => { p.x = ax + (p.x - ax) * r; p.y = ay + (p.y - ay) * r; });
+            obj.bounding_box = bboxFromPolygon(obj.polygon);
+        } else if (obj.bounding_box) {
+            const bb = obj.bounding_box;
+            bb.x_min = ax + (bb.x_min - ax) * r; bb.x_max = ax + (bb.x_max - ax) * r;
+            bb.y_min = ay + (bb.y_min - ay) * r; bb.y_max = ay + (bb.y_max - ay) * r;
+        }
+    }
+    return true;
+}
+
+// 旋轉：繞 anchor 轉 polygon（用 delta）+ 重算 bbox 外接框
+// 遊戲端碰撞是 axis-aligned bbox，斜框無法表示 → bbox 取旋轉後 polygon 的外接框，至少包住整個物件
+function applyRotationToObj(obj, newRad) {
+    if (!obj || !obj.sprite) return;
+    const prev = obj.sprite.rotation || 0;
+    const d = newRad - prev;
+    obj.sprite.rotation = newRad;
+    if (d && obj.anchor && Array.isArray(obj.polygon) && obj.polygon.length) {
+        const ax = obj.anchor.x, ay = obj.anchor.y, cos = Math.cos(d), sin = Math.sin(d);
+        obj.polygon.forEach(p => {
+            const dx = p.x - ax, dy = p.y - ay;
+            p.x = ax + dx * cos - dy * sin;
+            p.y = ay + dx * sin + dy * cos;
+        });
+        obj.bounding_box = bboxFromPolygon(obj.polygon);
+    }
+}
+
 function renderBuildingList() {
     buildingList.innerHTML = '';
     // 5/29 派派：buildings + obstacle_areas 統一顯示成「collision items」一個列表
@@ -1571,7 +1612,11 @@ function renderDetail() {
         return;
     }
     const owned = findItemAndOwner(selectedBuildingId);
-    if (!owned) return;
+    if (!owned) { // 選取的物件已不存在（被刪）→ 清空面板與選取，不留舊 UI
+        selectedBuildingId = null;
+        buildingDetail.innerHTML = '<div style="text-align:center;color:#888;padding:20px 0;">選一個 building</div>';
+        return;
+    }
     const b = owned.item;
     const isObstacle = owned.isObstacle;
     const escName = (b.name || '').replace(/"/g, '&quot;');
@@ -1703,15 +1748,21 @@ function renderDetail() {
         b.path = [];
         renderAll();
     });
-    // 外觀：大小 + 旋轉（路 tile 轉方向用）
+    // 外觀：大小 + 旋轉（路 tile 轉方向用）— 碰撞框(polygon/bbox)跟著一起變
     buildingDetail.querySelectorAll('input[data-sprite]').forEach(input => {
         input.addEventListener('change', () => {
             if (!b.sprite) return;
             const k = input.dataset.sprite;
-            if (k === 'scale') b.sprite.scale = parseFloat(input.value) || 1;
-            else if (k === 'rotdeg') b.sprite.rotation = (parseFloat(input.value) || 0) * Math.PI / 180;
+            if (k === 'scale') {
+                if (!applyScaleToObj(b, input.value)) { renderDetail(); return; } // 非法值還原顯示
+            } else if (k === 'rotdeg') {
+                const deg = parseFloat(input.value);
+                applyRotationToObj(b, (Number.isFinite(deg) ? deg : 0) * Math.PI / 180);
+            }
             autoSave();
             renderSpriteMarkers();
+            renderPolygons();
+            renderDetail(); // bbox/polygon 數值同步刷新面板
         });
     });
     // 刪除整個物件（擦路）
@@ -2224,6 +2275,7 @@ function renderPlacedSpriteList() {
             if (!confirm(`真的刪 ${id}？`)) return;
             if (isNpc) mapConfig.npcs = (mapConfig.npcs || []).filter(n => n.id !== id);
             else mapConfig.buildings = (mapConfig.buildings || []).filter(b => b.id !== id);
+            if (selectedBuildingId === id) selectedBuildingId = null; // 刪到選取中的就清，避免 detail 殘留舊資料
             autoSave();
             renderAll();
             renderSpriteMarkers();

@@ -15,7 +15,7 @@
       "world_offset_y": -400,
       "sprite_library": [
         {
-          "image": "wholesale_anim_v3.webp",
+          "image": "wholesale_anim_v4.webp",
           "name": "🏭 批發中心",
           "type": "building",
           "scale": 0.6,

@@ -91,7 +91,7 @@
         "name": "批發中心",
         "category": "house",
         "sprite": {
-          "image": "wholesale_anim_v3.webp",
+          "image": "wholesale_anim_v4.webp",
           "scale": 0.6,
           "anchor_x": 0.5,
           "anchor_y": 1,

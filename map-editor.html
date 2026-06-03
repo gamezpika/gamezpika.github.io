@@ -2059,13 +2059,18 @@ function renderSpriteMarkers() {
             el.style.backgroundPosition = '0 0';
         } else {
             // 靜態 image 用 <img>
-            const srcSize = meta.source_size || 512;
-            const renderSize = srcSize * spriteScale * displayScale;
-            el.style.width  = renderSize + 'px';
-            el.style.height = renderSize + 'px';
+            // 大小用「圖的真實尺寸」(寬高分開→非512/非正方形都對);圖載入前先用 fallback、onload 後校正
+            const fbSize = meta.source_size || 512;
+            const applySize = (sw, sh) => {
+                el.style.width  = (sw * spriteScale * displayScale) + 'px';
+                el.style.height = (sh * spriteScale * displayScale) + 'px';
+            };
+            applySize(fbSize, fbSize);
             const img = document.createElement('img');
             img.src = '../' + ACTIVE_PROJECT.sprite_base + bSprite.image;
             img.alt = b.name;
+            const fixSize = () => { if (img.naturalWidth) applySize(img.naturalWidth, img.naturalHeight); };
+            if (img.complete) fixSize(); else img.addEventListener('load', fixSize);
             img.onerror = () => {
                 el.innerHTML = '';
                 const fb = document.createElement('div');

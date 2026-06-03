@@ -77,7 +77,8 @@
           "grid_cols": 4,
           "grid_rows": 4,
           "frames": 16,
-          "frame_rate": 6
+          "frame_rate": 6,
+          "play_on_proximity": true
         },
         "anchor": {
           "x": 0.72,

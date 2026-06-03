@@ -429,9 +429,10 @@
   background: linear-gradient(180deg, #b5712f, #94591f); color: #fff7e6; font-size: 14px; font-weight: 800;
   padding: 5px 14px; border-radius: 999px; border: 2px solid #ffd98a; box-shadow: 0 3px 0 rgba(0,0,0,.18);
 }
-.dh-rightcol { flex: 1; margin-top: 52px; padding: 12px; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+.dh-rightcol { flex: 1; margin-top: 52px; padding: 12px 8px 12px 12px; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
 .dh-tabs .jc-tab { font-size: 13.5px; padding: 9px 2px; }
-.dh-content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+/* 右 padding 給垂直捲軸留空間，避免最右卡片(草帽等)被捲軸蓋住「切到」 */
+.dh-content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-right: 8px; }
 .dh-sub { font-size: 13px; font-weight: 900; color: #b5712f; margin: 6px 2px 8px; }
 .dh-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 9px; margin-bottom: 6px; }
 .dh-card {

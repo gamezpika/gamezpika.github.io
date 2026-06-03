@@ -385,18 +385,11 @@
   }
   window.openAcademyOffice = openAcademyOffice;
 
-  /* ───────────────────── 裝備欄（A 務實版：左立繪固定/依職業，右三格換裝，純展示）───────────────────── */
+  /* ───────────────────── 裝備欄（純展示：左=目前造型 / 右=帽子·武器·寵物項圈配件）───────────────────── */
   const EQ_KEY = "village_equip";
-  const PORTRAIT_BASE = "../assets/images/jobs/";
   const EQUIP = {
-    hat: { label: "帽子", items: [
-      { id: "hat_student", img: "equip/hat_student.webp", name: "學生帽" },
-      { id: "hat_wizard", img: "equip/hat_wizard.webp", name: "巫師帽" },
-      { id: "hat_crown", img: "equip/hat_crown.webp", name: "皇冠" },
-      { id: "hat_catear", img: "equip/hat_catear.webp", name: "貓耳髮箍" },
-      { id: "hat_straw", img: "equip/hat_straw.webp", name: "草帽" },
-    ] },
-    body: { label: "衣服", items: [
+    // body=目前造型(衣服店買的)，顯示在左大立繪，不放右格
+    body: { label: "造型", items: [
       { id: "f_academic", img: "outfits/f_academic.webp", name: "學院風" },
       { id: "f_dress", img: "outfits/f_dress.webp", name: "洋裝" },
       { id: "f_elf", img: "outfits/f_elf.webp", name: "精靈裝" },
@@ -406,19 +399,31 @@
       { id: "m_superhero", img: "outfits/m_superhero.webp", name: "英雄裝" },
       { id: "m_wizard_kid", img: "outfits/m_wizard_kid.webp", name: "小巫師" },
     ] },
+    hat: { label: "帽子", items: [
+      { id: "hat_student", img: "equip/hat_student.webp", name: "學生帽" },
+      { id: "hat_wizard", img: "equip/hat_wizard.webp", name: "巫師帽" },
+      { id: "hat_crown", img: "equip/hat_crown.webp", name: "皇冠" },
+      { id: "hat_catear", img: "equip/hat_catear.webp", name: "貓耳髮箍" },
+      { id: "hat_straw", img: "equip/hat_straw.webp", name: "草帽" },
+    ] },
+    weapon: { label: "武器", items: [
+      { id: "knife", img: "../assets/images/onboarding/knife.png", name: "巨大美工刀" },
+    ] },
+    // 寵物項圈格：依目前寵物顯示「對應配件」(acc_*)
     pet: { label: "寵物項圈", items: [
-      { id: "pet_cat", img: "equip/pet_cat.webp", name: "小貓" },
-      { id: "pet_bunny", img: "equip/pet_bunny.webp", name: "兔子" },
-      { id: "pet_puppy", img: "equip/pet_puppy.webp", name: "小狗" },
-      { id: "pet_penguin", img: "equip/pet_penguin.webp", name: "企鵝" },
-      { id: "pet_panda", img: "equip/pet_panda.webp", name: "熊貓" },
+      { id: "pet_cat", name: "小貓", acc_img: "equip/acc_yarn.webp", acc_name: "毛線球" },
+      { id: "pet_bunny", name: "兔子", acc_img: "equip/acc_carrot.webp", acc_name: "紅蘿蔔" },
+      { id: "pet_puppy", name: "小狗", acc_img: "equip/acc_collar.webp", acc_name: "項圈" },
+      { id: "pet_penguin", name: "企鵝", acc_img: "equip/acc_fish.webp", acc_name: "小魚" },
+      { id: "pet_panda", name: "熊貓", acc_img: "equip/acc_bamboo.webp", acc_name: "竹子" },
     ] },
   };
-  const EQ_CATS = ["hat", "body", "pet"];
+  const EQ_SLOTS = ["hat", "weapon", "pet"]; // 右側三格
+  const EQ_ALL = ["body", "hat", "weapon", "pet"];
   function getEquip() {
     let s = {};
     try { const p = JSON.parse(localStorage.getItem(EQ_KEY) || "{}"); if (p && typeof p === "object") s = p; } catch (e) {}
-    EQ_CATS.forEach((cat) => { if (!EQUIP[cat].items.some((it) => it.id === s[cat])) s[cat] = EQUIP[cat].items[0].id; });
+    EQ_ALL.forEach((cat) => { if (!EQUIP[cat].items.some((it) => it.id === s[cat])) s[cat] = EQUIP[cat].items[0].id; });
     return s;
   }
   function eqItem(cat, id) { return EQUIP[cat].items.find((it) => it.id === id) || EQUIP[cat].items[0]; }
@@ -432,7 +437,7 @@
         <div class="shop-title">裝備 / 寵物</div>
         <button class="shop-close" aria-label="關閉">×</button>
         <div class="eq-main">
-          <div class="eq-portrait"><img id="eq-port" alt="角色"></div>
+          <div class="eq-portrait"><img id="eq-port" alt="目前造型"></div>
           <div class="eq-slots"></div>
         </div>
       </div>`;
@@ -442,18 +447,19 @@
     return ov;
   }
 
-  // 純展示：左立繪依職業，右三格顯示目前裝備（不換裝）
+  // 純展示：左=目前造型(衣服店)，右三格=帽子/武器/寵物配件(依寵物)
   function eqRender(ov) {
     const s = getEquip();
-    const job = (function () { try { const k = localStorage.getItem("village_job"); return k || null; } catch (e) { return null; } })();
-    const port = ov.querySelector("#eq-port");
-    port.onerror = () => { port.onerror = null; port.src = PORTRAIT_BASE + "student_v2.png?v=1"; };
-    port.src = PORTRAIT_BASE + (job ? job : "student_v2") + ".png?v=1";
-    ov.querySelector(".eq-slots").innerHTML = EQ_CATS.map((cat) => {
+    // 左大立繪 = 目前造型
+    ov.querySelector("#eq-port").src = eqItem("body", s.body).img + "?v=1";
+    // 右三格
+    ov.querySelector(".eq-slots").innerHTML = EQ_SLOTS.map((cat) => {
       const it = eqItem(cat, s[cat]);
+      const img = cat === "pet" ? it.acc_img : it.img;
+      const nm = cat === "pet" ? it.acc_name : it.name;
       return `<div class="eq-slot" data-cat="${cat}">
-          <div class="eq-slot-ic"><img src="${it.img}?v=1" alt="${it.name}"></div>
-          <div class="eq-slot-tx"><div class="eq-slot-lb">${EQUIP[cat].label}</div><div class="eq-slot-nm">${it.name}</div></div>
+          <div class="eq-slot-ic"><img src="${img}?v=1" alt="${nm}"></div>
+          <div class="eq-slot-tx"><div class="eq-slot-lb">${EQUIP[cat].label}</div><div class="eq-slot-nm">${nm}</div></div>
         </div>`;
     }).join("");
   }

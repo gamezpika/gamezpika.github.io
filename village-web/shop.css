@@ -295,7 +295,9 @@
   -webkit-tap-highlight-color: transparent;
 }
 #eq-overlay.open { display: flex; align-items: center; justify-content: center; }
-.eq-main { display: flex; gap: 12px; margin-bottom: 10px; }
+/* 高度自適應：內容到哪面板到哪，不留下方大片空白 */
+.eq-panel { height: auto; max-height: 90vh; }
+.eq-main { display: flex; gap: 12px; }
 .eq-portrait {
   flex: 0 0 42%; background: radial-gradient(ellipse at 50% 80%, #ffe7b0 0%, #fffaf0 70%);
   border: 3px solid #e3c089; border-radius: 14px; display: flex; align-items: flex-end;

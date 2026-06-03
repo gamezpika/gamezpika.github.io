@@ -104,6 +104,7 @@
 
   async function openShop(shopId, onClose) {
     if (shopId === "job_center") { openJobCenter(onClose); return; }
+    if (shopId === "academy_office") { openAcademyOffice(onClose); return; }
     onCloseCb = onClose || null;
     let cat;
     try {
@@ -276,4 +277,111 @@
     release();
   }
   window.openJobCenter = openJobCenter;
+
+  /* ───────────────────── 學院辦公室（客服/公告：更新日誌 / 回報 Bug / 遊戲規則）───────────────────── */
+  let AO_CONTENT = null;
+  let aoTab = "log";
+  const BUG_KEY = "village_bugs";
+  const BUG_CATS = ["畫面顯示", "卡關 / 動不了", "閃退 / 當機", "操作問題", "建議", "其他"];
+  // 內容來自可編輯 JSON，innerHTML 前一律跳脫，避免日後內容含 HTML 被注入
+  const aoEsc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  async function aoLoad() {
+    if (AO_CONTENT) return AO_CONTENT;
+    const r = await fetch("academy_content.json?v=1");
+    if (!r.ok) throw new Error("academy content HTTP " + r.status);
+    AO_CONTENT = await r.json();
+    return AO_CONTENT;
+  }
+
+  function aoBuildOverlay() {
+    let ov = document.getElementById("ao-overlay");
+    if (ov) return ov;
+    ov = el("div"); ov.id = "ao-overlay";
+    ov.innerHTML = `
+      <div class="shop-panel jc-panel ao-panel">
+        <div class="shop-title">學院辦公室</div>
+        <button class="shop-close" aria-label="關閉">×</button>
+        <div class="jc-tabs">
+          <button class="jc-tab" data-tab="log">更新日誌</button>
+          <button class="jc-tab" data-tab="bug">回報 Bug</button>
+          <button class="jc-tab" data-tab="rules">遊戲規則</button>
+        </div>
+        <div class="jc-content ao-content"></div>
+        <div class="jc-bubble"></div>
+      </div>`;
+    document.body.appendChild(ov);
+    ov.querySelector(".shop-close").addEventListener("click", aoClose);
+    ov.addEventListener("click", (e) => { if (e.target === ov) aoClose(); });
+    ov.querySelectorAll(".jc-tab").forEach((b) =>
+      b.addEventListener("click", () => { aoTab = b.dataset.tab; aoRender(ov); }));
+    return ov;
+  }
+  function aoBubble(ov, txt) { ov.querySelector(".jc-bubble").textContent = txt || ""; }
+
+  function aoRender(ov) {
+    ov.querySelectorAll(".jc-tab").forEach((b) =>
+      b.classList.toggle("active", b.dataset.tab === aoTab));
+    const box = ov.querySelector(".ao-content");
+    box.innerHTML = "";
+    const c = AO_CONTENT || { changelog: [], rules: [] };
+
+    if (aoTab === "log") {
+      aoBubble(ov, "這裡看得到遊戲的最新更新內容唷！");
+      box.innerHTML = (c.changelog || []).map((v) => `
+        <div class="ao-log">
+          <div class="ao-log-head"><span class="ao-ver">${aoEsc(v.version)}</span><span class="ao-date">${aoEsc(v.date)}</span></div>
+          <ul class="ao-log-items">${(v.items || []).map((it) => `<li>${aoEsc(it)}</li>`).join("")}</ul>
+        </div>`).join("") || `<div class="jc-empty">目前沒有更新紀錄</div>`;
+    } else if (aoTab === "bug") {
+      aoBubble(ov, "遇到問題了嗎？填一下，我們會盡快處理！");
+      box.innerHTML = `
+        <div class="ao-form">
+          <label class="ao-fld"><span>問題類型</span>
+            <select id="ao-bug-cat">${BUG_CATS.map((x) => `<option>${x}</option>`).join("")}</select></label>
+          <label class="ao-fld col"><span>問題描述</span>
+            <textarea id="ao-bug-txt" rows="4" maxlength="300" placeholder="請描述你遇到的問題，越詳細越好～"></textarea></label>
+          <button class="jc-act ao-send">送出回報</button>
+          <div class="ao-bug-hint" id="ao-bug-hint"></div>
+        </div>`;
+      box.querySelector(".ao-send").addEventListener("click", () => {
+        const cat = box.querySelector("#ao-bug-cat").value;
+        const txt = box.querySelector("#ao-bug-txt").value.trim();
+        const hint = box.querySelector("#ao-bug-hint");
+        if (!txt) { hint.textContent = "請先描述問題再送出唷～"; hint.className = "ao-bug-hint err"; return; }
+        let list = [];
+        try { const p = JSON.parse(localStorage.getItem(BUG_KEY) || "[]"); list = Array.isArray(p) ? p : []; } catch (e) { list = []; }
+        list.push({ cat, txt, t: Date.now() });
+        try { localStorage.setItem(BUG_KEY, JSON.stringify(list)); } catch (e) {}
+        box.querySelector("#ao-bug-txt").value = "";
+        hint.textContent = "✓ 已收到你的回報，謝謝！（目前為展示版，回報暫存本機）";
+        hint.className = "ao-bug-hint ok";
+        aoBubble(ov, "收到囉，謝謝你的回報！");
+      });
+    } else if (aoTab === "rules") {
+      aoBubble(ov, "不熟悉玩法嗎？這裡有完整的遊戲規則！");
+      box.innerHTML = (c.rules || []).map((r) => `
+        <div class="ao-rule">
+          <div class="ao-rule-ic">${aoEsc(r.icon || "📋")}</div>
+          <div class="ao-rule-body"><div class="ao-rule-title">${aoEsc(r.title)}</div><div class="ao-rule-txt">${aoEsc(r.body)}</div></div>
+        </div>`).join("") || `<div class="jc-empty">目前沒有規則說明</div>`;
+    }
+  }
+
+  async function openAcademyOffice(onClose) {
+    onCloseCb = onClose || null;
+    const ov = aoBuildOverlay();
+    aoTab = "log";
+    try { await aoLoad(); }
+    catch (e) { console.warn("academy content 載入失敗", e); }
+    aoRender(ov);
+    ov.classList.add("open");
+  }
+  function aoClose() {
+    const ov = document.getElementById("ao-overlay");
+    if (ov) ov.classList.remove("open");
+    release();
+  }
+  window.openAcademyOffice = openAcademyOffice;
 })();

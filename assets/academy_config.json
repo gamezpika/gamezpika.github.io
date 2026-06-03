@@ -11,7 +11,10 @@
     "background": "village-web/academy_ground.webp",
     "asset_base": "village-web/",
     "player": {
-      "spawn": { "x": 0.5, "y": 0.27 },
+      "spawn": {
+        "x": 0.5,
+        "y": 0.27
+      },
       "scale": 0.2,
       "speed": 220,
       "sprites": {
@@ -46,55 +49,439 @@
     "portals": [
       {
         "id": "back_to_village",
-        "anchor": { "x": 0.5, "y": 0.09 },
+        "anchor": {
+          "x": 0.5,
+          "y": 0.09
+        },
         "radius": 110,
         "target_map": "village",
-        "target_spawn": { "x": 0.5, "y": 0.88 },
+        "target_spawn": {
+          "x": 0.5,
+          "y": 0.88
+        },
         "label": "回村莊"
       }
     ],
     "buildings": [
-      { "id": "kongqiu_academy", "name": "國語學院", "category": "house",
-        "sprite": { "image": "guoyu_academy.webp", "scale": 0.25, "anchor_x": 0.5, "anchor_y": 1 },
-        "anchor": { "x": 0.28, "y": 0.31 }, "center": { "x": 0.28, "y": 0.31 },
-        "bounding_box": { "x_min": 0.18, "y_min": 0.265, "x_max": 0.38, "y_max": 0.31 },
-        "interaction": { "type": "open_shop", "shop_id": "chinese_academy", "label": "國語學院", "body": "歡迎來到國語學院", "radius": 200 },
-        "polygon": [], "path": [], "render_order": 337 }
+      {
+        "id": "kongqiu_academy",
+        "name": "國語學院",
+        "category": "house",
+        "sprite": {
+          "image": "guoyu_academy.webp",
+          "scale": 0.4,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.24027272902121438,
+          "y": 0.28581869470444926
+        },
+        "center": {
+          "x": 0.24027272902121438,
+          "y": 0.28581869470444926
+        },
+        "bounding_box": {
+          "x_min": 0.1405885407651029,
+          "y_min": 0.21217745864854465,
+          "x_max": 0.3276475679418383,
+          "y_max": 0.27925375048083084
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "chinese_academy",
+          "label": "國語學院",
+          "body": "歡迎來到國語學院",
+          "radius": 200
+        },
+        "polygon": [
+          {
+            "x": 0.1405885407651029,
+            "y": 0.21381869470444925
+          },
+          {
+            "x": 0.3276475679418383,
+            "y": 0.21217745864854465
+          },
+          {
+            "x": 0.3108247905166721,
+            "y": 0.27378296362781557
+          },
+          {
+            "x": 0.1430504106322004,
+            "y": 0.27925375048083084
+          }
+        ],
+        "path": [],
+        "render_order": 337,
+        "mask_color": "#FF3B30",
+        "interaction_type": "open_shop"
+      },
+      {
+        "id": "fir_green_2",
+        "name": "森林樹",
+        "category": "decoration",
+        "sprite": {
+          "image": "fir_green.webp",
+          "scale": 0.42,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0
+        },
+        "anchor": {
+          "x": 0.04086126978631739,
+          "y": 0.1922682395178869
+        },
+        "bounding_box": {
+          "x_min": 0.01586126978631737,
+          "x_max": 0.06586126978631733,
+          "y_min": 0.16226823951788688,
+          "y_max": 0.1922682395178869
+        },
+        "path": [],
+        "center": {
+          "x": 0.04086126978631739,
+          "y": 0.1922682395178869
+        },
+        "polygon": [
+          {
+            "x": 0.04082226978631738,
+            "y": 0.16223123951788693
+          },
+          {
+            "x": 0.05852226978631737,
+            "y": 0.1666312395178869
+          },
+          {
+            "x": 0.06582226978631732,
+            "y": 0.17723123951788683
+          },
+          {
+            "x": 0.05852226978631737,
+            "y": 0.18783123951788688
+          },
+          {
+            "x": 0.04082226978631738,
+            "y": 0.19223123951788695
+          },
+          {
+            "x": 0.02322226978631743,
+            "y": 0.18783123951788688
+          },
+          {
+            "x": 0.01582226978631736,
+            "y": 0.17723123951788683
+          },
+          {
+            "x": 0.02322226978631743,
+            "y": 0.1666312395178869
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
+      },
+      {
+        "id": "fir_green_3",
+        "name": "森林樹",
+        "category": "decoration",
+        "sprite": {
+          "image": "fir_green.webp",
+          "scale": 0.42,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0
+        },
+        "anchor": {
+          "x": 0.01624257111534245,
+          "y": 0.34654442877291963
+        },
+        "bounding_box": {
+          "x_min": -0.00875742888465757,
+          "x_max": 0.041242571115342436,
+          "y_min": 0.31654442877291966,
+          "y_max": 0.34654442877291963
+        },
+        "path": [],
+        "center": {
+          "x": 0.01624257111534245,
+          "y": 0.34654442877291963
+        },
+        "polygon": [
+          {
+            "x": 0.01628657111534244,
+            "y": 0.31654542877291963
+          },
+          {
+            "x": 0.03388657111534239,
+            "y": 0.32094542877291965
+          },
+          {
+            "x": 0.041286571115342424,
+            "y": 0.33154542877291965
+          },
+          {
+            "x": 0.03388657111534239,
+            "y": 0.34214542877291965
+          },
+          {
+            "x": 0.01628657111534244,
+            "y": 0.34654542877291966
+          },
+          {
+            "x": -0.0014134288846575534,
+            "y": 0.34214542877291965
+          },
+          {
+            "x": -0.008713428884657527,
+            "y": 0.33154542877291965
+          },
+          {
+            "x": -0.0014134288846575534,
+            "y": 0.32094542877291965
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
+      },
+      {
+        "id": "fir_green_4",
+        "name": "森林樹",
+        "category": "decoration",
+        "sprite": {
+          "image": "fir_green.webp",
+          "scale": 0.42,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0
+        },
+        "anchor": {
+          "x": 0.08394399246052353,
+          "y": 0.40234645467367613
+        },
+        "bounding_box": {
+          "x_min": 0.05894399246052353,
+          "x_max": 0.10894399246052353,
+          "y_min": 0.3723464546736761,
+          "y_max": 0.40234645467367613
+        },
+        "path": [],
+        "center": {
+          "x": 0.08394399246052353,
+          "y": 0.40234645467367613
+        },
+        "polygon": [
+          {
+            "x": 0.08389499246052352,
+            "y": 0.3723504546736761
+          },
+          {
+            "x": 0.10159499246052353,
+            "y": 0.3767504546736761
+          },
+          {
+            "x": 0.10889499246052353,
+            "y": 0.3873504546736761
+          },
+          {
+            "x": 0.10159499246052353,
+            "y": 0.3979504546736761
+          },
+          {
+            "x": 0.08389499246052352,
+            "y": 0.40235045467367614
+          },
+          {
+            "x": 0.06629499246052353,
+            "y": 0.3979504546736761
+          },
+          {
+            "x": 0.05889499246052353,
+            "y": 0.3873504546736761
+          },
+          {
+            "x": 0.06629499246052353,
+            "y": 0.3767504546736761
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
+      }
     ],
     "obstacle_areas": [],
     "npcs": [
-      { "id": "kongqiu", "name": "孔丘",
-        "sprite": { "scale": 0.09, "sprites": {
-          "side": { "image": "kongqiu_npc_walk.webp", "frame_width": 593, "frame_height": 1264, "frames": 6, "frame_rate": 6, "facing": "left" },
-          "down": { "image": "kongqiu_npc_walk_down.webp", "frame_width": 531, "frame_height": 1264, "frames": 6, "frame_rate": 6 },
-          "up": { "image": "kongqiu_npc_walk_up.webp", "frame_width": 532, "frame_height": 1264, "frames": 6, "frame_rate": 6 }
-        } },
-        "spawn": { "x": 0.28, "y": 0.42 },
-        "patrol": [ { "x": 0.20, "y": 0.40 }, { "x": 0.38, "y": 0.40 }, { "x": 0.38, "y": 0.50 }, { "x": 0.20, "y": 0.50 } ],
+      {
+        "id": "kongqiu",
+        "name": "孔丘",
+        "sprite": {
+          "scale": 0.09,
+          "sprites": {
+            "side": {
+              "image": "kongqiu_npc_walk.webp",
+              "frame_width": 593,
+              "frame_height": 1264,
+              "frames": 6,
+              "frame_rate": 6,
+              "facing": "left"
+            },
+            "down": {
+              "image": "kongqiu_npc_walk_down.webp",
+              "frame_width": 531,
+              "frame_height": 1264,
+              "frames": 6,
+              "frame_rate": 6
+            },
+            "up": {
+              "image": "kongqiu_npc_walk_up.webp",
+              "frame_width": 532,
+              "frame_height": 1264,
+              "frames": 6,
+              "frame_rate": 6
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.28,
+          "y": 0.42
+        },
+        "patrol": [
+          {
+            "x": 0.2,
+            "y": 0.4
+          },
+          {
+            "x": 0.38,
+            "y": 0.4
+          },
+          {
+            "x": 0.38,
+            "y": 0.5
+          },
+          {
+            "x": 0.4864597157309638,
+            "y": 0.6567380433388896
+          }
+        ],
         "speed": 38,
-        "interaction": { "body": "吾乃孔丘，欲修國語者，可入吾學院。" }
+        "interaction": {
+          "body": "吾乃孔丘，欲修國語者，可入吾學院。"
+        }
       },
-      { "id": "mengzi", "name": "孟子",
-        "sprite": { "scale": 0.09, "sprites": {
-          "side": { "image": "mengzi_wfsheet.webp", "frame_width": 769, "frame_height": 1276, "frames": 6, "frame_rate": 8, "facing": "left" },
-          "down": { "image": "mengzi_walk_down.webp", "frame_width": 463, "frame_height": 1264, "frames": 6, "frame_rate": 6 },
-          "up": { "image": "mengzi_walk_up.webp", "frame_width": 446, "frame_height": 1264, "frames": 6, "frame_rate": 6 }
-        } },
-        "spawn": { "x": 0.72, "y": 0.42 },
-        "patrol": [ { "x": 0.64, "y": 0.40 }, { "x": 0.80, "y": 0.40 }, { "x": 0.80, "y": 0.50 }, { "x": 0.64, "y": 0.50 } ],
+      {
+        "id": "mengzi",
+        "name": "孟子",
+        "sprite": {
+          "scale": 0.09,
+          "sprites": {
+            "side": {
+              "image": "mengzi_wfsheet.webp",
+              "frame_width": 769,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 8,
+              "facing": "left"
+            },
+            "down": {
+              "image": "mengzi_walk_down.webp",
+              "frame_width": 463,
+              "frame_height": 1264,
+              "frames": 6,
+              "frame_rate": 6
+            },
+            "up": {
+              "image": "mengzi_walk_up.webp",
+              "frame_width": 446,
+              "frame_height": 1264,
+              "frames": 6,
+              "frame_rate": 6
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.72,
+          "y": 0.42
+        },
+        "patrol": [
+          {
+            "x": 0.64,
+            "y": 0.4
+          },
+          {
+            "x": 0.5393899178735599,
+            "y": 0.4089113988972945
+          },
+          {
+            "x": 0.524618698670975,
+            "y": 0.4942556738043339
+          },
+          {
+            "x": 0.43845325332256263,
+            "y": 0.4368124118476728
+          }
+        ],
         "speed": 36,
-        "interaction": { "body": "吾乃孟軻，字詞魔王猖獗，與我一同討伐這群妖魔！" }
+        "interaction": {
+          "body": "吾乃孟軻，字詞魔王猖獗，與我一同討伐這群妖魔！"
+        }
       },
-      { "id": "jinyong", "name": "金庸",
-        "sprite": { "scale": 0.09, "sprites": {
-          "side": { "image": "jinyong_wfsheet.webp", "frame_width": 653, "frame_height": 1276, "frames": 6, "frame_rate": 8, "facing": "left" },
-          "down": { "image": "jinyong_fwfhnsheet.webp", "frame_width": 579, "frame_height": 1276, "frames": 6, "frame_rate": 8 },
-          "up": { "image": "jinyong_bwfhnsheet.webp", "frame_width": 542, "frame_height": 1276, "frames": 6, "frame_rate": 8 }
-        } },
-        "spawn": { "x": 0.5, "y": 0.66 },
-        "patrol": [ { "x": 0.42, "y": 0.64 }, { "x": 0.60, "y": 0.64 }, { "x": 0.60, "y": 0.74 }, { "x": 0.42, "y": 0.74 } ],
+      {
+        "id": "jinyong",
+        "name": "金庸",
+        "sprite": {
+          "scale": 0.09,
+          "sprites": {
+            "side": {
+              "image": "jinyong_wfsheet.webp",
+              "frame_width": 653,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 8,
+              "facing": "left"
+            },
+            "down": {
+              "image": "jinyong_fwfhnsheet.webp",
+              "frame_width": 579,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 8
+            },
+            "up": {
+              "image": "jinyong_bwfhnsheet.webp",
+              "frame_width": 542,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 8
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.3289000442367242,
+          "y": 0.6009360174381331
+        },
+        "patrol": [
+          {
+            "x": 0.35351874290769914,
+            "y": 0.2464290293627388
+          },
+          {
+            "x": 0.35967341757544286,
+            "y": 0.40727016284138995
+          },
+          {
+            "x": 0.4322985786548189,
+            "y": 0.47456084113347863
+          },
+          {
+            "x": 0.5541611370761449,
+            "y": 0.5549814078728043
+          }
+        ],
         "speed": 36,
-        "interaction": { "body": "競技場以武會友、以文較高下，盼你成為常勝軍！" }
+        "interaction": {
+          "body": "競技場以武會友、以文較高下，盼你成為常勝軍！"
+        }
       }
     ],
     "objects": []

@@ -107,6 +107,7 @@
   async function openShop(shopId, onClose) {
     if (shopId === "job_center") { openJobCenter(onClose); return; }
     if (shopId === "academy_office") { openAcademyOffice(onClose); return; }
+    if (shopId === "dorm") { openDormHub(onClose); return; }
     if (shopId === "chinese_academy") { openChineseAcademy(onClose); return; }
     onCloseCb = onClose || null;
     let cat;
@@ -604,17 +605,21 @@
     weapon: { label: "武器", items: [
       { id: "knife", img: "../assets/images/onboarding/knife.png", name: "巨大美工刀" },
     ] },
-    // 寵物項圈格：依目前寵物顯示「對應配件」(acc_*)
+    // 寵物項圈格：依目前寵物顯示「對應配件」(acc_*)；img=寵物本體圖(寵物頁用)
     pet: { label: "寵物項圈", items: [
-      { id: "pet_cat", name: "小貓", acc_img: "equip/acc_yarn.webp", acc_name: "毛線球" },
-      { id: "pet_bunny", name: "兔子", acc_img: "equip/acc_carrot.webp", acc_name: "紅蘿蔔" },
-      { id: "pet_puppy", name: "小狗", acc_img: "equip/acc_collar.webp", acc_name: "項圈" },
-      { id: "pet_penguin", name: "企鵝", acc_img: "equip/acc_fish.webp", acc_name: "小魚" },
-      { id: "pet_panda", name: "熊貓", acc_img: "equip/acc_bamboo.webp", acc_name: "竹子" },
+      { id: "pet_cat", name: "小貓", img: "equip/pet_cat.webp", acc_img: "equip/acc_yarn.webp", acc_name: "毛線球" },
+      { id: "pet_bunny", name: "兔子", img: "equip/pet_bunny.webp", acc_img: "equip/acc_carrot.webp", acc_name: "紅蘿蔔" },
+      { id: "pet_puppy", name: "小狗", img: "equip/pet_puppy.webp", acc_img: "equip/acc_collar.webp", acc_name: "項圈" },
+      { id: "pet_penguin", name: "企鵝", img: "equip/pet_penguin.webp", acc_img: "equip/acc_fish.webp", acc_name: "小魚" },
+      { id: "pet_panda", name: "熊貓", img: "equip/pet_panda.webp", acc_img: "equip/acc_bamboo.webp", acc_name: "竹子" },
     ] },
   };
   const EQ_SLOTS = ["hat", "weapon", "pet"]; // 右側三格
   const EQ_ALL = ["body", "hat", "weapon", "pet"];
+  function setEquip(cat, id) {
+    const s = getEquip(); s[cat] = id;
+    try { localStorage.setItem(EQ_KEY, JSON.stringify(s)); } catch (e) {}
+  }
   function getEquip() {
     let s = {};
     try { const p = JSON.parse(localStorage.getItem(EQ_KEY) || "{}"); if (p && typeof p === "object") s = p; } catch (e) {}
@@ -666,4 +671,92 @@
   }
   function eqClose() { const ov = document.getElementById("eq-overlay"); if (ov) ov.classList.remove("open"); }
   window.openEquip = openEquip;
+
+  /* ───────────────────── 個人小屋 hub（學生宿舍：更衣室 / 角色裝備 / 寵物 / 圖鑑，純展示）───────────────────── */
+  let dhTab = "outfit";
+  function dhBuildOverlay() {
+    let ov = document.getElementById("dh-overlay");
+    if (ov) return ov;
+    ov = el("div"); ov.id = "dh-overlay";
+    ov.innerHTML = `
+      <div class="shop-panel dh-panel">
+        <div class="shop-title">個人小屋</div>
+        <button class="shop-close" aria-label="關閉">×</button>
+        <div class="dh-leftcol">
+          <div class="dh-preview"><img class="dh-port" alt="目前造型" draggable="false"></div>
+          <div class="dh-owner">🏠 你的小屋</div>
+        </div>
+        <div class="dh-rightcol">
+          <div class="jc-tabs dh-tabs">
+            <button class="jc-tab" data-tab="outfit">更衣室</button>
+            <button class="jc-tab" data-tab="gear">角色裝備</button>
+            <button class="jc-tab" data-tab="pet">寵物</button>
+            <button class="jc-tab" data-tab="book">圖鑑</button>
+          </div>
+          <div class="jc-content dh-content"></div>
+          <div class="dh-bubble"></div>
+        </div>
+      </div>`;
+    document.body.appendChild(ov);
+    ov.querySelector(".shop-close").addEventListener("click", dhClose);
+    ov.addEventListener("click", (e) => { if (e.target === ov) dhClose(); });
+    ov.querySelectorAll(".dh-tabs .jc-tab").forEach((b) =>
+      b.addEventListener("click", () => { dhTab = b.dataset.tab; dhRender(ov); }));
+    return ov;
+  }
+  function dhBubble(ov, txt) { ov.querySelector(".dh-bubble").textContent = txt || ""; }
+  function dhCard(opts) {
+    return `<div class="dh-card${opts.sel ? " sel" : ""}${opts.ro ? " ro" : ""}" data-cat="${opts.cat || ""}" data-id="${opts.id || ""}">
+        <img src="${opts.img}?v=1" alt="${opts.name}" loading="lazy" draggable="false">
+        <div class="dh-nm">${opts.name}</div>${opts.sub ? `<div class="dh-sub2">${opts.sub}</div>` : ""}</div>`;
+  }
+  function dhRender(ov) {
+    ov.querySelectorAll(".dh-tabs .jc-tab").forEach((b) =>
+      b.classList.toggle("active", b.dataset.tab === dhTab));
+    const s = getEquip();
+    ov.querySelector(".dh-port").src = eqItem("body", s.body).img + "?v=1";   // 左預覽=目前造型
+    const box = ov.querySelector(".dh-content"); box.innerHTML = "";
+
+    if (dhTab === "outfit") {
+      dhBubble(ov, "換上喜歡的造型吧！");
+      box.innerHTML = `<div class="dh-grid">` +
+        EQUIP.body.items.map((it) => dhCard({ id: it.id, img: it.img, name: it.name, sel: it.id === s.body })).join("") + `</div>`;
+      box.querySelectorAll(".dh-card").forEach((c) => c.addEventListener("click", () => {
+        setEquip("body", c.dataset.id); dhBubble(ov, "換上「" + eqItem("body", c.dataset.id).name + "」！"); dhRender(ov);
+      }));
+    } else if (dhTab === "gear") {
+      dhBubble(ov, "選頂帽子、看看你的裝備～");
+      box.innerHTML = `<div class="dh-sub">帽子</div><div class="dh-grid">` +
+        EQUIP.hat.items.map((it) => dhCard({ cat: "hat", id: it.id, img: it.img, name: it.name, sel: it.id === s.hat })).join("") + `</div>` +
+        `<div class="dh-sub">武器</div><div class="dh-grid">` +
+        EQUIP.weapon.items.map((it) => dhCard({ cat: "weapon", id: it.id, img: it.img, name: it.name, sel: true })).join("") + `</div>`;
+      box.querySelectorAll('.dh-card[data-cat="hat"]').forEach((c) => c.addEventListener("click", () => {
+        setEquip("hat", c.dataset.id); dhBubble(ov, "戴上「" + eqItem("hat", c.dataset.id).name + "」！"); dhRender(ov);
+      }));
+    } else if (dhTab === "pet") {
+      dhBubble(ov, "挑一隻夥伴陪你冒險！");
+      box.innerHTML = `<div class="dh-grid">` +
+        EQUIP.pet.items.map((it) => dhCard({ id: it.id, img: it.img, name: it.name, sub: "配件：" + it.acc_name, sel: it.id === s.pet })).join("") + `</div>`;
+      box.querySelectorAll(".dh-card").forEach((c) => c.addEventListener("click", () => {
+        setEquip("pet", c.dataset.id); dhBubble(ov, "選擇「" + eqItem("pet", c.dataset.id).name + "」當夥伴！"); dhRender(ov);
+      }));
+    } else if (dhTab === "book") {
+      dhBubble(ov, "你收集到的造型、帽子、夥伴都在這！");
+      const sect = (label, items) => `<div class="dh-sub">${label}</div><div class="dh-grid">` +
+        items.map((it) => dhCard({ img: it.img, name: it.name, ro: true })).join("") + `</div>`;
+      box.innerHTML = sect("造型", EQUIP.body.items) + sect("帽子", EQUIP.hat.items) + sect("寵物", EQUIP.pet.items);
+    }
+  }
+  function openDormHub(onClose) {
+    onCloseCb = onClose || null;
+    const ov = dhBuildOverlay();
+    dhTab = "outfit"; dhRender(ov);
+    ov.classList.add("open");
+  }
+  function dhClose() {
+    const ov = document.getElementById("dh-overlay");
+    if (ov) ov.classList.remove("open");
+    release();
+  }
+  window.openDormHub = openDormHub;
 })();

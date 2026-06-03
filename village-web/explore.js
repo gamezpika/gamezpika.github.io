@@ -214,7 +214,7 @@ class ExploreScene extends Phaser.Scene {
           if (b.sprite.play_on_proximity) {
             // 樹等：平常停在第0幀，玩家靠近才搖（update 控制）
             spr.stop(); spr.setFrame(0);
-            (this._proxAnims = this._proxAnims || []).push({ spr, animKey, x: anchor.x, y: anchor.y, on: false });
+            (this._proxAnims = this._proxAnims || []).push({ spr, animKey, x: anchor.x, y: anchor.y, on: false, r: b.sprite.prox_radius || 170 });
           } else {
             spr.play(animKey);
           }
@@ -844,7 +844,7 @@ class ExploreScene extends Phaser.Scene {
     if (this._proxAnims) {
       const px = this.player.x, py = this.player.y;
       for (const t of this._proxAnims) {
-        const near = Math.hypot(t.x - px, t.y - py) < 170;
+        const near = Math.hypot(t.x - px, t.y - py) < t.r;
         if (near && !t.on) { t.spr.play(t.animKey); t.on = true; }
         else if (!near && t.on) { t.spr.stop(); t.spr.setFrame(0); t.on = false; }
       }

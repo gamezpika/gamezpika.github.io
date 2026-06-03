@@ -154,7 +154,8 @@
           "grid_rows": 2,
           "frames": 10,
           "frame_rate": 10,
-          "play_on_proximity": true
+          "play_on_proximity": true,
+          "prox_radius": 320
         },
         "anchor": {
           "x": 0.8468521605334017,

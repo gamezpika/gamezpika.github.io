@@ -74,10 +74,10 @@
           "anchor_y": 1,
           "frame_width": 512,
           "frame_height": 512,
-          "grid_cols": 5,
-          "grid_rows": 2,
-          "frames": 10,
-          "frame_rate": 8
+          "grid_cols": 4,
+          "grid_rows": 4,
+          "frames": 16,
+          "frame_rate": 6
         },
         "anchor": {
           "x": 0.72,

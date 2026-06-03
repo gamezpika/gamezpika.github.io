@@ -295,6 +295,15 @@
           "bbox_h_norm": 0.03
         }
       ]
+    },
+    {
+      "id": "campus",
+      "name": "🏕️ 學園生活區 (village-web)",
+      "engine": "phaser",
+      "config_path": "assets/campus_config.json",
+      "background_path": "village-web/campus_ground.webp",
+      "sprite_base": "village-web/",
+      "sprite_library": []
     }
   ]
 }

@@ -8,7 +8,7 @@
       "world_height": 2600,
       "world_offset_y": 0
     },
-    "background": "village-web/academy_ground_v3.webp",
+    "background": "village-web/academy_ground_v4.webp",
     "asset_base": "village-web/",
     "player": {
       "spawn": { "x": 0.5, "y": 0.404 },

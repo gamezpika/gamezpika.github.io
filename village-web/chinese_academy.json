@@ -1,5 +1,5 @@
 {
-  "dean": { "name": "孔丘", "title": "國語學院 · 院長", "img": "kongqiu_npc.webp" },
+  "dean": { "name": "孔丘", "title": "國語學院 · 院長", "img": "kongqiu_front.webp" },
   "figures": [
     { "name": "孔丘", "badge": "院長", "img": "kongqiu_front.webp", "era": "春秋", "works": "《論語》", "desc": "儒家始祖，萬世師表，倡「有教無類」。國語學院院長。" },
     { "name": "朱熹", "badge": "教授", "img": "fig_zhuxi.webp", "era": "南宋", "works": "《四書章句集注》", "desc": "理學集大成者，主張格物致知，後世尊為朱子。" },

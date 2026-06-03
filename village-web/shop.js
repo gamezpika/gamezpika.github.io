@@ -501,7 +501,7 @@
   let caTab = 0;   // 目前任務線 index
   async function caLoad() {
     if (CA_CONTENT) return CA_CONTENT;
-    const r = await fetch("chinese_academy.json?v=2");
+    const r = await fetch("chinese_academy.json?v=3");
     if (!r.ok) throw new Error("chinese academy HTTP " + r.status);
     CA_CONTENT = await r.json();
     return CA_CONTENT;
@@ -516,7 +516,7 @@
         <button class="shop-close" aria-label="關閉">×</button>
         <div class="ao-principal">
           <div class="ao-bubble"></div>
-          <img class="ao-principal-img" src="kongqiu_npc.webp?v=1" alt="國語學院 院長 孔丘" draggable="false">
+          <img class="ao-principal-img" src="kongqiu_front.webp?v=1" alt="國語學院 院長 孔丘" draggable="false">
           <div class="ao-owner">👤 國語學院 · 院長 孔丘</div>
         </div>
         <div class="ao-right">

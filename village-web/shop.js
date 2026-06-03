@@ -120,7 +120,7 @@
     if (!shop) { console.warn("unknown shop", shopId); release(); return; }
     const ov = buildOverlay();
     ov.querySelector(".shop-title").textContent = shop.title;
-    ov.querySelector(".shop-merchant img").src = shop.merchant + "?v=3";
+    ov.querySelector(".shop-merchant img").src = shop.merchant + "?v=5";
     ov.querySelector(".shop-owner").textContent = shop.owner ? "👤 老闆 · " + shop.owner : "";
     const g = GREET[shopId] || ["歡迎光臨！"];
     bubble(ov, g[Math.floor(Math.random() * g.length)]);

@@ -70,7 +70,7 @@
       else if (i % 11 === 9) card.classList.add("vip");
       card.innerHTML = `
         <span class="tag">${card.classList.contains("sold") ? "賣光啦" : "VIP"}</span>
-        <img src="${it.img}" alt="${it.name}" loading="lazy">
+        ${it.img ? `<img src="${it.img}" alt="${it.name}" loading="lazy">` : `<div class="shop-emoji">${it.emoji || "🎁"}</div>`}
         <div class="nm">${it.name}</div>
         <div class="pr">${it.price}</div>`;
       card.addEventListener("click", () => {
@@ -140,28 +140,95 @@
 
   /* ───────────────────── 職業介紹所（純展示 demo，localStorage 記職業）───────────────────── */
   const JOB_IMG = "../assets/images/jobs/";
-  const SUBJ = { math: "數學", chinese: "國語", social: "社會" };
+  const SUBJ = { chinese: "國語", math: "數學", english: "英語", science: "自然", social: "社會" };
+  // 職業樹（依派派職業分支圖）：5 學院 ×（院生階2 → 執業人員階3 → 三選一進階階4）。
+  // item = 升到此職業所需道具（純展示標示，批發中心購買，不硬擋）；next = 下一階（字串；陣列=三選一）。
   const JOBS = {
-    math_detective: { name: "數學偵探", subj: "math", tier: 1, sprite: "math_detective.png",
-      desc: "用偵探般的眼光破解每一道數學題！", skill: "數學魔王戰多 1 顆愛心",
-      need: "入門職業 · 免條件", next: "engineer",
-      quest: { title: "破解 5 道數學謎題", reward: "金幣 ×100 + 偵探放大鏡" } },
-    engineer: { name: "工程師", subj: "math", tier: 2, sprite: "engineer.png",
-      desc: "用科學打造未來。", skill: "數學魔王戰 +2 愛心 + 牧場 exp ×1.5",
-      need: "需：數學 60+ 且 自然 60+", next: "ai_engineer",
-      quest: { title: "設計並建造 3 座裝置", reward: "金幣 ×300 + 工程計算機" } },
-    ai_engineer: { name: "AI 工程師", subj: "math", tier: 3, sprite: "ai_engineer.png",
-      desc: "用 AI 改變未來。", skill: "每天可自動跳過 1 題（一定答對）",
-      need: "需：已解鎖工程師 + 數學 120+", next: null,
-      quest: { title: "訓練 AI 模型答對 20 題", reward: "金幣 ×800 + AI 晶片" } },
-    poet: { name: "詩人", subj: "chinese", tier: 1, sprite: "poet.png",
-      desc: "用文字編織意境的人。", skill: "答對國語題金幣 +50%",
-      need: "入門職業 · 免條件", next: null, nextNeed: "需：文字大師已解鎖 + 國語 90+ + 答對國語 200 題",
-      quest: { title: "創作 3 首主題詩", reward: "金幣 ×100 + 詩人之筆" } },
-    explorer: { name: "探險家", subj: "social", tier: 1, sprite: "explorer.png",
-      desc: "走遍世界尋找歷史的人。", skill: "答對社會題自動解鎖背景知識卡",
-      need: "入門職業 · 免條件", next: null, nextNeed: "需：社會 60+ + 答對社會 100 題",
-      quest: { title: "探索 5 個歷史遺跡", reward: "金幣 ×100 + 古代地圖" } },
+    // ── 國語 ──
+    chinese_student: { name: "國語學院院生", subj: "chinese", tier: 2, sprite: "student_v2.png",
+      desc: "踏入國語學院，鑽研語文之美。", skill: "答對國語題金幣 +10%", next: "chinese_pro",
+      quest: { title: "完成 5 道國語練習", reward: "金幣 ×100" } },
+    chinese_pro: { name: "國語執業人員", subj: "chinese", tier: 3, sprite: "poet.png",
+      desc: "通過國語認證、正式執業。", skill: "國語魔王戰多 1 顆愛心", item: "國語證照",
+      next: ["reporter", "cn_teacher", "writer"],
+      quest: { title: "通過國語檢定考", reward: "金幣 ×300 + 國語證照" } },
+    reporter: { name: "記者", subj: "chinese", tier: 4, sprite: "reporter.png",
+      desc: "追逐真相、報導世界的人。", skill: "答對國語題自動解鎖新聞卡", item: "記者證",
+      quest: { title: "完成 3 篇採訪報導", reward: "金幣 ×500 + 採訪麥克風" } },
+    cn_teacher: { name: "國文老師", subj: "chinese", tier: 4, sprite: "teacher.png",
+      desc: "傳道授業、桃李滿天下。", skill: "教學相長：國語經驗 ×1.5", item: "教師證",
+      quest: { title: "備課並教 3 堂國文課", reward: "金幣 ×500 + 教鞭" } },
+    writer: { name: "作家", subj: "chinese", tier: 4, sprite: "writer.png",
+      desc: "用文字創造世界的人。", skill: "答對國語題金幣 +50%", item: "靈感鋼筆",
+      quest: { title: "創作 1 篇短篇故事", reward: "金幣 ×500 + 靈感鋼筆" } },
+    // ── 數學 ──
+    math_student: { name: "數學學院院生", subj: "math", tier: 2, sprite: "student_v2.png",
+      desc: "進入數學學院，探索數字奧秘。", skill: "答對數學題金幣 +10%", next: "math_pro",
+      quest: { title: "完成 5 道數學練習", reward: "金幣 ×100" } },
+    math_pro: { name: "數學執業人員", subj: "math", tier: 3, sprite: "math_detective.png",
+      desc: "通過數學認證、正式執業。", skill: "數學魔王戰多 1 顆愛心", item: "數學證照",
+      next: ["trader", "math_teacher", "accountant"],
+      quest: { title: "通過數學檢定考", reward: "金幣 ×300 + 數學證照" } },
+    trader: { name: "交易員", subj: "math", tier: 4, sprite: "trader.png",
+      desc: "在金融市場運籌帷幄的人。", skill: "牧場販售金幣 +30%", item: "財金人員資格證",
+      quest: { title: "完成 3 筆模擬交易", reward: "金幣 ×500 + 行情平板" } },
+    math_teacher: { name: "數學老師", subj: "math", tier: 4, sprite: "teacher.png",
+      desc: "把抽象變簡單的引路人。", skill: "教學相長：數學經驗 ×1.5", item: "教師證",
+      quest: { title: "備課並教 3 堂數學課", reward: "金幣 ×500 + 教鞭" } },
+    accountant: { name: "會計師", subj: "math", tier: 4, sprite: "accountant.png",
+      desc: "與數字為伍的理財專家。", skill: "每日金幣利息 +5%", item: "會計師資格證",
+      quest: { title: "結算 3 份帳本", reward: "金幣 ×500 + 計算機" } },
+    // ── 英語 ──
+    english_student: { name: "英語學院院生", subj: "english", tier: 2, sprite: "student_v2.png",
+      desc: "踏入英語學院，連結世界。", skill: "答對英語題金幣 +10%", next: "english_pro",
+      quest: { title: "完成 5 道英語練習", reward: "金幣 ×100" } },
+    english_pro: { name: "英語執業人員", subj: "english", tier: 3, sprite: "flight_attendant.png",
+      desc: "通過英語認證、正式執業。", skill: "英語魔王戰多 1 顆愛心", item: "英語證照",
+      next: ["translator", "en_teacher", "foreign_corp"],
+      quest: { title: "通過英語檢定考", reward: "金幣 ×300 + 英語證照" } },
+    translator: { name: "英文翻譯", subj: "english", tier: 4, sprite: "translator.png",
+      desc: "跨越語言隔閡的橋樑。", skill: "答對英語題自動解鎖單字卡", item: "超級電子字典",
+      quest: { title: "翻譯 3 段文章", reward: "金幣 ×500 + 電子字典" } },
+    en_teacher: { name: "英文老師", subj: "english", tier: 4, sprite: "teacher.png",
+      desc: "帶你開口說世界語言。", skill: "教學相長：英語經驗 ×1.5", item: "教師證",
+      quest: { title: "備課並教 3 堂英文課", reward: "金幣 ×500 + 教鞭" } },
+    foreign_corp: { name: "外商企業職員", subj: "english", tier: 4, sprite: "foreign_corp.png",
+      desc: "在國際舞台工作的人。", skill: "完成英語任務金幣 +30%", item: "外商員工證",
+      quest: { title: "完成 3 場國際會議", reward: "金幣 ×500 + 公事包" } },
+    // ── 自然 ──
+    science_student: { name: "自然學院院生", subj: "science", tier: 2, sprite: "student_v2.png",
+      desc: "進入自然學院，觀察萬物。", skill: "答對自然題金幣 +10%", next: "science_pro",
+      quest: { title: "完成 5 道自然練習", reward: "金幣 ×100" } },
+    science_pro: { name: "自然執業人員", subj: "science", tier: 3, sprite: "astronaut.png",
+      desc: "通過自然認證、正式執業。", skill: "自然魔王戰多 1 顆愛心", item: "自然證照",
+      next: ["engineer", "sci_teacher", "researcher"],
+      quest: { title: "通過自然檢定考", reward: "金幣 ×300 + 自然證照" } },
+    engineer: { name: "工程師", subj: "science", tier: 4, sprite: "engineer.png",
+      desc: "用科學打造未來的人。", skill: "牧場 exp ×1.5", item: "科技業員工證",
+      quest: { title: "打造 3 座裝置", reward: "金幣 ×500 + 工程計算機" } },
+    sci_teacher: { name: "自然老師", subj: "science", tier: 4, sprite: "teacher.png",
+      desc: "帶你認識大自然的奧妙。", skill: "教學相長：自然經驗 ×1.5", item: "教師證",
+      quest: { title: "備課並教 3 堂自然課", reward: "金幣 ×500 + 教鞭" } },
+    researcher: { name: "研究人員", subj: "science", tier: 4, sprite: "biologist.png",
+      desc: "在實驗室追尋真理的人。", skill: "答對自然題自動解鎖科學卡", item: "研究人員資格證",
+      quest: { title: "完成 3 項研究", reward: "金幣 ×500 + 顯微鏡" } },
+    // ── 社會 ──
+    social_student: { name: "社會學院院生", subj: "social", tier: 2, sprite: "student_v2.png",
+      desc: "踏入社會學院，理解人群。", skill: "答對社會題金幣 +10%", next: "social_pro",
+      quest: { title: "完成 5 道社會練習", reward: "金幣 ×100" } },
+    social_pro: { name: "社會執業人員", subj: "social", tier: 3, sprite: "explorer.png",
+      desc: "通過社會認證、正式執業。", skill: "社會魔王戰多 1 顆愛心", item: "社會證照",
+      next: ["social_worker", "social_teacher", "congress_aide"],
+      quest: { title: "通過社會檢定考", reward: "金幣 ×300 + 社會證照" } },
+    social_worker: { name: "社工人員", subj: "social", tier: 4, sprite: "social_worker.png",
+      desc: "用愛心幫助他人的人。", skill: "完成社會任務金幣 +30%", item: "社工證",
+      quest: { title: "完成 3 次社區服務", reward: "金幣 ×500 + 服務徽章" } },
+    social_teacher: { name: "社會學老師", subj: "social", tier: 4, sprite: "teacher.png",
+      desc: "帶你讀懂社會脈動。", skill: "教學相長：社會經驗 ×1.5", item: "教師證",
+      quest: { title: "備課並教 3 堂社會課", reward: "金幣 ×500 + 教鞭" } },
+    congress_aide: { name: "國會助理", subj: "social", tier: 4, sprite: "congress_aide.png",
+      desc: "在議事殿堂幕後奔走的人。", skill: "完成社會任務經驗 +30%", item: "助理證",
+      quest: { title: "協助 3 場議事", reward: "金幣 ×500 + 公文夾" } },
   };
   const JC_KEY = "village_job";
   // 防呆：非法/過期的存值一律視為「無職業」，避免 JOBS[cur] 取值炸掉把玩家鎖死
@@ -178,8 +245,8 @@
         <div class="shop-title">職業介紹所</div>
         <button class="shop-close" aria-label="關閉">×</button>
         <div class="jc-tabs">
-          <button class="jc-tab" data-tab="pick">選擇職業</button>
-          <button class="jc-tab" data-tab="promote">轉職</button>
+          <button class="jc-tab" data-tab="pick">選擇學院</button>
+          <button class="jc-tab" data-tab="promote">轉職進階</button>
           <button class="jc-tab" data-tab="quest">職業任務</button>
         </div>
         <div class="jc-current"></div>
@@ -198,13 +265,15 @@
 
   function jcJobCard(k, opts) {
     const j = JOBS[k]; opts = opts || {};
+    const reqLine = opts.needText != null ? opts.needText
+      : (j.item ? `🎫 需道具：${j.item}（批發中心購買）` : "選擇即可加入學院");
     return `<div class="jc-card${opts.cur ? " cur" : ""}${opts.locked ? " locked" : ""}" data-job="${k}">
         <img src="${JOB_IMG}${j.sprite}?v=1" alt="${j.name}" loading="lazy">
         <div class="jc-info">
           <div class="jc-nm">${j.name} <span class="jc-badge">${SUBJ[j.subj]}·階${j.tier}</span></div>
           <div class="jc-desc">${j.desc}</div>
           <div class="jc-skill">🌟 ${j.skill}</div>
-          <div class="jc-need">${opts.needText || j.need}</div>
+          <div class="jc-need">${reqLine}</div>
         </div>
         ${opts.btn ? `<button class="jc-act"${opts.locked ? " disabled" : ""}>${opts.btn}</button>` : ""}
       </div>`;
@@ -217,41 +286,42 @@
     const curEl = ov.querySelector(".jc-current");
     curEl.innerHTML = cur
       ? `目前職業：<b>${JOBS[cur].name}</b>（${SUBJ[JOBS[cur].subj]}·階${JOBS[cur].tier}）`
-      : "目前職業：<b>無</b>（還是學院實習生）";
+      : "目前身份：<b>學院正式學員</b>（尚未選擇學院）";
     const box = ov.querySelector(".jc-content");
     box.innerHTML = "";
 
     if (jcTab === "pick") {
-      jcBubble(ov, "想成為什麼樣的人呢？選一個入門職業吧！");
-      const starters = Object.keys(JOBS).filter((k) => JOBS[k].tier === 1);
-      box.innerHTML = starters.map((k) => jcJobCard(k, { cur: k === cur, btn: k === cur ? "目前職業" : "選擇" })).join("");
+      jcBubble(ov, "要進入哪一個學院呢？選一個學院開始你的職涯！");
+      const academies = Object.keys(JOBS).filter((k) => JOBS[k].tier === 2);
+      box.innerHTML = academies.map((k) => jcJobCard(k, { cur: k === cur, btn: k === cur ? "目前學院" : "加入", needText: "選擇即可加入學院" })).join("");
       box.querySelectorAll(".jc-card").forEach((c) => c.addEventListener("click", () => {
         const k = c.dataset.job;
-        if (k === getJob()) { jcBubble(ov, "這已經是你目前的職業囉～"); return; }
-        setJob(k); jcBubble(ov, "恭喜！你成為了「" + JOBS[k].name + "」！");
+        if (k === getJob()) { jcBubble(ov, "你已經在這個學院囉～"); return; }
+        setJob(k); jcBubble(ov, "歡迎加入「" + JOBS[k].name + "」！");
         jcRender(ov);
       }));
     } else if (jcTab === "promote") {
-      if (!cur) { jcBubble(ov, "先到「選擇職業」挑一個入門職業，才能轉職唷！");
-        box.innerHTML = `<div class="jc-empty">尚未選擇職業<br>請先到「選擇職業」分頁</div>`; return; }
+      if (!cur) { jcBubble(ov, "先到「選擇學院」加入一個學院，才能往上轉職唷！");
+        box.innerHTML = `<div class="jc-empty">尚未選擇學院<br>請先到「選擇學院」分頁</div>`; return; }
       const j = JOBS[cur];
-      if (j.next) {
-        jcBubble(ov, "達成條件就能轉職到更高階的職業！");
-        box.innerHTML = jcJobCard(j.next, { btn: "轉職", needText: JOBS[j.next].need });
-        box.querySelector(".jc-act").addEventListener("click", () => {
-          setJob(j.next); jcBubble(ov, "轉職成功！你現在是「" + JOBS[j.next].name + "」！");
-          jcTab = "promote"; jcRender(ov);
-        });
-      } else if (j.nextNeed) {
-        jcBubble(ov, "下一階職業尚未開放，先去達成條件吧！");
-        box.innerHTML = `<div class="jc-locked-note">🔒 下一階轉職條件<br><span>${j.nextNeed}</span><br><i>（demo 展示用，達成後開放）</i></div>`;
+      const nexts = j.next ? (Array.isArray(j.next) ? j.next : [j.next]) : [];
+      if (nexts.length === 0) {
+        jcBubble(ov, "你已經走到這條職業路線的頂端了，太厲害了！");
+        box.innerHTML = `<div class="jc-empty">🏆 已達職業樹頂端<br>${j.name}</div>`;
       } else {
-        jcBubble(ov, "你已經達到這條職業路線的最高階了，太厲害了！");
-        box.innerHTML = `<div class="jc-empty">🏆 已達最高階職業<br>${j.name}</div>`;
+        jcBubble(ov, nexts.length === 1
+          ? "取得「" + JOBS[nexts[0]].item + "」即可升級成執業人員！"
+          : "選擇想走的方向，取得對應道具即可轉職！");
+        box.innerHTML = nexts.map((nk) => jcJobCard(nk, { btn: "轉職" })).join("");
+        box.querySelectorAll(".jc-card").forEach((c) => c.addEventListener("click", () => {
+          const nk = c.dataset.job;
+          setJob(nk); jcBubble(ov, "轉職成功！你現在是「" + JOBS[nk].name + "」！（展示版不檢查道具）");
+          jcTab = "promote"; jcRender(ov);
+        }));
       }
     } else if (jcTab === "quest") {
-      if (!cur) { jcBubble(ov, "先選擇職業，才有專屬任務可以領取唷！");
-        box.innerHTML = `<div class="jc-empty">尚未選擇職業<br>請先到「選擇職業」分頁</div>`; return; }
+      if (!cur) { jcBubble(ov, "先選擇學院，才有專屬任務可以領取唷！");
+        box.innerHTML = `<div class="jc-empty">尚未選擇學院<br>請先到「選擇學院」分頁</div>`; return; }
       const j = JOBS[cur];
       jcBubble(ov, j.name + "的專屬任務，完成可拿獎勵！");
       box.innerHTML = `<div class="jc-quest">

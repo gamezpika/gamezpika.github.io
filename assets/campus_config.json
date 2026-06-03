@@ -68,7 +68,7 @@
         "name": "學生宿舍",
         "category": "house",
         "sprite": {
-          "image": "dorm_anim.webp",
+          "image": "dorm_anim_v2.webp",
           "scale": 0.72,
           "anchor_x": 0.5,
           "anchor_y": 1,

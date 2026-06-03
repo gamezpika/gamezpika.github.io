@@ -501,7 +501,7 @@
   let caTab = 0;   // 目前任務線 index
   async function caLoad() {
     if (CA_CONTENT) return CA_CONTENT;
-    const r = await fetch("chinese_academy.json?v=1");
+    const r = await fetch("chinese_academy.json?v=2");
     if (!r.ok) throw new Error("chinese academy HTTP " + r.status);
     CA_CONTENT = await r.json();
     return CA_CONTENT;
@@ -539,15 +539,38 @@
       ov.querySelector(".ao-owner").textContent = "👤 " + (d.title || "") + (d.name ? " " + d.name : "");
     }
     const lines = c.lines || [];
-    if (caTab >= lines.length) caTab = 0;
+    const figs = c.figures || [];
+    if (caTab !== "fig" && caTab >= lines.length) caTab = 0;
     const tabs = ov.querySelector(".ao-tabs4");
     tabs.innerHTML = lines.map((ln, i) =>
-      `<button class="jc-tab${i === caTab ? " active" : ""}" data-i="${i}">${aoEsc(ln.tab)}</button>`).join("");
+      `<button class="jc-tab${i === caTab ? " active" : ""}" data-i="${i}">${aoEsc(ln.tab)}</button>`).join("")
+      + (figs.length ? `<button class="jc-tab${caTab === "fig" ? " active" : ""}" data-fig="1">人物圖鑑</button>` : "");
     tabs.querySelectorAll(".jc-tab").forEach((b) =>
-      b.addEventListener("click", () => { caTab = +b.dataset.i; caRender(ov); }));
+      b.addEventListener("click", () => { caTab = b.dataset.fig ? "fig" : +b.dataset.i; caRender(ov); }));
+    const box = ov.querySelector(".ao-content");
+
+    if (caTab === "fig") {
+      caBubble(ov, "這些都是國語學院的師長，點一張卡片認識他們吧！");
+      const bcls = (b) => (b === "院長" ? "dean" : (b === "教授" ? "prof" : "assoc"));
+      box.innerHTML = `<div class="ca-figs">` + figs.map((f, i) => `
+        <div class="ca-fig" data-fi="${i}">
+          <span class="ca-fig-badge b-${bcls(f.badge)}">${aoEsc(f.badge || "")}</span>
+          <div class="ca-fig-pic"><img src="${aoEsc(f.img)}?v=1" alt="${aoEsc(f.name)}" loading="lazy" draggable="false"></div>
+          <div class="ca-fig-nm">${aoEsc(f.name)}<span class="ca-fig-era">${aoEsc(f.era || "")}</span></div>
+          <div class="ca-fig-wk">${aoEsc(f.works || "")}</div>
+        </div>`).join("") + `</div>`;
+      box.querySelectorAll(".ca-fig").forEach((cd) => cd.addEventListener("click", function () {
+        const f = figs[+this.dataset.fi]; if (!f) return;
+        box.querySelectorAll(".ca-fig").forEach((x) => x.classList.remove("sel"));
+        this.classList.add("sel");
+        caBubble(ov, f.name + "（" + (f.era || "") + "） " + (f.works || "") + "　" + (f.desc || ""));
+      }));
+      return;
+    }
+
+    if (caTab >= lines.length) caTab = 0;
     const ln = lines[caTab] || { quests: [] };
     caBubble(ov, ln.intro || "");
-    const box = ov.querySelector(".ao-content");
     box.innerHTML = (ln.quests || []).map((q) => `
       <div class="ao-quest">
         <div class="ao-quest-ic">${aoEsc(q.icon || "📜")}</div>

@@ -1,5 +1,17 @@
 {
   "dean": { "name": "孔丘", "title": "國語學院 · 院長", "img": "kongqiu_npc.webp" },
+  "figures": [
+    { "name": "孔丘", "badge": "院長", "img": "kongqiu_front.webp", "era": "春秋", "works": "《論語》", "desc": "儒家始祖，萬世師表，倡「有教無類」。國語學院院長。" },
+    { "name": "朱熹", "badge": "教授", "img": "fig_zhuxi.webp", "era": "南宋", "works": "《四書章句集注》", "desc": "理學集大成者，主張格物致知，後世尊為朱子。" },
+    { "name": "孟子", "badge": "教授", "img": "fig_mengzi.webp", "era": "戰國", "works": "《孟子》", "desc": "儒家亞聖，倡民貴君輕，善養浩然之氣。" },
+    { "name": "莊周", "badge": "教授", "img": "fig_zhuangzi.webp", "era": "戰國", "works": "《莊子·逍遙遊》", "desc": "道家代表，逍遙物外、齊物忘我，寓言入神。" },
+    { "name": "蒲松齡", "badge": "副教授", "img": "fig_pusongling.webp", "era": "清", "works": "《聊齋誌異》", "desc": "寫鬼寫妖、刺貪刺虐，短篇小說聖手。" },
+    { "name": "曹雪芹", "badge": "副教授", "img": "fig_caoxueqin.webp", "era": "清", "works": "《紅樓夢》", "desc": "滿紙荒唐言，一把辛酸淚，章回小說巔峰。" },
+    { "name": "羅貫中", "badge": "副教授", "img": "fig_luoguanzhong.webp", "era": "元末明初", "works": "《三國演義》", "desc": "話說天下大勢，分久必合，歷史演義宗師。" },
+    { "name": "吳承恩", "badge": "副教授", "img": "fig_wuchengen.webp", "era": "明", "works": "《西遊記》", "desc": "西天取經、降妖伏魔，神魔小說經典。" },
+    { "name": "鄭板橋", "badge": "副教授", "img": "fig_zhengbanqiao.webp", "era": "清", "works": "詩書畫三絕", "desc": "揚州八怪之一，「難得糊塗」，墨竹獨步。" },
+    { "name": "金庸", "badge": "副教授", "img": "fig_jinyong.webp", "era": "近代", "works": "《射鵰英雄傳》等", "desc": "新派武俠宗師，俠之大者、為國為民。" }
+  ],
   "lines": [
     {
       "id": "skill",

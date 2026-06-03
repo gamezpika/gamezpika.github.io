@@ -337,8 +337,10 @@
   display: flex; flex-direction: column; overflow: hidden;
 }
 .ao-right .jc-content { flex: 1; }
-/* 4 分頁字級微縮，手機不擠 */
-.ao-tabs4 .jc-tab { font-size: 13.5px; padding: 9px 2px; }
+/* 分頁可橫向捲（5 個分頁含人物圖鑑，手機一行放不下就滑） */
+.ao-tabs4 { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.ao-tabs4::-webkit-scrollbar { display: none; }
+.ao-tabs4 .jc-tab { flex: 0 0 auto; white-space: nowrap; font-size: 13px; padding: 9px 11px; }
 /* 學院任務 */
 .ao-quest {
   display: flex; align-items: center; gap: 11px; position: relative;
@@ -357,6 +359,28 @@
   background: #ffe3b0; border-radius: 999px; padding: 1px 9px;
 }
 .ao-quest-claim { flex-shrink: 0; padding: 8px 14px; }
+/* 人物圖鑑分頁 */
+.ao-content { overflow-y: auto; min-height: 0; }
+.ca-figs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.ca-fig {
+  position: relative; cursor: pointer; text-align: center;
+  background: #fffaf0; border: 3px solid #e3c089; border-radius: 14px;
+  padding: 8px 8px 10px; box-shadow: 0 2px 0 #e3c089; transition: transform .12s, box-shadow .12s;
+}
+.ca-fig:hover { transform: translateY(-2px); }
+.ca-fig.sel { border-color: #c8851a; box-shadow: 0 0 0 2px #ffd98a, 0 2px 0 #c8851a; }
+.ca-fig-badge {
+  position: absolute; top: 6px; left: 6px; z-index: 2;
+  font-size: 10px; font-weight: 800; color: #fff; padding: 1px 7px; border-radius: 999px;
+}
+.ca-fig-badge.b-dean { background: #c0392b; }
+.ca-fig-badge.b-prof { background: #2c7a4b; }
+.ca-fig-badge.b-assoc { background: #b8842a; }
+.ca-fig-pic { height: 122px; display: flex; align-items: flex-end; justify-content: center; }
+.ca-fig-pic img { max-height: 122px; max-width: 100%; object-fit: contain; }
+.ca-fig-nm { font-size: 14px; font-weight: 900; color: #5a3a18; margin-top: 4px; }
+.ca-fig-era { font-size: 10px; font-weight: 700; color: #fff; background: #b9985a; border-radius: 999px; padding: 1px 6px; margin-left: 5px; vertical-align: middle; }
+.ca-fig-wk { font-size: 11.5px; color: #a07a3a; font-weight: 700; margin-top: 1px; }
 @media (max-width: 560px) {
   /* 手機直式：對話框在上、立繪在下、分頁/內容再下（比照商店）*/
   .ao-panel { flex-direction: column; height: min(90vh, 680px); }

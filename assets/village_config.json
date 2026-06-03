@@ -322,10 +322,10 @@
       },
       {
         "id": "house_green",
-        "name": "綠屋",
+        "name": "職業介紹所",
         "category": "house",
         "sprite": {
-          "image": "house_green.webp",
+          "image": "jobcenter.webp",
           "scale": 0.74,
           "anchor_x": 0.5,
           "anchor_y": 1
@@ -341,10 +341,11 @@
           "y_max": 0.7085232725695072
         },
         "interaction": {
-          "type": "open_modal",
-          "label": "綠屋",
-          "body": "歡迎來到綠屋",
-          "radius": 110
+          "type": "open_shop",
+          "shop_id": "job_center",
+          "label": "職業介紹所",
+          "body": "歡迎光臨職業介紹所",
+          "radius": 250
         },
         "polygon": [
           {
@@ -391,7 +392,7 @@
         },
         "mask_color": "#FF3B30",
         "render_order": 500,
-        "interaction_type": "open_modal"
+        "interaction_type": "open_shop"
       },
       {
         "id": "house_yellow",

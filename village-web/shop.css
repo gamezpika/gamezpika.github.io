@@ -170,6 +170,82 @@
   50%      { box-shadow: 0 5px 0 #134f78, 0 0 22px 5px rgba(150,220,255,.95); }
 }
 
+/* ───────────── 職業介紹所 ───────────── */
+#jc-overlay {
+  position: fixed; inset: 0; z-index: 5000; display: none;
+  background: rgba(20, 14, 8, 0.55); backdrop-filter: blur(2px);
+  font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+#jc-overlay.open { display: flex; align-items: center; justify-content: center; }
+.jc-panel {
+  flex-direction: column;
+  width: min(94vw, 560px); height: min(90vh, 640px);
+  padding: 60px 14px 14px;
+}
+.jc-tabs { display: flex; gap: 8px; margin-bottom: 10px; }
+.jc-tab {
+  flex: 1; font-size: 15px; font-weight: 800; padding: 9px 4px; cursor: pointer;
+  background: #ffe3b0; color: #8a5a2b; border: 2px solid #d8a85a; border-radius: 12px;
+  font-family: inherit;
+}
+.jc-tab.active { background: #b5712f; color: #fff; box-shadow: inset 0 -3px 0 rgba(0,0,0,.15); }
+.jc-current {
+  font-size: 14px; color: #5a3a18; background: #fffaf0; border: 2px dashed #d8a85a;
+  border-radius: 10px; padding: 7px 10px; margin-bottom: 10px; text-align: center;
+}
+.jc-current b { color: #b5712f; }
+.jc-content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex;
+  flex-direction: column; gap: 10px; padding-right: 2px; }
+.jc-card {
+  display: flex; align-items: center; gap: 10px; position: relative;
+  background: #fffaf0; border: 3px solid #e3c089; border-radius: 14px; padding: 10px;
+  box-shadow: 0 2px 0 #e3c089;
+}
+.jc-card.cur { border-color: #b5712f; box-shadow: 0 0 0 2px #ffd98a, 0 2px 0 #b5712f; }
+.jc-card.locked { filter: grayscale(.5) opacity(.85); }
+.jc-card > img { width: 78px; height: 78px; object-fit: contain; flex-shrink: 0;
+  filter: drop-shadow(0 4px 5px rgba(0,0,0,.2)); }
+.jc-info { flex: 1; min-width: 0; text-align: left; }
+.jc-nm { font-size: 16px; font-weight: 900; color: #5a3a18; }
+.jc-badge { font-size: 11px; font-weight: 800; color: #fff; background: #c8843a;
+  border-radius: 999px; padding: 1px 8px; margin-left: 4px; vertical-align: middle; }
+.jc-desc { font-size: 12px; color: #7a5a30; margin-top: 2px; line-height: 1.4; }
+.jc-skill { font-size: 12px; color: #2b9b5a; font-weight: 700; margin-top: 3px; }
+.jc-need { font-size: 11px; color: #b06a1f; margin-top: 3px; }
+.jc-act {
+  flex-shrink: 0; align-self: stretch; font-size: 14px; font-weight: 800; cursor: pointer;
+  color: #fff7e6; background: linear-gradient(180deg, #c8843a, #a8631f);
+  border: 2px solid #fff2dd; border-radius: 12px; padding: 8px 14px; font-family: inherit;
+  box-shadow: 0 3px 0 #7a4715;
+}
+.jc-act:active { transform: translateY(2px); box-shadow: 0 1px 0 #7a4715; }
+.jc-act[disabled] { background: #c9b79a; box-shadow: 0 3px 0 #9a8a70; cursor: default; }
+.jc-act.done { background: #2bb05a; box-shadow: 0 3px 0 #1d7d3e; }
+.jc-empty, .jc-locked-note {
+  text-align: center; color: #8a5a2b; font-size: 15px; font-weight: 700; line-height: 1.7;
+  background: #fffaf0; border: 2px dashed #d8a85a; border-radius: 12px; padding: 22px 14px;
+}
+.jc-locked-note span { color: #b06a1f; font-size: 13px; }
+.jc-locked-note i { color: #a78a60; font-size: 11px; font-weight: 600; }
+.jc-quest {
+  background: #fffaf0; border: 3px solid #e3c089; border-radius: 14px; padding: 14px;
+  text-align: center; box-shadow: 0 2px 0 #e3c089;
+}
+.jc-quest-head { font-size: 14px; font-weight: 800; color: #b5712f; }
+.jc-quest-title { font-size: 17px; font-weight: 900; color: #5a3a18; margin: 8px 0; }
+.jc-quest-reward { font-size: 13px; color: #c8851a; font-weight: 700; margin-bottom: 12px; }
+.jc-bubble {
+  margin-top: 10px; background: #fff; color: #5a3a18; font-size: 14px; font-weight: 600;
+  padding: 9px 12px; border-radius: 12px; border: 3px solid #d8a85a; text-align: center;
+  min-height: 20px;
+}
+@media (max-width: 560px) {
+  .jc-card { flex-wrap: wrap; }
+  .jc-card > img { width: 60px; height: 60px; }
+  .jc-act { align-self: flex-end; }
+}
+
 /* 地圖轉場黑幕（DOM 層，跨 Phaser scene.restart 穩定） */
 #map-fade {
   position: fixed; inset: 0; z-index: 6000; background: #000;

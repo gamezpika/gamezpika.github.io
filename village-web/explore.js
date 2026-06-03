@@ -552,6 +552,10 @@ class ExploreScene extends Phaser.Scene {
     if (isPortrait) z *= 1.5;
     // 派派手動縮放倍率
     z *= (this.userZoom || 1);
+    // 最小縮放 = 剛好填滿世界（cover）：相機永遠不准縮到露出地圖邊界(底色綠)。
+    // 不論螢幕比例、不論雙指縮小，都不會再 letterbox 露綠。
+    const zCover = Math.max(sw / this.WORLD_W, sh / this.WORLD_H);
+    if (z < zCover) z = zCover;
     this.cameras.main.setZoom(z);
   }
 

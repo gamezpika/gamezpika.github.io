@@ -65,7 +65,7 @@
     "npcs": [
       { "id": "kongqiu", "name": "孔丘",
         "sprite": { "scale": 0.09, "sprites": {
-          "side": { "image": "kongqiu_wfhnsheet.webp", "frame_width": 571, "frame_height": 1276, "frames": 6, "frame_rate": 8, "facing": "left" },
+          "side": { "image": "kongqiu_npc_walk.webp", "frame_width": 593, "frame_height": 1264, "frames": 6, "frame_rate": 6, "facing": "left" },
           "down": { "image": "kongqiu_npc_walk_down.webp", "frame_width": 531, "frame_height": 1264, "frames": 6, "frame_rate": 6 },
           "up": { "image": "kongqiu_npc_walk_up.webp", "frame_width": 532, "frame_height": 1264, "frames": 6, "frame_rate": 6 }
         } },

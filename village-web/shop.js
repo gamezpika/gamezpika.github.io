@@ -3,10 +3,11 @@
   let CATALOG = null;
   let onCloseCb = null;
 
-  // 商人招呼台詞（隨機 + 購買反應）
+  // 商人招呼台詞（隨機 + 購買反應）— 帶老闆個性
   const GREET = {
-    grocer: ["新鮮蔬果，來看看唷！", "今天的菜很青喔～", "歡迎光臨蔬果攤！"],
-    boutique: ["新款到貨，快來試試！", "這件超適合你的～", "歡迎光臨服裝店！"],
+    grocer: ["大量批發最划算啦！", "新鮮貨色，俗俗賣！", "來來來，整箱搬回家！"],
+    boutique: ["親愛的，這款超適合你～", "本季新款，時尚必備！", "美麗是一種態度唷♥"],
+    menswear: ["先生，這套很襯您的氣質。", "紳士的衣櫥，不能將就。", "為您量身打造，請慢慢挑。"],
   };
   const BUY_REACT = ["好眼光！", "謝謝惠顧～", "包在我身上！", "下次再來唷！"];
 
@@ -43,6 +44,7 @@
         <div class="shop-merchant">
           <div class="shop-bubble"></div>
           <img alt="商人">
+          <div class="shop-owner"></div>
         </div>
         <div class="shop-grid-wrap">
           <div class="shop-cats"></div>
@@ -118,7 +120,8 @@
     if (!shop) { console.warn("unknown shop", shopId); release(); return; }
     const ov = buildOverlay();
     ov.querySelector(".shop-title").textContent = shop.title;
-    ov.querySelector(".shop-merchant img").src = shop.merchant + "?v=2";
+    ov.querySelector(".shop-merchant img").src = shop.merchant + "?v=3";
+    ov.querySelector(".shop-owner").textContent = shop.owner ? "👤 老闆 · " + shop.owner : "";
     const g = GREET[shopId] || ["歡迎光臨！"];
     bubble(ov, g[Math.floor(Math.random() * g.length)]);
     renderCats(ov, shop);

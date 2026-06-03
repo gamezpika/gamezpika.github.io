@@ -270,6 +270,21 @@
       },
       "world_offset_y": 0,
       "sprite_library": []
+    },
+    {
+      "id": "academy",
+      "name": "🏛️ 五大學院 (village-web)",
+      "engine": "phaser_iso",
+      "config_path": "assets/academy_config.json",
+      "background_path": "village-web/academy_ground.webp",
+      "sprite_base": "village-web/",
+      "preview_url": "village-web/?map=academy",
+      "image_dimensions": {
+        "width": 1448,
+        "height": 1086
+      },
+      "world_offset_y": 0,
+      "sprite_library": []
     }
   ]
 }

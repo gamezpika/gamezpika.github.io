@@ -77,12 +77,12 @@
           "y": 0.93
         },
         "radius": 120,
-        "target_map": "island",
+        "target_map": "academy",
         "target_spawn": {
           "x": 0.5,
-          "y": 0.82
+          "y": 0.27
         },
-        "label": "前往海島"
+        "label": "前往五大學院"
       }
     ],
     "buildings": [

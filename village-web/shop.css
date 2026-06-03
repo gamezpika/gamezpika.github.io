@@ -295,26 +295,42 @@
 .ao-rule-ic { font-size: 28px; flex-shrink: 0; line-height: 1.2; }
 .ao-rule-title { font-size: 15px; font-weight: 900; color: #5a3a18; }
 .ao-rule-txt { font-size: 13px; color: #7a5a30; line-height: 1.55; margin-top: 2px; }
-/* 園長立繪 banner（蘇格拉底） */
+/* 園長立繪：左側大圖（比照商店商人版面） */
 .ao-principal {
-  display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
-  background: radial-gradient(ellipse at 22% 80%, #ffe7b0 0%, #fffaf0 62%);
-  border: 3px solid #e3c089; border-radius: 16px; padding: 8px 14px 8px 8px;
-  box-shadow: 0 2px 0 #e3c089;
+  flex: 0 0 40%; margin-top: 52px; position: relative;
+  display: flex; align-items: flex-end; justify-content: center;
+  background: radial-gradient(ellipse at 50% 80%, #ffe7b0 0%, transparent 70%);
 }
 .ao-principal-img {
-  width: 88px; height: 104px; object-fit: contain; flex-shrink: 0;
-  filter: drop-shadow(0 6px 6px rgba(0,0,0,.2));
+  width: 100%; max-width: 340px; height: auto; max-height: 96%;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 8px rgba(0,0,0,0.22));
   -webkit-user-drag: none; user-select: none;
 }
-.ao-principal-side { flex: 1; min-width: 0; text-align: left; }
-.ao-principal-name {
-  display: inline-block; font-size: 15px; font-weight: 900; color: #fff7e6;
-  background: linear-gradient(180deg, #b5712f, #94591f); border: 2px solid #ffd98a;
-  border-radius: 999px; padding: 4px 12px; box-shadow: 0 2px 0 rgba(0,0,0,.18);
+.ao-bubble {
+  position: absolute; top: 14px; left: 8px; right: 8px;
+  background: #fff; color: #5a3a18; font-size: 15px; font-weight: 600;
+  padding: 10px 12px; border-radius: 14px; border: 3px solid #d8a85a;
+  box-shadow: 0 3px 0 rgba(0,0,0,.12); text-align: center; line-height: 1.4;
 }
-.ao-principal-role { font-size: 13px; color: #7a5a30; line-height: 1.5; margin-top: 8px; }
-/* 4 分頁時字級微縮，手機不擠 */
+.ao-bubble::after {
+  content: ""; position: absolute; bottom: -12px; left: 38px;
+  border: 8px solid transparent; border-top-color: #d8a85a;
+}
+.ao-owner {
+  position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(180deg, #b5712f, #94591f); color: #fff7e6;
+  font-size: 14px; font-weight: 800; white-space: nowrap;
+  padding: 5px 14px; border-radius: 999px; border: 2px solid #ffd98a;
+  box-shadow: 0 3px 0 rgba(0,0,0,.18); z-index: 2;
+}
+/* 右側分頁 + 內容 */
+.ao-right {
+  flex: 1; margin-top: 52px; padding: 12px; min-width: 0;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.ao-right .jc-content { flex: 1; }
+/* 4 分頁字級微縮，手機不擠 */
 .ao-tabs4 .jc-tab { font-size: 13.5px; padding: 9px 2px; }
 /* 學院任務 */
 .ao-quest {
@@ -334,6 +350,20 @@
 }
 .ao-quest-claim { flex-shrink: 0; padding: 8px 14px; }
 @media (max-width: 560px) {
+  /* 手機直式：對話框在上、立繪在下、分頁/內容再下（比照商店）*/
+  .ao-panel { flex-direction: column; height: min(90vh, 680px); }
+  .ao-principal {
+    flex: 0 0 auto; margin-top: 52px;
+    flex-direction: column; align-items: center; justify-content: flex-start;
+    gap: 2px; padding: 4px 0 0;
+  }
+  .ao-bubble {
+    position: relative; top: auto; left: auto; right: auto; transform: none;
+    width: auto; max-width: 82%; margin: 0 auto; font-size: 12px; padding: 6px 12px;
+  }
+  .ao-bubble::after { left: 50%; margin-left: -8px; }
+  .ao-principal-img { width: auto; max-width: 100%; max-height: 26vh; }
+  .ao-right { margin-top: 0; }
   .ao-quest { flex-wrap: wrap; }
   .ao-quest-claim { align-self: flex-end; }
 }

@@ -303,24 +303,23 @@
     if (ov) return ov;
     ov = el("div"); ov.id = "ao-overlay";
     ov.innerHTML = `
-      <div class="shop-panel jc-panel ao-panel">
+      <div class="shop-panel ao-panel">
         <div class="shop-title">學院辦公室</div>
         <button class="shop-close" aria-label="關閉">×</button>
         <div class="ao-principal">
+          <div class="ao-bubble"></div>
           <img class="ao-principal-img" src="socrates_anim.webp?v=1" alt="學園園長 蘇格拉底" draggable="false">
-          <div class="ao-principal-side">
-            <div class="ao-principal-name">👤 學園園長 · 蘇格拉底</div>
-            <div class="ao-principal-role">在此發布全園任務與公告，有問題都可以找我！</div>
+          <div class="ao-owner">👤 學園園長 · 蘇格拉底</div>
+        </div>
+        <div class="ao-right">
+          <div class="jc-tabs ao-tabs4">
+            <button class="jc-tab" data-tab="log">更新日誌</button>
+            <button class="jc-tab" data-tab="quest">學院任務</button>
+            <button class="jc-tab" data-tab="bug">回報 Bug</button>
+            <button class="jc-tab" data-tab="rules">遊戲規則</button>
           </div>
+          <div class="jc-content ao-content"></div>
         </div>
-        <div class="jc-tabs ao-tabs4">
-          <button class="jc-tab" data-tab="log">更新日誌</button>
-          <button class="jc-tab" data-tab="quest">學院任務</button>
-          <button class="jc-tab" data-tab="bug">回報 Bug</button>
-          <button class="jc-tab" data-tab="rules">遊戲規則</button>
-        </div>
-        <div class="jc-content ao-content"></div>
-        <div class="jc-bubble"></div>
       </div>`;
     document.body.appendChild(ov);
     ov.querySelector(".shop-close").addEventListener("click", aoClose);
@@ -329,7 +328,7 @@
       b.addEventListener("click", () => { aoTab = b.dataset.tab; aoRender(ov); }));
     return ov;
   }
-  function aoBubble(ov, txt) { ov.querySelector(".jc-bubble").textContent = txt || ""; }
+  function aoBubble(ov, txt) { ov.querySelector(".ao-bubble").textContent = txt || ""; }
 
   function aoRender(ov) {
     ov.querySelectorAll(".jc-tab").forEach((b) =>

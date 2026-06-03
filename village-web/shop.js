@@ -421,10 +421,8 @@
     EQ_CATS.forEach((cat) => { if (!EQUIP[cat].items.some((it) => it.id === s[cat])) s[cat] = EQUIP[cat].items[0].id; });
     return s;
   }
-  function setEquip(cat, id) { const s = getEquip(); s[cat] = id; try { localStorage.setItem(EQ_KEY, JSON.stringify(s)); } catch (e) {} }
   function eqItem(cat, id) { return EQUIP[cat].items.find((it) => it.id === id) || EQUIP[cat].items[0]; }
 
-  let eqOpenCat = null;
   function eqBuildOverlay() {
     let ov = document.getElementById("eq-overlay");
     if (ov) return ov;
@@ -437,57 +435,31 @@
           <div class="eq-portrait"><img id="eq-port" alt="角色"></div>
           <div class="eq-slots"></div>
         </div>
-        <div class="eq-picker" id="eq-picker"></div>
-        <div class="jc-bubble"></div>
       </div>`;
     document.body.appendChild(ov);
     ov.querySelector(".shop-close").addEventListener("click", eqClose);
     ov.addEventListener("click", (e) => { if (e.target === ov) eqClose(); });
     return ov;
   }
-  function eqBubble(ov, t) { ov.querySelector(".jc-bubble").textContent = t || ""; }
 
+  // 純展示：左立繪依職業，右三格顯示目前裝備（不換裝）
   function eqRender(ov) {
     const s = getEquip();
-    // 左立繪：依職業(職業介紹所存的)切換，無職業用預設 student
     const job = (function () { try { const k = localStorage.getItem("village_job"); return k || null; } catch (e) { return null; } })();
     const port = ov.querySelector("#eq-port");
     port.onerror = () => { port.onerror = null; port.src = PORTRAIT_BASE + "student_v2.png?v=1"; };
     port.src = PORTRAIT_BASE + (job ? job : "student_v2") + ".png?v=1";
-    // 右三格
-    const slots = ov.querySelector(".eq-slots");
-    slots.innerHTML = EQ_CATS.map((cat) => {
+    ov.querySelector(".eq-slots").innerHTML = EQ_CATS.map((cat) => {
       const it = eqItem(cat, s[cat]);
-      return `<div class="eq-slot${eqOpenCat === cat ? " active" : ""}" data-cat="${cat}">
+      return `<div class="eq-slot" data-cat="${cat}">
           <div class="eq-slot-ic"><img src="${it.img}?v=1" alt="${it.name}"></div>
           <div class="eq-slot-tx"><div class="eq-slot-lb">${EQUIP[cat].label}</div><div class="eq-slot-nm">${it.name}</div></div>
         </div>`;
     }).join("");
-    slots.querySelectorAll(".eq-slot").forEach((el2) =>
-      el2.addEventListener("click", () => { eqOpenCat = el2.dataset.cat; eqRender(ov); }));
-    // 擁有清單（點格後顯示）
-    const picker = ov.querySelector("#eq-picker");
-    if (eqOpenCat) {
-      const s2 = getEquip();
-      picker.innerHTML = `<div class="eq-pick-title">選擇${EQUIP[eqOpenCat].label}</div><div class="eq-pick-grid">` +
-        EQUIP[eqOpenCat].items.map((it) =>
-          `<div class="eq-pick${it.id === s2[eqOpenCat] ? " on" : ""}" data-id="${it.id}">
-             <img src="${it.img}?v=1" alt="${it.name}"><div class="eq-pick-nm">${it.name}</div></div>`).join("") + `</div>`;
-      picker.querySelectorAll(".eq-pick").forEach((p) => p.addEventListener("click", () => {
-        setEquip(eqOpenCat, p.dataset.id);
-        eqBubble(ov, "換上了「" + eqItem(eqOpenCat, p.dataset.id).name + "」！");
-        eqRender(ov);
-      }));
-      eqBubble(ov, "點一件" + EQUIP[eqOpenCat].label + "換上吧～");
-    } else {
-      picker.innerHTML = `<div class="eq-hint">點上方任一格子，更換帽子 / 衣服 / 寵物</div>`;
-      eqBubble(ov, "整理一下你的裝備吧！");
-    }
   }
 
   function openEquip() {
     const ov = eqBuildOverlay();
-    eqOpenCat = null;
     eqRender(ov);
     ov.classList.add("open");
   }

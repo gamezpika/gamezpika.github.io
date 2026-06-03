@@ -287,6 +287,61 @@
 .ao-rule-title { font-size: 15px; font-weight: 900; color: #5a3a18; }
 .ao-rule-txt { font-size: 13px; color: #7a5a30; line-height: 1.55; margin-top: 2px; }
 
+/* ───────────── 裝備欄（沿用 .jc-panel 骨架）───────────── */
+#eq-overlay {
+  position: fixed; inset: 0; z-index: 5000; display: none;
+  background: rgba(20, 14, 8, 0.55); backdrop-filter: blur(2px);
+  font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+#eq-overlay.open { display: flex; align-items: center; justify-content: center; }
+.eq-main { display: flex; gap: 12px; margin-bottom: 10px; }
+.eq-portrait {
+  flex: 0 0 42%; background: radial-gradient(ellipse at 50% 80%, #ffe7b0 0%, #fffaf0 70%);
+  border: 3px solid #e3c089; border-radius: 14px; display: flex; align-items: flex-end;
+  justify-content: center; min-height: 220px; overflow: hidden;
+}
+.eq-portrait img { width: 100%; max-height: 280px; object-fit: contain;
+  filter: drop-shadow(0 6px 8px rgba(0,0,0,.25)); }
+.eq-slots { flex: 1; display: flex; flex-direction: column; gap: 10px; justify-content: center; }
+.eq-slot { display: flex; align-items: center; gap: 10px; cursor: pointer;
+  background: #fffaf0; border: 3px solid #e3c089; border-radius: 14px; padding: 8px;
+  box-shadow: 0 2px 0 #e3c089; transition: transform .08s; }
+.eq-slot:active { transform: translateY(2px); box-shadow: 0 0 0 #e3c089; }
+.eq-slot.active { border-color: #b5712f; box-shadow: 0 0 0 2px #ffd98a, 0 2px 0 #b5712f; }
+.eq-slot-ic { width: 56px; height: 56px; flex-shrink: 0; background: #fff;
+  border: 2px solid #d8a85a; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+.eq-slot-ic img { width: 90%; height: 90%; object-fit: contain; }
+.eq-slot-lb { font-size: 12px; font-weight: 800; color: #b06a1f; }
+.eq-slot-nm { font-size: 15px; font-weight: 900; color: #5a3a18; }
+/* 擁有清單 */
+.eq-picker { background: #fff6e2; border: 2px dashed #d8a85a; border-radius: 12px; padding: 10px; min-height: 60px; }
+.eq-pick-title { font-size: 13px; font-weight: 800; color: #8a5a2b; margin-bottom: 8px; text-align: center; }
+.eq-pick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 8px; }
+.eq-pick { background: #fffaf0; border: 2px solid #e3c089; border-radius: 10px; padding: 6px 4px;
+  text-align: center; cursor: pointer; transition: transform .08s; }
+.eq-pick:active { transform: scale(.96); }
+.eq-pick.on { border-color: #b5712f; box-shadow: 0 0 0 2px #ffd98a; }
+.eq-pick img { width: 100%; aspect-ratio: 1/1; object-fit: contain; }
+.eq-pick-nm { font-size: 11px; font-weight: 700; color: #5a3a18; margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.eq-hint { text-align: center; color: #a78a60; font-size: 13px; font-weight: 700; padding: 14px 4px; }
+@media (max-width: 560px) {
+  .eq-portrait { min-height: 180px; }
+  .eq-slot-ic { width: 46px; height: 46px; }
+}
+/* 右上角常駐「裝備」按鈕（HTML 疊在 Phaser 上） */
+#equip-btn {
+  position: fixed; top: 14px; right: 14px; z-index: 4000;
+  font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-size: 16px; font-weight: 800; color: #fff7e6; white-space: nowrap;
+  background: linear-gradient(180deg, #c8843a, #a8631f); border: 3px solid #fff2dd;
+  border-radius: 999px; padding: 9px 16px; cursor: pointer; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 0 #7a4715, 0 6px 14px rgba(0,0,0,.3);
+}
+#equip-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #7a4715; }
+
 /* 地圖轉場黑幕（DOM 層，跨 Phaser scene.restart 穩定） */
 #map-fade {
   position: fixed; inset: 0; z-index: 6000; background: #000;

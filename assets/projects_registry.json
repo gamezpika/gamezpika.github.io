@@ -15,19 +15,13 @@
       "world_offset_y": -400,
       "sprite_library": [
         {
-          "image": "wholesale_anim_v4.webp",
+          "image": "wholesale.webp",
           "name": "🏭 批發中心",
           "type": "building",
           "scale": 0.6,
           "default_interaction": "open_modal",
           "bbox_w_norm": 0.15,
-          "bbox_h_norm": 0.05,
-          "frame_width": 609,
-          "frame_height": 512,
-          "grid_cols": 6,
-          "grid_rows": 4,
-          "frames": 24,
-          "frame_rate": 10
+          "bbox_h_norm": 0.05
         },
         {
           "image": "menswear_anim_v2.webp",

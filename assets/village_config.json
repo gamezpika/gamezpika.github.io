@@ -91,16 +91,10 @@
         "name": "批發中心",
         "category": "house",
         "sprite": {
-          "image": "wholesale_anim_v4.webp",
+          "image": "wholesale.webp",
           "scale": 0.6,
           "anchor_x": 0.5,
-          "anchor_y": 1,
-          "frame_width": 609,
-          "frame_height": 512,
-          "grid_cols": 6,
-          "grid_rows": 4,
-          "frames": 24,
-          "frame_rate": 10
+          "anchor_y": 1
         },
         "anchor": {
           "x": 0.18751482565035185,

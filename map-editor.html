@@ -1321,7 +1321,35 @@ function bboxFromPolygon(poly) {
     return { x_min, y_min, x_max, y_max };
 }
 
-// 大小：以 anchor 為中心同比例縮放 sprite + polygon + bbox（碰撞框跟著變）
+// 繞 (ax,ay) 把點集轉 rad
+function rotatePts(pts, ax, ay, rad) {
+    const cos = Math.cos(rad), sin = Math.sin(rad);
+    return pts.map(p => {
+        const dx = p.x - ax, dy = p.y - ay;
+        return { x: ax + dx * cos - dy * sin, y: ay + dx * sin + dy * cos };
+    });
+}
+// bbox → 4 角點（未旋轉外框）
+function bboxCorners(bb) {
+    return [{ x: bb.x_min, y: bb.y_min }, { x: bb.x_max, y: bb.y_min },
+            { x: bb.x_max, y: bb.y_max }, { x: bb.x_min, y: bb.y_max }];
+}
+// 取得「未旋轉基準幾何」base_polygon（缺就反推目前角度建立並存起來）。
+// 有 polygon 用 polygon、沒 polygon 用 bbox 四角；都依目前 sprite.rotation 反轉回 0 度。
+// 用絕對角度重算 → 不會累積 delta 誤差（P2-2 根治）。
+function getBasePolygon(obj) {
+    if (Array.isArray(obj.base_polygon) && obj.base_polygon.length) return obj.base_polygon;
+    if (!obj.anchor) return null;
+    const cur = (Array.isArray(obj.polygon) && obj.polygon.length)
+        ? obj.polygon
+        : (obj.bounding_box ? bboxCorners(obj.bounding_box) : null);
+    if (!cur) return null;
+    // 反轉目前角度 → 0 度基準
+    obj.base_polygon = rotatePts(cur, obj.anchor.x, obj.anchor.y, -(obj.sprite.rotation || 0));
+    return obj.base_polygon;
+}
+
+// 大小：以 anchor 為中心同比例縮放 sprite + polygon + bbox + base_polygon（碰撞框跟著變）
 // 回傳 false = 輸入非法（不動任何資料）
 function applyScaleToObj(obj, rawScale) {
     if (!obj || !obj.sprite) return false;
@@ -1332,34 +1360,32 @@ function applyScaleToObj(obj, rawScale) {
     obj.sprite.scale = s;
     if (obj.anchor) {
         const ax = obj.anchor.x, ay = obj.anchor.y;
+        const scalePts = pts => pts.forEach(p => { p.x = ax + (p.x - ax) * r; p.y = ay + (p.y - ay) * r; });
         if (Array.isArray(obj.polygon) && obj.polygon.length) {
-            obj.polygon.forEach(p => { p.x = ax + (p.x - ax) * r; p.y = ay + (p.y - ay) * r; });
+            scalePts(obj.polygon);
             obj.bounding_box = bboxFromPolygon(obj.polygon);
         } else if (obj.bounding_box) {
             const bb = obj.bounding_box;
             bb.x_min = ax + (bb.x_min - ax) * r; bb.x_max = ax + (bb.x_max - ax) * r;
             bb.y_min = ay + (bb.y_min - ay) * r; bb.y_max = ay + (bb.y_max - ay) * r;
         }
+        // base 一起縮，旋轉基準才不會失準
+        if (Array.isArray(obj.base_polygon) && obj.base_polygon.length) scalePts(obj.base_polygon);
     }
     return true;
 }
 
-// 旋轉：繞 anchor 轉 polygon（用 delta）+ 重算 bbox 外接框
-// 遊戲端碰撞是 axis-aligned bbox，斜框無法表示 → bbox 取旋轉後 polygon 的外接框，至少包住整個物件
+// 旋轉：用絕對角度從 base_polygon 重算 polygon + bbox 外接框（不依賴 delta、不累積誤差）。
+// 沒 polygon 的建築也能轉（base 從 bbox 四角來，旋轉後寫回 polygon + 外接 bbox）。
+// 遊戲端碰撞是 axis-aligned bbox，斜框無法表示 → bbox 取旋轉後外接框，至少包住整個物件。
 function applyRotationToObj(obj, newRad) {
     if (!obj || !obj.sprite) return;
-    const prev = obj.sprite.rotation || 0;
-    const d = newRad - prev;
+    const base = getBasePolygon(obj);
     obj.sprite.rotation = newRad;
-    if (d && obj.anchor && Array.isArray(obj.polygon) && obj.polygon.length) {
-        const ax = obj.anchor.x, ay = obj.anchor.y, cos = Math.cos(d), sin = Math.sin(d);
-        obj.polygon.forEach(p => {
-            const dx = p.x - ax, dy = p.y - ay;
-            p.x = ax + dx * cos - dy * sin;
-            p.y = ay + dx * sin + dy * cos;
-        });
-        obj.bounding_box = bboxFromPolygon(obj.polygon);
-    }
+    if (!base || !obj.anchor) return;
+    const rotated = rotatePts(base, obj.anchor.x, obj.anchor.y, newRad);
+    obj.polygon = rotated;                       // 含原本沒 polygon 的：旋轉後materialize成多邊形
+    obj.bounding_box = bboxFromPolygon(rotated);
 }
 
 function renderBuildingList() {
@@ -1472,6 +1498,7 @@ function renderPolygons() {
             }
             b.polygon.splice(insertAt, 0, { x: parseFloat(px.toFixed(3)), y: parseFloat(py.toFixed(3)) });
             b.bounding_box = bboxFromPolygon(b.polygon);
+            delete b.base_polygon; // 手動改 polygon → 旋轉基準作廢，下次旋轉從新 polygon 重建
             selectedBuildingId = b.id;
             renderAll();
         });
@@ -1499,6 +1526,7 @@ function renderPolygons() {
                     }
                     b.polygon.splice(i, 1);
                     b.bounding_box = bboxFromPolygon(b.polygon);
+                    delete b.base_polygon; // 手動改 polygon → 旋轉基準作廢
                     renderAll();
                 });
                 mapFrame.appendChild(dot);
@@ -1545,6 +1573,7 @@ function startPolygonDrag(building, e, vertexIdx) {
         renderDetail();
     }
     function onUp() {
+        delete building.base_polygon; // 拖動改了 polygon → 旋轉基準作廢
         window.removeEventListener('mousemove', onMove);
         window.removeEventListener('mouseup', onUp);
     }
@@ -1670,6 +1699,7 @@ function renderDetail() {
             const k = input.dataset.vertexKey;
             b.polygon[i][k] = parseFloat(input.value);
             b.bounding_box = bboxFromPolygon(b.polygon);
+            delete b.base_polygon; // 手動改 polygon → 旋轉基準作廢
             renderPolygons();
             renderDetail();
         });
@@ -1679,6 +1709,7 @@ function renderDetail() {
             if (b.polygon.length <= 3) { alert('polygon 最少 3 個頂點'); return; }
             b.polygon.splice(parseInt(btn.dataset.vertexDel), 1);
             b.bounding_box = bboxFromPolygon(b.polygon);
+            delete b.base_polygon; // 手動改 polygon → 旋轉基準作廢
             renderAll();
         });
     });
@@ -1689,6 +1720,7 @@ function renderDetail() {
             {x: bb.x_min, y: bb.y_min}, {x: bb.x_max, y: bb.y_min},
             {x: bb.x_max, y: bb.y_max}, {x: bb.x_min, y: bb.y_max},
         ];
+        delete b.base_polygon; // 重置 polygon → 旋轉基準作廢
         renderAll();
     });
 
@@ -1756,8 +1788,9 @@ function renderDetail() {
             if (k === 'scale') {
                 if (!applyScaleToObj(b, input.value)) { renderDetail(); return; } // 非法值還原顯示
             } else if (k === 'rotdeg') {
-                const deg = parseFloat(input.value);
-                applyRotationToObj(b, (Number.isFinite(deg) ? deg : 0) * Math.PI / 180);
+                const deg = Number(input.value);
+                if (!Number.isFinite(deg)) { renderDetail(); return; } // 非法/清空：還原顯示，不動資料
+                applyRotationToObj(b, deg * Math.PI / 180);
             }
             autoSave();
             renderSpriteMarkers();
@@ -2154,6 +2187,9 @@ function attachSpriteDrag(el, obj, w, h, isNpc, isPlayer) {
                 if (Array.isArray(obj.polygon)) {
                     obj.polygon.forEach(p => { p.x += dx; p.y += dy; });
                 }
+                if (Array.isArray(obj.base_polygon)) {   // 旋轉基準跟著平移，保持在新位置正確
+                    obj.base_polygon.forEach(p => { p.x += dx; p.y += dy; });
+                }
                 startAnchor.x = nx; startAnchor.y = ny;  // 累積 delta
             }
             el.style.left = (nx * w) + 'px';
@@ -2223,25 +2259,10 @@ function renderPlacedSpriteList() {
             const list = isNpc ? (mapConfig.npcs || []) : (mapConfig.buildings || []);
             const obj = list.find(x => x.id === id);
             if (!obj || !obj.sprite) return;
-            const oldScale = obj.sprite.scale || (isNpc ? 0.66 : 0.74);
-            const r = newScale / oldScale;
-            obj.sprite.scale = newScale;
-            // 建築物：bbox + polygon 以 anchor 為中心同比例縮放（NPC 沒有 collision、跳過）
-            if (!isNpc && obj.anchor) {
-                const ax = obj.anchor.x, ay = obj.anchor.y;
-                if (obj.bounding_box) {
-                    const bb = obj.bounding_box;
-                    bb.x_min = ax + (bb.x_min - ax) * r;
-                    bb.x_max = ax + (bb.x_max - ax) * r;
-                    bb.y_min = ay + (bb.y_min - ay) * r;
-                    bb.y_max = ay + (bb.y_max - ay) * r;
-                }
-                if (Array.isArray(obj.polygon)) {
-                    obj.polygon.forEach(p => {
-                        p.x = ax + (p.x - ax) * r;
-                        p.y = ay + (p.y - ay) * r;
-                    });
-                }
+            if (isNpc) {
+                obj.sprite.scale = newScale;       // NPC 無碰撞，只改大小
+            } else if (!applyScaleToObj(obj, newScale)) {
+                return;                            // 建築：sprite+polygon+bbox+base 一起縮（非法值不動）
             }
             autoSave();
             renderSpriteMarkers();
@@ -2249,7 +2270,7 @@ function renderPlacedSpriteList() {
         });
     });
 
-    // 旋轉輸入：改 sprite.rotation（建築），polygon + bbox 繞 anchor 跟著轉（碰撞框一起轉）
+    // 旋轉輸入：建築 sprite.rotation + polygon + bbox 用絕對角度從 base 重算（碰撞框一起轉）
     el.querySelectorAll('.placed-row input[data-action="rotate"]').forEach(inp => {
         inp.addEventListener('click', e => e.stopPropagation());
         inp.addEventListener('change', (e) => {
@@ -2257,8 +2278,9 @@ function renderPlacedSpriteList() {
             const row = inp.closest('.placed-row');
             const obj = (mapConfig.buildings || []).find(x => x.id === row.dataset.id);
             if (!obj || !obj.sprite) return;
-            const deg = parseFloat(inp.value);
-            applyRotationToObj(obj, (Number.isFinite(deg) ? deg : 0) * Math.PI / 180);
+            const deg = Number(inp.value);
+            if (!Number.isFinite(deg)) { inp.value = Math.round(((obj.sprite.rotation || 0) * 180 / Math.PI)); return; } // 非法/清空：還原顯示
+            applyRotationToObj(obj, deg * Math.PI / 180);
             autoSave();
             renderSpriteMarkers();
             renderPolygons();

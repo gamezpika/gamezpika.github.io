@@ -72,7 +72,29 @@
         "spawn": { "x": 0.28, "y": 0.42 },
         "patrol": [ { "x": 0.20, "y": 0.40 }, { "x": 0.38, "y": 0.40 }, { "x": 0.38, "y": 0.50 }, { "x": 0.20, "y": 0.50 } ],
         "speed": 38,
-        "interaction": { "body": "吾乃孔丘，欲修國語者，可入吾書院。" }
+        "interaction": { "body": "吾乃孔丘，欲修國語者，可入吾學院。" }
+      },
+      { "id": "mengzi", "name": "孟子",
+        "sprite": { "scale": 0.09, "sprites": {
+          "side": { "image": "mengzi_walk_side.webp", "frame_width": 592, "frame_height": 1264, "frames": 6, "frame_rate": 6, "facing": "left" },
+          "down": { "image": "mengzi_walk_down.webp", "frame_width": 463, "frame_height": 1264, "frames": 6, "frame_rate": 6 },
+          "up": { "image": "mengzi_walk_up.webp", "frame_width": 446, "frame_height": 1264, "frames": 6, "frame_rate": 6 }
+        } },
+        "spawn": { "x": 0.72, "y": 0.42 },
+        "patrol": [ { "x": 0.64, "y": 0.40 }, { "x": 0.80, "y": 0.40 }, { "x": 0.80, "y": 0.50 }, { "x": 0.64, "y": 0.50 } ],
+        "speed": 36,
+        "interaction": { "body": "吾乃孟軻，字詞魔王猖獗，與我一同討伐這群妖魔！" }
+      },
+      { "id": "jinyong", "name": "金庸",
+        "sprite": { "scale": 0.09, "sprites": {
+          "side": { "image": "jinyong_walk_side.webp", "frame_width": 540, "frame_height": 1264, "frames": 6, "frame_rate": 6, "facing": "left" },
+          "down": { "image": "jinyong_walk_down.webp", "frame_width": 526, "frame_height": 1264, "frames": 6, "frame_rate": 6 },
+          "up": { "image": "jinyong_walk_up.webp", "frame_width": 516, "frame_height": 1264, "frames": 6, "frame_rate": 6 }
+        } },
+        "spawn": { "x": 0.5, "y": 0.66 },
+        "patrol": [ { "x": 0.42, "y": 0.64 }, { "x": 0.60, "y": 0.64 }, { "x": 0.60, "y": 0.74 }, { "x": 0.42, "y": 0.74 } ],
+        "speed": 36,
+        "interaction": { "body": "競技場以武會友、以文較高下，盼你成為常勝軍！" }
       }
     ],
     "objects": []

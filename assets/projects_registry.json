@@ -281,10 +281,20 @@
       "preview_url": "village-web/?map=academy",
       "image_dimensions": {
         "width": 1448,
-        "height": 1086
+        "height": 2600
       },
       "world_offset_y": 0,
-      "sprite_library": []
+      "sprite_library": [
+        {
+          "image": "fir_green.webp",
+          "name": "🌲 森林樹",
+          "type": "decoration",
+          "scale": 0.42,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.03
+        }
+      ]
     }
   ]
 }

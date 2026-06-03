@@ -538,8 +538,8 @@
       if (d.img) ov.querySelector(".ao-principal-img").src = d.img + "?v=1";
       ov.querySelector(".ao-owner").textContent = "👤 " + (d.title || "") + (d.name ? " " + d.name : "");
     }
-    const lines = c.lines || [];
-    const figs = c.figures || [];
+    const lines = Array.isArray(c.lines) ? c.lines : [];
+    const figs = Array.isArray(c.figures) ? c.figures : [];
     if (caTab !== "fig" && caTab >= lines.length) caTab = 0;
     const tabs = ov.querySelector(".ao-tabs4");
     tabs.innerHTML = lines.map((ln, i) =>

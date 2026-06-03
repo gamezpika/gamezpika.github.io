@@ -3,15 +3,15 @@
     "version": 1,
     "dimensions": {
       "image_width": 1448,
-      "image_height": 1086,
+      "image_height": 2600,
       "world_width": 1448,
-      "world_height": 1086,
+      "world_height": 2600,
       "world_offset_y": 0
     },
     "background": "village-web/academy_ground.webp",
     "asset_base": "village-web/",
     "player": {
-      "spawn": { "x": 0.5, "y": 0.27 },
+      "spawn": { "x": 0.5, "y": 0.404 },
       "scale": 0.2,
       "speed": 220,
       "sprites": {
@@ -41,12 +41,12 @@
     },
     "camera": {
       "sky_pad": 0,
-      "view_base_width": 1200
+      "view_base_width": 1000
     },
     "portals": [
       {
         "id": "back_to_village",
-        "anchor": { "x": 0.5, "y": 0.06 },
+        "anchor": { "x": 0.5, "y": 0.316 },
         "radius": 120,
         "target_map": "village",
         "target_spawn": { "x": 0.5, "y": 0.88 },

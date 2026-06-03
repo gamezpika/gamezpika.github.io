@@ -122,6 +122,66 @@
         "mask_color": "#C8843A",
         "render_order": 500,
         "interaction_type": "open_shop"
+      },
+      {
+        "id": "farm",
+        "name": "學園牧場",
+        "category": "house",
+        "sprite": {
+          "image": "farm.webp",
+          "scale": 0.35,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "frame_width": 1024,
+          "frame_height": 1024,
+          "grid_cols": 5,
+          "grid_rows": 2,
+          "frames": 10,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        "anchor": {
+          "x": 0.4,
+          "y": 0.7
+        },
+        "bounding_box": {
+          "x_min": 0.3,
+          "y_min": 0.53,
+          "x_max": 0.5,
+          "y_max": 0.69
+        },
+        "interaction": {
+          "type": "open_modal",
+          "label": "學園牧場",
+          "body": "🐄 學園牧場\n種田、養動物功能即將開放，敬請期待！",
+          "radius": 130
+        },
+        "polygon": [
+          {
+            "x": 0.3,
+            "y": 0.53
+          },
+          {
+            "x": 0.5,
+            "y": 0.53
+          },
+          {
+            "x": 0.5,
+            "y": 0.69
+          },
+          {
+            "x": 0.3,
+            "y": 0.69
+          }
+        ],
+        "path": [],
+        "center": {
+          "x": 0.4,
+          "y": 0.7
+        },
+        "mask_color": "#E8533A",
+        "render_order": 480,
+        "interaction_type": "open_modal"
       }
     ],
     "obstacle_areas": [],

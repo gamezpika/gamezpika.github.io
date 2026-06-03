@@ -54,11 +54,11 @@
       }
     ],
     "buildings": [
-      { "id": "kongqiu_academy", "name": "孔丘書院", "category": "house",
-        "sprite": { "image": "kongqiu_academy.webp", "scale": 0.30, "anchor_x": 0.5, "anchor_y": 1 },
+      { "id": "kongqiu_academy", "name": "國語學院", "category": "house",
+        "sprite": { "image": "guoyu_academy.webp", "scale": 0.25, "anchor_x": 0.5, "anchor_y": 1 },
         "anchor": { "x": 0.28, "y": 0.31 }, "center": { "x": 0.28, "y": 0.31 },
         "bounding_box": { "x_min": 0.18, "y_min": 0.265, "x_max": 0.38, "y_max": 0.31 },
-        "interaction": { "type": "open_shop", "shop_id": "chinese_academy", "label": "孔丘書院", "body": "歡迎來到孔丘書院", "radius": 200 },
+        "interaction": { "type": "open_shop", "shop_id": "chinese_academy", "label": "國語學院", "body": "歡迎來到國語學院", "radius": 200 },
         "polygon": [], "path": [], "render_order": 337 }
     ],
     "obstacle_areas": [],

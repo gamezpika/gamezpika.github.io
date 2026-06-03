@@ -350,20 +350,13 @@ class ExploreScene extends Phaser.Scene {
         }
         npc.sprite.play(dSide.anim);
 
-        // 氣泡：玩家走近就冒「哞～」「你好～」這類短招呼
+        // 氣泡：玩家走近冒「完整台詞」，對話框形狀（圓角+下方尖角指向 NPC）
         const greeting = npcCfg.greeting
-          || (npcCfg.interaction && npcCfg.interaction.body
-              && String(npcCfg.interaction.body).split(/[！。!.\n]/)[0].slice(0, 12))
+          || (npcCfg.interaction && npcCfg.interaction.body)
           || npcCfg.name || "";
         if (greeting) {
-          npc.bubble = this.add.text(npc.body.x, npc.body.y - 80, greeting, {
-            fontFamily: '"PingFang TC","Microsoft JhengHei",sans-serif',
-            fontSize: "18px",
-            color: "#1a1a1a",
-            backgroundColor: "#ffffff",
-            padding: { x: 10, y: 6 },
-            stroke: "#ffffff", strokeThickness: 0,
-          }).setOrigin(0.5, 1).setVisible(false);
+          npc.bubble = this._makeBubble(npc.body.x, npc.body.y - 90, greeting);
+          npc.bubble.setVisible(false);
         }
 
         this.npcs.push(npc);
@@ -541,6 +534,31 @@ class ExploreScene extends Phaser.Scene {
     const dy = this.input.pointer1.y - this.input.pointer2.y;
     this._pinchStart = { dist: Math.hypot(dx, dy), zoom: this.userZoom };
     this.moveTarget = null;
+  }
+
+  // 對話框氣泡：圓角白框 + 下方尖角（指向 NPC），完整台詞自動換行。回傳 container。
+  _makeBubble(x, y, text) {
+    const PAD = 11, MAXW = 230, TAIL = 11, RAD = 13;
+    const txt = this.add.text(0, 0, text, {
+      fontFamily: '"PingFang TC","Microsoft JhengHei",sans-serif',
+      fontSize: "17px", color: "#3a2a14", align: "center", lineSpacing: 3,
+      wordWrap: { width: MAXW },
+    }).setOrigin(0.5, 0.5);
+    const w = Math.ceil(txt.width) + PAD * 2, h = Math.ceil(txt.height) + PAD * 2;
+    const top = -(TAIL + h), left = -w / 2;
+    const g = this.add.graphics();
+    g.fillStyle(0xfffdf5, 1); g.lineStyle(3, 0xd8a85a, 1);
+    g.fillRoundedRect(left, top, w, h, RAD);
+    g.strokeRoundedRect(left, top, w, h, RAD);
+    // 尖角：白三角蓋住框底中段，再描兩條斜邊
+    g.fillStyle(0xfffdf5, 1);
+    g.fillTriangle(-11, -TAIL - 1, 11, -TAIL - 1, 0, 0);
+    g.lineStyle(3, 0xd8a85a, 1);
+    g.beginPath(); g.moveTo(-11, -TAIL); g.lineTo(0, 0); g.lineTo(11, -TAIL); g.strokePath();
+    txt.setPosition(0, top + h / 2);
+    const c = this.add.container(x, y, [g, txt]);
+    c.setSize(w, h);
+    return c;
   }
 
   _adjustZoom() {

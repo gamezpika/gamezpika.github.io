@@ -511,12 +511,12 @@
     ov = el("div"); ov.id = "ca-overlay";
     ov.innerHTML = `
       <div class="shop-panel ao-panel">
-        <div class="shop-title">孔丘書院</div>
+        <div class="shop-title">國語學院</div>
         <button class="shop-close" aria-label="關閉">×</button>
         <div class="ao-principal">
           <div class="ao-bubble"></div>
-          <img class="ao-principal-img" src="kongqiu_npc.webp?v=1" alt="孔丘書院 院長 孔丘" draggable="false">
-          <div class="ao-owner">👤 孔丘書院 · 院長 孔丘</div>
+          <img class="ao-principal-img" src="kongqiu_npc.webp?v=1" alt="國語學院 院長 孔丘" draggable="false">
+          <div class="ao-owner">👤 國語學院 · 院長 孔丘</div>
         </div>
         <div class="ao-right">
           <div class="jc-tabs ao-tabs4"></div>

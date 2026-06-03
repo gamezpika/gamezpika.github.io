@@ -65,10 +65,12 @@
     "npcs": [
       { "id": "kongqiu", "name": "孔丘",
         "sprite": { "scale": 0.09, "sprites": {
-          "side": { "image": "kongqiu_npc_walk.webp", "frame_width": 593, "frame_height": 1264, "frames": 6, "frame_rate": 6, "facing": "left" }
+          "side": { "image": "kongqiu_npc_walk.webp", "frame_width": 593, "frame_height": 1264, "frames": 6, "frame_rate": 6, "facing": "left" },
+          "down": { "image": "kongqiu_npc_walk_down.webp", "frame_width": 531, "frame_height": 1264, "frames": 6, "frame_rate": 6 },
+          "up": { "image": "kongqiu_npc_walk_up.webp", "frame_width": 532, "frame_height": 1264, "frames": 6, "frame_rate": 6 }
         } },
-        "spawn": { "x": 0.28, "y": 0.43 },
-        "patrol": [ { "x": 0.20, "y": 0.43 }, { "x": 0.38, "y": 0.43 } ],
+        "spawn": { "x": 0.28, "y": 0.42 },
+        "patrol": [ { "x": 0.20, "y": 0.40 }, { "x": 0.38, "y": 0.40 }, { "x": 0.38, "y": 0.50 }, { "x": 0.20, "y": 0.50 } ],
         "speed": 38,
         "interaction": { "body": "吾乃孔丘，欲修國語者，可入吾書院。" }
       }

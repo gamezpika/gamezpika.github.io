@@ -80,7 +80,7 @@ class ExploreScene extends Phaser.Scene {
     // 背景（每張地圖一個 texture key，第一次切過去才下載 → 不拖累初始載入）
     this.bgKey = "bg_" + this.mapId;
     if (!this.textures.exists(this.bgKey)) {
-      this.load.image(this.bgKey, "../" + config.background + "?v=3");
+      this.load.image(this.bgKey, "../" + config.background + "?v=4");
     }
     // 河流（config.river 驅動，海島沒有就不載）
     if (config.river && !this.textures.exists("river")) {

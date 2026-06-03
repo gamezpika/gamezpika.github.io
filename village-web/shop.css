@@ -295,6 +295,48 @@
 .ao-rule-ic { font-size: 28px; flex-shrink: 0; line-height: 1.2; }
 .ao-rule-title { font-size: 15px; font-weight: 900; color: #5a3a18; }
 .ao-rule-txt { font-size: 13px; color: #7a5a30; line-height: 1.55; margin-top: 2px; }
+/* 園長立繪 banner（蘇格拉底） */
+.ao-principal {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+  background: radial-gradient(ellipse at 22% 80%, #ffe7b0 0%, #fffaf0 62%);
+  border: 3px solid #e3c089; border-radius: 16px; padding: 8px 14px 8px 8px;
+  box-shadow: 0 2px 0 #e3c089;
+}
+.ao-principal-img {
+  width: 88px; height: 104px; object-fit: contain; flex-shrink: 0;
+  filter: drop-shadow(0 6px 6px rgba(0,0,0,.2));
+  -webkit-user-drag: none; user-select: none;
+}
+.ao-principal-side { flex: 1; min-width: 0; text-align: left; }
+.ao-principal-name {
+  display: inline-block; font-size: 15px; font-weight: 900; color: #fff7e6;
+  background: linear-gradient(180deg, #b5712f, #94591f); border: 2px solid #ffd98a;
+  border-radius: 999px; padding: 4px 12px; box-shadow: 0 2px 0 rgba(0,0,0,.18);
+}
+.ao-principal-role { font-size: 13px; color: #7a5a30; line-height: 1.5; margin-top: 8px; }
+/* 4 分頁時字級微縮，手機不擠 */
+.ao-tabs4 .jc-tab { font-size: 13.5px; padding: 9px 2px; }
+/* 學院任務 */
+.ao-quest {
+  display: flex; align-items: center; gap: 11px; position: relative;
+  background: #fffaf0; border: 3px solid #e3c089; border-radius: 14px; padding: 10px 12px;
+  box-shadow: 0 2px 0 #e3c089;
+}
+.ao-quest-ic { font-size: 30px; flex-shrink: 0; line-height: 1.1; }
+.ao-quest-body { flex: 1; min-width: 0; text-align: left; }
+.ao-quest-title { font-size: 15px; font-weight: 900; color: #5a3a18; }
+.ao-quest-desc { font-size: 12px; color: #7a5a30; line-height: 1.45; margin-top: 2px; }
+.ao-quest-foot { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 5px; }
+.ao-quest-reward { font-size: 12px; color: #c8851a; font-weight: 800; }
+.ao-quest-prog {
+  font-size: 11px; font-weight: 700; color: #8a5a2b;
+  background: #ffe3b0; border-radius: 999px; padding: 1px 9px;
+}
+.ao-quest-claim { flex-shrink: 0; padding: 8px 14px; }
+@media (max-width: 560px) {
+  .ao-quest { flex-wrap: wrap; }
+  .ao-quest-claim { align-self: flex-end; }
+}
 
 /* ───────────── 裝備欄（沿用 .jc-panel 骨架）───────────── */
 #eq-overlay {

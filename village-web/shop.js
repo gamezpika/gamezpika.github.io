@@ -306,8 +306,16 @@
       <div class="shop-panel jc-panel ao-panel">
         <div class="shop-title">學院辦公室</div>
         <button class="shop-close" aria-label="關閉">×</button>
-        <div class="jc-tabs">
+        <div class="ao-principal">
+          <img class="ao-principal-img" src="socrates_anim.webp?v=1" alt="學園園長 蘇格拉底" draggable="false">
+          <div class="ao-principal-side">
+            <div class="ao-principal-name">👤 學園園長 · 蘇格拉底</div>
+            <div class="ao-principal-role">在此發布全園任務與公告，有問題都可以找我！</div>
+          </div>
+        </div>
+        <div class="jc-tabs ao-tabs4">
           <button class="jc-tab" data-tab="log">更新日誌</button>
+          <button class="jc-tab" data-tab="quest">學院任務</button>
           <button class="jc-tab" data-tab="bug">回報 Bug</button>
           <button class="jc-tab" data-tab="rules">遊戲規則</button>
         </div>
@@ -337,6 +345,23 @@
           <div class="ao-log-head"><span class="ao-ver">${aoEsc(v.version)}</span><span class="ao-date">${aoEsc(v.date)}</span></div>
           <ul class="ao-log-items">${(v.items || []).map((it) => `<li>${aoEsc(it)}</li>`).join("")}</ul>
         </div>`).join("") || `<div class="jc-empty">目前沒有更新紀錄</div>`;
+    } else if (aoTab === "quest") {
+      aoBubble(ov, "這些是學園的每日任務，完成後別忘了回來領獎勵！");
+      box.innerHTML = (c.quests || []).map((q) => `
+        <div class="ao-quest">
+          <div class="ao-quest-ic">${aoEsc(q.icon || "📜")}</div>
+          <div class="ao-quest-body">
+            <div class="ao-quest-title">${aoEsc(q.title)}</div>
+            <div class="ao-quest-desc">${aoEsc(q.desc)}</div>
+            <div class="ao-quest-foot"><span class="ao-quest-reward">🎁 ${aoEsc(q.reward)}</span>${q.progress ? `<span class="ao-quest-prog">${aoEsc(q.progress)}</span>` : ""}</div>
+          </div>
+          <button class="jc-act ao-quest-claim">領取</button>
+        </div>`).join("") || `<div class="jc-empty">目前沒有任務</div>`;
+      box.querySelectorAll(".ao-quest-claim").forEach((b) => b.addEventListener("click", function () {
+        if (this.classList.contains("done")) return;
+        this.classList.add("done"); this.textContent = "✓ 已領取";
+        aoBubble(ov, "任務獎勵已領取，繼續加油！");
+      }));
     } else if (aoTab === "bug") {
       aoBubble(ov, "遇到問題了嗎？填一下，我們會盡快處理！");
       box.innerHTML = `

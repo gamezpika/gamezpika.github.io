@@ -65,7 +65,7 @@
     "npcs": [
       { "id": "kongqiu", "name": "孔丘",
         "sprite": { "scale": 0.09, "sprites": {
-          "side": { "image": "kongqiu_wfsheet.webp", "frame_width": 634, "frame_height": 1276, "frames": 6, "frame_rate": 8, "facing": "left" },
+          "side": { "image": "kongqiu_wfhnsheet.webp", "frame_width": 571, "frame_height": 1276, "frames": 6, "frame_rate": 8, "facing": "left" },
           "down": { "image": "kongqiu_npc_walk_down.webp", "frame_width": 531, "frame_height": 1264, "frames": 6, "frame_rate": 6 },
           "up": { "image": "kongqiu_npc_walk_up.webp", "frame_width": 532, "frame_height": 1264, "frames": 6, "frame_rate": 6 }
         } },
@@ -88,8 +88,8 @@
       { "id": "jinyong", "name": "金庸",
         "sprite": { "scale": 0.09, "sprites": {
           "side": { "image": "jinyong_wfsheet.webp", "frame_width": 653, "frame_height": 1276, "frames": 6, "frame_rate": 8, "facing": "left" },
-          "down": { "image": "jinyong_walk_down.webp", "frame_width": 526, "frame_height": 1264, "frames": 6, "frame_rate": 6 },
-          "up": { "image": "jinyong_walk_up.webp", "frame_width": 516, "frame_height": 1264, "frames": 6, "frame_rate": 6 }
+          "down": { "image": "jinyong_fwfhnsheet.webp", "frame_width": 579, "frame_height": 1276, "frames": 6, "frame_rate": 8 },
+          "up": { "image": "jinyong_bwfhnsheet.webp", "frame_width": 542, "frame_height": 1276, "frames": 6, "frame_rate": 8 }
         } },
         "spawn": { "x": 0.5, "y": 0.66 },
         "patrol": [ { "x": 0.42, "y": 0.64 }, { "x": 0.60, "y": 0.64 }, { "x": 0.60, "y": 0.74 }, { "x": 0.42, "y": 0.74 } ],

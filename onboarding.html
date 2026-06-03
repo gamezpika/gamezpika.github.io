@@ -439,6 +439,8 @@ function showCreator(){
     if(!name || !g || !gr){ $('#creatorHint').textContent='請填寫姓名、選擇性別與年級～'; return; }
     $('#creatorOk').onclick=null; // 驗證通過，擋連點重複 spawnOrb
     PLAYER={ name, gender:g.dataset.v, grade:gr.dataset.v };
+    // 存性別給村莊/職業介紹所讀（女角職業圖用女版）
+    try { localStorage.setItem('village_gender', g.dataset.v === '女生' ? 'female' : 'male'); } catch(e){}
     wrap.classList.add('leaving'); setTimeout(()=>wrap.remove(), 400);
     spawnOrb();
   };

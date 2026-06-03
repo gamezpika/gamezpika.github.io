@@ -235,6 +235,17 @@
   // 防呆：非法/過期的存值一律視為「無職業」，避免 JOBS[cur] 取值炸掉把玩家鎖死
   const getJob = () => { const k = localStorage.getItem(JC_KEY); return k && JOBS[k] ? k : null; };
   const setJob = (k) => localStorage.setItem(JC_KEY, k);
+  // 性別（讀 onboarding 建角存的 village_gender）：女角職業圖用 _female 版
+  const isFemale = () => localStorage.getItem("village_gender") === "female";
+  // 依性別取圖檔名（女→插 _female），附 onerror 退回男版的 HTML 屬性
+  const femFile = (file) => file.replace(/\.png$/, "_female.png");
+  const spriteFile = (file) => (isFemale() ? femFile(file) : file);
+  const spriteImg = (file, alt, cls) => {
+    const male = JOB_IMG + file + "?v=1";
+    const src = JOB_IMG + spriteFile(file) + "?v=1";
+    const onerr = isFemale() ? ` onerror="this.onerror=null;this.src='${male}'"` : "";
+    return `<img${cls ? ` class="${cls}"` : ""} src="${src}" alt="${alt}" loading="lazy"${onerr}>`;
+  };
   let jcTab = "pick";
 
   function jcBuildOverlay() {
@@ -269,7 +280,7 @@
     const reqLine = opts.needText != null ? opts.needText
       : (j.item ? `🎫 需道具：${j.item}（批發中心購買）` : "選擇即可加入學院");
     return `<div class="jc-card${opts.cur ? " cur" : ""}${opts.locked ? " locked" : ""}" data-job="${k}">
-        <img src="${JOB_IMG}${j.sprite}?v=1" alt="${j.name}" loading="lazy">
+        ${spriteImg(j.sprite, j.name)}
         <div class="jc-info">
           <div class="jc-nm">${j.name} <span class="jc-badge">${SUBJ[j.subj]}·階${j.tier}</span></div>
           <div class="jc-desc">${j.desc}</div>
@@ -287,7 +298,8 @@
     const curEl = ov.querySelector(".jc-current");
     curEl.innerHTML = cur
       ? `目前職業：<b>${JOBS[cur].name}</b>（${SUBJ[JOBS[cur].subj]}·階${JOBS[cur].tier}）`
-      : "目前身份：<b>學院正式學員</b>（尚未選擇學院）";
+      : `<div class="jc-intern">${spriteImg("student_v2.png", "學院實習生", "jc-intern-img")}<div class="jc-intern-txt">目前身份：<b>學院實習生</b><br><span>到下方「選擇學院」開始你的職涯！</span></div></div>`;
+    curEl.classList.toggle("has-intern", !cur);
     const box = ov.querySelector(".jc-content");
     box.innerHTML = "";
 

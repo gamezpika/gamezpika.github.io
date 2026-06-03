@@ -205,6 +205,12 @@
   border-radius: 10px; padding: 7px 10px; margin-bottom: 10px; text-align: center;
 }
 .jc-current b { color: #b5712f; }
+.jc-current.has-intern { text-align: left; padding: 6px 10px; }
+.jc-intern { display: flex; align-items: center; gap: 12px; }
+.jc-intern-img { width: 58px; height: 58px; object-fit: contain; flex-shrink: 0;
+  filter: drop-shadow(0 3px 4px rgba(0,0,0,.2)); }
+.jc-intern-txt { font-size: 14px; line-height: 1.45; }
+.jc-intern-txt span { font-size: 12px; color: #a78a60; }
 .jc-content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex;
   flex-direction: column; gap: 10px; padding-right: 2px; }
 .jc-card {

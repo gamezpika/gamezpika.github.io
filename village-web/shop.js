@@ -555,7 +555,7 @@
       box.innerHTML = `<div class="ca-figs">` + figs.map((f, i) => `
         <div class="ca-fig" data-fi="${i}">
           <span class="ca-fig-badge b-${bcls(f.badge)}">${aoEsc(f.badge || "")}</span>
-          <div class="ca-fig-pic"><img src="${aoEsc(f.img)}?v=1" alt="${aoEsc(f.name)}" loading="lazy" draggable="false"></div>
+          <div class="ca-fig-pic"><img src="${aoEsc(f.img)}?v=1" alt="${aoEsc(f.name)}" draggable="false"></div>
           <div class="ca-fig-nm">${aoEsc(f.name)}<span class="ca-fig-era">${aoEsc(f.era || "")}</span></div>
           <div class="ca-fig-wk">${aoEsc(f.works || "")}</div>
         </div>`).join("") + `</div>`;

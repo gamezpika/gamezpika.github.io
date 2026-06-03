@@ -89,8 +89,15 @@
   @keyframes twk{ 0%,100%{ opacity:0; transform:scale(.6); } 50%{ opacity:1; transform:scale(1.1); } }
 
   /* ── S1 上學路（校園場景）── */
-  #s1 .student{ position:absolute; z-index:6; bottom:31%; left:14%; width:146px;
+  #s1 .student{ position:absolute; z-index:6; bottom:30%; left:34%; width:138px;
     filter:drop-shadow(0 10px 16px rgba(0,0,0,.4)); }
+  #s1 .cmate{ position:absolute; z-index:6; bottom:30%; width:118px;
+    filter:drop-shadow(0 10px 16px rgba(0,0,0,.4)); }
+  #s1 .cmA{ left:8%; } #s1 .cmB{ right:8%; }
+  #s1 .pole{ position:absolute; z-index:5; bottom:30%; left:50%; transform:translateX(-50%); height:44%;
+    filter:drop-shadow(0 8px 14px rgba(0,0,0,.4)); }
+  #s1 .s1anim{ opacity:0; transition:opacity .5s ease; }
+  #s1 .s1anim.in{ opacity:1; }
   .phone-pickup{ position:absolute; bottom:28%; left:50%; transform:translateX(-50%); cursor:pointer; z-index:7;
     animation:phoneGlow 1.6s ease-in-out infinite; }
   @keyframes phoneGlow{ 0%,100%{ filter:drop-shadow(0 0 6px var(--blue)); transform:translateX(-50%) translateY(0) scale(1); }
@@ -106,6 +113,31 @@
   #flash{ position:absolute; inset:0; background:#fff; opacity:0; z-index:50; pointer-events:none; }
   #flash.go{ animation:fl 1.4s ease forwards; }
   @keyframes fl{ 0%{ opacity:0; } 55%{ opacity:1; } 100%{ opacity:0; } }
+
+  /* ── 建角輸入頁（解鎖手機）── */
+  .creator{ text-align:left; }
+  .creator h3{ margin-bottom:6px; }
+  .creator .sub{ font-size:12px; color:#9fb4dc; text-align:center; margin-bottom:14px; }
+  .creator .fld{ display:flex; align-items:center; gap:10px; margin:11px 0; }
+  .creator .fld>span{ width:42px; font-size:14px; font-weight:800; color:var(--yellow); flex-shrink:0; }
+  .creator input{ flex:1; background:rgba(255,255,255,.08); border:1.5px solid rgba(255,255,255,.2); border-radius:12px;
+    padding:11px 12px; color:#fff; font-size:16px; font-family:inherit; outline:none; }
+  .creator input:focus{ border-color:var(--blue); }
+  .creator .seg{ display:flex; gap:8px; flex:1; }
+  .creator .seg.grades{ display:grid; grid-template-columns:repeat(3,1fr); }
+  .creator .seg button{ flex:1; background:rgba(255,255,255,.07); border:1.5px solid rgba(255,255,255,.18); border-radius:12px;
+    padding:10px 4px; color:#cfe0ff; font-weight:800; font-size:14px; font-family:inherit; cursor:pointer; transition:.15s; }
+  .creator .seg button.sel{ background:linear-gradient(135deg,var(--yellow),var(--orange)); color:var(--ink); border-color:transparent; }
+  .creator #creatorOk{ width:100%; margin-top:12px; }
+  .creator .hint{ color:var(--red); font-size:12px; font-weight:700; text-align:center; margin-top:8px; min-height:14px; }
+  .creator.leaving{ opacity:0; transform:translateY(-54%) scale(.95); transition:.4s; }
+
+  /* ── 手機飛出的小光團 ── */
+  #orb{ position:absolute; left:50%; top:54%; width:26px; height:26px; border-radius:50%; z-index:32;
+    transform:translate(-50%,-50%) scale(.3); opacity:0;
+    background:radial-gradient(circle, #ffffff 0%, #bff5ff 38%, rgba(0,212,255,.65) 70%, transparent 80%);
+    box-shadow:0 0 30px #00D4FF, 0 0 70px #00D4FF; transition:transform 1.2s cubic-bezier(.2,.8,.2,1), opacity .6s; }
+  #orb.grow{ opacity:1; transform:translate(-50%,-110px) scale(2.4); }
 
   /* ── 任務舞台中央卡 ── */
   .panel{ position:absolute; left:18px; right:18px; top:50%; transform:translateY(-54%);
@@ -208,11 +240,14 @@
     <div class="start"><button class="btn" onclick="next()">▶ 開始</button></div>
   </section>
 
-  <!-- S1 上學路撿手機 -->
+  <!-- S1 上學路：開學第一天，三人邊走邊聊 -->
   <section class="scene" id="s1">
     <div class="scene-bg" id="streetbg"></div>
-    <img class="student" src="assets/images/onboarding/student_pickup.png?v=1" alt="小學生">
-    <div class="phone-pickup" id="phonePick" onclick="pickPhone()"><img class="gi" style="height:60px" src="assets/images/onboarding/phone.png?v=1" alt=""></div>
+    <img class="cmate cmA s1anim" id="cmA" src="assets/images/onboarding/classmate_a.png?v=1" alt="同學A" hidden>
+    <img class="cmate cmB s1anim" id="cmB" src="assets/images/onboarding/classmate_b.png?v=1" alt="同學B" hidden>
+    <img class="pole s1anim" id="pole" src="assets/images/onboarding/pole.png?v=1" alt="電線杆" hidden>
+    <img class="student s1anim" id="student" src="assets/images/onboarding/student_pickup.png?v=1" alt="你" hidden>
+    <div class="phone-pickup s1anim" id="phonePick" onclick="pickPhone()" hidden><img class="gi" style="height:60px" src="assets/images/onboarding/phone.png?v=1" alt=""></div>
   </section>
 
   <!-- S2 穿越漩渦 -->
@@ -255,12 +290,12 @@
 
   <!-- 精靈 + 泡泡（跨場景持續） -->
   <div id="fairy"><div class="halo"></div><img src="assets/images/onboarding/sprite_main.png?v=1" alt="系統精靈"></div>
-  <div id="bubble"><div class="who">系統精靈 · 小智</div><div class="txt" id="btxt"></div><div class="tap" id="btap">輕觸繼續 ▼</div></div>
+  <div id="bubble"><div class="who">系統精靈 · 艾斯</div><div class="txt" id="btxt"></div><div class="tap" id="btap">輕觸繼續 ▼</div></div>
 
 </div>
 
 <script>
-const SPRITE_NAME = "小智";
+const SPRITE_NAME = "艾斯";
 const AST='assets/images/onboarding/';
 function gi(name,h,b){ return '<img class="gi'+(b?' gib':'')+'" style="height:'+h+'px" src="'+AST+name+'.png?v=1" alt="">'; }
 
@@ -340,25 +375,104 @@ function confetti(n=40){
 
 // ═══════════════ 流程 ═══════════════
 let stage = 0;
+let PLAYER = { name:'', gender:'', grade:'' };
 function next(){ stage++; run(); }
+
+// S1 元素淡入/淡出
+function show(sel){ const e=$(sel); if(e){ e.hidden=false; requestAnimationFrame(()=>e.classList.add('in')); } }
+function hide(sel){ const e=$(sel); if(e){ e.classList.remove('in'); setTimeout(()=>{ e.hidden=true; }, 500); } }
+function resetS1(){ ['#cmA','#cmB','#pole','#student','#phonePick'].forEach(s=>{ const e=$(s); if(e){ e.classList.remove('in'); e.hidden=true; } });
+  const ph=$('#phonePick'); if(ph){ ph.style.transform=''; ph.style.filter=''; ph.style.transition=''; } }
+
 function run(){
   switch(stage){
-    case 1: // 撿手機
-      showScene('s1'); fairyShow(false); hideBubble();
-      setTimeout(()=>say('放學路上，你撿到一支發光的手機…\n（輕觸手機）', null, {who:'旁白'}), 400);
+    case 1: // S1 上學路：開學第一天，三人邊走邊聊
+      showScene('s1'); fairyShow(false); hideBubble(); resetS1();
+      show('#cmA'); show('#cmB');
+      setTimeout(()=> say('開學第一天，你和同學開心地走在上學的路上。', ()=>{
+        say('今天是國小開學～不知道大家暑假都去哪裡玩了？', ()=>{
+          say('我暑假跟爸媽去北海道玩了七天，北海道好漂亮喔！！', ()=>{
+            say('太好了吧！我暑假都在上小提琴跟鋼琴課～下個月要去參加比賽了！', ()=>{
+              // 邊走邊聊時，看到路邊電線杆
+              hide('#cmA'); hide('#cmB');
+              show('#pole'); show('#student'); setTimeout(()=> show('#phonePick'), 320);
+              say('咦？怎麼會有一支手機掉在電線杆下面？前面剛好有警察局，順道拿過去好了！', ()=>{
+                say('（輕觸地上的手機把它撿起來）', null, {who:'旁白'});
+              }, {who:'你'});
+            }, {who:'同學B'});
+          }, {who:'同學A'});
+        }, {who:'你'});
+      }, {who:'旁白'}), 400);
       break;
-    case 2: break; // 由 pickPhone() 推進
-    case 3: // 小屋 + 精靈登場 + 自介
-      showScene('s3');
-      fairyAt('50%','42%','40px'); fairyShow(true);
-      // 手機放大→變精靈
-      setTimeout(()=>{ fairyAt('50%','230px','170px'); }, 250);
-      setTimeout(()=> say('哇！你終於醒了！我是被困在手機裡的系統精靈——「'+SPRITE_NAME+'」！', step1Intro), 1100);
+    case 3: // 醒在小木屋 → 解鎖建角
+      showScene('s3'); fairyShow(false); hideBubble();
+      setTimeout(()=> say('一陣天旋地轉……你張開眼睛，發現自己躺在一間小木屋裡，旁邊只有一張小木桌，空空如也。', ()=>{
+        say('那支手機就掉在你身旁，螢幕上跑出一行字：「請解鎖螢幕，並輸入姓名、性別跟年級。」', ()=>{
+          hideBubble(); showCreator();
+        }, {who:'旁白'});
+      }, {who:'旁白'}), 550);
       break;
   }
 }
+
+// 建角輸入頁（A：真輸入）
+function showCreator(){
+  if($('#creator')) return;
+  const wrap=document.createElement('div'); wrap.className='panel creator'; wrap.id='creator';
+  wrap.innerHTML =
+    '<h3>📱 解鎖手機</h3><div class="sub">輸入你的資料，開始這趟冒險</div>'+
+    '<div class="fld"><span>姓名</span><input id="cName" maxlength="6" placeholder="輸入你的名字" autocomplete="off"></div>'+
+    '<div class="fld"><span>性別</span><div class="seg" id="segGender">'+
+      '<button data-v="男生">男生</button><button data-v="女生">女生</button></div></div>'+
+    '<div class="fld"><span>年級</span><div class="seg grades" id="segGrade">'+
+      [1,2,3,4,5,6].map(g=>'<button data-v="'+g+'">'+g+'年級</button>').join('')+'</div></div>'+
+    '<button class="btn" id="creatorOk">解鎖 ▶</button>'+
+    '<div class="hint" id="creatorHint"></div>';
+  $('#s3').appendChild(wrap);
+  wrap.querySelectorAll('.seg').forEach(seg=>{
+    seg.addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return;
+      seg.querySelectorAll('button').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); });
+  });
+  $('#creatorOk').onclick=()=>{
+    const name=$('#cName').value.trim();
+    const g=wrap.querySelector('#segGender .sel'), gr=wrap.querySelector('#segGrade .sel');
+    if(!name || !g || !gr){ $('#creatorHint').textContent='請填寫姓名、選擇性別與年級～'; return; }
+    $('#creatorOk').onclick=null; // 驗證通過，擋連點重複 spawnOrb
+    PLAYER={ name, gender:g.dataset.v, grade:gr.dataset.v };
+    wrap.classList.add('leaving'); setTimeout(()=>wrap.remove(), 400);
+    spawnOrb();
+  };
+}
+
+// 手機飛出小光團 → 艾斯登場
+function spawnOrb(){
+  const old=$('#orb'); if(old) old.remove();
+  const orb=document.createElement('div'); orb.id='orb'; $('#stage').appendChild(orb);
+  requestAnimationFrame(()=> orb.classList.add('grow'));
+  setTimeout(()=>{
+    orb.remove();
+    fairyAt('50%','42%','40px'); fairyShow(true);
+    setTimeout(()=>{ fairyAt('50%','230px','170px'); }, 250);
+    setTimeout(astIntro, 1000);
+  }, 1400);
+}
+
+// 艾斯自介（揭名節奏 + 官方預言）
+function astIntro(){
+  const nm = PLAYER.name || '你';
+  say(nm+'，你好。這個世界名叫「布雷夫」。', ()=>{
+    say('我的名字叫做艾斯，是這個世界的小精靈。你被我們選中，來到了這個世界。', ()=>{
+      say('因為這個世界有許多魔物與怪獸正在橫行！而在我們至高無上的神殿裡，有一篇古老的預言……', ()=>{
+        say('「當被封印已久的魔物開始出現時，唯有來自異世界、具有智慧與勇氣的人來到，才能拯救我們。」而你，就是我們選中的人。', ()=>{
+          say('這裡是各大王國共同建立的海外學園島，是讓被選中的人學習知識、打敗魔王的地方。', step1Intro);
+        });
+      });
+    }, {who:'艾斯'});
+  }, {who:'神秘光團'});
+}
 function pickPhone(){
   if(stage!==1) return;
+  stage=2; // 立刻離開 1，擋掉連點重入
   const ph=$('#phonePick');
   ph.style.transition='transform .45s, filter .45s';
   ph.style.transform='translateX(-50%) scale(1.7)';
@@ -378,10 +492,10 @@ function pickPhone(){
   }, 450);
 }
 
-// 精靈自介 → 發任務總覽 → 進步驟 1
+// 發任務總覽 → 進步驟 1
 function step1Intro(){
-  say('這裡是「小智學園島」！只要完成 5 個新手任務、打倒初始魔王，你就能回到現實世界～', ()=>{
-    say('準備好了嗎？我會全程陪著你！我們開始第一個任務吧！', ()=>{
+  say('來吧！我先帶你熟悉學園的環境。從現在起，我就是你的隨從，會陪你度過許多難關！', ()=>{
+    say('完成 5 個新手任務、打倒初始魔王，你就能用這支手機回到現實世界～我們開始第一個任務吧！', ()=>{
       setHud(0); startTask(1);
     });
   });
@@ -579,8 +693,8 @@ function finale(){
   hideBubble(); fairyShow(false); showScene('end'); confetti(60);
 }
 
-function restart(){ stage=0; step=0; hud.classList.remove('on'); fairyShow(false); hideBubble();
-  document.querySelectorAll('.glow-burst,#flash').forEach(e=>e.remove()); $('#phonePick').style=''; showScene('s0'); }
+function restart(){ stage=0; step=0; PLAYER={ name:'', gender:'', grade:'' }; hud.classList.remove('on'); fairyShow(false); hideBubble();
+  document.querySelectorAll('.glow-burst,#flash,#creator,#orb').forEach(e=>e.remove()); resetS1(); showScene('s0'); }
 
 // 啟動
 showScene('s0');

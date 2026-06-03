@@ -1,3 +1,5 @@
 
 # 暫存/生圖中繼，不進版控
 tmp/
+assets/images/onboarding/.imagegen/
+*.pptx

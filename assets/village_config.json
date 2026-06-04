@@ -2024,6 +2024,1351 @@
         "mask_color": "#FF3B30",
         "render_order": 500,
         "interaction_type": "open_modal"
+      },
+      {
+        "id": "deco_grass_29",
+        "name": "草叢",
+        "category": "decoration",
+        "sprite": {
+          "image": "deco_grass.webp",
+          "scale": 0.2,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0,
+          "frame_width": 334,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        "anchor": {
+          "x": 0.7401201579543272,
+          "y": 0.7893498490161119
+        },
+        "bounding_box": {
+          "x_min": 0.726247935732105,
+          "y_min": 0.7804387379050008,
+          "x_max": 0.7540257135098828,
+          "y_max": 0.7893276267938897
+        },
+        "path": [],
+        "center": {
+          "x": 0.7401201579543272,
+          "y": 0.7893498490161119
+        },
+        "polygon": [
+          {
+            "x": 0.7401368246209938,
+            "y": 0.7804387379050008
+          },
+          {
+            "x": 0.7499146023987716,
+            "y": 0.7817720712383343
+          },
+          {
+            "x": 0.7540257135098828,
+            "y": 0.7848831823494452
+          },
+          {
+            "x": 0.7499146023987716,
+            "y": 0.7879942934605564
+          },
+          {
+            "x": 0.7401368246209938,
+            "y": 0.7893276267938897
+          },
+          {
+            "x": 0.730247935732105,
+            "y": 0.7879942934605564
+          },
+          {
+            "x": 0.726247935732105,
+            "y": 0.7848831823494452
+          },
+          {
+            "x": 0.730247935732105,
+            "y": 0.7817720712383343
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
+      },
+      {
+        "id": "deco_grass_30",
+        "name": "草叢",
+        "category": "decoration",
+        "sprite": {
+          "image": "deco_grass.webp",
+          "scale": 0.18,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0,
+          "frame_width": 334,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        "anchor": {
+          "x": 0.850565,
+          "y": 0.685952
+        },
+        "bounding_box": {
+          "x_min": 0.8380650000000001,
+          "x_max": 0.863065,
+          "y_min": 0.677952,
+          "y_max": 0.685952
+        },
+        "path": [],
+        "center": {
+          "x": 0.850565,
+          "y": 0.685952
+        },
+        "polygon": [
+          {
+            "x": 0.8506,
+            "y": 0.678
+          },
+          {
+            "x": 0.8594,
+            "y": 0.6791
+          },
+          {
+            "x": 0.8631,
+            "y": 0.682
+          },
+          {
+            "x": 0.8594,
+            "y": 0.6848
+          },
+          {
+            "x": 0.8506,
+            "y": 0.686
+          },
+          {
+            "x": 0.8417,
+            "y": 0.6848
+          },
+          {
+            "x": 0.8381,
+            "y": 0.682
+          },
+          {
+            "x": 0.8417,
+            "y": 0.6791
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
+      },
+      {
+        "id": "deco_grass_31",
+        "name": "草叢",
+        "category": "decoration",
+        "sprite": {
+          "image": "deco_grass.webp",
+          "scale": 0.18,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0,
+          "frame_width": 334,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        "anchor": {
+          "x": 0.622843,
+          "y": 0.907519
+        },
+        "bounding_box": {
+          "x_min": 0.6103430000000001,
+          "x_max": 0.635343,
+          "y_min": 0.899519,
+          "y_max": 0.907519
+        },
+        "path": [],
+        "center": {
+          "x": 0.622843,
+          "y": 0.907519
+        },
+        "polygon": [
+          {
+            "x": 0.6228,
+            "y": 0.8995
+          },
+          {
+            "x": 0.6317,
+            "y": 0.9007
+          },
+          {
+            "x": 0.6353,
+            "y": 0.9035
+          },
+          {
+            "x": 0.6317,
+            "y": 0.9063
+          },
+          {
+            "x": 0.6228,
+            "y": 0.9075
+          },
+          {
+            "x": 0.614,
+            "y": 0.9063
+          },
+          {
+            "x": 0.6103,
+            "y": 0.9035
+          },
+          {
+            "x": 0.614,
+            "y": 0.9007
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
+      },
+      {
+        "id": "deco_grass_32",
+        "name": "草叢",
+        "category": "decoration",
+        "sprite": {
+          "image": "deco_grass.webp",
+          "scale": 0.18,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0,
+          "frame_width": 334,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        "anchor": {
+          "x": 0.775417,
+          "y": 0.956264
+        },
+        "bounding_box": {
+          "x_min": 0.7629170000000001,
+          "x_max": 0.787917,
+          "y_min": 0.948264,
+          "y_max": 0.956264
+        },
+        "path": [],
+        "center": {
+          "x": 0.775417,
+          "y": 0.956264
+        },
+        "polygon": [
+          {
+            "x": 0.7754,
+            "y": 0.9483
+          },
+          {
+            "x": 0.7843,
+            "y": 0.9494
+          },
+          {
+            "x": 0.7879,
+            "y": 0.9523
+          },
+          {
+            "x": 0.7843,
+            "y": 0.9551
+          },
+          {
+            "x": 0.7754,
+            "y": 0.9563
+          },
+          {
+            "x": 0.7666,
+            "y": 0.9551
+          },
+          {
+            "x": 0.7629,
+            "y": 0.9523
+          },
+          {
+            "x": 0.7666,
+            "y": 0.9494
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
+      },
+      {
+        "id": "deco_grass_33",
+        "name": "草叢",
+        "category": "decoration",
+        "sprite": {
+          "image": "deco_grass.webp",
+          "scale": 0.18,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0,
+          "frame_width": 334,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        "anchor": {
+          "x": 0.5442792531152628,
+          "y": 0.4230259906948414
+        },
+        "bounding_box": {
+          "x_min": 0.5317792531152629,
+          "x_max": 0.5567792531152628,
+          "y_min": 0.4150259906948414,
+          "y_max": 0.4230259906948414
+        },
+        "path": [],
+        "center": {
+          "x": 0.5442792531152628,
+          "y": 0.4230259906948414
+        },
+        "polygon": [
+          {
+            "x": 0.5442462531152628,
+            "y": 0.4150069906948414
+          },
+          {
+            "x": 0.5531462531152628,
+            "y": 0.4162069906948414
+          },
+          {
+            "x": 0.5567462531152628,
+            "y": 0.41900699069484143
+          },
+          {
+            "x": 0.5531462531152628,
+            "y": 0.42180699069484145
+          },
+          {
+            "x": 0.5442462531152628,
+            "y": 0.42300699069484143
+          },
+          {
+            "x": 0.5354462531152628,
+            "y": 0.42180699069484145
+          },
+          {
+            "x": 0.5317462531152628,
+            "y": 0.41900699069484143
+          },
+          {
+            "x": 0.5354462531152628,
+            "y": 0.4162069906948414
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
+      },
+      {
+        "id": "deco_grass_33",
+        "name": "草叢",
+        "category": "decoration",
+        "sprite": {
+          "image": "deco_grass.webp",
+          "scale": 0.18,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0,
+          "frame_width": 334,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        "anchor": {
+          "x": 0.428141,
+          "y": 0.511653
+        },
+        "bounding_box": {
+          "x_min": 0.415641,
+          "x_max": 0.440641,
+          "y_min": 0.503653,
+          "y_max": 0.511653
+        },
+        "path": [],
+        "center": {
+          "x": 0.428141,
+          "y": 0.511653
+        },
+        "polygon": [
+          {
+            "x": 0.4281,
+            "y": 0.5037
+          },
+          {
+            "x": 0.437,
+            "y": 0.5048
+          },
+          {
+            "x": 0.4406,
+            "y": 0.5077
+          },
+          {
+            "x": 0.437,
+            "y": 0.5105
+          },
+          {
+            "x": 0.4281,
+            "y": 0.5117
+          },
+          {
+            "x": 0.4193,
+            "y": 0.5105
+          },
+          {
+            "x": 0.4156,
+            "y": 0.5077
+          },
+          {
+            "x": 0.4193,
+            "y": 0.5048
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
+      },
+      {
+        "id": "deco_grass_34",
+        "name": "草叢",
+        "category": "decoration",
+        "sprite": {
+          "image": "deco_grass.webp",
+          "scale": 0.18,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0,
+          "frame_width": 334,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        "anchor": {
+          "x": 0.301755,
+          "y": 0.542672
+        },
+        "bounding_box": {
+          "x_min": 0.289255,
+          "x_max": 0.314255,
+          "y_min": 0.534672,
+          "y_max": 0.542672
+        },
+        "path": [],
+        "center": {
+          "x": 0.301755,
+          "y": 0.542672
+        },
+        "polygon": [
+          {
+            "x": 0.3018,
+            "y": 0.5347
+          },
+          {
+            "x": 0.3106,
+            "y": 0.5358
+          },
+          {
+            "x": 0.3143,
+            "y": 0.5387
+          },
+          {
+            "x": 0.3106,
+            "y": 0.5415
+          },
+          {
+            "x": 0.3018,
+            "y": 0.5427
+          },
+          {
+            "x": 0.2929,
+            "y": 0.5415
+          },
+          {
+            "x": 0.2893,
+            "y": 0.5387
+          },
+          {
+            "x": 0.2929,
+            "y": 0.5358
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
+      },
+      {
+        "id": "deco_grass_35",
+        "name": "草叢",
+        "category": "decoration",
+        "sprite": {
+          "image": "deco_grass.webp",
+          "scale": 0.18,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0,
+          "frame_width": 334,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        "anchor": {
+          "x": 0.348438,
+          "y": 0.576646
+        },
+        "bounding_box": {
+          "x_min": 0.335938,
+          "x_max": 0.36093800000000004,
+          "y_min": 0.568646,
+          "y_max": 0.576646
+        },
+        "path": [],
+        "center": {
+          "x": 0.348438,
+          "y": 0.576646
+        },
+        "polygon": [
+          {
+            "x": 0.3484,
+            "y": 0.5686
+          },
+          {
+            "x": 0.3573,
+            "y": 0.5698
+          },
+          {
+            "x": 0.3609,
+            "y": 0.5726
+          },
+          {
+            "x": 0.3573,
+            "y": 0.5755
+          },
+          {
+            "x": 0.3484,
+            "y": 0.5766
+          },
+          {
+            "x": 0.3396,
+            "y": 0.5755
+          },
+          {
+            "x": 0.3359,
+            "y": 0.5726
+          },
+          {
+            "x": 0.3396,
+            "y": 0.5698
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
+      },
+      {
+        "id": "deco_grass_36",
+        "name": "草叢",
+        "category": "decoration",
+        "sprite": {
+          "image": "deco_grass.webp",
+          "scale": 0.18,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0,
+          "frame_width": 334,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        "anchor": {
+          "x": 0.419032,
+          "y": 0.764239
+        },
+        "bounding_box": {
+          "x_min": 0.406532,
+          "x_max": 0.431532,
+          "y_min": 0.756239,
+          "y_max": 0.764239
+        },
+        "path": [],
+        "center": {
+          "x": 0.419032,
+          "y": 0.764239
+        },
+        "polygon": [
+          {
+            "x": 0.419,
+            "y": 0.7562
+          },
+          {
+            "x": 0.4279,
+            "y": 0.7574
+          },
+          {
+            "x": 0.4315,
+            "y": 0.7602
+          },
+          {
+            "x": 0.4279,
+            "y": 0.7631
+          },
+          {
+            "x": 0.419,
+            "y": 0.7642
+          },
+          {
+            "x": 0.4102,
+            "y": 0.7631
+          },
+          {
+            "x": 0.4065,
+            "y": 0.7602
+          },
+          {
+            "x": 0.4102,
+            "y": 0.7574
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
+      },
+      {
+        "id": "deco_grass_37",
+        "name": "草叢",
+        "category": "decoration",
+        "sprite": {
+          "image": "deco_grass.webp",
+          "scale": 0.18,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0,
+          "frame_width": 334,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        "anchor": {
+          "x": 0.285815,
+          "y": 0.703677
+        },
+        "bounding_box": {
+          "x_min": 0.273315,
+          "x_max": 0.298315,
+          "y_min": 0.695677,
+          "y_max": 0.703677
+        },
+        "path": [],
+        "center": {
+          "x": 0.285815,
+          "y": 0.703677
+        },
+        "polygon": [
+          {
+            "x": 0.2858,
+            "y": 0.6957
+          },
+          {
+            "x": 0.2947,
+            "y": 0.6968
+          },
+          {
+            "x": 0.2983,
+            "y": 0.6997
+          },
+          {
+            "x": 0.2947,
+            "y": 0.7025
+          },
+          {
+            "x": 0.2858,
+            "y": 0.7037
+          },
+          {
+            "x": 0.277,
+            "y": 0.7025
+          },
+          {
+            "x": 0.2733,
+            "y": 0.6997
+          },
+          {
+            "x": 0.277,
+            "y": 0.6968
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
+      },
+      {
+        "id": "deco_grass_38",
+        "name": "草叢",
+        "category": "decoration",
+        "sprite": {
+          "image": "deco_grass.webp",
+          "scale": 0.18,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0,
+          "frame_width": 334,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        "anchor": {
+          "x": 0.255072,
+          "y": 0.950355
+        },
+        "bounding_box": {
+          "x_min": 0.242572,
+          "x_max": 0.26757200000000003,
+          "y_min": 0.9423549999999999,
+          "y_max": 0.950355
+        },
+        "path": [],
+        "center": {
+          "x": 0.255072,
+          "y": 0.950355
+        },
+        "polygon": [
+          {
+            "x": 0.2551,
+            "y": 0.9424
+          },
+          {
+            "x": 0.2639,
+            "y": 0.9435
+          },
+          {
+            "x": 0.2676,
+            "y": 0.9464
+          },
+          {
+            "x": 0.2639,
+            "y": 0.9492
+          },
+          {
+            "x": 0.2551,
+            "y": 0.9504
+          },
+          {
+            "x": 0.2462,
+            "y": 0.9492
+          },
+          {
+            "x": 0.2426,
+            "y": 0.9464
+          },
+          {
+            "x": 0.2462,
+            "y": 0.9435
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
+      },
+      {
+        "id": "deco_grass_39",
+        "name": "草叢",
+        "category": "decoration",
+        "sprite": {
+          "image": "deco_grass.webp",
+          "scale": 0.18,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0,
+          "frame_width": 334,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        "anchor": {
+          "x": 0.118439,
+          "y": 0.953309
+        },
+        "bounding_box": {
+          "x_min": 0.105939,
+          "x_max": 0.130939,
+          "y_min": 0.945309,
+          "y_max": 0.953309
+        },
+        "path": [],
+        "center": {
+          "x": 0.118439,
+          "y": 0.953309
+        },
+        "polygon": [
+          {
+            "x": 0.1184,
+            "y": 0.9453
+          },
+          {
+            "x": 0.1273,
+            "y": 0.9465
+          },
+          {
+            "x": 0.1309,
+            "y": 0.9493
+          },
+          {
+            "x": 0.1273,
+            "y": 0.9521
+          },
+          {
+            "x": 0.1184,
+            "y": 0.9533
+          },
+          {
+            "x": 0.1096,
+            "y": 0.9521
+          },
+          {
+            "x": 0.1059,
+            "y": 0.9493
+          },
+          {
+            "x": 0.1096,
+            "y": 0.9465
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
+      },
+      {
+        "id": "deco_grass_40",
+        "name": "草叢",
+        "category": "decoration",
+        "sprite": {
+          "image": "deco_grass.webp",
+          "scale": 0.18,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0,
+          "frame_width": 334,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        "anchor": {
+          "x": 0.028489,
+          "y": 0.343262
+        },
+        "bounding_box": {
+          "x_min": 0.015989,
+          "x_max": 0.040989,
+          "y_min": 0.335262,
+          "y_max": 0.343262
+        },
+        "path": [],
+        "center": {
+          "x": 0.028489,
+          "y": 0.343262
+        },
+        "polygon": [
+          {
+            "x": 0.0285,
+            "y": 0.3353
+          },
+          {
+            "x": 0.0373,
+            "y": 0.3364
+          },
+          {
+            "x": 0.041,
+            "y": 0.3393
+          },
+          {
+            "x": 0.0373,
+            "y": 0.3421
+          },
+          {
+            "x": 0.0285,
+            "y": 0.3433
+          },
+          {
+            "x": 0.0197,
+            "y": 0.3421
+          },
+          {
+            "x": 0.016,
+            "y": 0.3393
+          },
+          {
+            "x": 0.0197,
+            "y": 0.3364
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
+      },
+      {
+        "id": "deco_grass_41",
+        "name": "草叢",
+        "category": "decoration",
+        "sprite": {
+          "image": "deco_grass.webp",
+          "scale": 0.18,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0,
+          "frame_width": 334,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        "anchor": {
+          "x": 0.838041,
+          "y": 0.548581
+        },
+        "bounding_box": {
+          "x_min": 0.8255410000000001,
+          "x_max": 0.850541,
+          "y_min": 0.540581,
+          "y_max": 0.548581
+        },
+        "path": [],
+        "center": {
+          "x": 0.838041,
+          "y": 0.548581
+        },
+        "polygon": [
+          {
+            "x": 0.838,
+            "y": 0.5406
+          },
+          {
+            "x": 0.8469,
+            "y": 0.5418
+          },
+          {
+            "x": 0.8505,
+            "y": 0.5446
+          },
+          {
+            "x": 0.8469,
+            "y": 0.5474
+          },
+          {
+            "x": 0.838,
+            "y": 0.5486
+          },
+          {
+            "x": 0.8292,
+            "y": 0.5474
+          },
+          {
+            "x": 0.8255,
+            "y": 0.5446
+          },
+          {
+            "x": 0.8292,
+            "y": 0.5418
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
+      },
+      {
+        "id": "deco_flower_v2_42",
+        "name": "花卉",
+        "category": "decoration",
+        "sprite": {
+          "image": "deco_flower_v2.webp",
+          "scale": 0.18,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0,
+          "frame_width": 420,
+          "frame_height": 345,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        "anchor": {
+          "x": 0.153736,
+          "y": 0.312243
+        },
+        "bounding_box": {
+          "x_min": 0.13873600000000003,
+          "x_max": 0.168736,
+          "y_min": 0.300243,
+          "y_max": 0.312243
+        },
+        "path": [],
+        "center": {
+          "x": 0.153736,
+          "y": 0.312243
+        },
+        "polygon": [
+          {
+            "x": 0.1537,
+            "y": 0.3002
+          },
+          {
+            "x": 0.1643,
+            "y": 0.302
+          },
+          {
+            "x": 0.1687,
+            "y": 0.3062
+          },
+          {
+            "x": 0.1643,
+            "y": 0.3105
+          },
+          {
+            "x": 0.1537,
+            "y": 0.3122
+          },
+          {
+            "x": 0.1431,
+            "y": 0.3105
+          },
+          {
+            "x": 0.1387,
+            "y": 0.3062
+          },
+          {
+            "x": 0.1431,
+            "y": 0.302
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
+      },
+      {
+        "id": "deco_flower_v2_43",
+        "name": "花卉",
+        "category": "decoration",
+        "sprite": {
+          "image": "deco_flower_v2.webp",
+          "scale": 0.18,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0,
+          "frame_width": 420,
+          "frame_height": 345,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        "anchor": {
+          "x": 0.793635,
+          "y": 0.759808
+        },
+        "bounding_box": {
+          "x_min": 0.778635,
+          "x_max": 0.808635,
+          "y_min": 0.747808,
+          "y_max": 0.759808
+        },
+        "path": [],
+        "center": {
+          "x": 0.793635,
+          "y": 0.759808
+        },
+        "polygon": [
+          {
+            "x": 0.7936,
+            "y": 0.7478
+          },
+          {
+            "x": 0.8042,
+            "y": 0.7496
+          },
+          {
+            "x": 0.8086,
+            "y": 0.7538
+          },
+          {
+            "x": 0.8042,
+            "y": 0.7581
+          },
+          {
+            "x": 0.7936,
+            "y": 0.7598
+          },
+          {
+            "x": 0.783,
+            "y": 0.7581
+          },
+          {
+            "x": 0.7786,
+            "y": 0.7538
+          },
+          {
+            "x": 0.783,
+            "y": 0.7496
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
+      },
+      {
+        "id": "deco_flower_v2_44",
+        "name": "花卉",
+        "category": "decoration",
+        "sprite": {
+          "image": "deco_flower_v2.webp",
+          "scale": 0.18,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0,
+          "frame_width": 420,
+          "frame_height": 345,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        "anchor": {
+          "x": 0.622843,
+          "y": 0.972512
+        },
+        "bounding_box": {
+          "x_min": 0.607843,
+          "x_max": 0.637843,
+          "y_min": 0.960512,
+          "y_max": 0.972512
+        },
+        "path": [],
+        "center": {
+          "x": 0.622843,
+          "y": 0.972512
+        },
+        "polygon": [
+          {
+            "x": 0.6228,
+            "y": 0.9605
+          },
+          {
+            "x": 0.6334,
+            "y": 0.9623
+          },
+          {
+            "x": 0.6378,
+            "y": 0.9665
+          },
+          {
+            "x": 0.6334,
+            "y": 0.9708
+          },
+          {
+            "x": 0.6228,
+            "y": 0.9725
+          },
+          {
+            "x": 0.6122,
+            "y": 0.9708
+          },
+          {
+            "x": 0.6078,
+            "y": 0.9665
+          },
+          {
+            "x": 0.6122,
+            "y": 0.9623
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
+      },
+      {
+        "id": "deco_flower_v2_45",
+        "name": "花卉",
+        "category": "decoration",
+        "sprite": {
+          "image": "deco_flower_v2.webp",
+          "scale": 0.18,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0,
+          "frame_width": 420,
+          "frame_height": 345,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        "anchor": {
+          "x": 0.594378,
+          "y": 0.347693
+        },
+        "bounding_box": {
+          "x_min": 0.579378,
+          "x_max": 0.609378,
+          "y_min": 0.33569299999999996,
+          "y_max": 0.347693
+        },
+        "path": [],
+        "center": {
+          "x": 0.594378,
+          "y": 0.347693
+        },
+        "polygon": [
+          {
+            "x": 0.5944,
+            "y": 0.3357
+          },
+          {
+            "x": 0.605,
+            "y": 0.3375
+          },
+          {
+            "x": 0.6094,
+            "y": 0.3417
+          },
+          {
+            "x": 0.605,
+            "y": 0.3459
+          },
+          {
+            "x": 0.5944,
+            "y": 0.3477
+          },
+          {
+            "x": 0.5838,
+            "y": 0.3459
+          },
+          {
+            "x": 0.5794,
+            "y": 0.3417
+          },
+          {
+            "x": 0.5838,
+            "y": 0.3375
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
+      },
+      {
+        "id": "deco_grass_46",
+        "name": "草叢",
+        "category": "decoration",
+        "sprite": {
+          "image": "deco_grass.webp",
+          "scale": 0.18,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0,
+          "frame_width": 334,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        "anchor": {
+          "x": 0.644477,
+          "y": 0.321105
+        },
+        "bounding_box": {
+          "x_min": 0.631977,
+          "x_max": 0.6569769999999999,
+          "y_min": 0.31310499999999997,
+          "y_max": 0.321105
+        },
+        "path": [],
+        "center": {
+          "x": 0.644477,
+          "y": 0.321105
+        },
+        "polygon": [
+          {
+            "x": 0.6445,
+            "y": 0.3131
+          },
+          {
+            "x": 0.6533,
+            "y": 0.3143
+          },
+          {
+            "x": 0.657,
+            "y": 0.3171
+          },
+          {
+            "x": 0.6533,
+            "y": 0.3199
+          },
+          {
+            "x": 0.6445,
+            "y": 0.3211
+          },
+          {
+            "x": 0.6356,
+            "y": 0.3199
+          },
+          {
+            "x": 0.632,
+            "y": 0.3171
+          },
+          {
+            "x": 0.6356,
+            "y": 0.3143
+          }
+        ],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_modal"
       }
     ],
     "obstacle_areas": [

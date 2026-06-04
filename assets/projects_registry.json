@@ -409,224 +409,7 @@
           "frames": 8,
           "frame_rate": 10,
           "play_on_proximity": true
-        }
-      ]
-    },
-    {
-      "id": "island",
-      "name": "🏝️ 海島 Demo (village-web)",
-      "engine": "phaser_iso",
-      "config_path": "assets/island_config.json",
-      "background_path": "village-web/beach_ground.webp",
-      "sprite_base": "village-web/",
-      "preview_url": "village-web/?map=island",
-      "image_dimensions": {
-        "width": 1536,
-        "height": 1024
-      },
-      "world_offset_y": 0,
-      "sprite_library": [
-        {
-          "image": "deco_flower_v2.webp",
-          "name": "🌸 花卉",
-          "type": "decoration",
-          "scale": 0.18,
-          "default_interaction": null,
-          "bbox_w_norm": 0.03,
-          "bbox_h_norm": 0.012,
-          "frame_width": 420,
-          "frame_height": 345,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 8
         },
-        {
-          "image": "deco_flowerbush.webp",
-          "name": "💐 花叢",
-          "type": "decoration",
-          "scale": 0.22,
-          "default_interaction": null,
-          "bbox_w_norm": 0.05,
-          "bbox_h_norm": 0.02,
-          "frame_width": 392,
-          "frame_height": 257,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 8
-        },
-        {
-          "image": "deco_palm_v2.webp",
-          "name": "🌴 椰子樹",
-          "type": "decoration",
-          "scale": 0.32,
-          "default_interaction": null,
-          "bbox_w_norm": 0.018,
-          "bbox_h_norm": 0.015,
-          "frame_width": 321,
-          "frame_height": 360,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 8
-        },
-        {
-          "image": "deco_olive.webp",
-          "name": "🫒 橄欖樹",
-          "type": "decoration",
-          "scale": 0.3,
-          "default_interaction": null,
-          "bbox_w_norm": 0.025,
-          "bbox_h_norm": 0.015,
-          "frame_width": 374,
-          "frame_height": 360,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 8
-        },
-        {
-          "image": "deco_pine_v2.webp",
-          "name": "🌲 松樹",
-          "type": "decoration",
-          "scale": 0.3,
-          "default_interaction": null,
-          "bbox_w_norm": 0.02,
-          "bbox_h_norm": 0.015,
-          "frame_width": 290,
-          "frame_height": 360,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 8
-        },
-        {
-          "image": "deco_windmill.webp",
-          "name": "🪈 風車",
-          "type": "decoration",
-          "scale": 0.42,
-          "default_interaction": null,
-          "bbox_w_norm": 0.06,
-          "bbox_h_norm": 0.04,
-          "frame_width": 308,
-          "frame_height": 420,
-          "grid_cols": 4,
-          "grid_rows": 3,
-          "frames": 12,
-          "frame_rate": 10
-        },
-        {
-          "image": "deco_well.webp",
-          "name": "🪣 井",
-          "type": "decoration",
-          "scale": 0.3,
-          "default_interaction": null,
-          "bbox_w_norm": 0.05,
-          "bbox_h_norm": 0.03,
-          "frame_width": 266,
-          "frame_height": 380,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 6
-        },
-        {
-          "image": "deco_sakura.webp",
-          "name": "🌸 櫻花樹",
-          "type": "decoration",
-          "scale": 0.3,
-          "default_interaction": null,
-          "bbox_w_norm": 0.02,
-          "bbox_h_norm": 0.015,
-          "frame_width": 360,
-          "frame_height": 350,
-          "grid_cols": 4,
-          "grid_rows": 4,
-          "frames": 16,
-          "frame_rate": 10,
-          "play_on_proximity": true
-        },
-        {
-          "image": "deco_maple.webp",
-          "name": "🍁 楓樹",
-          "type": "decoration",
-          "scale": 0.3,
-          "default_interaction": null,
-          "bbox_w_norm": 0.02,
-          "bbox_h_norm": 0.015,
-          "frame_width": 360,
-          "frame_height": 349,
-          "grid_cols": 4,
-          "grid_rows": 4,
-          "frames": 16,
-          "frame_rate": 10,
-          "play_on_proximity": true
-        },
-        {
-          "image": "deco_sunflower.webp",
-          "name": "🌻 向日葵",
-          "type": "decoration",
-          "scale": 0.2,
-          "default_interaction": null,
-          "bbox_w_norm": 0.015,
-          "bbox_h_norm": 0.012,
-          "frame_width": 267,
-          "frame_height": 340,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 8,
-          "play_on_proximity": true
-        },
-        {
-          "image": "deco_bamboo.webp",
-          "name": "🎋 竹子",
-          "type": "decoration",
-          "scale": 0.25,
-          "default_interaction": null,
-          "bbox_w_norm": 0.02,
-          "bbox_h_norm": 0.015,
-          "frame_width": 256,
-          "frame_height": 340,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 8,
-          "play_on_proximity": true
-        },
-        {
-          "image": "deco_grass.webp",
-          "name": "🌾 草叢",
-          "type": "decoration",
-          "scale": 0.18,
-          "default_interaction": null,
-          "bbox_w_norm": 0.025,
-          "bbox_h_norm": 0.008,
-          "frame_width": 334,
-          "frame_height": 340,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 10,
-          "play_on_proximity": true
-        }
-      ]
-    },
-    {
-      "id": "academy",
-      "name": "🏛️ 五大學院 (village-web)",
-      "engine": "phaser_iso",
-      "config_path": "assets/academy_config.json",
-      "background_path": "village-web/academy_ground.webp",
-      "sprite_base": "village-web/",
-      "preview_url": "village-web/?map=academy",
-      "image_dimensions": {
-        "width": 1448,
-        "height": 1086
-      },
-      "world_offset_y": 0,
-      "sprite_library": [
         {
           "image": "fir_green.webp",
           "name": "🌲 森林樹",
@@ -636,201 +419,6 @@
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.03
         },
-        {
-          "image": "deco_flower_v2.webp",
-          "name": "🌸 花卉",
-          "type": "decoration",
-          "scale": 0.18,
-          "default_interaction": null,
-          "bbox_w_norm": 0.03,
-          "bbox_h_norm": 0.012,
-          "frame_width": 420,
-          "frame_height": 345,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 8
-        },
-        {
-          "image": "deco_flowerbush.webp",
-          "name": "💐 花叢",
-          "type": "decoration",
-          "scale": 0.22,
-          "default_interaction": null,
-          "bbox_w_norm": 0.05,
-          "bbox_h_norm": 0.02,
-          "frame_width": 392,
-          "frame_height": 257,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 8
-        },
-        {
-          "image": "deco_palm_v2.webp",
-          "name": "🌴 椰子樹",
-          "type": "decoration",
-          "scale": 0.32,
-          "default_interaction": null,
-          "bbox_w_norm": 0.018,
-          "bbox_h_norm": 0.015,
-          "frame_width": 321,
-          "frame_height": 360,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 8
-        },
-        {
-          "image": "deco_olive.webp",
-          "name": "🫒 橄欖樹",
-          "type": "decoration",
-          "scale": 0.3,
-          "default_interaction": null,
-          "bbox_w_norm": 0.025,
-          "bbox_h_norm": 0.015,
-          "frame_width": 374,
-          "frame_height": 360,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 8
-        },
-        {
-          "image": "deco_pine_v2.webp",
-          "name": "🌲 松樹",
-          "type": "decoration",
-          "scale": 0.3,
-          "default_interaction": null,
-          "bbox_w_norm": 0.02,
-          "bbox_h_norm": 0.015,
-          "frame_width": 290,
-          "frame_height": 360,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 8
-        },
-        {
-          "image": "deco_windmill.webp",
-          "name": "🪈 風車",
-          "type": "decoration",
-          "scale": 0.42,
-          "default_interaction": null,
-          "bbox_w_norm": 0.06,
-          "bbox_h_norm": 0.04,
-          "frame_width": 308,
-          "frame_height": 420,
-          "grid_cols": 4,
-          "grid_rows": 3,
-          "frames": 12,
-          "frame_rate": 10
-        },
-        {
-          "image": "deco_well.webp",
-          "name": "🪣 井",
-          "type": "decoration",
-          "scale": 0.3,
-          "default_interaction": null,
-          "bbox_w_norm": 0.05,
-          "bbox_h_norm": 0.03,
-          "frame_width": 266,
-          "frame_height": 380,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 6
-        },
-        {
-          "image": "deco_sakura.webp",
-          "name": "🌸 櫻花樹",
-          "type": "decoration",
-          "scale": 0.3,
-          "default_interaction": null,
-          "bbox_w_norm": 0.02,
-          "bbox_h_norm": 0.015,
-          "frame_width": 360,
-          "frame_height": 350,
-          "grid_cols": 4,
-          "grid_rows": 4,
-          "frames": 16,
-          "frame_rate": 10,
-          "play_on_proximity": true
-        },
-        {
-          "image": "deco_maple.webp",
-          "name": "🍁 楓樹",
-          "type": "decoration",
-          "scale": 0.3,
-          "default_interaction": null,
-          "bbox_w_norm": 0.02,
-          "bbox_h_norm": 0.015,
-          "frame_width": 360,
-          "frame_height": 349,
-          "grid_cols": 4,
-          "grid_rows": 4,
-          "frames": 16,
-          "frame_rate": 10,
-          "play_on_proximity": true
-        },
-        {
-          "image": "deco_sunflower.webp",
-          "name": "🌻 向日葵",
-          "type": "decoration",
-          "scale": 0.2,
-          "default_interaction": null,
-          "bbox_w_norm": 0.015,
-          "bbox_h_norm": 0.012,
-          "frame_width": 267,
-          "frame_height": 340,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 8,
-          "play_on_proximity": true
-        },
-        {
-          "image": "deco_bamboo.webp",
-          "name": "🎋 竹子",
-          "type": "decoration",
-          "scale": 0.25,
-          "default_interaction": null,
-          "bbox_w_norm": 0.02,
-          "bbox_h_norm": 0.015,
-          "frame_width": 256,
-          "frame_height": 340,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 8,
-          "play_on_proximity": true
-        },
-        {
-          "image": "deco_grass.webp",
-          "name": "🌾 草叢",
-          "type": "decoration",
-          "scale": 0.18,
-          "default_interaction": null,
-          "bbox_w_norm": 0.025,
-          "bbox_h_norm": 0.008,
-          "frame_width": 334,
-          "frame_height": 340,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 10,
-          "play_on_proximity": true
-        }
-      ]
-    },
-    {
-      "id": "campus",
-      "name": "🏕️ 學園生活區 (village-web)",
-      "engine": "phaser",
-      "config_path": "assets/campus_config.json",
-      "background_path": "village-web/campus_ground_v2.webp",
-      "sprite_base": "village-web/",
-      "sprite_library": [
         {
           "image": "fence_pen_v2.webp",
           "name": "🪵 牧場柵欄",
@@ -848,111 +436,6 @@
           "default_interaction": null,
           "bbox_w_norm": 0.296,
           "bbox_h_norm": 0.247
-        },
-        {
-          "image": "deco_flower_v2.webp",
-          "name": "🌸 花卉",
-          "type": "decoration",
-          "scale": 0.18,
-          "default_interaction": null,
-          "bbox_w_norm": 0.03,
-          "bbox_h_norm": 0.012,
-          "frame_width": 420,
-          "frame_height": 345,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 8
-        },
-        {
-          "image": "deco_flowerbush.webp",
-          "name": "💐 花叢",
-          "type": "decoration",
-          "scale": 0.22,
-          "default_interaction": null,
-          "bbox_w_norm": 0.05,
-          "bbox_h_norm": 0.02,
-          "frame_width": 392,
-          "frame_height": 257,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 8
-        },
-        {
-          "image": "deco_palm_v2.webp",
-          "name": "🌴 椰子樹",
-          "type": "decoration",
-          "scale": 0.32,
-          "default_interaction": null,
-          "bbox_w_norm": 0.018,
-          "bbox_h_norm": 0.015,
-          "frame_width": 321,
-          "frame_height": 360,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 8
-        },
-        {
-          "image": "deco_olive.webp",
-          "name": "🫒 橄欖樹",
-          "type": "decoration",
-          "scale": 0.3,
-          "default_interaction": null,
-          "bbox_w_norm": 0.025,
-          "bbox_h_norm": 0.015,
-          "frame_width": 374,
-          "frame_height": 360,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 8
-        },
-        {
-          "image": "deco_pine_v2.webp",
-          "name": "🌲 松樹",
-          "type": "decoration",
-          "scale": 0.3,
-          "default_interaction": null,
-          "bbox_w_norm": 0.02,
-          "bbox_h_norm": 0.015,
-          "frame_width": 290,
-          "frame_height": 360,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 8
-        },
-        {
-          "image": "deco_windmill.webp",
-          "name": "🪈 風車",
-          "type": "decoration",
-          "scale": 0.42,
-          "default_interaction": null,
-          "bbox_w_norm": 0.06,
-          "bbox_h_norm": 0.04,
-          "frame_width": 308,
-          "frame_height": 420,
-          "grid_cols": 4,
-          "grid_rows": 3,
-          "frames": 12,
-          "frame_rate": 10
-        },
-        {
-          "image": "deco_well.webp",
-          "name": "🪣 井",
-          "type": "decoration",
-          "scale": 0.3,
-          "default_interaction": null,
-          "bbox_w_norm": 0.05,
-          "bbox_h_norm": 0.03,
-          "frame_width": 266,
-          "frame_height": 380,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 6
         },
         {
           "image": "deco_windmill_iso.webp",
@@ -977,6 +460,338 @@
           "default_interaction": null,
           "bbox_w_norm": 0.059,
           "bbox_h_norm": 0.126
+        }
+      ]
+    },
+    {
+      "id": "island",
+      "name": "🏝️ 海島 Demo (village-web)",
+      "engine": "phaser_iso",
+      "config_path": "assets/island_config.json",
+      "background_path": "village-web/beach_ground.webp",
+      "sprite_base": "village-web/",
+      "preview_url": "village-web/?map=island",
+      "image_dimensions": {
+        "width": 1536,
+        "height": 1024
+      },
+      "world_offset_y": 0,
+      "sprite_library": [
+        {
+          "image": "academy_office.webp",
+          "name": "🏛️ 學院辦公室",
+          "type": "building",
+          "scale": 0.7,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.16,
+          "bbox_h_norm": 0.05
+        },
+        {
+          "image": "jobcenter_right.webp",
+          "name": "💼 職業介紹所",
+          "type": "building",
+          "scale": 0.34,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.16,
+          "bbox_h_norm": 0.05
+        },
+        {
+          "image": "exam_hall.webp",
+          "name": "📜 考試院",
+          "type": "building",
+          "scale": 0.32,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.16,
+          "bbox_h_norm": 0.05
+        },
+        {
+          "image": "house_green.webp",
+          "name": "🏠 綠屋",
+          "type": "building",
+          "scale": 0.74,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.146,
+          "bbox_h_norm": 0.054
+        },
+        {
+          "image": "house_yellow.webp",
+          "name": "🏠 黃屋",
+          "type": "building",
+          "scale": 0.74,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.146,
+          "bbox_h_norm": 0.054
+        },
+        {
+          "image": "fountain_flow.webp",
+          "name": "⛲ 噴泉",
+          "type": "decoration",
+          "scale": 0.9,
+          "default_interaction": "fountain_splash",
+          "bbox_w_norm": 0.094,
+          "bbox_h_norm": 0.047,
+          "frame_width": 269,
+          "frame_height": 331,
+          "grid_cols": 2,
+          "grid_rows": 2,
+          "frames": 4,
+          "frame_rate": 6
+        },
+        {
+          "image": "tree_green.webp",
+          "name": "🌳 綠樹",
+          "type": "decoration",
+          "scale": 0.36,
+          "default_interaction": null,
+          "bbox_w_norm": 0.021,
+          "bbox_h_norm": 0.02,
+          "frame_width": 512,
+          "frame_height": 512,
+          "grid_cols": 4,
+          "grid_rows": 4,
+          "frames": 16,
+          "frame_rate": 12,
+          "play_on_proximity": true
+        },
+        {
+          "name": "👤 村民 NPC",
+          "type": "npc",
+          "scale": 0.6,
+          "default_interaction": "open_modal",
+          "default_greeting": "你好～",
+          "sprites": {
+            "side": {
+              "image": "hero_walk2.webp",
+              "frame_width": 151,
+              "frame_height": 206,
+              "frames": 9,
+              "frame_rate": 12,
+              "facing": "left"
+            },
+            "down": {
+              "image": "hero_walk.webp",
+              "frame_width": 139,
+              "frame_height": 230,
+              "frames": 25,
+              "frame_rate": 14
+            },
+            "up": {
+              "image": "hero_walk3.webp",
+              "frame_width": 96,
+              "frame_height": 173,
+              "frames": 16,
+              "frame_rate": 14
+            }
+          }
+        },
+        {
+          "name": "🐮 走路牛",
+          "type": "npc",
+          "scale": 0.45,
+          "default_interaction": "open_modal",
+          "default_greeting": "哞～",
+          "sprites": {
+            "side": {
+              "image": "cowwalk.webp",
+              "frame_width": 384,
+              "frame_height": 337,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 4,
+              "facing": "left"
+            },
+            "up": {
+              "image": "cowwalk2.webp",
+              "frame_width": 377,
+              "frame_height": 353,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 4
+            }
+          }
+        },
+        {
+          "name": "👧 女學生 NPC",
+          "type": "npc",
+          "scale": 0.35,
+          "default_interaction": "open_modal",
+          "default_greeting": "嗨～",
+          "sprites": {
+            "side": {
+              "image": "girl3.webp",
+              "frame_width": 234,
+              "frame_height": 464,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 6,
+              "facing": "right"
+            },
+            "down": {
+              "image": "girl1.webp",
+              "frame_width": 281,
+              "frame_height": 491,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 6
+            },
+            "up": {
+              "image": "girl2.webp",
+              "frame_width": 269,
+              "frame_height": 486,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 6
+            }
+          }
+        },
+        {
+          "name": "🦅 鳥群",
+          "type": "npc",
+          "scale": 0.5,
+          "default_interaction": "open_modal",
+          "default_greeting": "啾啾～",
+          "sprites": {
+            "side": {
+              "image": "bird.webp",
+              "frame_width": 518,
+              "frame_height": 250,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 8,
+              "facing": "left"
+            }
+          },
+          "default_depth_override": 9999
+        },
+        {
+          "name": "🐕 黃金獵犬 NPC",
+          "type": "npc",
+          "scale": 0.36,
+          "default_interaction": "open_modal",
+          "default_greeting": "汪～",
+          "sprites": {
+            "side": {
+              "image": "dog_side.webp",
+              "frame_width": 256,
+              "frame_height": 256,
+              "grid_cols": 4,
+              "grid_rows": 4,
+              "frames": 16,
+              "frame_rate": 12,
+              "facing": "right"
+            }
+          }
+        },
+        {
+          "image": "deco_flower_v2.webp",
+          "name": "🌸 花卉",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.012,
+          "frame_width": 420,
+          "frame_height": 345,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_flowerbush.webp",
+          "name": "💐 花叢",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.02,
+          "frame_width": 392,
+          "frame_height": 257,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_palm_v2.webp",
+          "name": "🌴 椰子樹",
+          "type": "decoration",
+          "scale": 0.32,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015,
+          "frame_width": 321,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_olive.webp",
+          "name": "🫒 橄欖樹",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.025,
+          "bbox_h_norm": 0.015,
+          "frame_width": 374,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_pine_v2.webp",
+          "name": "🌲 松樹",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.015,
+          "frame_width": 290,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_windmill.webp",
+          "name": "🪈 風車",
+          "type": "decoration",
+          "scale": 0.42,
+          "default_interaction": null,
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.04,
+          "frame_width": 308,
+          "frame_height": 420,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 10
+        },
+        {
+          "image": "deco_well.webp",
+          "name": "🪣 井",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.03,
+          "frame_width": 266,
+          "frame_height": 380,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 6
         },
         {
           "image": "deco_sakura.webp",
@@ -1057,6 +872,977 @@
           "frames": 8,
           "frame_rate": 10,
           "play_on_proximity": true
+        },
+        {
+          "image": "fir_green.webp",
+          "name": "🌲 森林樹",
+          "type": "decoration",
+          "scale": 0.42,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.03
+        },
+        {
+          "image": "fence_pen_v2.webp",
+          "name": "🪵 牧場柵欄",
+          "type": "decoration",
+          "scale": 0.52,
+          "default_interaction": null,
+          "bbox_w_norm": 0.306,
+          "bbox_h_norm": 0.286
+        },
+        {
+          "image": "field_iso.webp",
+          "name": "🟫 翻土田",
+          "type": "decoration",
+          "scale": 0.46,
+          "default_interaction": null,
+          "bbox_w_norm": 0.296,
+          "bbox_h_norm": 0.247
+        },
+        {
+          "image": "deco_windmill_iso.webp",
+          "name": "🪈 風車(2.5D)",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "frame_width": 816,
+          "frame_height": 1290,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 10,
+          "bbox_w_norm": 0.106,
+          "bbox_h_norm": 0.252
+        },
+        {
+          "image": "deco_well_static.webp",
+          "name": "🪣 古井(靜態)",
+          "type": "decoration",
+          "scale": 0.34,
+          "default_interaction": null,
+          "bbox_w_norm": 0.059,
+          "bbox_h_norm": 0.126
+        }
+      ]
+    },
+    {
+      "id": "academy",
+      "name": "🏛️ 五大學院 (village-web)",
+      "engine": "phaser_iso",
+      "config_path": "assets/academy_config.json",
+      "background_path": "village-web/academy_ground.webp",
+      "sprite_base": "village-web/",
+      "preview_url": "village-web/?map=academy",
+      "image_dimensions": {
+        "width": 1448,
+        "height": 1086
+      },
+      "world_offset_y": 0,
+      "sprite_library": [
+        {
+          "image": "academy_office.webp",
+          "name": "🏛️ 學院辦公室",
+          "type": "building",
+          "scale": 0.7,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.16,
+          "bbox_h_norm": 0.05
+        },
+        {
+          "image": "jobcenter_right.webp",
+          "name": "💼 職業介紹所",
+          "type": "building",
+          "scale": 0.34,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.16,
+          "bbox_h_norm": 0.05
+        },
+        {
+          "image": "exam_hall.webp",
+          "name": "📜 考試院",
+          "type": "building",
+          "scale": 0.32,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.16,
+          "bbox_h_norm": 0.05
+        },
+        {
+          "image": "house_green.webp",
+          "name": "🏠 綠屋",
+          "type": "building",
+          "scale": 0.74,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.146,
+          "bbox_h_norm": 0.054
+        },
+        {
+          "image": "house_yellow.webp",
+          "name": "🏠 黃屋",
+          "type": "building",
+          "scale": 0.74,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.146,
+          "bbox_h_norm": 0.054
+        },
+        {
+          "image": "fountain_flow.webp",
+          "name": "⛲ 噴泉",
+          "type": "decoration",
+          "scale": 0.9,
+          "default_interaction": "fountain_splash",
+          "bbox_w_norm": 0.094,
+          "bbox_h_norm": 0.047,
+          "frame_width": 269,
+          "frame_height": 331,
+          "grid_cols": 2,
+          "grid_rows": 2,
+          "frames": 4,
+          "frame_rate": 6
+        },
+        {
+          "image": "tree_green.webp",
+          "name": "🌳 綠樹",
+          "type": "decoration",
+          "scale": 0.36,
+          "default_interaction": null,
+          "bbox_w_norm": 0.021,
+          "bbox_h_norm": 0.02,
+          "frame_width": 512,
+          "frame_height": 512,
+          "grid_cols": 4,
+          "grid_rows": 4,
+          "frames": 16,
+          "frame_rate": 12,
+          "play_on_proximity": true
+        },
+        {
+          "name": "👤 村民 NPC",
+          "type": "npc",
+          "scale": 0.6,
+          "default_interaction": "open_modal",
+          "default_greeting": "你好～",
+          "sprites": {
+            "side": {
+              "image": "hero_walk2.webp",
+              "frame_width": 151,
+              "frame_height": 206,
+              "frames": 9,
+              "frame_rate": 12,
+              "facing": "left"
+            },
+            "down": {
+              "image": "hero_walk.webp",
+              "frame_width": 139,
+              "frame_height": 230,
+              "frames": 25,
+              "frame_rate": 14
+            },
+            "up": {
+              "image": "hero_walk3.webp",
+              "frame_width": 96,
+              "frame_height": 173,
+              "frames": 16,
+              "frame_rate": 14
+            }
+          }
+        },
+        {
+          "name": "🐮 走路牛",
+          "type": "npc",
+          "scale": 0.45,
+          "default_interaction": "open_modal",
+          "default_greeting": "哞～",
+          "sprites": {
+            "side": {
+              "image": "cowwalk.webp",
+              "frame_width": 384,
+              "frame_height": 337,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 4,
+              "facing": "left"
+            },
+            "up": {
+              "image": "cowwalk2.webp",
+              "frame_width": 377,
+              "frame_height": 353,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 4
+            }
+          }
+        },
+        {
+          "name": "👧 女學生 NPC",
+          "type": "npc",
+          "scale": 0.35,
+          "default_interaction": "open_modal",
+          "default_greeting": "嗨～",
+          "sprites": {
+            "side": {
+              "image": "girl3.webp",
+              "frame_width": 234,
+              "frame_height": 464,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 6,
+              "facing": "right"
+            },
+            "down": {
+              "image": "girl1.webp",
+              "frame_width": 281,
+              "frame_height": 491,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 6
+            },
+            "up": {
+              "image": "girl2.webp",
+              "frame_width": 269,
+              "frame_height": 486,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 6
+            }
+          }
+        },
+        {
+          "name": "🦅 鳥群",
+          "type": "npc",
+          "scale": 0.5,
+          "default_interaction": "open_modal",
+          "default_greeting": "啾啾～",
+          "sprites": {
+            "side": {
+              "image": "bird.webp",
+              "frame_width": 518,
+              "frame_height": 250,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 8,
+              "facing": "left"
+            }
+          },
+          "default_depth_override": 9999
+        },
+        {
+          "name": "🐕 黃金獵犬 NPC",
+          "type": "npc",
+          "scale": 0.36,
+          "default_interaction": "open_modal",
+          "default_greeting": "汪～",
+          "sprites": {
+            "side": {
+              "image": "dog_side.webp",
+              "frame_width": 256,
+              "frame_height": 256,
+              "grid_cols": 4,
+              "grid_rows": 4,
+              "frames": 16,
+              "frame_rate": 12,
+              "facing": "right"
+            }
+          }
+        },
+        {
+          "image": "deco_flower_v2.webp",
+          "name": "🌸 花卉",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.012,
+          "frame_width": 420,
+          "frame_height": 345,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_flowerbush.webp",
+          "name": "💐 花叢",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.02,
+          "frame_width": 392,
+          "frame_height": 257,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_palm_v2.webp",
+          "name": "🌴 椰子樹",
+          "type": "decoration",
+          "scale": 0.32,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015,
+          "frame_width": 321,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_olive.webp",
+          "name": "🫒 橄欖樹",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.025,
+          "bbox_h_norm": 0.015,
+          "frame_width": 374,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_pine_v2.webp",
+          "name": "🌲 松樹",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.015,
+          "frame_width": 290,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_windmill.webp",
+          "name": "🪈 風車",
+          "type": "decoration",
+          "scale": 0.42,
+          "default_interaction": null,
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.04,
+          "frame_width": 308,
+          "frame_height": 420,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 10
+        },
+        {
+          "image": "deco_well.webp",
+          "name": "🪣 井",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.03,
+          "frame_width": 266,
+          "frame_height": 380,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 6
+        },
+        {
+          "image": "deco_sakura.webp",
+          "name": "🌸 櫻花樹",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.015,
+          "frame_width": 360,
+          "frame_height": 350,
+          "grid_cols": 4,
+          "grid_rows": 4,
+          "frames": 16,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        {
+          "image": "deco_maple.webp",
+          "name": "🍁 楓樹",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.015,
+          "frame_width": 360,
+          "frame_height": 349,
+          "grid_cols": 4,
+          "grid_rows": 4,
+          "frames": 16,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        {
+          "image": "deco_sunflower.webp",
+          "name": "🌻 向日葵",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "bbox_w_norm": 0.015,
+          "bbox_h_norm": 0.012,
+          "frame_width": 267,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true
+        },
+        {
+          "image": "deco_bamboo.webp",
+          "name": "🎋 竹子",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.015,
+          "frame_width": 256,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true
+        },
+        {
+          "image": "deco_grass.webp",
+          "name": "🌾 草叢",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.025,
+          "bbox_h_norm": 0.008,
+          "frame_width": 334,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        {
+          "image": "fir_green.webp",
+          "name": "🌲 森林樹",
+          "type": "decoration",
+          "scale": 0.42,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.03
+        },
+        {
+          "image": "fence_pen_v2.webp",
+          "name": "🪵 牧場柵欄",
+          "type": "decoration",
+          "scale": 0.52,
+          "default_interaction": null,
+          "bbox_w_norm": 0.306,
+          "bbox_h_norm": 0.286
+        },
+        {
+          "image": "field_iso.webp",
+          "name": "🟫 翻土田",
+          "type": "decoration",
+          "scale": 0.46,
+          "default_interaction": null,
+          "bbox_w_norm": 0.296,
+          "bbox_h_norm": 0.247
+        },
+        {
+          "image": "deco_windmill_iso.webp",
+          "name": "🪈 風車(2.5D)",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "frame_width": 816,
+          "frame_height": 1290,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 10,
+          "bbox_w_norm": 0.106,
+          "bbox_h_norm": 0.252
+        },
+        {
+          "image": "deco_well_static.webp",
+          "name": "🪣 古井(靜態)",
+          "type": "decoration",
+          "scale": 0.34,
+          "default_interaction": null,
+          "bbox_w_norm": 0.059,
+          "bbox_h_norm": 0.126
+        }
+      ]
+    },
+    {
+      "id": "campus",
+      "name": "🏕️ 學園生活區 (village-web)",
+      "engine": "phaser",
+      "config_path": "assets/campus_config.json",
+      "background_path": "village-web/campus_ground_v2.webp",
+      "sprite_base": "village-web/",
+      "sprite_library": [
+        {
+          "image": "academy_office.webp",
+          "name": "🏛️ 學院辦公室",
+          "type": "building",
+          "scale": 0.7,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.16,
+          "bbox_h_norm": 0.05
+        },
+        {
+          "image": "jobcenter_right.webp",
+          "name": "💼 職業介紹所",
+          "type": "building",
+          "scale": 0.34,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.16,
+          "bbox_h_norm": 0.05
+        },
+        {
+          "image": "exam_hall.webp",
+          "name": "📜 考試院",
+          "type": "building",
+          "scale": 0.32,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.16,
+          "bbox_h_norm": 0.05
+        },
+        {
+          "image": "house_green.webp",
+          "name": "🏠 綠屋",
+          "type": "building",
+          "scale": 0.74,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.146,
+          "bbox_h_norm": 0.054
+        },
+        {
+          "image": "house_yellow.webp",
+          "name": "🏠 黃屋",
+          "type": "building",
+          "scale": 0.74,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.146,
+          "bbox_h_norm": 0.054
+        },
+        {
+          "image": "fountain_flow.webp",
+          "name": "⛲ 噴泉",
+          "type": "decoration",
+          "scale": 0.9,
+          "default_interaction": "fountain_splash",
+          "bbox_w_norm": 0.094,
+          "bbox_h_norm": 0.047,
+          "frame_width": 269,
+          "frame_height": 331,
+          "grid_cols": 2,
+          "grid_rows": 2,
+          "frames": 4,
+          "frame_rate": 6
+        },
+        {
+          "image": "tree_green.webp",
+          "name": "🌳 綠樹",
+          "type": "decoration",
+          "scale": 0.36,
+          "default_interaction": null,
+          "bbox_w_norm": 0.021,
+          "bbox_h_norm": 0.02,
+          "frame_width": 512,
+          "frame_height": 512,
+          "grid_cols": 4,
+          "grid_rows": 4,
+          "frames": 16,
+          "frame_rate": 12,
+          "play_on_proximity": true
+        },
+        {
+          "name": "👤 村民 NPC",
+          "type": "npc",
+          "scale": 0.6,
+          "default_interaction": "open_modal",
+          "default_greeting": "你好～",
+          "sprites": {
+            "side": {
+              "image": "hero_walk2.webp",
+              "frame_width": 151,
+              "frame_height": 206,
+              "frames": 9,
+              "frame_rate": 12,
+              "facing": "left"
+            },
+            "down": {
+              "image": "hero_walk.webp",
+              "frame_width": 139,
+              "frame_height": 230,
+              "frames": 25,
+              "frame_rate": 14
+            },
+            "up": {
+              "image": "hero_walk3.webp",
+              "frame_width": 96,
+              "frame_height": 173,
+              "frames": 16,
+              "frame_rate": 14
+            }
+          }
+        },
+        {
+          "name": "🐮 走路牛",
+          "type": "npc",
+          "scale": 0.45,
+          "default_interaction": "open_modal",
+          "default_greeting": "哞～",
+          "sprites": {
+            "side": {
+              "image": "cowwalk.webp",
+              "frame_width": 384,
+              "frame_height": 337,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 4,
+              "facing": "left"
+            },
+            "up": {
+              "image": "cowwalk2.webp",
+              "frame_width": 377,
+              "frame_height": 353,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 4
+            }
+          }
+        },
+        {
+          "name": "👧 女學生 NPC",
+          "type": "npc",
+          "scale": 0.35,
+          "default_interaction": "open_modal",
+          "default_greeting": "嗨～",
+          "sprites": {
+            "side": {
+              "image": "girl3.webp",
+              "frame_width": 234,
+              "frame_height": 464,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 6,
+              "facing": "right"
+            },
+            "down": {
+              "image": "girl1.webp",
+              "frame_width": 281,
+              "frame_height": 491,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 6
+            },
+            "up": {
+              "image": "girl2.webp",
+              "frame_width": 269,
+              "frame_height": 486,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 6
+            }
+          }
+        },
+        {
+          "name": "🦅 鳥群",
+          "type": "npc",
+          "scale": 0.5,
+          "default_interaction": "open_modal",
+          "default_greeting": "啾啾～",
+          "sprites": {
+            "side": {
+              "image": "bird.webp",
+              "frame_width": 518,
+              "frame_height": 250,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 8,
+              "facing": "left"
+            }
+          },
+          "default_depth_override": 9999
+        },
+        {
+          "name": "🐕 黃金獵犬 NPC",
+          "type": "npc",
+          "scale": 0.36,
+          "default_interaction": "open_modal",
+          "default_greeting": "汪～",
+          "sprites": {
+            "side": {
+              "image": "dog_side.webp",
+              "frame_width": 256,
+              "frame_height": 256,
+              "grid_cols": 4,
+              "grid_rows": 4,
+              "frames": 16,
+              "frame_rate": 12,
+              "facing": "right"
+            }
+          }
+        },
+        {
+          "image": "deco_flower_v2.webp",
+          "name": "🌸 花卉",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.012,
+          "frame_width": 420,
+          "frame_height": 345,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_flowerbush.webp",
+          "name": "💐 花叢",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.02,
+          "frame_width": 392,
+          "frame_height": 257,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_palm_v2.webp",
+          "name": "🌴 椰子樹",
+          "type": "decoration",
+          "scale": 0.32,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015,
+          "frame_width": 321,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_olive.webp",
+          "name": "🫒 橄欖樹",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.025,
+          "bbox_h_norm": 0.015,
+          "frame_width": 374,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_pine_v2.webp",
+          "name": "🌲 松樹",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.015,
+          "frame_width": 290,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_windmill.webp",
+          "name": "🪈 風車",
+          "type": "decoration",
+          "scale": 0.42,
+          "default_interaction": null,
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.04,
+          "frame_width": 308,
+          "frame_height": 420,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 10
+        },
+        {
+          "image": "deco_well.webp",
+          "name": "🪣 井",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.03,
+          "frame_width": 266,
+          "frame_height": 380,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 6
+        },
+        {
+          "image": "deco_sakura.webp",
+          "name": "🌸 櫻花樹",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.015,
+          "frame_width": 360,
+          "frame_height": 350,
+          "grid_cols": 4,
+          "grid_rows": 4,
+          "frames": 16,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        {
+          "image": "deco_maple.webp",
+          "name": "🍁 楓樹",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.015,
+          "frame_width": 360,
+          "frame_height": 349,
+          "grid_cols": 4,
+          "grid_rows": 4,
+          "frames": 16,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        {
+          "image": "deco_sunflower.webp",
+          "name": "🌻 向日葵",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "bbox_w_norm": 0.015,
+          "bbox_h_norm": 0.012,
+          "frame_width": 267,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true
+        },
+        {
+          "image": "deco_bamboo.webp",
+          "name": "🎋 竹子",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.015,
+          "frame_width": 256,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true
+        },
+        {
+          "image": "deco_grass.webp",
+          "name": "🌾 草叢",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.025,
+          "bbox_h_norm": 0.008,
+          "frame_width": 334,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 10,
+          "play_on_proximity": true
+        },
+        {
+          "image": "fir_green.webp",
+          "name": "🌲 森林樹",
+          "type": "decoration",
+          "scale": 0.42,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.03
+        },
+        {
+          "image": "fence_pen_v2.webp",
+          "name": "🪵 牧場柵欄",
+          "type": "decoration",
+          "scale": 0.52,
+          "default_interaction": null,
+          "bbox_w_norm": 0.306,
+          "bbox_h_norm": 0.286
+        },
+        {
+          "image": "field_iso.webp",
+          "name": "🟫 翻土田",
+          "type": "decoration",
+          "scale": 0.46,
+          "default_interaction": null,
+          "bbox_w_norm": 0.296,
+          "bbox_h_norm": 0.247
+        },
+        {
+          "image": "deco_windmill_iso.webp",
+          "name": "🪈 風車(2.5D)",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "frame_width": 816,
+          "frame_height": 1290,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 10,
+          "bbox_w_norm": 0.106,
+          "bbox_h_norm": 0.252
+        },
+        {
+          "image": "deco_well_static.webp",
+          "name": "🪣 古井(靜態)",
+          "type": "decoration",
+          "scale": 0.34,
+          "default_interaction": null,
+          "bbox_w_norm": 0.059,
+          "bbox_h_norm": 0.126
         }
       ]
     },
@@ -1075,6 +1861,322 @@
       "world_offset_y": 0,
       "sprite_library": [
         {
+          "image": "academy_office.webp",
+          "name": "🏛️ 學院辦公室",
+          "type": "building",
+          "scale": 0.7,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.16,
+          "bbox_h_norm": 0.05
+        },
+        {
+          "image": "jobcenter_right.webp",
+          "name": "💼 職業介紹所",
+          "type": "building",
+          "scale": 0.34,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.16,
+          "bbox_h_norm": 0.05
+        },
+        {
+          "image": "exam_hall.webp",
+          "name": "📜 考試院",
+          "type": "building",
+          "scale": 0.32,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.16,
+          "bbox_h_norm": 0.05
+        },
+        {
+          "image": "house_green.webp",
+          "name": "🏠 綠屋",
+          "type": "building",
+          "scale": 0.74,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.146,
+          "bbox_h_norm": 0.054
+        },
+        {
+          "image": "house_yellow.webp",
+          "name": "🏠 黃屋",
+          "type": "building",
+          "scale": 0.74,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.146,
+          "bbox_h_norm": 0.054
+        },
+        {
+          "image": "fountain_flow.webp",
+          "name": "⛲ 噴泉",
+          "type": "decoration",
+          "scale": 0.9,
+          "default_interaction": "fountain_splash",
+          "bbox_w_norm": 0.094,
+          "bbox_h_norm": 0.047,
+          "frame_width": 269,
+          "frame_height": 331,
+          "grid_cols": 2,
+          "grid_rows": 2,
+          "frames": 4,
+          "frame_rate": 6
+        },
+        {
+          "image": "tree_green.webp",
+          "name": "🌳 綠樹",
+          "type": "decoration",
+          "scale": 0.36,
+          "default_interaction": null,
+          "bbox_w_norm": 0.021,
+          "bbox_h_norm": 0.02,
+          "frame_width": 512,
+          "frame_height": 512,
+          "grid_cols": 4,
+          "grid_rows": 4,
+          "frames": 16,
+          "frame_rate": 12,
+          "play_on_proximity": true
+        },
+        {
+          "name": "👤 村民 NPC",
+          "type": "npc",
+          "scale": 0.6,
+          "default_interaction": "open_modal",
+          "default_greeting": "你好～",
+          "sprites": {
+            "side": {
+              "image": "hero_walk2.webp",
+              "frame_width": 151,
+              "frame_height": 206,
+              "frames": 9,
+              "frame_rate": 12,
+              "facing": "left"
+            },
+            "down": {
+              "image": "hero_walk.webp",
+              "frame_width": 139,
+              "frame_height": 230,
+              "frames": 25,
+              "frame_rate": 14
+            },
+            "up": {
+              "image": "hero_walk3.webp",
+              "frame_width": 96,
+              "frame_height": 173,
+              "frames": 16,
+              "frame_rate": 14
+            }
+          }
+        },
+        {
+          "name": "🐮 走路牛",
+          "type": "npc",
+          "scale": 0.45,
+          "default_interaction": "open_modal",
+          "default_greeting": "哞～",
+          "sprites": {
+            "side": {
+              "image": "cowwalk.webp",
+              "frame_width": 384,
+              "frame_height": 337,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 4,
+              "facing": "left"
+            },
+            "up": {
+              "image": "cowwalk2.webp",
+              "frame_width": 377,
+              "frame_height": 353,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 4
+            }
+          }
+        },
+        {
+          "name": "👧 女學生 NPC",
+          "type": "npc",
+          "scale": 0.35,
+          "default_interaction": "open_modal",
+          "default_greeting": "嗨～",
+          "sprites": {
+            "side": {
+              "image": "girl3.webp",
+              "frame_width": 234,
+              "frame_height": 464,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 6,
+              "facing": "right"
+            },
+            "down": {
+              "image": "girl1.webp",
+              "frame_width": 281,
+              "frame_height": 491,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 6
+            },
+            "up": {
+              "image": "girl2.webp",
+              "frame_width": 269,
+              "frame_height": 486,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 6
+            }
+          }
+        },
+        {
+          "name": "🦅 鳥群",
+          "type": "npc",
+          "scale": 0.5,
+          "default_interaction": "open_modal",
+          "default_greeting": "啾啾～",
+          "sprites": {
+            "side": {
+              "image": "bird.webp",
+              "frame_width": 518,
+              "frame_height": 250,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 8,
+              "facing": "left"
+            }
+          },
+          "default_depth_override": 9999
+        },
+        {
+          "name": "🐕 黃金獵犬 NPC",
+          "type": "npc",
+          "scale": 0.36,
+          "default_interaction": "open_modal",
+          "default_greeting": "汪～",
+          "sprites": {
+            "side": {
+              "image": "dog_side.webp",
+              "frame_width": 256,
+              "frame_height": 256,
+              "grid_cols": 4,
+              "grid_rows": 4,
+              "frames": 16,
+              "frame_rate": 12,
+              "facing": "right"
+            }
+          }
+        },
+        {
+          "image": "deco_flower_v2.webp",
+          "name": "🌸 花卉",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.012,
+          "frame_width": 420,
+          "frame_height": 345,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_flowerbush.webp",
+          "name": "💐 花叢",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.02,
+          "frame_width": 392,
+          "frame_height": 257,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_palm_v2.webp",
+          "name": "🌴 椰子樹",
+          "type": "decoration",
+          "scale": 0.32,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015,
+          "frame_width": 321,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_olive.webp",
+          "name": "🫒 橄欖樹",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.025,
+          "bbox_h_norm": 0.015,
+          "frame_width": 374,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_pine_v2.webp",
+          "name": "🌲 松樹",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.015,
+          "frame_width": 290,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_windmill.webp",
+          "name": "🪈 風車",
+          "type": "decoration",
+          "scale": 0.42,
+          "default_interaction": null,
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.04,
+          "frame_width": 308,
+          "frame_height": 420,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 10
+        },
+        {
+          "image": "deco_well.webp",
+          "name": "🪣 井",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.03,
+          "frame_width": 266,
+          "frame_height": 380,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 6
+        },
+        {
           "image": "deco_sakura.webp",
           "name": "🌸 櫻花樹",
           "type": "decoration",
@@ -1153,6 +2255,57 @@
           "frames": 8,
           "frame_rate": 10,
           "play_on_proximity": true
+        },
+        {
+          "image": "fir_green.webp",
+          "name": "🌲 森林樹",
+          "type": "decoration",
+          "scale": 0.42,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.03
+        },
+        {
+          "image": "fence_pen_v2.webp",
+          "name": "🪵 牧場柵欄",
+          "type": "decoration",
+          "scale": 0.52,
+          "default_interaction": null,
+          "bbox_w_norm": 0.306,
+          "bbox_h_norm": 0.286
+        },
+        {
+          "image": "field_iso.webp",
+          "name": "🟫 翻土田",
+          "type": "decoration",
+          "scale": 0.46,
+          "default_interaction": null,
+          "bbox_w_norm": 0.296,
+          "bbox_h_norm": 0.247
+        },
+        {
+          "image": "deco_windmill_iso.webp",
+          "name": "🪈 風車(2.5D)",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "frame_width": 816,
+          "frame_height": 1290,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 10,
+          "bbox_w_norm": 0.106,
+          "bbox_h_norm": 0.252
+        },
+        {
+          "image": "deco_well_static.webp",
+          "name": "🪣 古井(靜態)",
+          "type": "decoration",
+          "scale": 0.34,
+          "default_interaction": null,
+          "bbox_w_norm": 0.059,
+          "bbox_h_norm": 0.126
         }
       ]
     },
@@ -1171,6 +2324,322 @@
       "world_offset_y": 0,
       "sprite_library": [
         {
+          "image": "academy_office.webp",
+          "name": "🏛️ 學院辦公室",
+          "type": "building",
+          "scale": 0.7,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.16,
+          "bbox_h_norm": 0.05
+        },
+        {
+          "image": "jobcenter_right.webp",
+          "name": "💼 職業介紹所",
+          "type": "building",
+          "scale": 0.34,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.16,
+          "bbox_h_norm": 0.05
+        },
+        {
+          "image": "exam_hall.webp",
+          "name": "📜 考試院",
+          "type": "building",
+          "scale": 0.32,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.16,
+          "bbox_h_norm": 0.05
+        },
+        {
+          "image": "house_green.webp",
+          "name": "🏠 綠屋",
+          "type": "building",
+          "scale": 0.74,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.146,
+          "bbox_h_norm": 0.054
+        },
+        {
+          "image": "house_yellow.webp",
+          "name": "🏠 黃屋",
+          "type": "building",
+          "scale": 0.74,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.146,
+          "bbox_h_norm": 0.054
+        },
+        {
+          "image": "fountain_flow.webp",
+          "name": "⛲ 噴泉",
+          "type": "decoration",
+          "scale": 0.9,
+          "default_interaction": "fountain_splash",
+          "bbox_w_norm": 0.094,
+          "bbox_h_norm": 0.047,
+          "frame_width": 269,
+          "frame_height": 331,
+          "grid_cols": 2,
+          "grid_rows": 2,
+          "frames": 4,
+          "frame_rate": 6
+        },
+        {
+          "image": "tree_green.webp",
+          "name": "🌳 綠樹",
+          "type": "decoration",
+          "scale": 0.36,
+          "default_interaction": null,
+          "bbox_w_norm": 0.021,
+          "bbox_h_norm": 0.02,
+          "frame_width": 512,
+          "frame_height": 512,
+          "grid_cols": 4,
+          "grid_rows": 4,
+          "frames": 16,
+          "frame_rate": 12,
+          "play_on_proximity": true
+        },
+        {
+          "name": "👤 村民 NPC",
+          "type": "npc",
+          "scale": 0.6,
+          "default_interaction": "open_modal",
+          "default_greeting": "你好～",
+          "sprites": {
+            "side": {
+              "image": "hero_walk2.webp",
+              "frame_width": 151,
+              "frame_height": 206,
+              "frames": 9,
+              "frame_rate": 12,
+              "facing": "left"
+            },
+            "down": {
+              "image": "hero_walk.webp",
+              "frame_width": 139,
+              "frame_height": 230,
+              "frames": 25,
+              "frame_rate": 14
+            },
+            "up": {
+              "image": "hero_walk3.webp",
+              "frame_width": 96,
+              "frame_height": 173,
+              "frames": 16,
+              "frame_rate": 14
+            }
+          }
+        },
+        {
+          "name": "🐮 走路牛",
+          "type": "npc",
+          "scale": 0.45,
+          "default_interaction": "open_modal",
+          "default_greeting": "哞～",
+          "sprites": {
+            "side": {
+              "image": "cowwalk.webp",
+              "frame_width": 384,
+              "frame_height": 337,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 4,
+              "facing": "left"
+            },
+            "up": {
+              "image": "cowwalk2.webp",
+              "frame_width": 377,
+              "frame_height": 353,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 4
+            }
+          }
+        },
+        {
+          "name": "👧 女學生 NPC",
+          "type": "npc",
+          "scale": 0.35,
+          "default_interaction": "open_modal",
+          "default_greeting": "嗨～",
+          "sprites": {
+            "side": {
+              "image": "girl3.webp",
+              "frame_width": 234,
+              "frame_height": 464,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 6,
+              "facing": "right"
+            },
+            "down": {
+              "image": "girl1.webp",
+              "frame_width": 281,
+              "frame_height": 491,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 6
+            },
+            "up": {
+              "image": "girl2.webp",
+              "frame_width": 269,
+              "frame_height": 486,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 6
+            }
+          }
+        },
+        {
+          "name": "🦅 鳥群",
+          "type": "npc",
+          "scale": 0.5,
+          "default_interaction": "open_modal",
+          "default_greeting": "啾啾～",
+          "sprites": {
+            "side": {
+              "image": "bird.webp",
+              "frame_width": 518,
+              "frame_height": 250,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 8,
+              "facing": "left"
+            }
+          },
+          "default_depth_override": 9999
+        },
+        {
+          "name": "🐕 黃金獵犬 NPC",
+          "type": "npc",
+          "scale": 0.36,
+          "default_interaction": "open_modal",
+          "default_greeting": "汪～",
+          "sprites": {
+            "side": {
+              "image": "dog_side.webp",
+              "frame_width": 256,
+              "frame_height": 256,
+              "grid_cols": 4,
+              "grid_rows": 4,
+              "frames": 16,
+              "frame_rate": 12,
+              "facing": "right"
+            }
+          }
+        },
+        {
+          "image": "deco_flower_v2.webp",
+          "name": "🌸 花卉",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.012,
+          "frame_width": 420,
+          "frame_height": 345,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_flowerbush.webp",
+          "name": "💐 花叢",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.02,
+          "frame_width": 392,
+          "frame_height": 257,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_palm_v2.webp",
+          "name": "🌴 椰子樹",
+          "type": "decoration",
+          "scale": 0.32,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015,
+          "frame_width": 321,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_olive.webp",
+          "name": "🫒 橄欖樹",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.025,
+          "bbox_h_norm": 0.015,
+          "frame_width": 374,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_pine_v2.webp",
+          "name": "🌲 松樹",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.015,
+          "frame_width": 290,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_windmill.webp",
+          "name": "🪈 風車",
+          "type": "decoration",
+          "scale": 0.42,
+          "default_interaction": null,
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.04,
+          "frame_width": 308,
+          "frame_height": 420,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 10
+        },
+        {
+          "image": "deco_well.webp",
+          "name": "🪣 井",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.03,
+          "frame_width": 266,
+          "frame_height": 380,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 6
+        },
+        {
           "image": "deco_sakura.webp",
           "name": "🌸 櫻花樹",
           "type": "decoration",
@@ -1249,6 +2718,57 @@
           "frames": 8,
           "frame_rate": 10,
           "play_on_proximity": true
+        },
+        {
+          "image": "fir_green.webp",
+          "name": "🌲 森林樹",
+          "type": "decoration",
+          "scale": 0.42,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.03
+        },
+        {
+          "image": "fence_pen_v2.webp",
+          "name": "🪵 牧場柵欄",
+          "type": "decoration",
+          "scale": 0.52,
+          "default_interaction": null,
+          "bbox_w_norm": 0.306,
+          "bbox_h_norm": 0.286
+        },
+        {
+          "image": "field_iso.webp",
+          "name": "🟫 翻土田",
+          "type": "decoration",
+          "scale": 0.46,
+          "default_interaction": null,
+          "bbox_w_norm": 0.296,
+          "bbox_h_norm": 0.247
+        },
+        {
+          "image": "deco_windmill_iso.webp",
+          "name": "🪈 風車(2.5D)",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "frame_width": 816,
+          "frame_height": 1290,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 10,
+          "bbox_w_norm": 0.106,
+          "bbox_h_norm": 0.252
+        },
+        {
+          "image": "deco_well_static.webp",
+          "name": "🪣 古井(靜態)",
+          "type": "decoration",
+          "scale": 0.34,
+          "default_interaction": null,
+          "bbox_w_norm": 0.059,
+          "bbox_h_norm": 0.126
         }
       ]
     },
@@ -1267,6 +2787,322 @@
       "world_offset_y": 0,
       "sprite_library": [
         {
+          "image": "academy_office.webp",
+          "name": "🏛️ 學院辦公室",
+          "type": "building",
+          "scale": 0.7,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.16,
+          "bbox_h_norm": 0.05
+        },
+        {
+          "image": "jobcenter_right.webp",
+          "name": "💼 職業介紹所",
+          "type": "building",
+          "scale": 0.34,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.16,
+          "bbox_h_norm": 0.05
+        },
+        {
+          "image": "exam_hall.webp",
+          "name": "📜 考試院",
+          "type": "building",
+          "scale": 0.32,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.16,
+          "bbox_h_norm": 0.05
+        },
+        {
+          "image": "house_green.webp",
+          "name": "🏠 綠屋",
+          "type": "building",
+          "scale": 0.74,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.146,
+          "bbox_h_norm": 0.054
+        },
+        {
+          "image": "house_yellow.webp",
+          "name": "🏠 黃屋",
+          "type": "building",
+          "scale": 0.74,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.146,
+          "bbox_h_norm": 0.054
+        },
+        {
+          "image": "fountain_flow.webp",
+          "name": "⛲ 噴泉",
+          "type": "decoration",
+          "scale": 0.9,
+          "default_interaction": "fountain_splash",
+          "bbox_w_norm": 0.094,
+          "bbox_h_norm": 0.047,
+          "frame_width": 269,
+          "frame_height": 331,
+          "grid_cols": 2,
+          "grid_rows": 2,
+          "frames": 4,
+          "frame_rate": 6
+        },
+        {
+          "image": "tree_green.webp",
+          "name": "🌳 綠樹",
+          "type": "decoration",
+          "scale": 0.36,
+          "default_interaction": null,
+          "bbox_w_norm": 0.021,
+          "bbox_h_norm": 0.02,
+          "frame_width": 512,
+          "frame_height": 512,
+          "grid_cols": 4,
+          "grid_rows": 4,
+          "frames": 16,
+          "frame_rate": 12,
+          "play_on_proximity": true
+        },
+        {
+          "name": "👤 村民 NPC",
+          "type": "npc",
+          "scale": 0.6,
+          "default_interaction": "open_modal",
+          "default_greeting": "你好～",
+          "sprites": {
+            "side": {
+              "image": "hero_walk2.webp",
+              "frame_width": 151,
+              "frame_height": 206,
+              "frames": 9,
+              "frame_rate": 12,
+              "facing": "left"
+            },
+            "down": {
+              "image": "hero_walk.webp",
+              "frame_width": 139,
+              "frame_height": 230,
+              "frames": 25,
+              "frame_rate": 14
+            },
+            "up": {
+              "image": "hero_walk3.webp",
+              "frame_width": 96,
+              "frame_height": 173,
+              "frames": 16,
+              "frame_rate": 14
+            }
+          }
+        },
+        {
+          "name": "🐮 走路牛",
+          "type": "npc",
+          "scale": 0.45,
+          "default_interaction": "open_modal",
+          "default_greeting": "哞～",
+          "sprites": {
+            "side": {
+              "image": "cowwalk.webp",
+              "frame_width": 384,
+              "frame_height": 337,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 4,
+              "facing": "left"
+            },
+            "up": {
+              "image": "cowwalk2.webp",
+              "frame_width": 377,
+              "frame_height": 353,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 4
+            }
+          }
+        },
+        {
+          "name": "👧 女學生 NPC",
+          "type": "npc",
+          "scale": 0.35,
+          "default_interaction": "open_modal",
+          "default_greeting": "嗨～",
+          "sprites": {
+            "side": {
+              "image": "girl3.webp",
+              "frame_width": 234,
+              "frame_height": 464,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 6,
+              "facing": "right"
+            },
+            "down": {
+              "image": "girl1.webp",
+              "frame_width": 281,
+              "frame_height": 491,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 6
+            },
+            "up": {
+              "image": "girl2.webp",
+              "frame_width": 269,
+              "frame_height": 486,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 6
+            }
+          }
+        },
+        {
+          "name": "🦅 鳥群",
+          "type": "npc",
+          "scale": 0.5,
+          "default_interaction": "open_modal",
+          "default_greeting": "啾啾～",
+          "sprites": {
+            "side": {
+              "image": "bird.webp",
+              "frame_width": 518,
+              "frame_height": 250,
+              "grid_cols": 3,
+              "grid_rows": 3,
+              "frames": 9,
+              "frame_rate": 8,
+              "facing": "left"
+            }
+          },
+          "default_depth_override": 9999
+        },
+        {
+          "name": "🐕 黃金獵犬 NPC",
+          "type": "npc",
+          "scale": 0.36,
+          "default_interaction": "open_modal",
+          "default_greeting": "汪～",
+          "sprites": {
+            "side": {
+              "image": "dog_side.webp",
+              "frame_width": 256,
+              "frame_height": 256,
+              "grid_cols": 4,
+              "grid_rows": 4,
+              "frames": 16,
+              "frame_rate": 12,
+              "facing": "right"
+            }
+          }
+        },
+        {
+          "image": "deco_flower_v2.webp",
+          "name": "🌸 花卉",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.012,
+          "frame_width": 420,
+          "frame_height": 345,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_flowerbush.webp",
+          "name": "💐 花叢",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.02,
+          "frame_width": 392,
+          "frame_height": 257,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_palm_v2.webp",
+          "name": "🌴 椰子樹",
+          "type": "decoration",
+          "scale": 0.32,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015,
+          "frame_width": 321,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_olive.webp",
+          "name": "🫒 橄欖樹",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.025,
+          "bbox_h_norm": 0.015,
+          "frame_width": 374,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_pine_v2.webp",
+          "name": "🌲 松樹",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.015,
+          "frame_width": 290,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8
+        },
+        {
+          "image": "deco_windmill.webp",
+          "name": "🪈 風車",
+          "type": "decoration",
+          "scale": 0.42,
+          "default_interaction": null,
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.04,
+          "frame_width": 308,
+          "frame_height": 420,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 10
+        },
+        {
+          "image": "deco_well.webp",
+          "name": "🪣 井",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.03,
+          "frame_width": 266,
+          "frame_height": 380,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 6
+        },
+        {
           "image": "deco_sakura.webp",
           "name": "🌸 櫻花樹",
           "type": "decoration",
@@ -1345,6 +3181,57 @@
           "frames": 8,
           "frame_rate": 10,
           "play_on_proximity": true
+        },
+        {
+          "image": "fir_green.webp",
+          "name": "🌲 森林樹",
+          "type": "decoration",
+          "scale": 0.42,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.03
+        },
+        {
+          "image": "fence_pen_v2.webp",
+          "name": "🪵 牧場柵欄",
+          "type": "decoration",
+          "scale": 0.52,
+          "default_interaction": null,
+          "bbox_w_norm": 0.306,
+          "bbox_h_norm": 0.286
+        },
+        {
+          "image": "field_iso.webp",
+          "name": "🟫 翻土田",
+          "type": "decoration",
+          "scale": 0.46,
+          "default_interaction": null,
+          "bbox_w_norm": 0.296,
+          "bbox_h_norm": 0.247
+        },
+        {
+          "image": "deco_windmill_iso.webp",
+          "name": "🪈 風車(2.5D)",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "frame_width": 816,
+          "frame_height": 1290,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 10,
+          "bbox_w_norm": 0.106,
+          "bbox_h_norm": 0.252
+        },
+        {
+          "image": "deco_well_static.webp",
+          "name": "🪣 古井(靜態)",
+          "type": "decoration",
+          "scale": 0.34,
+          "default_interaction": null,
+          "bbox_w_norm": 0.059,
+          "bbox_h_norm": 0.126
         }
       ]
     }

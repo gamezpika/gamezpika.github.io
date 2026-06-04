@@ -665,6 +665,7 @@
     ov.querySelector(".ao-tabs4").innerHTML = "";
     if (!f) {
       caBubble(ov, "找不到這位師長。");
+      ov.querySelector(".ao-owner").textContent = "";
       ov.querySelector(".ao-content").innerHTML = `<div class="jc-empty">找不到這位師長</div>`;
       return;
     }

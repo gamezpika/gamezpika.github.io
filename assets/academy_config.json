@@ -566,35 +566,49 @@
           "scale": 0.0893,
           "sprites": {
             "side": {
-              "image": "zhuangzi_wfsheet.webp",
-              "frame_width": 622,
+              "image": "zhuangzi_wfsheet2.webp",
+              "frame_width": 752,
               "frame_height": 1276,
               "frames": 6,
               "frame_rate": 8,
               "facing": "left"
+            },
+            "down": {
+              "image": "zhuangzi_npc_walk_down.webp",
+              "frame_width": 756,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 6
+            },
+            "up": {
+              "image": "zhuangzi_npc_walk_up.webp",
+              "frame_width": 649,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 6
             }
           }
         },
         "spawn": {
-          "x": 0.5,
-          "y": 0.74
+          "x": 0.43,
+          "y": 0.76
         },
         "patrol": [
           {
-            "x": 0.42,
-            "y": 0.74
+            "x": 0.43,
+            "y": 0.76
           },
           {
-            "x": 0.42011229064932254,
-            "y": 0.6047108075235361
+            "x": 0.57,
+            "y": 0.76
           },
           {
-            "x": 0.516494,
-            "y": 0.607665
+            "x": 0.57,
+            "y": 0.7
           },
           {
-            "x": 0.523142,
-            "y": 0.742082
+            "x": 0.43,
+            "y": 0.7
           }
         ],
         "speed": 36,
@@ -613,35 +627,49 @@
           "scale": 0.0893,
           "sprites": {
             "side": {
-              "image": "caoxueqin_wfsheet.webp",
-              "frame_width": 597,
+              "image": "caoxueqin_wfsheet2.webp",
+              "frame_width": 864,
               "frame_height": 1276,
               "frames": 6,
               "frame_rate": 8,
               "facing": "left"
+            },
+            "down": {
+              "image": "caoxueqin_npc_walk_down.webp",
+              "frame_width": 607,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 6
+            },
+            "up": {
+              "image": "caoxueqin_npc_walk_up.webp",
+              "frame_width": 614,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 6
             }
           }
         },
         "spawn": {
-          "x": 0.68,
+          "x": 0.62,
           "y": 0.6
         },
         "patrol": [
           {
-            "x": 0.7624352725222817,
-            "y": 0.46143091132529723
+            "x": 0.62,
+            "y": 0.6
           },
           {
             "x": 0.76,
             "y": 0.6
           },
           {
-            "x": 0.909778,
-            "y": 0.521993
+            "x": 0.76,
+            "y": 0.53
           },
           {
-            "x": 0.897592,
-            "y": 0.321105
+            "x": 0.62,
+            "y": 0.53
           }
         ],
         "speed": 36,

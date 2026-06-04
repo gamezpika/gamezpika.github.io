@@ -1984,9 +1984,15 @@ function placeSpriteAt(libIdx, normX, normY) {
         const halfH = (item.bbox_h_norm || 0.02) / 2;
         // bbox 中心在 anchor 點往上半個 bbox 高（房子腳底就是 anchor）
         const bboxCenterY = normY - halfH;
+        // 動畫 spritesheet 欄位（噴泉/樹/風車/花等）一起帶進 sprite，否則放下去不會動只顯示整張幀圖
+        const sprite = { image: item.image, scale: item.scale || 0.74, anchor_x: 0.5, anchor_y: 1.0, rotation: 0 };
+        ['frame_width', 'frame_height', 'grid_cols', 'grid_rows', 'frames', 'frame_rate'].forEach(k => {
+            if (item[k] != null) sprite[k] = item[k];
+        });
+        if (item.play_on_proximity) sprite.play_on_proximity = true;
         mapConfig.buildings.push({
             id, name: itemName, category: item.type || 'building',
-            sprite: { image: item.image, scale: item.scale || 0.74, anchor_x: 0.5, anchor_y: 1.0, rotation: 0 },
+            sprite,
             anchor: { x: normX, y: normY },
             bounding_box: { x_min: normX - halfW, x_max: normX + halfW,
                             y_min: bboxCenterY - halfH, y_max: bboxCenterY + halfH },

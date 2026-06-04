@@ -203,9 +203,63 @@
         "mask_color": "#E8533A",
         "render_order": 480,
         "interaction_type": "open_shop"
+      },
+      {
+        "id": "ranch_fence",
+        "name": "牧場柵欄",
+        "category": "decoration",
+        "sprite": {
+          "image": "fence_pen.webp",
+          "scale": 0.55,
+          "anchor_x": 0.5,
+          "anchor_y": 1.0
+        },
+        "anchor": {
+          "x": 0.46,
+          "y": 0.9
+        },
+        "render_order": 300
       }
     ],
-    "obstacle_areas": [],
+    "obstacle_areas": [
+      {
+        "id": "pond",
+        "polygon": [
+          {
+            "x": 0.05,
+            "y": 0.73
+          },
+          {
+            "x": 0.1,
+            "y": 0.64
+          },
+          {
+            "x": 0.19,
+            "y": 0.63
+          },
+          {
+            "x": 0.27,
+            "y": 0.71
+          },
+          {
+            "x": 0.28,
+            "y": 0.82
+          },
+          {
+            "x": 0.21,
+            "y": 0.92
+          },
+          {
+            "x": 0.1,
+            "y": 0.92
+          },
+          {
+            "x": 0.03,
+            "y": 0.83
+          }
+        ]
+      }
+    ],
     "npcs": [],
     "objects": []
   }

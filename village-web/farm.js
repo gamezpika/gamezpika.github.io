@@ -31,21 +31,21 @@
     document.head.appendChild(st);
   })();
 
-  // 6 種家畜：走路圖(成年) + 寶寶/青年靜態圖 + 產品
+  // 6 種家畜：走路圖(成年) + 寶寶/青年靜態圖 + 產品 + h(成年顯示高,依體型) + zone(pen陸欄/pond池塘)
   const SPECIES = {
-    cow:     { name: "牛", emoji: "🐄", img: "cowwalk.webp",    fw: 384, fh: 337, frames: 9, fr: 8, facing: "left",  speed: 28, baby: "cow_baby.webp",     teen: "cow_teen.webp",     product: "🥛" },
-    chicken: { name: "雞", emoji: "🐔", img: "chick_walk.webp", fw: 512, fh: 512, frames: 6, fr: 8, facing: "right", speed: 34, baby: "chicken_baby.webp", teen: "chicken_teen.webp", product: "🥚" },
-    pig:     { name: "豬", emoji: "🐷", img: "pig_walk.webp",   fw: 292, fh: 264, frames: 2, fr: 4, facing: "right", speed: 26, baby: "pig_baby.webp",     teen: "pig_teen.webp",     product: "🍖" },
-    sheep:   { name: "羊", emoji: "🐑", img: "sheep_walk.webp", fw: 277, fh: 264, frames: 2, fr: 4, facing: "right", speed: 28, baby: "sheep_baby.webp",   teen: "sheep_teen.webp",   product: "🧶" },
-    duck:    { name: "鴨", emoji: "🦆", img: "duck_walk.webp",  fw: 239, fh: 264, frames: 2, fr: 5, facing: "right", speed: 30, baby: "duck_baby.webp",    teen: "duck_teen.webp",    product: "🥚" },
-    goose:   { name: "鵝", emoji: "🪿", img: "goose_walk.webp", fw: 247, fh: 264, frames: 2, fr: 5, facing: "right", speed: 30, baby: "goose_baby.webp",   teen: "goose_teen.webp",   product: "🥚" },
+    cow:     { name: "牛", emoji: "🐄", img: "cowwalk.webp",    fw: 384, fh: 337, frames: 9, fr: 8, facing: "left",  speed: 28, baby: "cow_baby.webp",     teen: "cow_teen.webp",     product: "🥛", h: 118, zone: "pen" },
+    chicken: { name: "雞", emoji: "🐔", img: "chick_walk.webp", fw: 512, fh: 512, frames: 6, fr: 8, facing: "right", speed: 34, baby: "chicken_baby.webp", teen: "chicken_teen.webp", product: "🥚", h: 58,  zone: "pen" },
+    pig:     { name: "豬", emoji: "🐷", img: "pig_walk.webp",   fw: 292, fh: 264, frames: 2, fr: 4, facing: "right", speed: 26, baby: "pig_baby.webp",     teen: "pig_teen.webp",     product: "🍖", h: 90,  zone: "pen" },
+    sheep:   { name: "羊", emoji: "🐑", img: "sheep_walk.webp", fw: 277, fh: 264, frames: 2, fr: 4, facing: "right", speed: 28, baby: "sheep_baby.webp",   teen: "sheep_teen.webp",   product: "🧶", h: 92,  zone: "pen" },
+    duck:    { name: "鴨", emoji: "🦆", img: "duck_walk.webp",  fw: 239, fh: 264, frames: 2, fr: 5, facing: "right", speed: 30, baby: "duck_baby.webp",    teen: "duck_teen.webp",    product: "🥚", h: 66,  zone: "pond" },
+    goose:   { name: "鵝", emoji: "🪿", img: "goose_walk.webp", fw: 247, fh: 264, frames: 2, fr: 5, facing: "right", speed: 30, baby: "goose_baby.webp",   teen: "goose_teen.webp",   product: "🥚", h: 80,  zone: "pond" },
   };
   const ORDER = ["cow", "chicken", "pig", "sheep", "duck", "goose"];
 
   // 成長時間（秒級 demo）
   const BABY_MS = 7000, TEEN_MS = 18000;   // 0~7s 寶寶 / 7~18s 青年 / 18s+ 成年
   const PRODUCT_MS = 10000;                 // 成年每 10s 產出一個產品
-  const STAGE_H = { baby: 56, teen: 78, adult: 100 };  // 各階段目標螢幕高(px)
+  const STAGE_MUL = { baby: 0.55, teen: 0.78, adult: 1.0 };  // 各階段相對成年 h 的倍率
 
   const LS_STOCK = "campus_livestock";   // [{id,species,bornAt,lastCollect}]
   const LS_HARVEST = "campus_harvest";   // {emoji: count}
@@ -78,9 +78,29 @@
   // ---------- 世界裡的動物管理 ----------
   const Ranch = {
     scene: null, animals: {}, _pending: {}, onUpdate: null,
-    PEN: { x0: 0.46, y0: 0.46, x1: 0.80, y1: 0.70 },
+    // 水禽在池塘上游（池塘是 obstacle，動物不吃碰撞所以可在水面）
+    POND:         { x0: 0.07, y0: 0.70, x1: 0.24, y1: 0.87 },
+    LAND_DEFAULT: { x0: 0.34, y0: 0.66, x1: 0.58, y1: 0.86 },  // 找不到柵欄時的後備陸欄
+    _landPen: null,
 
-    penPoint() { const P = this.PEN; return { x: P.x0 + (P.x1 - P.x0) * Math.random(), y: P.y0 + (P.y1 - P.y0) * Math.random() }; },
+    // 從 config 放置的「牧場柵欄」建築 sprite 讀位置 → 算欄內活動範圍（派派在地圖編輯器移柵欄,動物自動跟著）
+    computePen() {
+      const sc = this.scene;
+      const f = sc.children.list.find((o) => o.texture && o.texture.key === "fence_pen.webp");
+      if (!f) { this._landPen = this.LAND_DEFAULT; return; }
+      const dw = f.displayWidth, dh = f.displayHeight;
+      const left = f.x - dw * (f.originX != null ? f.originX : 0.5);
+      const top = f.y - dh * (f.originY != null ? f.originY : 1.0);
+      const oy = sc.WORLD_OFFSET_Y || 0;
+      // 內縮到柵欄內側（裁切後柵欄：左右各約15%是木樁、頂20%後欄、底18%前欄）
+      this._landPen = {
+        x0: (left + dw * 0.16) / sc.IMG_W, x1: (left + dw * 0.84) / sc.IMG_W,
+        y0: (top + dh * 0.34 - oy) / sc.IMG_H, y1: (top + dh * 0.82 - oy) / sc.IMG_H,
+      };
+    },
+
+    zoneArea(zone) { return zone === "pond" ? this.POND : (this._landPen || this.LAND_DEFAULT); },
+    penPoint(zone) { const A = this.zoneArea(zone); return { x: A.x0 + (A.x1 - A.x0) * Math.random(), y: A.y0 + (A.y1 - A.y0) * Math.random() }; },
     nx(x) { return x * this.scene.IMG_W; },
     ny(y) { return y * this.scene.IMG_H + (this.scene.WORLD_OFFSET_Y || 0); },
 
@@ -108,8 +128,8 @@
     spawn(rec) {
       const sp = SPECIES[rec.species];
       if (!sp || !this.scene || this.animals[rec.id]) return;
-      const p = this.penPoint();
-      const a = { rec, sp, spr: null, shadow: null, stage: null, homeX: this.nx(p.x), homeY: this.ny(p.y), target: this.penPoint(), pause: 0, prodSpr: null };
+      const p = this.penPoint(sp.zone);
+      const a = { rec, sp, spr: null, shadow: null, stage: null, homeX: this.nx(p.x), homeY: this.ny(p.y), target: this.penPoint(sp.zone), pause: 0, prodSpr: null };
       this.animals[rec.id] = a;
       this.applyStage(a, stageOf(rec));
     },
@@ -125,7 +145,8 @@
         if (!this.scene || !this.animals[a.rec.id]) return;
         if (isAdult) this.ensureWalkAnim(sp);
         const frameH = isAdult ? sp.fh : this.scene.textures.get(texKey).getSourceImage().height;
-        const scale = STAGE_H[stage] / frameH;
+        const targetH = sp.h * STAGE_MUL[stage];   // 依體型 + 階段
+        const scale = targetH / frameH;
         if (!a.spr) {
           a.spr = this.scene.add.sprite(a.homeX, a.homeY, texKey, 0).setOrigin(0.5, 1);
           a.shadow = this.scene.add.ellipse(a.homeX, a.homeY, 40, 13, 0x000000, 0.26);
@@ -133,7 +154,7 @@
           a.spr.setTexture(texKey, 0);
         }
         a.spr.setScale(scale);
-        a.shadow.setScale(STAGE_H[stage] / STAGE_H.adult);
+        a.shadow.setScale((sp.h / 100) * STAGE_MUL[stage]);
         if (isAdult) { a.spr.play("ranch_walk_" + sp.img); a.spr.setInteractive(); a.spr.on("pointerdown", () => this.tryCollect(a)); }
         else { a.spr.anims && a.spr.anims.stop(); a.spr.disableInteractive && a.spr.disableInteractive(); }
         a.stage = stage;
@@ -147,7 +168,7 @@
     },
     showProduct(a) {
       if (a.prodSpr) return;
-      a.prodSpr = this.scene.add.text(a.spr.x, a.spr.y - STAGE_H.adult - 6, a.sp.product, { fontSize: "26px" }).setOrigin(0.5, 1).setDepth(99998);
+      a.prodSpr = this.scene.add.text(a.spr.x, a.spr.y - a.sp.h - 6, a.sp.product, { fontSize: "26px" }).setOrigin(0.5, 1).setDepth(99998);
     },
     hideProduct(a) { if (a.prodSpr) { a.prodSpr.destroy(); a.prodSpr = null; } },
     tryCollect(a) {
@@ -190,6 +211,7 @@
       this.scene = scene; this.animals = {}; this._pending = {};
       this.preloadAll(() => {
         if (!this.scene) return;
+        this.computePen();
         ORDER.forEach((k) => this.ensureWalkAnim(SPECIES[k]));
         loadStock().forEach((rec) => this.spawn(rec));
       });
@@ -201,7 +223,7 @@
     detach() {
       if (this.scene && this.onUpdate) this.scene.events.off("update", this.onUpdate);
       Object.values(this.animals).forEach((a) => { if (a.spr) a.spr.destroy(); if (a.shadow) a.shadow.destroy(); if (a.prodSpr) a.prodSpr.destroy(); });
-      this.animals = {}; this._pending = {}; this.onUpdate = null;
+      this.animals = {}; this._pending = {}; this._landPen = null; this.onUpdate = null;
       if (this.scene) this.scene.__ranchAttached = false;
       this.scene = null;
     },
@@ -227,7 +249,7 @@
           a.spr.anims && a.spr.anims.resume();
           const tx = this.nx(a.target.x), ty = this.ny(a.target.y);
           const dx = tx - a.spr.x, dy = ty - a.spr.y, dist = Math.hypot(dx, dy);
-          if (dist < 6) { a.target = this.penPoint(); a.pause = 600 + Math.random() * 1400; }
+          if (dist < 6) { a.target = this.penPoint(a.sp.zone); a.pause = 600 + Math.random() * 1400; }
           else {
             a.spr.x += (dx / dist) * a.sp.speed * dt;
             a.spr.y += (dy / dist) * a.sp.speed * dt;
@@ -238,7 +260,7 @@
         a.shadow.x = a.spr.x; a.shadow.y = a.spr.y;
         a.spr.setDepth(a.spr.y); a.shadow.setDepth(a.spr.y - 1);
         // 產品收成提示
-        if (this.productReady(a)) { this.showProduct(a); if (a.prodSpr) { a.prodSpr.x = a.spr.x; a.prodSpr.y = a.spr.y - STAGE_H.adult - 6; a.prodSpr.setDepth(99998); } }
+        if (this.productReady(a)) { this.showProduct(a); if (a.prodSpr) { a.prodSpr.x = a.spr.x; a.prodSpr.y = a.spr.y - a.sp.h - 6; a.prodSpr.setDepth(99998); } }
       });
     },
   };

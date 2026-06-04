@@ -2,13 +2,13 @@
   "map_config": {
     "version": 1,
     "dimensions": {
-      "image_width": 1536,
-      "image_height": 1024,
-      "world_width": 1536,
-      "world_height": 1024,
+      "image_width": 1672,
+      "image_height": 941,
+      "world_width": 1672,
+      "world_height": 941,
       "world_offset_y": 0
     },
-    "background": "village-web/shopping_ground.webp",
+    "background": "village-web/shopping_ground_v2.webp",
     "asset_base": "village-web/",
     "player": {
       "spawn": {
@@ -62,7 +62,125 @@
         "label": "回村莊"
       }
     ],
-    "buildings": [],
+    "buildings": [
+      {
+        "id": "house_blue",
+        "name": "男裝店",
+        "category": "house",
+        "sprite": {
+          "image": "menswear_anim_v2.webp",
+          "scale": 0.7,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "frame_width": 511,
+          "frame_height": 512,
+          "grid_cols": 4,
+          "grid_rows": 4,
+          "frames": 16,
+          "frame_rate": 12
+        },
+        "anchor": {
+          "x": 0.3,
+          "y": 0.55
+        },
+        "center": {
+          "x": 0.3,
+          "y": 0.55
+        },
+        "bounding_box": {
+          "x_min": 0.20917773437499998,
+          "y_min": 0.39250000000000007,
+          "x_max": 0.390822265625,
+          "y_max": 0.55
+        },
+        "interaction": {
+          "type": "open_shop",
+          "label": "男裝店",
+          "body": "歡迎光臨男裝店",
+          "radius": 150,
+          "shop_id": "menswear"
+        },
+        "polygon": [],
+        "path": [],
+        "render_order": 550
+      },
+      {
+        "id": "house_brown",
+        "name": "女裝店",
+        "category": "house",
+        "sprite": {
+          "image": "clothes.webp",
+          "scale": 1.15,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "frame_width": 301,
+          "frame_height": 296,
+          "grid_cols": 2,
+          "grid_rows": 2,
+          "frames": 4,
+          "frame_rate": 4
+        },
+        "anchor": {
+          "x": 0.54,
+          "y": 0.55
+        },
+        "center": {
+          "x": 0.54,
+          "y": 0.55
+        },
+        "bounding_box": {
+          "x_min": 0.4521103515625,
+          "y_min": 0.40041015625000004,
+          "x_max": 0.6278896484375001,
+          "y_max": 0.55
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "boutique",
+          "label": "女裝店",
+          "body": "歡迎光臨女裝店",
+          "radius": 150
+        },
+        "polygon": [],
+        "path": [],
+        "render_order": 550
+      },
+      {
+        "id": "house_red",
+        "name": "批發中心",
+        "category": "house",
+        "sprite": {
+          "image": "wholesale_left.webp",
+          "scale": 0.75,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.78,
+          "y": 0.55
+        },
+        "center": {
+          "x": 0.78,
+          "y": 0.55
+        },
+        "bounding_box": {
+          "x_min": 0.6640283203125,
+          "y_min": 0.38125000000000003,
+          "x_max": 0.8959716796875,
+          "y_max": 0.55
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "grocer",
+          "label": "批發中心",
+          "body": "歡迎光臨批發中心",
+          "radius": 150
+        },
+        "polygon": [],
+        "path": [],
+        "render_order": 550
+      }
+    ],
     "obstacle_areas": [],
     "npcs": [],
     "objects": []

@@ -563,7 +563,7 @@
         "id": "zhuangzi",
         "name": "莊周",
         "sprite": {
-          "scale": 0.0893,
+          "scale": 0.07,
           "sprites": {
             "side": {
               "image": "zhuangzi_wfsheet2.webp",
@@ -624,7 +624,7 @@
         "id": "caoxueqin",
         "name": "曹雪芹",
         "sprite": {
-          "scale": 0.0893,
+          "scale": 0.07,
           "sprites": {
             "side": {
               "image": "caoxueqin_wfsheet2.webp",

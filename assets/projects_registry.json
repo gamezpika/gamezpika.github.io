@@ -486,15 +486,15 @@
           "bbox_h_norm": 0.126
         },
         {
-          "image": "deco_scarecrow.webp",
+          "image": "deco_scarecrow_v2.webp",
           "name": "🌾 稻草人",
           "type": "decoration",
           "scale": 0.25,
           "default_interaction": null,
           "bbox_w_norm": 0.018,
           "bbox_h_norm": 0.015,
-          "frame_width": 357,
-          "frame_height": 340,
+          "frame_width": 304,
+          "frame_height": 360,
           "grid_cols": 4,
           "grid_rows": 2,
           "frames": 8,
@@ -503,15 +503,15 @@
           "prox_radius": 80
         },
         {
-          "image": "deco_stall.webp",
+          "image": "deco_stall_v2.webp",
           "name": "⛺ 市集攤位",
           "type": "decoration",
           "scale": 0.35,
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.03,
-          "frame_width": 340,
-          "frame_height": 320,
+          "frame_width": 275,
+          "frame_height": 360,
           "grid_cols": 4,
           "grid_rows": 2,
           "frames": 8,
@@ -520,7 +520,7 @@
           "prox_radius": 80
         },
         {
-          "image": "deco_signpost.webp",
+          "image": "deco_signpost_v2.webp",
           "name": "🪧 路標",
           "type": "decoration",
           "scale": 0.22,
@@ -529,7 +529,7 @@
           "bbox_h_norm": 0.015
         },
         {
-          "image": "deco_bench.webp",
+          "image": "deco_bench_v2.webp",
           "name": "🪑 長椅",
           "type": "decoration",
           "scale": 0.25,
@@ -538,7 +538,7 @@
           "bbox_h_norm": 0.012
         },
         {
-          "image": "deco_barrel.webp",
+          "image": "deco_barrel_v2.webp",
           "name": "🛢️ 木桶",
           "type": "decoration",
           "scale": 0.18,
@@ -1034,15 +1034,15 @@
           "bbox_h_norm": 0.126
         },
         {
-          "image": "deco_scarecrow.webp",
+          "image": "deco_scarecrow_v2.webp",
           "name": "🌾 稻草人",
           "type": "decoration",
           "scale": 0.25,
           "default_interaction": null,
           "bbox_w_norm": 0.018,
           "bbox_h_norm": 0.015,
-          "frame_width": 357,
-          "frame_height": 340,
+          "frame_width": 304,
+          "frame_height": 360,
           "grid_cols": 4,
           "grid_rows": 2,
           "frames": 8,
@@ -1051,15 +1051,15 @@
           "prox_radius": 80
         },
         {
-          "image": "deco_stall.webp",
+          "image": "deco_stall_v2.webp",
           "name": "⛺ 市集攤位",
           "type": "decoration",
           "scale": 0.35,
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.03,
-          "frame_width": 340,
-          "frame_height": 320,
+          "frame_width": 275,
+          "frame_height": 360,
           "grid_cols": 4,
           "grid_rows": 2,
           "frames": 8,
@@ -1068,7 +1068,7 @@
           "prox_radius": 80
         },
         {
-          "image": "deco_signpost.webp",
+          "image": "deco_signpost_v2.webp",
           "name": "🪧 路標",
           "type": "decoration",
           "scale": 0.22,
@@ -1077,7 +1077,7 @@
           "bbox_h_norm": 0.015
         },
         {
-          "image": "deco_bench.webp",
+          "image": "deco_bench_v2.webp",
           "name": "🪑 長椅",
           "type": "decoration",
           "scale": 0.25,
@@ -1086,7 +1086,7 @@
           "bbox_h_norm": 0.012
         },
         {
-          "image": "deco_barrel.webp",
+          "image": "deco_barrel_v2.webp",
           "name": "🛢️ 木桶",
           "type": "decoration",
           "scale": 0.18,
@@ -1582,15 +1582,15 @@
           "bbox_h_norm": 0.126
         },
         {
-          "image": "deco_scarecrow.webp",
+          "image": "deco_scarecrow_v2.webp",
           "name": "🌾 稻草人",
           "type": "decoration",
           "scale": 0.25,
           "default_interaction": null,
           "bbox_w_norm": 0.018,
           "bbox_h_norm": 0.015,
-          "frame_width": 357,
-          "frame_height": 340,
+          "frame_width": 304,
+          "frame_height": 360,
           "grid_cols": 4,
           "grid_rows": 2,
           "frames": 8,
@@ -1599,15 +1599,15 @@
           "prox_radius": 80
         },
         {
-          "image": "deco_stall.webp",
+          "image": "deco_stall_v2.webp",
           "name": "⛺ 市集攤位",
           "type": "decoration",
           "scale": 0.35,
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.03,
-          "frame_width": 340,
-          "frame_height": 320,
+          "frame_width": 275,
+          "frame_height": 360,
           "grid_cols": 4,
           "grid_rows": 2,
           "frames": 8,
@@ -1616,7 +1616,7 @@
           "prox_radius": 80
         },
         {
-          "image": "deco_signpost.webp",
+          "image": "deco_signpost_v2.webp",
           "name": "🪧 路標",
           "type": "decoration",
           "scale": 0.22,
@@ -1625,7 +1625,7 @@
           "bbox_h_norm": 0.015
         },
         {
-          "image": "deco_bench.webp",
+          "image": "deco_bench_v2.webp",
           "name": "🪑 長椅",
           "type": "decoration",
           "scale": 0.25,
@@ -1634,7 +1634,7 @@
           "bbox_h_norm": 0.012
         },
         {
-          "image": "deco_barrel.webp",
+          "image": "deco_barrel_v2.webp",
           "name": "🛢️ 木桶",
           "type": "decoration",
           "scale": 0.18,
@@ -2124,15 +2124,15 @@
           "bbox_h_norm": 0.126
         },
         {
-          "image": "deco_scarecrow.webp",
+          "image": "deco_scarecrow_v2.webp",
           "name": "🌾 稻草人",
           "type": "decoration",
           "scale": 0.25,
           "default_interaction": null,
           "bbox_w_norm": 0.018,
           "bbox_h_norm": 0.015,
-          "frame_width": 357,
-          "frame_height": 340,
+          "frame_width": 304,
+          "frame_height": 360,
           "grid_cols": 4,
           "grid_rows": 2,
           "frames": 8,
@@ -2141,15 +2141,15 @@
           "prox_radius": 80
         },
         {
-          "image": "deco_stall.webp",
+          "image": "deco_stall_v2.webp",
           "name": "⛺ 市集攤位",
           "type": "decoration",
           "scale": 0.35,
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.03,
-          "frame_width": 340,
-          "frame_height": 320,
+          "frame_width": 275,
+          "frame_height": 360,
           "grid_cols": 4,
           "grid_rows": 2,
           "frames": 8,
@@ -2158,7 +2158,7 @@
           "prox_radius": 80
         },
         {
-          "image": "deco_signpost.webp",
+          "image": "deco_signpost_v2.webp",
           "name": "🪧 路標",
           "type": "decoration",
           "scale": 0.22,
@@ -2167,7 +2167,7 @@
           "bbox_h_norm": 0.015
         },
         {
-          "image": "deco_bench.webp",
+          "image": "deco_bench_v2.webp",
           "name": "🪑 長椅",
           "type": "decoration",
           "scale": 0.25,
@@ -2176,7 +2176,7 @@
           "bbox_h_norm": 0.012
         },
         {
-          "image": "deco_barrel.webp",
+          "image": "deco_barrel_v2.webp",
           "name": "🛢️ 木桶",
           "type": "decoration",
           "scale": 0.18,
@@ -2672,15 +2672,15 @@
           "bbox_h_norm": 0.126
         },
         {
-          "image": "deco_scarecrow.webp",
+          "image": "deco_scarecrow_v2.webp",
           "name": "🌾 稻草人",
           "type": "decoration",
           "scale": 0.25,
           "default_interaction": null,
           "bbox_w_norm": 0.018,
           "bbox_h_norm": 0.015,
-          "frame_width": 357,
-          "frame_height": 340,
+          "frame_width": 304,
+          "frame_height": 360,
           "grid_cols": 4,
           "grid_rows": 2,
           "frames": 8,
@@ -2689,15 +2689,15 @@
           "prox_radius": 80
         },
         {
-          "image": "deco_stall.webp",
+          "image": "deco_stall_v2.webp",
           "name": "⛺ 市集攤位",
           "type": "decoration",
           "scale": 0.35,
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.03,
-          "frame_width": 340,
-          "frame_height": 320,
+          "frame_width": 275,
+          "frame_height": 360,
           "grid_cols": 4,
           "grid_rows": 2,
           "frames": 8,
@@ -2706,7 +2706,7 @@
           "prox_radius": 80
         },
         {
-          "image": "deco_signpost.webp",
+          "image": "deco_signpost_v2.webp",
           "name": "🪧 路標",
           "type": "decoration",
           "scale": 0.22,
@@ -2715,7 +2715,7 @@
           "bbox_h_norm": 0.015
         },
         {
-          "image": "deco_bench.webp",
+          "image": "deco_bench_v2.webp",
           "name": "🪑 長椅",
           "type": "decoration",
           "scale": 0.25,
@@ -2724,7 +2724,7 @@
           "bbox_h_norm": 0.012
         },
         {
-          "image": "deco_barrel.webp",
+          "image": "deco_barrel_v2.webp",
           "name": "🛢️ 木桶",
           "type": "decoration",
           "scale": 0.18,
@@ -3220,15 +3220,15 @@
           "bbox_h_norm": 0.126
         },
         {
-          "image": "deco_scarecrow.webp",
+          "image": "deco_scarecrow_v2.webp",
           "name": "🌾 稻草人",
           "type": "decoration",
           "scale": 0.25,
           "default_interaction": null,
           "bbox_w_norm": 0.018,
           "bbox_h_norm": 0.015,
-          "frame_width": 357,
-          "frame_height": 340,
+          "frame_width": 304,
+          "frame_height": 360,
           "grid_cols": 4,
           "grid_rows": 2,
           "frames": 8,
@@ -3237,15 +3237,15 @@
           "prox_radius": 80
         },
         {
-          "image": "deco_stall.webp",
+          "image": "deco_stall_v2.webp",
           "name": "⛺ 市集攤位",
           "type": "decoration",
           "scale": 0.35,
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.03,
-          "frame_width": 340,
-          "frame_height": 320,
+          "frame_width": 275,
+          "frame_height": 360,
           "grid_cols": 4,
           "grid_rows": 2,
           "frames": 8,
@@ -3254,7 +3254,7 @@
           "prox_radius": 80
         },
         {
-          "image": "deco_signpost.webp",
+          "image": "deco_signpost_v2.webp",
           "name": "🪧 路標",
           "type": "decoration",
           "scale": 0.22,
@@ -3263,7 +3263,7 @@
           "bbox_h_norm": 0.015
         },
         {
-          "image": "deco_bench.webp",
+          "image": "deco_bench_v2.webp",
           "name": "🪑 長椅",
           "type": "decoration",
           "scale": 0.25,
@@ -3272,7 +3272,7 @@
           "bbox_h_norm": 0.012
         },
         {
-          "image": "deco_barrel.webp",
+          "image": "deco_barrel_v2.webp",
           "name": "🛢️ 木桶",
           "type": "decoration",
           "scale": 0.18,
@@ -3768,15 +3768,15 @@
           "bbox_h_norm": 0.126
         },
         {
-          "image": "deco_scarecrow.webp",
+          "image": "deco_scarecrow_v2.webp",
           "name": "🌾 稻草人",
           "type": "decoration",
           "scale": 0.25,
           "default_interaction": null,
           "bbox_w_norm": 0.018,
           "bbox_h_norm": 0.015,
-          "frame_width": 357,
-          "frame_height": 340,
+          "frame_width": 304,
+          "frame_height": 360,
           "grid_cols": 4,
           "grid_rows": 2,
           "frames": 8,
@@ -3785,15 +3785,15 @@
           "prox_radius": 80
         },
         {
-          "image": "deco_stall.webp",
+          "image": "deco_stall_v2.webp",
           "name": "⛺ 市集攤位",
           "type": "decoration",
           "scale": 0.35,
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.03,
-          "frame_width": 340,
-          "frame_height": 320,
+          "frame_width": 275,
+          "frame_height": 360,
           "grid_cols": 4,
           "grid_rows": 2,
           "frames": 8,
@@ -3802,7 +3802,7 @@
           "prox_radius": 80
         },
         {
-          "image": "deco_signpost.webp",
+          "image": "deco_signpost_v2.webp",
           "name": "🪧 路標",
           "type": "decoration",
           "scale": 0.22,
@@ -3811,7 +3811,7 @@
           "bbox_h_norm": 0.015
         },
         {
-          "image": "deco_bench.webp",
+          "image": "deco_bench_v2.webp",
           "name": "🪑 長椅",
           "type": "decoration",
           "scale": 0.25,
@@ -3820,7 +3820,7 @@
           "bbox_h_norm": 0.012
         },
         {
-          "image": "deco_barrel.webp",
+          "image": "deco_barrel_v2.webp",
           "name": "🛢️ 木桶",
           "type": "decoration",
           "scale": 0.18,

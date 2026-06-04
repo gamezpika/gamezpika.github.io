@@ -202,7 +202,80 @@
       }
     ],
     "obstacle_areas": [],
-    "npcs": [],
+    "npcs": [
+      {
+        "id": "farm_sheep",
+        "name": "小羊",
+        "spawn": { "x": 0.58, "y": 0.40 },
+        "speed": 34,
+        "sprite": {
+          "scale": 0.42,
+          "sprites": {
+            "side": { "image": "sheep_walk.webp", "frame_width": 277, "frame_height": 264, "frames": 2, "frame_rate": 4, "grid_cols": 2, "grid_rows": 1, "facing": "right" }
+          }
+        },
+        "patrol": [
+          { "x": 0.58, "y": 0.40 },
+          { "x": 0.74, "y": 0.42 },
+          { "x": 0.76, "y": 0.52 },
+          { "x": 0.60, "y": 0.52 }
+        ]
+      },
+      {
+        "id": "farm_pig",
+        "name": "小豬",
+        "spawn": { "x": 0.42, "y": 0.52 },
+        "speed": 30,
+        "sprite": {
+          "scale": 0.44,
+          "sprites": {
+            "side": { "image": "pig_walk.webp", "frame_width": 292, "frame_height": 264, "frames": 2, "frame_rate": 4, "grid_cols": 2, "grid_rows": 1, "facing": "right" }
+          }
+        },
+        "patrol": [
+          { "x": 0.42, "y": 0.52 },
+          { "x": 0.54, "y": 0.50 },
+          { "x": 0.50, "y": 0.60 },
+          { "x": 0.40, "y": 0.60 }
+        ]
+      },
+      {
+        "id": "farm_duck",
+        "name": "小鴨",
+        "spawn": { "x": 0.12, "y": 0.52 },
+        "speed": 32,
+        "sprite": {
+          "scale": 0.36,
+          "sprites": {
+            "side": { "image": "duck_walk.webp", "frame_width": 239, "frame_height": 264, "frames": 2, "frame_rate": 5, "grid_cols": 2, "grid_rows": 1, "facing": "right" }
+          }
+        },
+        "patrol": [
+          { "x": 0.12, "y": 0.52 },
+          { "x": 0.26, "y": 0.54 },
+          { "x": 0.22, "y": 0.62 },
+          { "x": 0.10, "y": 0.60 }
+        ]
+      },
+      {
+        "id": "farm_goose",
+        "name": "小鵝",
+        "spawn": { "x": 0.20, "y": 0.26 },
+        "speed": 32,
+        "sprite": {
+          "scale": 0.38,
+          "sprites": {
+            "side": { "image": "goose_walk.webp", "frame_width": 247, "frame_height": 264, "frames": 2, "frame_rate": 5, "grid_cols": 2, "grid_rows": 1, "facing": "right" }
+          }
+        },
+        "patrol": [
+          { "x": 0.20, "y": 0.26 },
+          { "x": 0.34, "y": 0.28 },
+          { "x": 0.30, "y": 0.38 },
+          { "x": 0.18, "y": 0.36 }
+        ]
+      }
+    ],
     "objects": []
   }
 }

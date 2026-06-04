@@ -944,6 +944,26 @@ function dedupNpcIds(cfg) {
     });
 }
 
+// building id 撞了會讓清單調 scale/rotation 都抓到第一個（id 改用 max suffix+1，修舊草稿重複）
+function dedupBuildingIds(cfg) {
+    if (!cfg || !Array.isArray(cfg.buildings)) return;
+    let maxN = 0;
+    cfg.buildings.forEach(b => {
+        const m = (b.id || '').match(/_(\d+)$/);
+        if (m) maxN = Math.max(maxN, parseInt(m[1], 10));
+    });
+    const seen = new Set();
+    cfg.buildings.forEach(b => {
+        if (!b.id || seen.has(b.id)) {
+            const base = (b.id || (b.sprite && b.sprite.image) || 'obj')
+                .replace(/\.(png|jpe?g|webp)$/, '').replace(/_(\d+)$/, '');
+            maxN += 1;
+            b.id = base + '_' + maxN;
+        }
+        seen.add(b.id);
+    });
+}
+
 // 共用：載 server 底圖（+ 可選自訂 config，預設用 server config）
 function loadServerMap(useCachedConfig) {
     const placeholder = document.getElementById('empty-placeholder');
@@ -993,6 +1013,8 @@ function loadServerMap(useCachedConfig) {
             normalizeSpriteFrames(mapConfig);
             // NPC id 撞了會讓 path mode 點哪個都 highlight 第一個
             dedupNpcIds(mapConfig);
+            // building id 撞了會讓清單調某個物件卻改到別個
+            dedupBuildingIds(mapConfig);
             // 如果走 cached（localStorage）也要 normalize 一次
             if (Array.isArray(mapConfig.buildings)) {
                 mapConfig.buildings.forEach(b => {
@@ -1972,7 +1994,13 @@ function placeSpriteAt(libIdx, normX, normY) {
         mapConfig.npcs.push(newNpc);
     } else {
         if (!Array.isArray(mapConfig.buildings)) mapConfig.buildings = [];
-        const id = item.image.replace(/\.(png|jpe?g|webp)$/, '') + '_' + (mapConfig.buildings.length + 1);
+        // 用 max 現有 suffix + 1（不能用 length+1，刪過物件後會撞號→清單調錯物件）
+        let _maxB = 0;
+        mapConfig.buildings.forEach(b => {
+            const m = (b.id || '').match(/_(\d+)$/);
+            if (m) _maxB = Math.max(_maxB, parseInt(m[1], 10));
+        });
+        const id = item.image.replace(/\.(png|jpe?g|webp)$/, '') + '_' + (_maxB + 1);
         // 從顯示名 ("🌳 綠樹") 去掉開頭 emoji+空白，從第一個中/英/數開始截
         const cleanName = (s) => {
             const m = (s || '').match(/[一-鿿A-Za-z0-9].*/);

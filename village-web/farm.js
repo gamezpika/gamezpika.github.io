@@ -86,8 +86,8 @@
     // 從 config 放置的「牧場柵欄」建築 sprite 讀位置 → 算欄內活動範圍（派派在地圖編輯器移柵欄,動物自動跟著）
     computePen() {
       const sc = this.scene;
-      // 用 /fence/ 模糊比對：抓 fence_back(或任何柵欄圖)，日後再改名也不會失聯掉進後備欄
-      const f = sc.children.list.find((o) => o.texture && /fence/.test(o.texture.key));
+      // 用 /fence/ 模糊比對：抓 fence_back(或任何柵欄圖)，日後再改名也不會失聯掉進後備欄；排除前排 overlay 自己
+      const f = sc.children.list.find((o) => o.texture && /fence/.test(o.texture.key) && o.texture.key !== "fence_front.webp");
       if (!f) { this._landPen = this.LAND_DEFAULT; return; }
       const dw = f.displayWidth, dh = f.displayHeight;
       const left = f.x - dw * (f.originX != null ? f.originX : 0.5);
@@ -100,15 +100,22 @@
       };
     },
 
-    // 疊「柵欄前排」在後排同位置，用接地線正常排序 → 走進欄裡的玩家會被前排橫桿正確遮住（後排在玩家後）
-    addFenceFront() {
+    // 執行期強制圖層深度（寫在 farm.js 不靠 campus_config → 地圖編輯器一鍵推也洗不掉）：
+    // ①柵欄整片壓到玩家後 ②疊一張前排底排橫桿用接地線排序,遮住走進欄裡的玩家 ③翻土田壓成地面層永遠在玩家下
+    applyMapDepth() {
       const sc = this.scene;
       if (this._fenceFront) { this._fenceFront.destroy(); this._fenceFront = null; }
-      const back = sc.children.list.find((o) => o.texture && o.texture.key === "fence_back.webp");
-      if (!back || !sc.textures.exists("fence_front.webp")) return;
-      this._fenceFront = sc.add.image(back.x, back.y, "fence_front.webp")
-        .setOrigin(back.originX, back.originY).setScale(back.scaleX, back.scaleY)
-        .setRotation(back.rotation).setDepth(back.y);
+      const fence = sc.children.list.find((o) => o.texture && /fence/.test(o.texture.key) && o.texture.key !== "fence_front.webp");
+      if (fence) {
+        fence.setDepth(2);   // 後排:永遠在玩家後(地面層之上)
+        if (sc.textures.exists("fence_front.webp")) {
+          this._fenceFront = sc.add.image(fence.x, fence.y, "fence_front.webp")
+            .setOrigin(fence.originX, fence.originY).setScale(fence.scaleX, fence.scaleY)
+            .setRotation(fence.rotation).setDepth(fence.y);   // 前排:接地線正常排序
+        }
+      }
+      const field = sc.children.list.find((o) => o.texture && o.texture.key === "field_iso.webp");
+      if (field) field.setDepth(1);   // 翻土田:地面層,永遠在玩家下
     },
 
     zoneArea(zone) { return zone === "pond" ? this.POND : (this._landPen || this.LAND_DEFAULT); },
@@ -225,7 +232,7 @@
       this.preloadAll(() => {
         if (!this.scene) return;
         this.computePen();
-        this.addFenceFront();
+        this.applyMapDepth();
         ORDER.forEach((k) => this.ensureWalkAnim(SPECIES[k]));
         loadStock().forEach((rec) => this.spawn(rec));
       });

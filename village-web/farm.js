@@ -151,14 +151,25 @@
     },
     hideProduct(a) { if (a.prodSpr) { a.prodSpr.destroy(); a.prodSpr = null; } },
     tryCollect(a) {
-      if (!this.productReady(a)) return;
+      if (!this.productReady(a) || a._collected) return;
+      a._collected = true;
       const h = loadHarvest(); h[a.sp.product] = (h[a.sp.product] || 0) + 1; saveHarvest(h);
-      a.rec.lastCollect = Date.now();
-      const stock = loadStock(); const r = stock.find((x) => x.id === a.rec.id); if (r) { r.lastCollect = a.rec.lastCollect; saveStock(stock); }
+      saveStock(loadStock().filter((x) => x.id !== a.rec.id));   // 從牧場移除
       this.hideProduct(a);
+      if (a.spr.disableInteractive) a.spr.disableInteractive();
       // 飄字 +產品
       const t = this.scene.add.text(a.spr.x, a.spr.y - 60, "+" + a.sp.product, { fontSize: "22px", color: "#3a8a3a", fontStyle: "bold" }).setOrigin(0.5).setDepth(99999);
       this.scene.tweens.add({ targets: t, y: t.y - 36, alpha: 0, duration: 800, onComplete: () => t.destroy() });
+      // 動物收成後離開：縮小淡出消失
+      a.leaving = true;   // update() 不再移動牠
+      this.scene.tweens.add({ targets: a.shadow, alpha: 0, duration: 420 });
+      this.scene.tweens.add({
+        targets: a.spr, scaleX: a.spr.scaleX * 0.4, scaleY: a.spr.scaleY * 0.4, alpha: 0, duration: 420,
+        onComplete: () => {
+          if (a.spr) a.spr.destroy(); if (a.shadow) a.shadow.destroy();
+          delete this.animals[a.rec.id];
+        },
+      });
     },
 
     // 一次批次預載 6 種全部圖（成年 sheet + 寶寶 + 青年），避免逐隻 load.start 序列化失效
@@ -200,7 +211,7 @@
       if (!sc || !sc.player) return;
       const dt = delta / 1000;
       Object.values(this.animals).forEach((a) => {
-        if (!a.spr) return;
+        if (!a.spr || a.leaving) return;
         // 成長換階段
         const stage = stageOf(a.rec);
         if (stage !== a.stage) this.applyStage(a, stage);
@@ -248,7 +259,7 @@
       '<div class="ranch-panel">' +
       '  <button class="ranch-close" id="ranch-close">✕</button>' +
       '  <div class="ranch-title">🐮 學園牧場・養動物</div>' +
-      '  <div class="ranch-sub">養動物→寶寶長大成年→點成年的動物收成</div>' +
+      '  <div class="ranch-sub">養動物→寶寶長大成年→點成年的動物收成（收成後牠會離開）</div>' +
       '  <div class="ranch-grid" id="ranch-grid"></div>' +
       '  <div class="ranch-sec" id="ranch-owned"></div>' +
       '  <div class="ranch-sec" id="ranch-harvest"></div>' +

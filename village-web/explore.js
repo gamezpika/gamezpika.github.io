@@ -4,6 +4,8 @@
 
 const REGISTRY_URL = "../assets/projects_registry.json";
 const DPR = Math.max(1, window.devicePixelRatio || 1);
+// 草/花卉等地上小植物：可踩過去、不建碰撞（現有已放置的也一起生效）
+const WALKABLE_DECOR = new Set(["deco_grass.webp", "deco_flower.webp", "deco_flower_v2.webp"]);
 
 function _qParam(name) {
   try { return new URLSearchParams(window.location.search).get(name); } catch (e) { return null; }
@@ -232,8 +234,8 @@ class ExploreScene extends Phaser.Scene {
           this._addFountainParticles(anchor.x, anchor.y);
         }
       }
-      // Collision bbox
-      if (b.bounding_box) {
+      // Collision bbox（草/花卉跳過，可踩過去）
+      if (b.bounding_box && !(b.sprite && WALKABLE_DECOR.has(b.sprite.image))) {
         const bb = this._nbbox(b.bounding_box);
         const body = this.add.rectangle(bb.cx, bb.cy, bb.w, bb.h, 0xff0000, 0).setVisible(false);
         this.physics.add.existing(body, true);

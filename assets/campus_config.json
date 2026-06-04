@@ -259,17 +259,11 @@
         "name": "井",
         "category": "decoration",
         "sprite": {
-          "image": "deco_well.webp",
+          "image": "deco_well_static.webp",
           "scale": 0.45,
           "anchor_x": 0.5,
           "anchor_y": 1,
-          "rotation": 0,
-          "frame_width": 266,
-          "frame_height": 380,
-          "grid_cols": 4,
-          "grid_rows": 2,
-          "frames": 8,
-          "frame_rate": 6
+          "rotation": 0
         },
         "anchor": {
           "x": 0.08827285372578107,
@@ -741,6 +735,28 @@
             "y": 0.36903118239632626
           }
         ]
+      },
+      {
+        "id": "deco_windmill",
+        "name": "風車",
+        "category": "decoration",
+        "sprite": {
+          "image": "deco_windmill_iso.webp",
+          "scale": 0.2,
+          "anchor_x": 0.5,
+          "anchor_y": 1.0,
+          "frame_width": 816,
+          "frame_height": 1290,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 10
+        },
+        "anchor": {
+          "x": 0.82,
+          "y": 0.33
+        },
+        "render_order": 310
       }
     ],
     "obstacle_areas": [

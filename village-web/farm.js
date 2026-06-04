@@ -80,13 +80,14 @@
     scene: null, animals: {}, _pending: {}, onUpdate: null,
     // 水禽在池塘上游（池塘是 obstacle，動物不吃碰撞所以可在水面）
     POND:         { x0: 0.06, y0: 0.76, x1: 0.21, y1: 0.90 },
-    LAND_DEFAULT: { x0: 0.30, y0: 0.55, x1: 0.50, y1: 0.64 },  // 找不到柵欄時的後備陸欄
+    LAND_DEFAULT: { x0: 0.82, y0: 0.12, x1: 0.93, y1: 0.22 },  // 找不到柵欄時的後備：右上空草地(刻意避開翻土田)
     _landPen: null,
 
     // 從 config 放置的「牧場柵欄」建築 sprite 讀位置 → 算欄內活動範圍（派派在地圖編輯器移柵欄,動物自動跟著）
     computePen() {
       const sc = this.scene;
-      const f = sc.children.list.find((o) => o.texture && o.texture.key === "fence_back.webp");
+      // 用 /fence/ 模糊比對：抓 fence_back(或任何柵欄圖)，日後再改名也不會失聯掉進後備欄
+      const f = sc.children.list.find((o) => o.texture && /fence/.test(o.texture.key));
       if (!f) { this._landPen = this.LAND_DEFAULT; return; }
       const dw = f.displayWidth, dh = f.displayHeight;
       const left = f.x - dw * (f.originX != null ? f.originX : 0.5);

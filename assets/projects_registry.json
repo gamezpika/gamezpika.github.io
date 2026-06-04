@@ -15,15 +15,6 @@
       "world_offset_y": -400,
       "sprite_library": [
         {
-          "image": "road_tile.webp",
-          "name": "🛣 路段",
-          "type": "decoration",
-          "scale": 0.25,
-          "default_interaction": null,
-          "bbox_w_norm": 0.06,
-          "bbox_h_norm": 0.015
-        },
-        {
           "image": "wholesale.webp",
           "name": "🏭 批發中心",
           "type": "building",
@@ -126,7 +117,14 @@
           "scale": 0.36,
           "default_interaction": null,
           "bbox_w_norm": 0.021,
-          "bbox_h_norm": 0.02
+          "bbox_h_norm": 0.02,
+          "frame_width": 512,
+          "frame_height": 512,
+          "grid_cols": 4,
+          "grid_rows": 4,
+          "frames": 16,
+          "frame_rate": 12,
+          "play_on_proximity": true
         },
         {
           "name": "👤 村民 NPC",

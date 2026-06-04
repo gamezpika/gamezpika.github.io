@@ -499,14 +499,14 @@
         "id": "zhuangzi",
         "name": "莊周",
         "sprite": {
-          "scale": 0.063,
+          "scale": 0.0893,
           "sprites": {
             "side": {
-              "image": "zhuangzi_npc_walk.webp",
-              "frame_width": 692,
-              "frame_height": 1809,
+              "image": "zhuangzi_wfsheet.webp",
+              "frame_width": 622,
+              "frame_height": 1276,
               "frames": 6,
-              "frame_rate": 6,
+              "frame_rate": 8,
               "facing": "left"
             }
           }
@@ -538,14 +538,14 @@
         "id": "caoxueqin",
         "name": "曹雪芹",
         "sprite": {
-          "scale": 0.064,
+          "scale": 0.0893,
           "sprites": {
             "side": {
-              "image": "caoxueqin_npc_walk.webp",
-              "frame_width": 500,
-              "frame_height": 1767,
+              "image": "caoxueqin_wfsheet.webp",
+              "frame_width": 597,
+              "frame_height": 1276,
               "frames": 6,
-              "frame_rate": 6,
+              "frame_rate": 8,
               "facing": "left"
             }
           }

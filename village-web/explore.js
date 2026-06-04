@@ -428,8 +428,8 @@ class ExploreScene extends Phaser.Scene {
     if (fade) this.time.delayedCall(30, () => fade.classList.remove("show"));
   }
 
-  _showEnter(label) {
-    if (this.enterEl) { this.enterEl.textContent = "🛒 進入 " + label; this.enterEl.classList.add("show"); }
+  _showEnter(text) {
+    if (this.enterEl) { this.enterEl.textContent = text; this.enterEl.classList.add("show"); }
   }
   _hideEnter() { if (this.enterEl) this.enterEl.classList.remove("show"); }
 
@@ -795,16 +795,24 @@ class ExploreScene extends Phaser.Scene {
       const d = Math.hypot(px - it.cx, py - it.cy);
       if (d < it.radius && d < bestDist) { nearest = it; bestDist = d; }
     }
-    // NPC：只冒氣泡，不再列入 A button 互動（派派要求：經過就有泡、不用按 A 對話）
+    // NPC：冒氣泡；若帶 open_shop 互動，走近也納入「進入」鈕偵測（NPC 會走動 → 用動態座標）
     for (const npc of this.npcs) {
-      const r = (npc.cfg.interaction && npc.cfg.interaction.radius) || 110;
+      const it = npc.cfg.interaction || {};
+      const r = it.radius || 110;
       const d = Math.hypot(px - npc.body.x, py - npc.body.y);
       const inRange = d < r;
-      if (npc.bubble) npc.bubble.setVisible(inRange);
+      if (npc.bubble) npc.bubble.setVisible(inRange && !this.modalOpen);
+      if (it.type === "open_shop" && it.shop_id && inRange && d < bestDist) {
+        nearest = { type: "open_shop", shop_id: it.shop_id, npc: true,
+                    label: it.label || (npc.cfg.name || ""),
+                    cx: npc.body.x, cy: npc.body.y, radius: r };
+        bestDist = d;
+      }
     }
 
     if (nearest && nearest.type === "open_shop" && !this.modalOpen) {
-      this._nearShop = nearest; this._showEnter(nearest.label);
+      this._nearShop = nearest;
+      this._showEnter(nearest.npc ? ("📜 找 " + nearest.label) : ("🛒 進入 " + nearest.label));
     } else {
       this._nearShop = null; this._hideEnter();
     }

@@ -109,6 +109,7 @@
     if (shopId === "academy_office") { openAcademyOffice(onClose); return; }
     if (shopId === "dorm") { openDormHub(onClose); return; }
     if (shopId === "chinese_academy") { openChineseAcademy(onClose); return; }
+    if (shopId.indexOf("npc_") === 0) { openNpcQuest(shopId.slice(4), onClose); return; }
     onCloseCb = onClose || null;
     let cat;
     try {
@@ -498,10 +499,12 @@
 
   /* ───────────────────── 孔丘書院（國語學院·院長孔丘，16 主線任務，純展示假領獎）───────────────────── */
   let CA_CONTENT = null;
-  let caTab = 0;   // 目前任務線 index
+  let caTab = 0;          // 門面:'overview'/'fig'；NPC:line index
+  let caMode = "academy"; // "academy" 建築門面 / "npc" 任務面板
+  let caNpcId = null;
   async function caLoad() {
     if (CA_CONTENT) return CA_CONTENT;
-    const r = await fetch("chinese_academy.json?v=3");
+    const r = await fetch("chinese_academy.json?v=4");
     if (!r.ok) throw new Error("chinese academy HTTP " + r.status);
     CA_CONTENT = await r.json();
     return CA_CONTENT;
@@ -516,8 +519,8 @@
         <button class="shop-close" aria-label="關閉">×</button>
         <div class="ao-principal">
           <div class="ao-bubble"></div>
-          <img class="ao-principal-img" src="kongqiu_front.webp?v=1" alt="國語學院 院長 孔丘" draggable="false">
-          <div class="ao-owner">👤 國語學院 · 院長 孔丘</div>
+          <img class="ao-principal-img" src="kongqiu_front.webp?v=1" alt="國語學院 院長" draggable="false">
+          <div class="ao-owner"></div>
         </div>
         <div class="ao-right">
           <div class="jc-tabs ao-tabs4"></div>
@@ -530,71 +533,130 @@
     return ov;
   }
   function caBubble(ov, txt) { ov.querySelector(".ao-bubble").textContent = txt || ""; }
-
-  function caRender(ov) {
-    const c = CA_CONTENT || { lines: [] };
-    const d = c.dean;
-    if (d) {                                   // 院長資料以 JSON 為準，避免與畫面漂移
-      if (d.img) ov.querySelector(".ao-principal-img").src = d.img + "?v=1";
-      ov.querySelector(".ao-owner").textContent = "👤 " + (d.title || "") + (d.name ? " " + d.name : "");
-    }
-    const lines = Array.isArray(c.lines) ? c.lines : [];
-    const figs = Array.isArray(c.figures) ? c.figures : [];
-    if (caTab !== "fig" && caTab >= lines.length) caTab = 0;
-    const tabs = ov.querySelector(".ao-tabs4");
-    tabs.innerHTML = lines.map((ln, i) =>
-      `<button class="jc-tab${i === caTab ? " active" : ""}" data-i="${i}">${aoEsc(ln.tab)}</button>`).join("")
-      + (figs.length ? `<button class="jc-tab${caTab === "fig" ? " active" : ""}" data-fig="1">人物圖鑑</button>` : "");
-    tabs.querySelectorAll(".jc-tab").forEach((b) =>
-      b.addEventListener("click", () => { caTab = b.dataset.fig ? "fig" : +b.dataset.i; caRender(ov); }));
+  function caSetPrincipal(ov, img, owner) {
+    if (img) ov.querySelector(".ao-principal-img").src = img + "?v=1";
+    ov.querySelector(".ao-owner").textContent = owner || "";
+  }
+  function caFigBadgeCls(b) { return b === "院長" ? "dean" : (b === "教授" ? "prof" : "assoc"); }
+  function caRenderFigures(ov, figs) {
+    caBubble(ov, "這些都是國語學院的師長，點一張卡片認識他們吧！");
     const box = ov.querySelector(".ao-content");
+    box.innerHTML = `<div class="ca-figs">` + figs.map((f, i) => `
+      <div class="ca-fig" data-fi="${i}">
+        <span class="ca-fig-badge b-${caFigBadgeCls(f.badge)}">${aoEsc(f.badge || "")}</span>
+        <div class="ca-fig-pic"><img src="${aoEsc(f.img)}?v=1" alt="${aoEsc(f.name)}" draggable="false"></div>
+        <div class="ca-fig-nm">${aoEsc(f.name)}<span class="ca-fig-era">${aoEsc(f.era || "")}</span></div>
+        <div class="ca-fig-wk">${aoEsc(f.works || "")}</div>
+      </div>`).join("") + `</div>`;
+    box.querySelectorAll(".ca-fig").forEach((cd) => cd.addEventListener("click", function () {
+      const f = figs[+this.dataset.fi]; if (!f) return;
+      box.querySelectorAll(".ca-fig").forEach((x) => x.classList.remove("sel"));
+      this.classList.add("sel");
+      caBubble(ov, f.name + "（" + (f.era || "") + "） " + (f.works || "") + "　" + (f.desc || ""));
+    }));
+  }
 
-    if (caTab === "fig") {
-      caBubble(ov, "這些都是國語學院的師長，點一張卡片認識他們吧！");
-      const bcls = (b) => (b === "院長" ? "dean" : (b === "教授" ? "prof" : "assoc"));
-      box.innerHTML = `<div class="ca-figs">` + figs.map((f, i) => `
-        <div class="ca-fig" data-fi="${i}">
-          <span class="ca-fig-badge b-${bcls(f.badge)}">${aoEsc(f.badge || "")}</span>
-          <div class="ca-fig-pic"><img src="${aoEsc(f.img)}?v=1" alt="${aoEsc(f.name)}" draggable="false"></div>
-          <div class="ca-fig-nm">${aoEsc(f.name)}<span class="ca-fig-era">${aoEsc(f.era || "")}</span></div>
-          <div class="ca-fig-wk">${aoEsc(f.works || "")}</div>
-        </div>`).join("") + `</div>`;
-      box.querySelectorAll(".ca-fig").forEach((cd) => cd.addEventListener("click", function () {
-        const f = figs[+this.dataset.fi]; if (!f) return;
-        box.querySelectorAll(".ca-fig").forEach((x) => x.classList.remove("sel"));
-        this.classList.add("sel");
-        caBubble(ov, f.name + "（" + (f.era || "") + "） " + (f.works || "") + "　" + (f.desc || ""));
-      }));
+  /* ── 建築門面：孔丘致詞 + 任務一覽(唯讀導覽) + 人物圖鑑 ── */
+  function caRenderAcademy(ov) {
+    const c = CA_CONTENT || {};
+    const a = c.academy || {};
+    const npcs = c.npcs || {};
+    const figs = Array.isArray(c.figures) ? c.figures : [];
+    ov.querySelector(".shop-title").textContent = a.title || "國語學院";
+    caSetPrincipal(ov, a.dean_img, "👤 " + (a.dean_title || "") + (a.dean_name ? " " + a.dean_name : ""));
+    if (caTab !== "overview" && caTab !== "fig") caTab = "overview";
+    const tabs = ov.querySelector(".ao-tabs4");
+    const TABS = [{ k: "overview", t: "任務一覽" }, { k: "fig", t: "人物圖鑑" }];
+    tabs.innerHTML = TABS.map((tb) =>
+      `<button class="jc-tab${caTab === tb.k ? " active" : ""}" data-k="${tb.k}">${tb.t}</button>`).join("");
+    tabs.querySelectorAll(".jc-tab").forEach((b) =>
+      b.addEventListener("click", () => { caTab = b.dataset.k; caRenderAcademy(ov); }));
+    if (caTab === "fig") { caRenderFigures(ov, figs); return; }
+    // 任務一覽（唯讀，導引去找路上 NPC）
+    caBubble(ov, a.intro || "");
+    const box = ov.querySelector(".ao-content");
+    const ids = Object.keys(npcs);
+    const group = (id) => {
+      const n = npcs[id];
+      const quests = (n.lines || []).reduce((acc, l) => acc.concat(l.quests || []), []);
+      return `<div class="ca-navgroup">
+        <div class="ca-navhd"><img src="${aoEsc(n.img)}?v=1" draggable="false"><span class="ca-navnm">${aoEsc(n.name)}</span><i class="ca-navti">${aoEsc(n.title || "")}</i></div>
+        ${quests.map((q) => `<div class="ca-navq"><span class="ca-navq-ic">${aoEsc(q.icon || "📜")}</span><span class="ca-navq-t">${aoEsc(q.title)}</span><span class="ca-navq-r">🎁 ${aoEsc(q.reward)}</span></div>`).join("")}
+        <div class="ca-navgo">→ 去找路上的「${aoEsc(n.name)}」接取</div>
+      </div>`;
+    };
+    const mainIds = ids.filter((id) => !npcs[id].side);
+    const sideIds = ids.filter((id) => npcs[id].side);
+    let html = "";
+    if (mainIds.length) html += `<div class="ca-navsec">📘 主線任務</div>` + mainIds.map(group).join("");
+    if (sideIds.length) html += `<div class="ca-navsec">📙 支線任務</div>` + sideIds.map(group).join("");
+    box.innerHTML = html || `<div class="jc-empty">目前沒有任務</div>`;
+  }
+
+  /* ── NPC 任務面板：單一師長立繪 + 對白 + 任務領取 ── */
+  function caRenderNpc(ov) {
+    const c = CA_CONTENT || {};
+    const n = (c.npcs || {})[caNpcId];
+    if (!n) {                                  // 未知 npcId：清空避免殘留上一位師長的任務卡
+      caBubble(ov, "找不到這位師長。");
+      ov.querySelector(".ao-tabs4").innerHTML = "";
+      ov.querySelector(".ao-content").innerHTML = `<div class="jc-empty">找不到這位師長</div>`;
       return;
     }
-
-    if (caTab >= lines.length) caTab = 0;
+    ov.querySelector(".shop-title").textContent = "國語學院";
+    caSetPrincipal(ov, n.img, "👤 " + (n.title || "") + (n.name ? " " + n.name : ""));
+    const lines = Array.isArray(n.lines) ? n.lines : [];
+    if (typeof caTab !== "number" || caTab >= lines.length) caTab = 0;
+    const tabs = ov.querySelector(".ao-tabs4");
+    tabs.innerHTML = lines.map((l, i) =>
+      `<button class="jc-tab${i === caTab ? " active" : ""}" data-i="${i}">${aoEsc(l.tab)}</button>`).join("");
+    tabs.querySelectorAll(".jc-tab").forEach((b) =>
+      b.addEventListener("click", () => { caTab = +b.dataset.i; caRenderNpc(ov); }));
     const ln = lines[caTab] || { quests: [] };
     caBubble(ov, ln.intro || "");
-    box.innerHTML = (ln.quests || []).map((q) => `
-      <div class="ao-quest">
+    const box = ov.querySelector(".ao-content");
+    box.innerHTML = (ln.quests || []).map((q, qi) => `
+      <div class="ao-quest" data-qi="${qi}">
         <div class="ao-quest-ic">${aoEsc(q.icon || "📜")}</div>
         <div class="ao-quest-body">
           <div class="ao-quest-title">${aoEsc(q.title)}</div>
-          <div class="ao-quest-desc">${aoEsc(q.desc)}<span class="ca-npc">· ${aoEsc(ln.npc)}</span></div>
+          <div class="ao-quest-desc">${aoEsc(q.desc)}</div>
           <div class="ao-quest-foot"><span class="ao-quest-reward">🎁 ${aoEsc(q.reward)}</span>${q.progress ? `<span class="ao-quest-prog">${aoEsc(q.progress)}</span>` : ""}</div>
         </div>
         <button class="jc-act ao-quest-claim">領取</button>
       </div>`).join("") || `<div class="jc-empty">目前沒有任務</div>`;
-    box.querySelectorAll(".ao-quest-claim").forEach((b) => b.addEventListener("click", function () {
+    // 點任務卡（非領取鈕）→ NPC 講該任務對白
+    box.querySelectorAll(".ao-quest").forEach((card) => card.addEventListener("click", function (e) {
+      if (e.target.classList.contains("ao-quest-claim")) return;
+      const q = (ln.quests || [])[+this.dataset.qi];
+      if (q && q.dialog) caBubble(ov, q.dialog);
+    }));
+    box.querySelectorAll(".ao-quest-claim").forEach((b) => b.addEventListener("click", function (e) {
+      e.stopPropagation();
       if (this.classList.contains("done")) return;
       this.classList.add("done"); this.textContent = "✓ 已領取";
-      caBubble(ov, "好！學而時習之，這份獎勵你當之無愧。");
+      const card = this.closest(".ao-quest");
+      const q = card ? (ln.quests || [])[+card.dataset.qi] : null;
+      caBubble(ov, (q && q.dialog) ? q.dialog : "好！這份獎勵你當之無愧。");
     }));
   }
 
   async function openChineseAcademy(onClose) {
     onCloseCb = onClose || null;
     const ov = caBuildOverlay();
-    caTab = 0;
+    caMode = "academy"; caTab = "overview";
     try { await caLoad(); }
     catch (e) { console.warn("chinese academy 載入失敗", e); }
-    caRender(ov);
+    caRenderAcademy(ov);
+    ov.classList.add("open");
+  }
+  async function openNpcQuest(npcId, onClose) {
+    onCloseCb = onClose || null;
+    const ov = caBuildOverlay();
+    caMode = "npc"; caNpcId = npcId; caTab = 0;
+    try { await caLoad(); }
+    catch (e) { console.warn("npc quest 載入失敗", e); }
+    caRenderNpc(ov);
     ov.classList.add("open");
   }
   function caClose() {
@@ -603,6 +665,7 @@
     release();
   }
   window.openChineseAcademy = openChineseAcademy;
+  window.openNpcQuest = openNpcQuest;
 
   /* ───────────────────── 裝備欄（純展示：左=目前造型 / 右=帽子·武器·寵物項圈配件）───────────────────── */
   const EQ_KEY = "village_equip";

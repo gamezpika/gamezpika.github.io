@@ -366,6 +366,10 @@
         ],
         "speed": 38,
         "interaction": {
+          "type": "open_shop",
+          "shop_id": "npc_kongqiu",
+          "label": "孔丘",
+          "radius": 150,
           "body": "吾乃孔丘，欲修國語者，可入吾學院。"
         }
       },
@@ -423,6 +427,10 @@
         ],
         "speed": 36,
         "interaction": {
+          "type": "open_shop",
+          "shop_id": "npc_mengzi",
+          "label": "孟子",
+          "radius": 150,
           "body": "吾乃孟軻，字詞魔王猖獗，與我一同討伐這群妖魔！"
         }
       },
@@ -480,6 +488,10 @@
         ],
         "speed": 36,
         "interaction": {
+          "type": "open_shop",
+          "shop_id": "npc_jinyong",
+          "label": "金庸",
+          "radius": 150,
           "body": "競技場以武會友、以文較高下，盼你成為常勝軍！"
         }
       }

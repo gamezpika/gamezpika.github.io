@@ -505,7 +505,7 @@
   let caNpcId = null;
   async function caLoad() {
     if (CA_CONTENT) return CA_CONTENT;
-    const r = await fetch("chinese_academy.json?v=5");
+    const r = await fetch("chinese_academy.json?v=6");
     if (!r.ok) throw new Error("chinese academy HTTP " + r.status);
     CA_CONTENT = await r.json();
     return CA_CONTENT;
@@ -630,29 +630,37 @@
     const ln = lines[caTab] || { quests: [] };
     caBubble(ov, ln.intro || "");
     const box = ov.querySelector(".ao-content");
-    box.innerHTML = (ln.quests || []).map((q, qi) => `
-      <div class="ao-quest" data-qi="${qi}">
-        <div class="ao-quest-ic">${aoEsc(q.icon || "📜")}</div>
+    // 順序解鎖：主線(chain=main)1→20跨NPC一條鏈、支線(side)各自；進度存 localStorage
+    const chain = ln.chain === "side" ? "side" : "main";
+    const pkey = chain === "side" ? "village_chinese_side" : "village_chinese_main";
+    let prog = 0;
+    try { prog = Math.max(0, parseInt(localStorage.getItem(pkey) || "0", 10) || 0); } catch (e) { prog = 0; }
+    const base = Number(ln.seq_start) || 1;
+    box.innerHTML = (ln.quests || []).map((q, qi) => {
+      const seq = base + qi;
+      const st = seq <= prog ? "done" : (seq === prog + 1 ? "active" : "locked");
+      const btn = st === "done" ? `<button class="jc-act done" disabled>✓ 已完成</button>`
+        : st === "active" ? `<button class="jc-act ao-quest-claim">領取</button>`
+        : `<span class="ao-quest-lock">🔒 未解鎖</span>`;
+      return `<div class="ao-quest ${st}" data-qi="${qi}" data-seq="${seq}">
+        <div class="ao-quest-ic">${st === "locked" ? "🔒" : aoEsc(q.icon || "📜")}</div>
         <div class="ao-quest-body">
-          <div class="ao-quest-title">${aoEsc(q.title)}</div>
+          <div class="ao-quest-title"><span class="ao-quest-seq">${seq}</span>${aoEsc(q.title)}</div>
           <div class="ao-quest-desc">${aoEsc(q.desc)}</div>
+          ${q.dialog ? `<div class="ao-quest-dialog">「${aoEsc(q.dialog)}」</div>` : ""}
           <div class="ao-quest-foot"><span class="ao-quest-reward">🎁 ${aoEsc(q.reward)}</span>${q.progress ? `<span class="ao-quest-prog">${aoEsc(q.progress)}</span>` : ""}</div>
         </div>
-        <button class="jc-act ao-quest-claim">領取</button>
-      </div>`).join("") || `<div class="jc-empty">目前沒有任務</div>`;
-    // 點任務卡（非領取鈕）→ NPC 講該任務對白
-    box.querySelectorAll(".ao-quest").forEach((card) => card.addEventListener("click", function (e) {
-      if (e.target.classList.contains("ao-quest-claim")) return;
-      const q = (ln.quests || [])[+this.dataset.qi];
-      if (q && q.dialog) caBubble(ov, q.dialog);
-    }));
+        ${btn}
+      </div>`;
+    }).join("") || `<div class="jc-empty">目前沒有任務</div>`;
     box.querySelectorAll(".ao-quest-claim").forEach((b) => b.addEventListener("click", function (e) {
       e.stopPropagation();
-      if (this.classList.contains("done")) return;
-      this.classList.add("done"); this.textContent = "✓ 已領取";
       const card = this.closest(".ao-quest");
+      const seq = card ? +card.dataset.seq : 0;
       const q = card ? (ln.quests || [])[+card.dataset.qi] : null;
+      try { localStorage.setItem(pkey, String(seq)); } catch (e2) {}
       caBubble(ov, (q && q.dialog) ? q.dialog : "好！這份獎勵你當之無愧。");
+      caRenderNpc(ov);   // 重渲染：解鎖下一關
     }));
   }
 

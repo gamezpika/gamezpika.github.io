@@ -617,17 +617,17 @@
       "name": "🏕️ 學園生活區 (village-web)",
       "engine": "phaser",
       "config_path": "assets/campus_config.json",
-      "background_path": "village-web/campus_ground.webp",
+      "background_path": "village-web/campus_ground_v2.webp",
       "sprite_base": "village-web/",
       "sprite_library": [
         {
-          "image": "fence_pen.webp",
+          "image": "fence_pen_v2.webp",
           "name": "🪵 牧場柵欄",
           "type": "decoration",
-          "scale": 0.55,
+          "scale": 0.52,
           "default_interaction": null,
-          "bbox_w_norm": 0.344,
-          "bbox_h_norm": 0.322
+          "bbox_w_norm": 0.306,
+          "bbox_h_norm": 0.286
         },
         {
           "image": "deco_flower.webp",
@@ -733,6 +733,15 @@
           "grid_rows": 2,
           "frames": 8,
           "frame_rate": 6
+        },
+        {
+          "image": "field_iso.webp",
+          "name": "🟫 翻土田",
+          "type": "decoration",
+          "scale": 0.46,
+          "default_interaction": null,
+          "bbox_w_norm": 0.296,
+          "bbox_h_norm": 0.247
         }
       ]
     }

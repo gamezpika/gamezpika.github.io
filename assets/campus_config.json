@@ -8,7 +8,7 @@
       "world_height": 1024,
       "world_offset_y": 0
     },
-    "background": "village-web/campus_ground.webp",
+    "background": "village-web/campus_ground_v2.webp",
     "asset_base": "village-web/",
     "player": {
       "spawn": {
@@ -209,15 +209,15 @@
         "name": "牧場柵欄",
         "category": "decoration",
         "sprite": {
-          "image": "fence_pen.webp",
-          "scale": 0.55,
+          "image": "fence_pen_v2.webp",
+          "scale": 0.52,
           "anchor_x": 0.5,
           "anchor_y": 1,
           "rotation": 0
         },
         "anchor": {
-          "x": 0.4723220831131779,
-          "y": 0.928198408218529
+          "x": 0.4,
+          "y": 0.64
         },
         "render_order": 300,
         "path": [],
@@ -228,6 +228,22 @@
         "polygon": [],
         "mask_color": "#FF3B30",
         "interaction_type": "open_modal"
+      },
+      {
+        "id": "crop_field",
+        "name": "翻土田",
+        "category": "decoration",
+        "sprite": {
+          "image": "field_iso.webp",
+          "scale": 0.46,
+          "anchor_x": 0.5,
+          "anchor_y": 1.0
+        },
+        "anchor": {
+          "x": 0.66,
+          "y": 0.72
+        },
+        "render_order": 290
       }
     ],
     "obstacle_areas": [
@@ -235,47 +251,38 @@
         "id": "pond",
         "polygon": [
           {
-            "x": 0.039167842248047785,
-            "y": 0.7403397863235842
+            "x": 0.04,
+            "y": 0.76
           },
           {
-            "x": 0.08916784224804779,
-            "y": 0.6503397863235842
+            "x": 0.09,
+            "y": 0.69
           },
           {
-            "x": 0.17916784224804777,
-            "y": 0.6403397863235842
+            "x": 0.18,
+            "y": 0.69
           },
           {
-            "x": 0.2591678422480478,
-            "y": 0.7203397863235842
+            "x": 0.24,
+            "y": 0.77
           },
           {
-            "x": 0.2691678422480478,
-            "y": 0.8303397863235842
+            "x": 0.24,
+            "y": 0.88
           },
           {
-            "x": 0.1991678422480478,
-            "y": 0.9303397863235843
+            "x": 0.17,
+            "y": 0.95
           },
           {
-            "x": 0.08916784224804779,
-            "y": 0.9303397863235843
+            "x": 0.07,
+            "y": 0.95
           },
           {
-            "x": 0.01916784224804778,
-            "y": 0.8403397863235842
+            "x": 0.02,
+            "y": 0.86
           }
-        ],
-        "name": "障礙物",
-        "mask_color": "#00aaff",
-        "render_order": 100,
-        "bounding_box": {
-          "x_min": 0.01916784224804778,
-          "y_min": 0.6403397863235842,
-          "x_max": 0.2691678422480478,
-          "y_max": 0.9303397863235843
-        }
+        ]
       }
     ],
     "npcs": [],

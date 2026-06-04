@@ -79,23 +79,23 @@
   const Ranch = {
     scene: null, animals: {}, _pending: {}, onUpdate: null,
     // 水禽在池塘上游（池塘是 obstacle，動物不吃碰撞所以可在水面）
-    POND:         { x0: 0.07, y0: 0.70, x1: 0.24, y1: 0.87 },
-    LAND_DEFAULT: { x0: 0.34, y0: 0.66, x1: 0.58, y1: 0.86 },  // 找不到柵欄時的後備陸欄
+    POND:         { x0: 0.06, y0: 0.76, x1: 0.21, y1: 0.90 },
+    LAND_DEFAULT: { x0: 0.30, y0: 0.55, x1: 0.50, y1: 0.64 },  // 找不到柵欄時的後備陸欄
     _landPen: null,
 
     // 從 config 放置的「牧場柵欄」建築 sprite 讀位置 → 算欄內活動範圍（派派在地圖編輯器移柵欄,動物自動跟著）
     computePen() {
       const sc = this.scene;
-      const f = sc.children.list.find((o) => o.texture && o.texture.key === "fence_pen.webp");
+      const f = sc.children.list.find((o) => o.texture && o.texture.key === "fence_pen_v2.webp");
       if (!f) { this._landPen = this.LAND_DEFAULT; return; }
       const dw = f.displayWidth, dh = f.displayHeight;
       const left = f.x - dw * (f.originX != null ? f.originX : 0.5);
       const top = f.y - dh * (f.originY != null ? f.originY : 1.0);
       const oy = sc.WORLD_OFFSET_Y || 0;
-      // 內縮到柵欄內側（裁切後柵欄：左右各約15%是木樁、頂20%後欄、底18%前欄）
+      // 內縮到菱形欄內側（iso 六角欄：中央透明區約佔中段）
       this._landPen = {
-        x0: (left + dw * 0.16) / sc.IMG_W, x1: (left + dw * 0.84) / sc.IMG_W,
-        y0: (top + dh * 0.34 - oy) / sc.IMG_H, y1: (top + dh * 0.82 - oy) / sc.IMG_H,
+        x0: (left + dw * 0.24) / sc.IMG_W, x1: (left + dw * 0.76) / sc.IMG_W,
+        y0: (top + dh * 0.40 - oy) / sc.IMG_H, y1: (top + dh * 0.78 - oy) / sc.IMG_H,
       };
     },
 

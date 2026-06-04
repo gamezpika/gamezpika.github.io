@@ -1990,6 +1990,7 @@ function placeSpriteAt(libIdx, normX, normY) {
             if (item[k] != null) sprite[k] = item[k];
         });
         if (item.play_on_proximity) sprite.play_on_proximity = true;
+        if (typeof item.prox_radius === 'number') sprite.prox_radius = item.prox_radius;
         mapConfig.buildings.push({
             id, name: itemName, category: item.type || 'building',
             sprite,

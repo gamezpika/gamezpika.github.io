@@ -109,6 +109,7 @@
     if (shopId === "academy_office") { openAcademyOffice(onClose); return; }
     if (shopId === "dorm") { openDormHub(onClose); return; }
     if (shopId === "chinese_academy") { openChineseAcademy(onClose); return; }
+    if (shopId.indexOf("npcintro:") === 0) { openNpcIntro(shopId.slice(9), onClose); return; }
     if (shopId.indexOf("npc_") === 0) { openNpcQuest(shopId.slice(4), onClose); return; }
     onCloseCb = onClose || null;
     let cat;
@@ -504,7 +505,7 @@
   let caNpcId = null;
   async function caLoad() {
     if (CA_CONTENT) return CA_CONTENT;
-    const r = await fetch("chinese_academy.json?v=4");
+    const r = await fetch("chinese_academy.json?v=5");
     if (!r.ok) throw new Error("chinese academy HTTP " + r.status);
     CA_CONTENT = await r.json();
     return CA_CONTENT;
@@ -556,6 +557,19 @@
     }));
   }
 
+  /* ── 典籍收藏（slide 14 掉落物品，純展示）── */
+  function caRenderBooks(ov, books) {
+    caBubble(ov, "勤學有成，這些典籍便會收入囊中。");
+    const box = ov.querySelector(".ao-content");
+    const sec = (title, arr, cls, tag) => (Array.isArray(arr) && arr.length)
+      ? `<div class="ca-navsec">${title}</div><div class="ca-books">` + arr.map((bk) =>
+          `<div class="ca-book ${cls}"><span class="ca-book-ic">${aoEsc(bk.icon || "📖")}</span><span class="ca-book-nm">${aoEsc(bk.name)}</span><span class="ca-book-rate">${tag}</span></div>`).join("") + `</div>`
+      : "";
+    box.innerHTML = sec("📘 必定掉落 · 四書", books.guaranteed || [], "g", "必掉")
+                  + sec("📕 稀有掉落 · 國語小說", books.rare || [], "r", "20%")
+                  || `<div class="jc-empty">尚無典籍</div>`;
+  }
+
   /* ── 建築門面：孔丘致詞 + 任務一覽(唯讀導覽) + 人物圖鑑 ── */
   function caRenderAcademy(ov) {
     const c = CA_CONTENT || {};
@@ -564,14 +578,15 @@
     const figs = Array.isArray(c.figures) ? c.figures : [];
     ov.querySelector(".shop-title").textContent = a.title || "國語學院";
     caSetPrincipal(ov, a.dean_img, "👤 " + (a.dean_title || "") + (a.dean_name ? " " + a.dean_name : ""));
-    if (caTab !== "overview" && caTab !== "fig") caTab = "overview";
+    if (caTab !== "overview" && caTab !== "fig" && caTab !== "books") caTab = "overview";
     const tabs = ov.querySelector(".ao-tabs4");
-    const TABS = [{ k: "overview", t: "任務一覽" }, { k: "fig", t: "人物圖鑑" }];
+    const TABS = [{ k: "overview", t: "任務一覽" }, { k: "books", t: "典籍收藏" }, { k: "fig", t: "人物圖鑑" }];
     tabs.innerHTML = TABS.map((tb) =>
       `<button class="jc-tab${caTab === tb.k ? " active" : ""}" data-k="${tb.k}">${tb.t}</button>`).join("");
     tabs.querySelectorAll(".jc-tab").forEach((b) =>
       b.addEventListener("click", () => { caTab = b.dataset.k; caRenderAcademy(ov); }));
     if (caTab === "fig") { caRenderFigures(ov, figs); return; }
+    if (caTab === "books") { caRenderBooks(ov, a.books || {}); return; }
     // 任務一覽（唯讀，導引去找路上 NPC）
     caBubble(ov, a.intro || "");
     const box = ov.querySelector(".ao-content");
@@ -639,6 +654,36 @@
       const q = card ? (ln.quests || [])[+card.dataset.qi] : null;
       caBubble(ov, (q && q.dialog) ? q.dialog : "好！這份獎勵你當之無愧。");
     }));
+  }
+
+  /* ── 人物簡介卡（朱熹等尚無任務的師長，走近顯示簡介+任務籌備中）── */
+  function caRenderIntro(ov, figName) {
+    const c = CA_CONTENT || {};
+    const figs = Array.isArray(c.figures) ? c.figures : [];
+    const f = figs.find((x) => x.name === figName);
+    ov.querySelector(".shop-title").textContent = "國語學院";
+    ov.querySelector(".ao-tabs4").innerHTML = "";
+    if (!f) {
+      caBubble(ov, "找不到這位師長。");
+      ov.querySelector(".ao-content").innerHTML = `<div class="jc-empty">找不到這位師長</div>`;
+      return;
+    }
+    caSetPrincipal(ov, f.img, "👤 " + (f.badge || "") + " " + f.name);
+    caBubble(ov, f.name + "（" + (f.era || "") + "） " + (f.works || ""));
+    ov.querySelector(".ao-content").innerHTML = `
+      <div class="ca-intro">
+        <div class="ca-intro-desc">${aoEsc(f.desc || "")}</div>
+        <div class="ca-intro-soon">📜 任務籌備中，敬請期待</div>
+      </div>`;
+  }
+  async function openNpcIntro(figName, onClose) {
+    onCloseCb = onClose || null;
+    const ov = caBuildOverlay();
+    caMode = "intro";
+    try { await caLoad(); }
+    catch (e) { console.warn("npc intro 載入失敗", e); }
+    caRenderIntro(ov, figName);
+    ov.classList.add("open");
   }
 
   async function openChineseAcademy(onClose) {

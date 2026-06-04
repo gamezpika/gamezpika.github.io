@@ -208,8 +208,9 @@
         "id": "ranch_fence",
         "name": "牧場柵欄",
         "category": "decoration",
+        "render_depth": 2,
         "sprite": {
-          "image": "fence_pen_v2.webp",
+          "image": "fence_back.webp",
           "scale": 0.52,
           "anchor_x": 0.5,
           "anchor_y": 1,
@@ -233,6 +234,7 @@
         "id": "crop_field",
         "name": "翻土田",
         "category": "decoration",
+        "render_depth": 1,
         "sprite": {
           "image": "field_iso.webp",
           "scale": 0.65,

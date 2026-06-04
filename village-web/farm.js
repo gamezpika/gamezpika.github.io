@@ -86,7 +86,7 @@
     // 從 config 放置的「牧場柵欄」建築 sprite 讀位置 → 算欄內活動範圍（派派在地圖編輯器移柵欄,動物自動跟著）
     computePen() {
       const sc = this.scene;
-      const f = sc.children.list.find((o) => o.texture && o.texture.key === "fence_pen_v2.webp");
+      const f = sc.children.list.find((o) => o.texture && o.texture.key === "fence_back.webp");
       if (!f) { this._landPen = this.LAND_DEFAULT; return; }
       const dw = f.displayWidth, dh = f.displayHeight;
       const left = f.x - dw * (f.originX != null ? f.originX : 0.5);
@@ -97,6 +97,17 @@
         x0: (left + dw * 0.24) / sc.IMG_W, x1: (left + dw * 0.76) / sc.IMG_W,
         y0: (top + dh * 0.40 - oy) / sc.IMG_H, y1: (top + dh * 0.78 - oy) / sc.IMG_H,
       };
+    },
+
+    // 疊「柵欄前排」在後排同位置，用接地線正常排序 → 走進欄裡的玩家會被前排橫桿正確遮住（後排在玩家後）
+    addFenceFront() {
+      const sc = this.scene;
+      if (this._fenceFront) { this._fenceFront.destroy(); this._fenceFront = null; }
+      const back = sc.children.list.find((o) => o.texture && o.texture.key === "fence_back.webp");
+      if (!back || !sc.textures.exists("fence_front.webp")) return;
+      this._fenceFront = sc.add.image(back.x, back.y, "fence_front.webp")
+        .setOrigin(back.originX, back.originY).setScale(back.scaleX, back.scaleY)
+        .setRotation(back.rotation).setDepth(back.y);
     },
 
     zoneArea(zone) { return zone === "pond" ? this.POND : (this._landPen || this.LAND_DEFAULT); },
@@ -202,6 +213,7 @@
         if (!sc.textures.exists(a)) { sc.load.spritesheet(a, sp.img + "?v=3", { frameWidth: sp.fw, frameHeight: sp.fh }); need = true; }
         [sp.baby, sp.teen].forEach((img) => { const k2 = "ranch_" + img; if (!sc.textures.exists(k2)) { sc.load.image(k2, img + "?v=3"); need = true; } });
       });
+      if (!sc.textures.exists("fence_front.webp")) { sc.load.image("fence_front.webp", "fence_front.webp?v=1"); need = true; }
       if (!need) { cb(); return; }
       sc.load.once("complete", () => { if (this.scene) cb(); });
       sc.load.start();
@@ -212,6 +224,7 @@
       this.preloadAll(() => {
         if (!this.scene) return;
         this.computePen();
+        this.addFenceFront();
         ORDER.forEach((k) => this.ensureWalkAnim(SPECIES[k]));
         loadStock().forEach((rec) => this.spawn(rec));
       });
@@ -223,6 +236,7 @@
     detach() {
       if (this.scene && this.onUpdate) this.scene.events.off("update", this.onUpdate);
       Object.values(this.animals).forEach((a) => { if (a.spr) a.spr.destroy(); if (a.shadow) a.shadow.destroy(); if (a.prodSpr) a.prodSpr.destroy(); });
+      if (this._fenceFront) { this._fenceFront.destroy(); this._fenceFront = null; }
       this.animals = {}; this._pending = {}; this._landPen = null; this.onUpdate = null;
       if (this.scene) this.scene.__ranchAttached = false;
       this.scene = null;

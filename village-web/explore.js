@@ -225,6 +225,8 @@ class ExploreScene extends Phaser.Scene {
         spr.setScale(b.sprite.scale || 1.0);
         if (b.sprite.rotation) spr.setRotation(b.sprite.rotation);
         spr.setDepth(anchor.y);
+        // render_depth：覆寫排序深度。平鋪地面(翻土田)用低值永遠在玩家下；柵欄後排用低值永遠在玩家後
+        if (typeof b.render_depth === "number") spr.setDepth(b.render_depth);
         // 噴泉自動加連續粒子水流（fountain_splash 互動類型，加強動感）
         if (b.interaction && b.interaction.type === "fountain_splash") {
           this._addFountainParticles(anchor.x, anchor.y);

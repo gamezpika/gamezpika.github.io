@@ -494,6 +494,84 @@
           "radius": 150,
           "body": "競技場以武會友、以文較高下，盼你成為常勝軍！"
         }
+      },
+      {
+        "id": "zhuangzi",
+        "name": "莊周",
+        "sprite": {
+          "scale": 0.063,
+          "sprites": {
+            "side": {
+              "image": "zhuangzi_npc_walk.webp",
+              "frame_width": 692,
+              "frame_height": 1809,
+              "frames": 6,
+              "frame_rate": 6,
+              "facing": "left"
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.5,
+          "y": 0.74
+        },
+        "patrol": [
+          {
+            "x": 0.42,
+            "y": 0.74
+          },
+          {
+            "x": 0.58,
+            "y": 0.74
+          }
+        ],
+        "speed": 36,
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "npc_zhuangzi",
+          "label": "莊周",
+          "radius": 150,
+          "body": "欲取得語文證照者，且來尋我莊周。"
+        }
+      },
+      {
+        "id": "caoxueqin",
+        "name": "曹雪芹",
+        "sprite": {
+          "scale": 0.064,
+          "sprites": {
+            "side": {
+              "image": "caoxueqin_npc_walk.webp",
+              "frame_width": 500,
+              "frame_height": 1767,
+              "frames": 6,
+              "frame_rate": 6,
+              "facing": "left"
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.68,
+          "y": 0.6
+        },
+        "patrol": [
+          {
+            "x": 0.6,
+            "y": 0.6
+          },
+          {
+            "x": 0.76,
+            "y": 0.6
+          }
+        ],
+        "speed": 36,
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "npc_caoxueqin",
+          "label": "曹雪芹",
+          "radius": 150,
+          "body": "瑣事繁多，能否請你幫個小忙？"
+        }
       }
     ],
     "objects": []

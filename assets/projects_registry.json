@@ -700,6 +700,67 @@
           "frame_rate": 9,
           "play_on_proximity": true,
           "prox_radius": 80
+        },
+        {
+          "image": "deco_parasol.webp",
+          "name": "☂️ 遮陽傘桌",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.025,
+          "frame_width": 291,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_plant_pot.webp",
+          "name": "🪴 盆栽",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "bbox_w_norm": 0.025,
+          "bbox_h_norm": 0.018,
+          "frame_width": 291,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_cart.webp",
+          "name": "🛒 攤販推車",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.045,
+          "bbox_h_norm": 0.025
+        },
+        {
+          "image": "deco_aframe.webp",
+          "name": "🪧 立牌看板",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_crates.webp",
+          "name": "📦 貨箱堆",
+          "type": "decoration",
+          "scale": 0.28,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.03
         }
       ]
     },
@@ -1403,6 +1464,67 @@
           "frame_rate": 9,
           "play_on_proximity": true,
           "prox_radius": 80
+        },
+        {
+          "image": "deco_parasol.webp",
+          "name": "☂️ 遮陽傘桌",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.025,
+          "frame_width": 291,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_plant_pot.webp",
+          "name": "🪴 盆栽",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "bbox_w_norm": 0.025,
+          "bbox_h_norm": 0.018,
+          "frame_width": 291,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_cart.webp",
+          "name": "🛒 攤販推車",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.045,
+          "bbox_h_norm": 0.025
+        },
+        {
+          "image": "deco_aframe.webp",
+          "name": "🪧 立牌看板",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_crates.webp",
+          "name": "📦 貨箱堆",
+          "type": "decoration",
+          "scale": 0.28,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.03
         }
       ]
     },
@@ -2106,6 +2228,67 @@
           "frame_rate": 9,
           "play_on_proximity": true,
           "prox_radius": 80
+        },
+        {
+          "image": "deco_parasol.webp",
+          "name": "☂️ 遮陽傘桌",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.025,
+          "frame_width": 291,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_plant_pot.webp",
+          "name": "🪴 盆栽",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "bbox_w_norm": 0.025,
+          "bbox_h_norm": 0.018,
+          "frame_width": 291,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_cart.webp",
+          "name": "🛒 攤販推車",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.045,
+          "bbox_h_norm": 0.025
+        },
+        {
+          "image": "deco_aframe.webp",
+          "name": "🪧 立牌看板",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_crates.webp",
+          "name": "📦 貨箱堆",
+          "type": "decoration",
+          "scale": 0.28,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.03
         }
       ]
     },
@@ -2803,6 +2986,67 @@
           "frame_rate": 9,
           "play_on_proximity": true,
           "prox_radius": 80
+        },
+        {
+          "image": "deco_parasol.webp",
+          "name": "☂️ 遮陽傘桌",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.025,
+          "frame_width": 291,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_plant_pot.webp",
+          "name": "🪴 盆栽",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "bbox_w_norm": 0.025,
+          "bbox_h_norm": 0.018,
+          "frame_width": 291,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_cart.webp",
+          "name": "🛒 攤販推車",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.045,
+          "bbox_h_norm": 0.025
+        },
+        {
+          "image": "deco_aframe.webp",
+          "name": "🪧 立牌看板",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_crates.webp",
+          "name": "📦 貨箱堆",
+          "type": "decoration",
+          "scale": 0.28,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.03
         }
       ]
     },
@@ -3506,6 +3750,67 @@
           "frame_rate": 9,
           "play_on_proximity": true,
           "prox_radius": 80
+        },
+        {
+          "image": "deco_parasol.webp",
+          "name": "☂️ 遮陽傘桌",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.025,
+          "frame_width": 291,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_plant_pot.webp",
+          "name": "🪴 盆栽",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "bbox_w_norm": 0.025,
+          "bbox_h_norm": 0.018,
+          "frame_width": 291,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_cart.webp",
+          "name": "🛒 攤販推車",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.045,
+          "bbox_h_norm": 0.025
+        },
+        {
+          "image": "deco_aframe.webp",
+          "name": "🪧 立牌看板",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_crates.webp",
+          "name": "📦 貨箱堆",
+          "type": "decoration",
+          "scale": 0.28,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.03
         }
       ]
     },
@@ -4254,6 +4559,67 @@
           "frame_rate": 9,
           "play_on_proximity": true,
           "prox_radius": 80
+        },
+        {
+          "image": "deco_parasol.webp",
+          "name": "☂️ 遮陽傘桌",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.025,
+          "frame_width": 291,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_plant_pot.webp",
+          "name": "🪴 盆栽",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "bbox_w_norm": 0.025,
+          "bbox_h_norm": 0.018,
+          "frame_width": 291,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_cart.webp",
+          "name": "🛒 攤販推車",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.045,
+          "bbox_h_norm": 0.025
+        },
+        {
+          "image": "deco_aframe.webp",
+          "name": "🪧 立牌看板",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_crates.webp",
+          "name": "📦 貨箱堆",
+          "type": "decoration",
+          "scale": 0.28,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.03
         }
       ]
     },
@@ -4957,6 +5323,67 @@
           "frame_rate": 9,
           "play_on_proximity": true,
           "prox_radius": 80
+        },
+        {
+          "image": "deco_parasol.webp",
+          "name": "☂️ 遮陽傘桌",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.025,
+          "frame_width": 291,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_plant_pot.webp",
+          "name": "🪴 盆栽",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "bbox_w_norm": 0.025,
+          "bbox_h_norm": 0.018,
+          "frame_width": 291,
+          "frame_height": 340,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_cart.webp",
+          "name": "🛒 攤販推車",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.045,
+          "bbox_h_norm": 0.025
+        },
+        {
+          "image": "deco_aframe.webp",
+          "name": "🪧 立牌看板",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_crates.webp",
+          "name": "📦 貨箱堆",
+          "type": "decoration",
+          "scale": 0.28,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.03
         }
       ]
     }

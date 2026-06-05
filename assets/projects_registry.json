@@ -589,6 +589,49 @@
           "default_interaction": null,
           "bbox_w_norm": 0.02,
           "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_flag.webp",
+          "name": "🚩 旗幟",
+          "type": "decoration",
+          "scale": 0.28,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015,
+          "frame_width": 235,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_banner.webp",
+          "name": "🎏 橫幅",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015,
+          "frame_width": 228,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_sign.webp",
+          "name": "🪧 木招牌",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.02
         }
       ]
     },
@@ -1181,6 +1224,49 @@
           "default_interaction": null,
           "bbox_w_norm": 0.02,
           "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_flag.webp",
+          "name": "🚩 旗幟",
+          "type": "decoration",
+          "scale": 0.28,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015,
+          "frame_width": 235,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_banner.webp",
+          "name": "🎏 橫幅",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015,
+          "frame_width": 228,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_sign.webp",
+          "name": "🪧 木招牌",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.02
         }
       ]
     },
@@ -1773,6 +1859,49 @@
           "default_interaction": null,
           "bbox_w_norm": 0.02,
           "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_flag.webp",
+          "name": "🚩 旗幟",
+          "type": "decoration",
+          "scale": 0.28,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015,
+          "frame_width": 235,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_banner.webp",
+          "name": "🎏 橫幅",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015,
+          "frame_width": 228,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_sign.webp",
+          "name": "🪧 木招牌",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.02
         }
       ]
     },
@@ -2359,6 +2488,49 @@
           "default_interaction": null,
           "bbox_w_norm": 0.02,
           "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_flag.webp",
+          "name": "🚩 旗幟",
+          "type": "decoration",
+          "scale": 0.28,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015,
+          "frame_width": 235,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_banner.webp",
+          "name": "🎏 橫幅",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015,
+          "frame_width": 228,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_sign.webp",
+          "name": "🪧 木招牌",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.02
         }
       ]
     },
@@ -2951,6 +3123,49 @@
           "default_interaction": null,
           "bbox_w_norm": 0.02,
           "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_flag.webp",
+          "name": "🚩 旗幟",
+          "type": "decoration",
+          "scale": 0.28,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015,
+          "frame_width": 235,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_banner.webp",
+          "name": "🎏 橫幅",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015,
+          "frame_width": 228,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_sign.webp",
+          "name": "🪧 木招牌",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.02
         }
       ]
     },
@@ -3543,6 +3758,49 @@
           "default_interaction": null,
           "bbox_w_norm": 0.02,
           "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_flag.webp",
+          "name": "🚩 旗幟",
+          "type": "decoration",
+          "scale": 0.28,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015,
+          "frame_width": 235,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_banner.webp",
+          "name": "🎏 橫幅",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015,
+          "frame_width": 228,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_sign.webp",
+          "name": "🪧 木招牌",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.02
         }
       ]
     },
@@ -4135,6 +4393,49 @@
           "default_interaction": null,
           "bbox_w_norm": 0.02,
           "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_flag.webp",
+          "name": "🚩 旗幟",
+          "type": "decoration",
+          "scale": 0.28,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015,
+          "frame_width": 235,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_banner.webp",
+          "name": "🎏 橫幅",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015,
+          "frame_width": 228,
+          "frame_height": 360,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_sign.webp",
+          "name": "🪧 木招牌",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.02
         }
       ]
     }

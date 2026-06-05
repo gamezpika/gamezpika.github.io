@@ -536,3 +536,26 @@
   opacity: 0; pointer-events: none; transition: opacity 0.28s ease;
 }
 #map-fade.show { opacity: 1; pointer-events: auto; }
+
+/* ───── 商店街新增：橫幅 / 收購 / 閱讀任務 ───── */
+.shop-banner {
+  margin: -2px 0 10px; padding: 7px 12px; border-radius: 10px;
+  font-size: 13px; font-weight: 800; text-align: center; color: #fff;
+  background: linear-gradient(90deg,#e8862b,#d8503a); box-shadow: 0 2px 0 #b5712f;
+}
+/* 收購卡：藍綠標籤 + 「已收」回饋 */
+.shop-card .tag.tag-sell { display: block; background: #2b9bb0; }
+.shop-card.sell .pr { color: #1c9a5a; }
+.shop-card.sell.bought::after { content: "✓ 已收"; background: rgba(28,154,90,.88); }
+/* 閱讀任務卡（出版社） */
+.shop-quests { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 10px; }
+.shop-quest {
+  display: flex; align-items: center; gap: 10px; background: #fffaf0;
+  border: 3px solid #e3c089; border-radius: 14px; padding: 10px 12px; box-shadow: 0 2px 0 #e3c089;
+}
+.sq-ic { font-size: 30px; line-height: 1; flex: 0 0 auto; }
+.sq-body { flex: 1 1 auto; min-width: 0; }
+.sq-title { font-size: 14px; font-weight: 800; color: #5a3a18; }
+.sq-desc { font-size: 12px; color: #8a6a45; margin-top: 2px; }
+.sq-reward { font-size: 12px; font-weight: 700; color: #c8851a; margin-top: 3px; }
+.sq-claim { flex: 0 0 auto; }

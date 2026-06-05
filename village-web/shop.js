@@ -8,8 +8,13 @@
     grocer: ["大量批發最划算啦！", "新鮮貨色，俗俗賣！", "來來來，整箱搬回家！"],
     boutique: ["親愛的，這款超適合你～", "本季新款，時尚必備！", "美麗是一種態度唷♥"],
     menswear: ["先生，這套很襯您的氣質。", "紳士的衣櫥，不能將就。", "為您量身打造，請慢慢挑。"],
+    costcool: ["量販批發，買越多越省！", "會員價，整箱搬最划算！", "歡迎光臨 COSTCOOL～"],
+    publisher: ["想看什麼書？我幫你找！", "閱讀，是最划算的投資。", "新書到貨囉，快來翻翻看～"],
   };
   const BUY_REACT = ["好眼光！", "謝謝惠顧～", "包在我身上！", "下次再來唷！"];
+  const SELL_REACT = ["收下囉，這是你的金幣！", "好貨！全收了～", "牧場豐收啊，謝謝！", "下次再帶來唷！"];
+  const CAT_BUYBACK = "🐮 收購牧場收成";
+  const CAT_QUEST = "📜 閱讀任務";
 
   function el(tag, cls, html) {
     const e = document.createElement(tag);
@@ -17,6 +22,10 @@
     if (html != null) e.innerHTML = html;
     return e;
   }
+
+  // innerHTML 前跳脫（資料來自 JSON，仍防呆避免欄位含 HTML 被注入）
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
   async function loadCatalog() {
     if (CATALOG) return CATALOG;
@@ -47,6 +56,7 @@
           <div class="shop-owner"></div>
         </div>
         <div class="shop-grid-wrap">
+          <div class="shop-banner" hidden></div>
           <div class="shop-cats"></div>
           <div class="shop-grid"></div>
         </div>
@@ -87,18 +97,69 @@
     });
   }
 
+  // 收購牧場收成（玩家賣 → 批發中心，純展示假交易）
+  function renderBuyback(ov, shop) {
+    const grid = ov.querySelector(".shop-grid");
+    grid.innerHTML = "";
+    (shop.buyback || []).forEach((it) => {
+      const card = el("div", "shop-card sell");
+      card.innerHTML = `
+        <span class="tag tag-sell">收購</span>
+        ${it.img ? `<img src="${esc(it.img)}" alt="${esc(it.name)}">` : `<div class="shop-emoji">${esc(it.emoji || "📦")}</div>`}
+        <div class="nm">${esc(it.name)}</div>
+        <div class="pr">+${esc(it.price)} 金幣</div>`;
+      card.addEventListener("click", () => {
+        if (card.classList.contains("bought")) return;
+        card.classList.add("bought");
+        bubble(ov, SELL_REACT[Math.floor(Math.random() * SELL_REACT.length)]);
+        setTimeout(() => card.classList.remove("bought"), 900);
+      });
+      grid.appendChild(card);
+    });
+  }
+
+  // 閱讀任務（出版社，純展示假領獎，仿學院辦公室）
+  function renderQuests(ov, shop) {
+    const grid = ov.querySelector(".shop-grid");
+    grid.innerHTML = `<div class="shop-quests">` + (shop.quests || []).map((q) => `
+      <div class="shop-quest">
+        <div class="sq-ic">${esc(q.icon || "📜")}</div>
+        <div class="sq-body">
+          <div class="sq-title">${esc(q.title)}</div>
+          <div class="sq-desc">${esc(q.desc || "")}</div>
+          <div class="sq-reward">🎁 ${esc(q.reward || "")}</div>
+        </div>
+        <button class="jc-act sq-claim">領取任務</button>
+      </div>`).join("") + `</div>`;
+    grid.querySelectorAll(".sq-claim").forEach((b) => b.addEventListener("click", function () {
+      if (this.classList.contains("done")) return;
+      this.classList.add("done"); this.textContent = "✓ 已領取";
+      bubble(ov, "任務已領取，完成後回來領獎勵唷！");
+    }));
+  }
+
+  // 依分類路由：偽分類(收購/任務)走專屬渲染，其餘走商品格
+  function renderBody(ov, shop, cat) {
+    if (cat === CAT_BUYBACK) { renderBuyback(ov, shop); return; }
+    if (cat === CAT_QUEST) { renderQuests(ov, shop); return; }
+    renderGrid(ov, shop, cat);
+  }
+
   function renderCats(ov, shop) {
-    const cats = ["全部", ...Array.from(new Set(shop.items.map((it) => it.cat).filter(Boolean)))];
+    const its = Array.isArray(shop.items) ? shop.items : [];
+    const cats = ["全部", ...Array.from(new Set(its.map((it) => it.cat).filter(Boolean)))];
+    if (Array.isArray(shop.buyback) && shop.buyback.length) cats.push(CAT_BUYBACK);
+    if (Array.isArray(shop.quests) && shop.quests.length) cats.push(CAT_QUEST);
     const bar = ov.querySelector(".shop-cats");
     bar.innerHTML = "";
-    // 服裝店若沒分類就不顯示分類列
+    // 只有「全部」一項就不顯示分類列（服裝店）
     if (cats.length <= 1) return;
     cats.forEach((c, i) => {
       const b = el("div", "shop-cat" + (i === 0 ? " active" : ""), c);
       b.addEventListener("click", () => {
         bar.querySelectorAll(".shop-cat").forEach((x) => x.classList.remove("active"));
         b.classList.add("active");
-        renderGrid(ov, shop, c);
+        renderBody(ov, shop, c);
       });
       bar.appendChild(b);
     });
@@ -124,12 +185,19 @@
     if (!shop) { console.warn("unknown shop", shopId); release(); return; }
     const ov = buildOverlay();
     ov.querySelector(".shop-title").textContent = shop.title;
-    ov.querySelector(".shop-merchant img").src = shop.merchant + "?v=5";
+    // 橫幅（如 COSTCOOL 特約商店預告）
+    const ban = ov.querySelector(".shop-banner");
+    if (shop.banner) { ban.textContent = shop.banner; ban.hidden = false; }
+    else { ban.textContent = ""; ban.hidden = true; }
+    // 老闆頭像可選：沒有 merchant 就隱藏整個頭像區（出版社）
+    const mImg = ov.querySelector(".shop-merchant img");
+    if (shop.merchant) { mImg.src = shop.merchant + "?v=5"; mImg.hidden = false; }
+    else { mImg.removeAttribute("src"); mImg.hidden = true; }
     ov.querySelector(".shop-owner").textContent = shop.owner ? "👤 老闆 · " + shop.owner : "";
     const g = GREET[shopId] || ["歡迎光臨！"];
     bubble(ov, g[Math.floor(Math.random() * g.length)]);
     renderCats(ov, shop);
-    renderGrid(ov, shop, "全部");
+    renderBody(ov, shop, "全部");
     ov.classList.add("open");
   }
 

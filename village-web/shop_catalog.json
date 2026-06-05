@@ -215,111 +215,6 @@
         "price": 45
       },
       {
-        "img": "shopitems/jumping_rope.webp",
-        "name": "跳繩",
-        "emoji": "🪢",
-        "cat": "運動",
-        "price": 40
-      },
-      {
-        "img": "shopitems/swimming.webp",
-        "name": "游泳",
-        "emoji": "🏊",
-        "cat": "運動",
-        "price": 60
-      },
-      {
-        "img": "shopitems/running.webp",
-        "name": "跑步",
-        "emoji": "🏃",
-        "cat": "運動",
-        "price": 35
-      },
-      {
-        "img": "shopitems/cycling.webp",
-        "name": "騎單車",
-        "emoji": "🚴",
-        "cat": "運動",
-        "price": 50
-      },
-      {
-        "img": "shopitems/soccer.webp",
-        "name": "踢足球",
-        "emoji": "⚽",
-        "cat": "運動",
-        "price": 45
-      },
-      {
-        "img": "shopitems/basketball.webp",
-        "name": "打籃球",
-        "emoji": "🏀",
-        "cat": "運動",
-        "price": 45
-      },
-      {
-        "img": "shopitems/stairs.webp",
-        "name": "爬樓梯",
-        "emoji": "🪜",
-        "cat": "運動",
-        "price": 30
-      },
-      {
-        "img": "shopitems/yoga.webp",
-        "name": "瑜伽",
-        "emoji": "🧘",
-        "cat": "運動",
-        "price": 40
-      },
-      {
-        "img": "shopitems/badminton.webp",
-        "name": "羽毛球",
-        "emoji": "🏸",
-        "cat": "運動",
-        "price": 45
-      },
-      {
-        "img": "shopitems/walking.webp",
-        "name": "散步",
-        "emoji": "🚶",
-        "cat": "運動",
-        "price": 25
-      },
-      {
-        "img": "shopitems/early_sleep.webp",
-        "name": "早睡",
-        "emoji": "😴",
-        "cat": "生活習慣",
-        "price": 30
-      },
-      {
-        "img": "shopitems/brush_teeth.webp",
-        "name": "刷牙",
-        "emoji": "🪥",
-        "cat": "生活習慣",
-        "price": 20
-      },
-      {
-        "img": "shopitems/wash_hands.webp",
-        "name": "洗手",
-        "emoji": "🧼",
-        "cat": "生活習慣",
-        "price": 20
-      },
-      {
-        "img": "shopitems/drink_water.webp",
-        "name": "喝水",
-        "emoji": "💧",
-        "cat": "生活習慣",
-        "price": 15
-      },
-      {
-        "img": "shopitems/reading.webp",
-        "name": "閱讀",
-        "emoji": "📖",
-        "cat": "生活習慣",
-        "price": 30
-      },
-      {
         "name": "國語證照",
         "emoji": "📜",
         "cat": "職業道具",
@@ -414,6 +309,77 @@
         "emoji": "📋",
         "cat": "職業道具",
         "price": 300
+      }
+    ],
+    "buyback": [
+      {
+        "img": "shopitems/egg.webp",
+        "name": "雞蛋",
+        "emoji": "🥚",
+        "price": 50
+      },
+      {
+        "img": "shopitems/milk.webp",
+        "name": "牛奶",
+        "emoji": "🥛",
+        "price": 60
+      },
+      {
+        "img": "shopitems/corn.webp",
+        "name": "玉米",
+        "emoji": "🌽",
+        "price": 40
+      },
+      {
+        "img": "shopitems/pumpkin.webp",
+        "name": "南瓜",
+        "emoji": "🎃",
+        "price": 55
+      },
+      {
+        "img": "shopitems/strawberry.webp",
+        "name": "草莓",
+        "emoji": "🍓",
+        "price": 70
+      },
+      {
+        "img": "shopitems/tomato.webp",
+        "name": "番茄",
+        "emoji": "🍅",
+        "price": 35
+      },
+      {
+        "img": "shopitems/carrot.webp",
+        "name": "胡蘿蔔",
+        "emoji": "🥕",
+        "price": 30
+      },
+      {
+        "img": "shopitems/sweet_potato.webp",
+        "name": "地瓜",
+        "emoji": "🍠",
+        "price": 35
+      },
+      {
+        "img": "shopitems/cabbage.webp",
+        "name": "高麗菜",
+        "emoji": "🥬",
+        "price": 30
+      },
+      {
+        "name": "羊毛",
+        "emoji": "🐑",
+        "price": 80
+      },
+      {
+        "name": "蜂蜜",
+        "emoji": "🍯",
+        "price": 90
+      },
+      {
+        "name": "鮮花",
+        "emoji": "🌸",
+        "price": 45
       }
     ]
   },
@@ -588,6 +554,251 @@
         "img": "outfits/m_wizard_kid.webp",
         "name": "男 Wizard Kid",
         "price": 180
+      }
+    ]
+  },
+  "costcool": {
+    "title": "COSTCOOL 大型超市",
+    "owner": "沃爾瑪",
+    "merchant": "merchant_grocer_anim.webp",
+    "banner": "🏬 特約商店專區・即將開放",
+    "items": [
+      {
+        "name": "量販衛生紙",
+        "emoji": "🧻",
+        "cat": "日用品",
+        "price": 120
+      },
+      {
+        "name": "洗衣精",
+        "emoji": "🧴",
+        "cat": "日用品",
+        "price": 150
+      },
+      {
+        "name": "肥皂組",
+        "emoji": "🧼",
+        "cat": "日用品",
+        "price": 80
+      },
+      {
+        "name": "垃圾袋",
+        "emoji": "🗑️",
+        "cat": "日用品",
+        "price": 60
+      },
+      {
+        "name": "牙膏組",
+        "emoji": "🪥",
+        "cat": "日用品",
+        "price": 90
+      },
+      {
+        "name": "毛巾組",
+        "emoji": "🧺",
+        "cat": "日用品",
+        "price": 110
+      },
+      {
+        "name": "液晶電視",
+        "emoji": "📺",
+        "cat": "家電",
+        "price": 4500
+      },
+      {
+        "name": "檯燈",
+        "emoji": "💡",
+        "cat": "家電",
+        "price": 350
+      },
+      {
+        "name": "吹風機",
+        "emoji": "💨",
+        "cat": "家電",
+        "price": 420
+      },
+      {
+        "name": "電子鍋",
+        "emoji": "🍚",
+        "cat": "家電",
+        "price": 980
+      },
+      {
+        "name": "耳機",
+        "emoji": "🎧",
+        "cat": "家電",
+        "price": 680
+      },
+      {
+        "name": "時鐘",
+        "emoji": "🕐",
+        "cat": "家電",
+        "price": 260
+      },
+      {
+        "name": "洋芋片",
+        "emoji": "🥔",
+        "cat": "零食",
+        "price": 55
+      },
+      {
+        "name": "巧克力",
+        "emoji": "🍫",
+        "cat": "零食",
+        "price": 60
+      },
+      {
+        "name": "餅乾",
+        "emoji": "🍪",
+        "cat": "零食",
+        "price": 45
+      },
+      {
+        "name": "爆米花",
+        "emoji": "🍿",
+        "cat": "零食",
+        "price": 50
+      },
+      {
+        "name": "糖果罐",
+        "emoji": "🍬",
+        "cat": "零食",
+        "price": 70
+      },
+      {
+        "name": "甜甜圈",
+        "emoji": "🍩",
+        "cat": "零食",
+        "price": 40
+      },
+      {
+        "name": "可樂箱",
+        "emoji": "🥤",
+        "cat": "飲料",
+        "price": 180
+      },
+      {
+        "name": "果汁",
+        "emoji": "🧃",
+        "cat": "飲料",
+        "price": 35
+      },
+      {
+        "name": "咖啡",
+        "emoji": "☕",
+        "cat": "飲料",
+        "price": 65
+      },
+      {
+        "name": "礦泉水箱",
+        "emoji": "💧",
+        "cat": "飲料",
+        "price": 120
+      }
+    ]
+  },
+  "publisher": {
+    "title": "出版社",
+    "owner": "主編",
+    "merchant": null,
+    "items": [
+      {
+        "name": "成語故事",
+        "emoji": "📕",
+        "cat": "國語",
+        "price": 120
+      },
+      {
+        "name": "唐詩三百首",
+        "emoji": "📕",
+        "cat": "國語",
+        "price": 150
+      },
+      {
+        "name": "西遊記",
+        "emoji": "📕",
+        "cat": "國語",
+        "price": 180
+      },
+      {
+        "name": "論語讀本",
+        "emoji": "📜",
+        "cat": "國語",
+        "price": 160
+      },
+      {
+        "name": "數學練習本",
+        "emoji": "📘",
+        "cat": "數學",
+        "price": 90
+      },
+      {
+        "name": "益智數獨",
+        "emoji": "📘",
+        "cat": "數學",
+        "price": 80
+      },
+      {
+        "name": "英語單字書",
+        "emoji": "📗",
+        "cat": "英語",
+        "price": 130
+      },
+      {
+        "name": "英文故事書",
+        "emoji": "📗",
+        "cat": "英語",
+        "price": 110
+      },
+      {
+        "name": "十萬個為什麼",
+        "emoji": "📙",
+        "cat": "自然",
+        "price": 140
+      },
+      {
+        "name": "昆蟲圖鑑",
+        "emoji": "📙",
+        "cat": "自然",
+        "price": 160
+      },
+      {
+        "name": "世界地圖冊",
+        "emoji": "🗺️",
+        "cat": "社會",
+        "price": 150
+      },
+      {
+        "name": "台灣歷史",
+        "emoji": "📙",
+        "cat": "社會",
+        "price": 130
+      }
+    ],
+    "quests": [
+      {
+        "icon": "📖",
+        "title": "讀完 1 本故事書",
+        "desc": "在出版社挑一本故事書讀完。",
+        "reward": "金幣 ×80"
+      },
+      {
+        "icon": "✍️",
+        "title": "寫一篇 100 字短文",
+        "desc": "把今天的心得寫成短文投稿。",
+        "reward": "金幣 ×120 + 靈感鋼筆"
+      },
+      {
+        "icon": "🀄",
+        "title": "背 10 個成語",
+        "desc": "從成語故事裡記下 10 個成語。",
+        "reward": "金幣 ×100"
+      },
+      {
+        "icon": "📰",
+        "title": "投稿校刊 1 篇",
+        "desc": "完成一篇文章投稿到校刊。",
+        "reward": "金幣 ×150 + 稿費徽章"
       }
     ]
   }

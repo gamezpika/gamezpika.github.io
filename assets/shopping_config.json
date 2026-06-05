@@ -2,13 +2,13 @@
   "map_config": {
     "version": 1,
     "dimensions": {
-      "image_width": 1672,
-      "image_height": 941,
-      "world_width": 1672,
-      "world_height": 941,
+      "image_width": 2800,
+      "image_height": 1500,
+      "world_width": 2800,
+      "world_height": 1500,
       "world_offset_y": 0
     },
-    "background": "village-web/shopping_ground_v2.webp",
+    "background": "village-web/shopping_flat_bg.webp",
     "asset_base": "village-web/",
     "player": {
       "spawn": {
@@ -64,178 +64,174 @@
     ],
     "buildings": [
       {
-        "id": "house_blue",
-        "name": "男裝店",
-        "category": "house",
-        "sprite": {
-          "image": "menswear_anim_v2.webp",
-          "scale": 0.75,
-          "anchor_x": 0.5,
-          "anchor_y": 1,
-          "frame_width": 511,
-          "frame_height": 512,
-          "grid_cols": 4,
-          "grid_rows": 4,
-          "frames": 16,
-          "frame_rate": 12
-        },
-        "anchor": {
-          "x": 0.2787732065480962,
-          "y": 0.41564042903513837
-        },
-        "center": {
-          "x": 0.2787732065480962,
-          "y": 0.41564042903513837
-        },
-        "bounding_box": {
-          "x_min": 0.18146363623559617,
-          "y_min": 0.24689042903513841,
-          "x_max": 0.3760827768605962,
-          "y_max": 0.41564042903513837
-        },
-        "interaction": {
-          "type": "open_shop",
-          "label": "男裝店",
-          "body": "歡迎光臨男裝店",
-          "radius": 150,
-          "shop_id": "menswear"
-        },
-        "polygon": [
-          {
-            "x": 0.18146363623559617,
-            "y": 0.24689042903513841
-          },
-          {
-            "x": 0.3760827768605962,
-            "y": 0.24689042903513841
-          },
-          {
-            "x": 0.3760827768605962,
-            "y": 0.41564042903513837
-          },
-          {
-            "x": 0.18146363623559617,
-            "y": 0.41564042903513837
-          }
-        ],
-        "path": [],
-        "render_order": 550,
-        "mask_color": "#FF3B30",
-        "interaction_type": "open_shop"
-      },
-      {
-        "id": "house_brown",
-        "name": "女裝店",
-        "category": "house",
-        "sprite": {
-          "image": "clothes.webp",
-          "scale": 1.3,
-          "anchor_x": 0.5,
-          "anchor_y": 1,
-          "frame_width": 301,
-          "frame_height": 296,
-          "grid_cols": 2,
-          "grid_rows": 2,
-          "frames": 4,
-          "frame_rate": 4
-        },
-        "anchor": {
-          "x": 0.5181929964188957,
-          "y": 0.4185946536990196
-        },
-        "center": {
-          "x": 0.5181929964188957,
-          "y": 0.4185946536990196
-        },
-        "bounding_box": {
-          "x_min": 0.41883948079389566,
-          "y_min": 0.2494930911990197,
-          "x_max": 0.6175465120438958,
-          "y_max": 0.4185946536990196
-        },
-        "interaction": {
-          "type": "open_shop",
-          "shop_id": "boutique",
-          "label": "女裝店",
-          "body": "歡迎光臨女裝店",
-          "radius": 150
-        },
-        "polygon": [
-          {
-            "x": 0.41883948079389566,
-            "y": 0.2494930911990197
-          },
-          {
-            "x": 0.6175465120438958,
-            "y": 0.2494930911990197
-          },
-          {
-            "x": 0.6175465120438958,
-            "y": 0.4185946536990196
-          },
-          {
-            "x": 0.41883948079389566,
-            "y": 0.4185946536990196
-          }
-        ],
-        "path": [],
-        "render_order": 550,
-        "mask_color": "#FF3B30",
-        "interaction_type": "open_shop"
-      },
-      {
-        "id": "house_red",
+        "id": "grocer",
         "name": "批發中心",
-        "category": "house",
+        "category": "shop",
         "sprite": {
-          "image": "wholesale_left.webp",
-          "scale": 0.75,
+          "image": "facade_grocer.webp",
+          "scale": 0.3,
           "anchor_x": 0.5,
-          "anchor_y": 1
+          "anchor_y": 1.0
         },
         "anchor": {
-          "x": 0.8008413594608119,
-          "y": 0.42745732769066325
+          "x": 0.2,
+          "y": 0.455
         },
         "center": {
-          "x": 0.8008413594608119,
-          "y": 0.42745732769066325
+          "x": 0.2,
+          "y": 0.3683
         },
         "bounding_box": {
-          "x_min": 0.6848696797733119,
-          "y_min": 0.25870732769066324,
-          "x_max": 0.9168130391483119,
-          "y_max": 0.42745732769066325
+          "x_min": 0.15092857142857144,
+          "y_min": 0.29547200000000007,
+          "x_max": 0.24907142857142858,
+          "y_max": 0.455
         },
         "interaction": {
           "type": "open_shop",
           "shop_id": "grocer",
-          "label": "批發中心",
-          "body": "歡迎光臨批發中心",
-          "radius": 150
+          "radius": 135,
+          "label": "批發中心"
         },
-        "polygon": [
-          {
-            "x": 0.6848696797733119,
-            "y": 0.25870732769066324
-          },
-          {
-            "x": 0.9168130391483119,
-            "y": 0.25870732769066324
-          },
-          {
-            "x": 0.9168130391483119,
-            "y": 0.42745732769066325
-          },
-          {
-            "x": 0.6848696797733119,
-            "y": 0.42745732769066325
-          }
-        ],
+        "polygon": [],
         "path": [],
-        "render_order": 550,
-        "mask_color": "#FF3B30",
-        "interaction_type": "open_shop"
+        "render_order": 455
+      },
+      {
+        "id": "menswear",
+        "name": "男裝館",
+        "category": "shop",
+        "sprite": {
+          "image": "facade_menswear.webp",
+          "scale": 0.3,
+          "anchor_x": 0.5,
+          "anchor_y": 1.0
+        },
+        "anchor": {
+          "x": 0.5,
+          "y": 0.455
+        },
+        "center": {
+          "x": 0.5,
+          "y": 0.3648
+        },
+        "bounding_box": {
+          "x_min": 0.45135714285714285,
+          "y_min": 0.28903200000000007,
+          "x_max": 0.5486428571428571,
+          "y_max": 0.455
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "menswear",
+          "radius": 135,
+          "label": "男裝館"
+        },
+        "polygon": [],
+        "path": [],
+        "render_order": 455
+      },
+      {
+        "id": "boutique",
+        "name": "女裝館",
+        "category": "shop",
+        "sprite": {
+          "image": "facade_boutique.webp",
+          "scale": 0.3,
+          "anchor_x": 0.5,
+          "anchor_y": 1.0
+        },
+        "anchor": {
+          "x": 0.8,
+          "y": 0.455
+        },
+        "center": {
+          "x": 0.8,
+          "y": 0.3634
+        },
+        "bounding_box": {
+          "x_min": 0.7508428571428571,
+          "y_min": 0.28645600000000004,
+          "x_max": 0.8491571428571429,
+          "y_max": 0.455
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "boutique",
+          "radius": 135,
+          "label": "女裝館"
+        },
+        "polygon": [],
+        "path": [],
+        "render_order": 455
+      },
+      {
+        "id": "costcool",
+        "name": "COSTCOOL",
+        "category": "shop",
+        "sprite": {
+          "image": "facade_costcool.webp",
+          "scale": 0.34,
+          "anchor_x": 0.5,
+          "anchor_y": 1.0
+        },
+        "anchor": {
+          "x": 0.36,
+          "y": 0.95
+        },
+        "center": {
+          "x": 0.36,
+          "y": 0.8513999999999999
+        },
+        "bounding_box": {
+          "x_min": 0.3063285714285714,
+          "y_min": 0.7685759999999999,
+          "x_max": 0.4136714285714286,
+          "y_max": 0.95
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "costcool",
+          "radius": 135,
+          "label": "COSTCOOL"
+        },
+        "polygon": [],
+        "path": [],
+        "render_order": 950
+      },
+      {
+        "id": "publisher",
+        "name": "出版社",
+        "category": "shop",
+        "sprite": {
+          "image": "facade_publisher.webp",
+          "scale": 0.3,
+          "anchor_x": 0.5,
+          "anchor_y": 1.0
+        },
+        "anchor": {
+          "x": 0.66,
+          "y": 0.95
+        },
+        "center": {
+          "x": 0.66,
+          "y": 0.8588
+        },
+        "bounding_box": {
+          "x_min": 0.6099428571428571,
+          "y_min": 0.782192,
+          "x_max": 0.7100571428571429,
+          "y_max": 0.95
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "publisher",
+          "radius": 135,
+          "label": "出版社"
+        },
+        "polygon": [],
+        "path": [],
+        "render_order": 950
       }
     ],
     "obstacle_areas": [],

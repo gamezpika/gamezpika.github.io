@@ -545,6 +545,50 @@
           "default_interaction": null,
           "bbox_w_norm": 0.025,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_bush.webp",
+          "name": "🌳 灌木叢",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.02,
+          "frame_width": 360,
+          "frame_height": 294,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_rocks.webp",
+          "name": "🪨 巨岩",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.035,
+          "bbox_h_norm": 0.025
+        },
+        {
+          "image": "deco_stump.webp",
+          "name": "🪵 樹樁",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_mushroom.webp",
+          "name": "🍄 蘑菇",
+          "type": "decoration",
+          "scale": 0.15,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
         }
       ]
     },
@@ -1093,6 +1137,50 @@
           "default_interaction": null,
           "bbox_w_norm": 0.025,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_bush.webp",
+          "name": "🌳 灌木叢",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.02,
+          "frame_width": 360,
+          "frame_height": 294,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_rocks.webp",
+          "name": "🪨 巨岩",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.035,
+          "bbox_h_norm": 0.025
+        },
+        {
+          "image": "deco_stump.webp",
+          "name": "🪵 樹樁",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_mushroom.webp",
+          "name": "🍄 蘑菇",
+          "type": "decoration",
+          "scale": 0.15,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
         }
       ]
     },
@@ -1641,6 +1729,50 @@
           "default_interaction": null,
           "bbox_w_norm": 0.025,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_bush.webp",
+          "name": "🌳 灌木叢",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.02,
+          "frame_width": 360,
+          "frame_height": 294,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_rocks.webp",
+          "name": "🪨 巨岩",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.035,
+          "bbox_h_norm": 0.025
+        },
+        {
+          "image": "deco_stump.webp",
+          "name": "🪵 樹樁",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_mushroom.webp",
+          "name": "🍄 蘑菇",
+          "type": "decoration",
+          "scale": 0.15,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
         }
       ]
     },
@@ -2183,6 +2315,50 @@
           "default_interaction": null,
           "bbox_w_norm": 0.025,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_bush.webp",
+          "name": "🌳 灌木叢",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.02,
+          "frame_width": 360,
+          "frame_height": 294,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_rocks.webp",
+          "name": "🪨 巨岩",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.035,
+          "bbox_h_norm": 0.025
+        },
+        {
+          "image": "deco_stump.webp",
+          "name": "🪵 樹樁",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_mushroom.webp",
+          "name": "🍄 蘑菇",
+          "type": "decoration",
+          "scale": 0.15,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
         }
       ]
     },
@@ -2731,6 +2907,50 @@
           "default_interaction": null,
           "bbox_w_norm": 0.025,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_bush.webp",
+          "name": "🌳 灌木叢",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.02,
+          "frame_width": 360,
+          "frame_height": 294,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_rocks.webp",
+          "name": "🪨 巨岩",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.035,
+          "bbox_h_norm": 0.025
+        },
+        {
+          "image": "deco_stump.webp",
+          "name": "🪵 樹樁",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_mushroom.webp",
+          "name": "🍄 蘑菇",
+          "type": "decoration",
+          "scale": 0.15,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
         }
       ]
     },
@@ -3279,6 +3499,50 @@
           "default_interaction": null,
           "bbox_w_norm": 0.025,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_bush.webp",
+          "name": "🌳 灌木叢",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.02,
+          "frame_width": 360,
+          "frame_height": 294,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_rocks.webp",
+          "name": "🪨 巨岩",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.035,
+          "bbox_h_norm": 0.025
+        },
+        {
+          "image": "deco_stump.webp",
+          "name": "🪵 樹樁",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_mushroom.webp",
+          "name": "🍄 蘑菇",
+          "type": "decoration",
+          "scale": 0.15,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
         }
       ]
     },
@@ -3827,6 +4091,50 @@
           "default_interaction": null,
           "bbox_w_norm": 0.025,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_bush.webp",
+          "name": "🌳 灌木叢",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.02,
+          "frame_width": 360,
+          "frame_height": 294,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 8,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_rocks.webp",
+          "name": "🪨 巨岩",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.035,
+          "bbox_h_norm": 0.025
+        },
+        {
+          "image": "deco_stump.webp",
+          "name": "🪵 樹樁",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.03,
+          "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_mushroom.webp",
+          "name": "🍄 蘑菇",
+          "type": "decoration",
+          "scale": 0.15,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
         }
       ]
     }

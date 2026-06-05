@@ -455,13 +455,13 @@
         <div class="sprite-library" id="spriteLibrary" style="
             display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;
             padding:10px 12px; border-bottom:1px solid #0d1019;
-            max-height: 280px; overflow-y: auto; flex-shrink:0;
+            flex: 0 1 240px; min-height: 96px; overflow-y: auto;
         "></div>
         <div style="padding:8px 12px; font-size:11px; color:#888; flex-shrink:0;">
             已放置（<span id="spriteCount">0</span>）<span style="color:#666;">— 同類折疊，點展開</span>
         </div>
         <div class="placed-list" id="placedSpriteList" style="
-            flex:1; min-height:0; overflow-y:auto; border-bottom:1px solid #0d1019;
+            flex: 1 1 220px; min-height: 220px; overflow-y:auto; border-bottom:1px solid #0d1019;
         "></div>
     </div>
 
@@ -2287,11 +2287,12 @@ function renderPlacedSpriteList() {
         byName[it.name].items.push(it);
     });
     let html = player ? rowHtml(player, false) : '';
-    order.forEach(nm => {
-        const g = byName[nm];
-        if (g.items.length === 1) { html += rowHtml(g.items[0], false); return; }
-        const open = _placedExpanded.has(nm);
-        html += `<div class="placed-group" data-group="${encodeURIComponent(nm)}" style="display:flex;align-items:center;gap:8px;padding:8px 10px;cursor:pointer;background:#1e2433;border-bottom:1px solid #1a1f2e;white-space:nowrap;font-size:13px;">
+    // 群組（同名>1）排最上面、依數量多→少，方便一眼看到可展開的；單個物件排後面（放置順序）
+    const groupsArr = order.map(nm => byName[nm]).filter(g => g.items.length > 1).sort((a, b) => b.items.length - a.items.length);
+    const singles = order.map(nm => byName[nm]).filter(g => g.items.length === 1);
+    groupsArr.forEach(g => {
+        const open = _placedExpanded.has(g.name);
+        html += `<div class="placed-group" data-group="${encodeURIComponent(g.name)}" style="display:flex;align-items:center;gap:8px;padding:8px 10px;cursor:pointer;background:#1e2433;border-bottom:1px solid #1a1f2e;white-space:nowrap;font-size:13px;">
             <span style="width:12px;color:#fdc500;">${open ? '▾' : '▸'}</span>
             <span>${g.icon}</span>
             <span style="flex:1;overflow:hidden;text-overflow:ellipsis;">${g.name}</span>
@@ -2299,6 +2300,7 @@ function renderPlacedSpriteList() {
         </div>`;
         if (open) g.items.forEach(it => { html += rowHtml(it, true); });
     });
+    singles.forEach(g => { html += rowHtml(g.items[0], false); });
     el.innerHTML = html || '<div style="padding:10px;color:#666;font-size:11px;">尚未放置</div>';
     // 群組標頭：點擊展開/收合
     el.querySelectorAll('.placed-group').forEach(gh => {

@@ -761,6 +761,50 @@
           "default_interaction": null,
           "bbox_w_norm": 0.04,
           "bbox_h_norm": 0.03
+        },
+        {
+          "image": "deco_lights.webp",
+          "name": "🎐 燈串",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.015,
+          "frame_width": 420,
+          "frame_height": 202,
+          "grid_cols": 5,
+          "grid_rows": 2,
+          "frames": 10,
+          "frame_rate": 9,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_postbox.webp",
+          "name": "📮 郵筒",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015
+        },
+        {
+          "image": "deco_trashcan.webp",
+          "name": "🗑️ 垃圾桶",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.022,
+          "bbox_h_norm": 0.018
+        },
+        {
+          "image": "deco_chairs.webp",
+          "name": "🪑 咖啡椅",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.02
         }
       ]
     },
@@ -1525,6 +1569,50 @@
           "default_interaction": null,
           "bbox_w_norm": 0.04,
           "bbox_h_norm": 0.03
+        },
+        {
+          "image": "deco_lights.webp",
+          "name": "🎐 燈串",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.015,
+          "frame_width": 420,
+          "frame_height": 202,
+          "grid_cols": 5,
+          "grid_rows": 2,
+          "frames": 10,
+          "frame_rate": 9,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_postbox.webp",
+          "name": "📮 郵筒",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015
+        },
+        {
+          "image": "deco_trashcan.webp",
+          "name": "🗑️ 垃圾桶",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.022,
+          "bbox_h_norm": 0.018
+        },
+        {
+          "image": "deco_chairs.webp",
+          "name": "🪑 咖啡椅",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.02
         }
       ]
     },
@@ -2289,6 +2377,50 @@
           "default_interaction": null,
           "bbox_w_norm": 0.04,
           "bbox_h_norm": 0.03
+        },
+        {
+          "image": "deco_lights.webp",
+          "name": "🎐 燈串",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.015,
+          "frame_width": 420,
+          "frame_height": 202,
+          "grid_cols": 5,
+          "grid_rows": 2,
+          "frames": 10,
+          "frame_rate": 9,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_postbox.webp",
+          "name": "📮 郵筒",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015
+        },
+        {
+          "image": "deco_trashcan.webp",
+          "name": "🗑️ 垃圾桶",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.022,
+          "bbox_h_norm": 0.018
+        },
+        {
+          "image": "deco_chairs.webp",
+          "name": "🪑 咖啡椅",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.02
         }
       ]
     },
@@ -3047,6 +3179,50 @@
           "default_interaction": null,
           "bbox_w_norm": 0.04,
           "bbox_h_norm": 0.03
+        },
+        {
+          "image": "deco_lights.webp",
+          "name": "🎐 燈串",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.015,
+          "frame_width": 420,
+          "frame_height": 202,
+          "grid_cols": 5,
+          "grid_rows": 2,
+          "frames": 10,
+          "frame_rate": 9,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_postbox.webp",
+          "name": "📮 郵筒",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015
+        },
+        {
+          "image": "deco_trashcan.webp",
+          "name": "🗑️ 垃圾桶",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.022,
+          "bbox_h_norm": 0.018
+        },
+        {
+          "image": "deco_chairs.webp",
+          "name": "🪑 咖啡椅",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.02
         }
       ]
     },
@@ -3811,6 +3987,50 @@
           "default_interaction": null,
           "bbox_w_norm": 0.04,
           "bbox_h_norm": 0.03
+        },
+        {
+          "image": "deco_lights.webp",
+          "name": "🎐 燈串",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.015,
+          "frame_width": 420,
+          "frame_height": 202,
+          "grid_cols": 5,
+          "grid_rows": 2,
+          "frames": 10,
+          "frame_rate": 9,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_postbox.webp",
+          "name": "📮 郵筒",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015
+        },
+        {
+          "image": "deco_trashcan.webp",
+          "name": "🗑️ 垃圾桶",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.022,
+          "bbox_h_norm": 0.018
+        },
+        {
+          "image": "deco_chairs.webp",
+          "name": "🪑 咖啡椅",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.02
         }
       ]
     },
@@ -4620,6 +4840,50 @@
           "default_interaction": null,
           "bbox_w_norm": 0.04,
           "bbox_h_norm": 0.03
+        },
+        {
+          "image": "deco_lights.webp",
+          "name": "🎐 燈串",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.015,
+          "frame_width": 420,
+          "frame_height": 202,
+          "grid_cols": 5,
+          "grid_rows": 2,
+          "frames": 10,
+          "frame_rate": 9,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_postbox.webp",
+          "name": "📮 郵筒",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015
+        },
+        {
+          "image": "deco_trashcan.webp",
+          "name": "🗑️ 垃圾桶",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.022,
+          "bbox_h_norm": 0.018
+        },
+        {
+          "image": "deco_chairs.webp",
+          "name": "🪑 咖啡椅",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.02
         }
       ]
     },
@@ -5384,6 +5648,50 @@
           "default_interaction": null,
           "bbox_w_norm": 0.04,
           "bbox_h_norm": 0.03
+        },
+        {
+          "image": "deco_lights.webp",
+          "name": "🎐 燈串",
+          "type": "decoration",
+          "scale": 0.3,
+          "default_interaction": null,
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.015,
+          "frame_width": 420,
+          "frame_height": 202,
+          "grid_cols": 5,
+          "grid_rows": 2,
+          "frames": 10,
+          "frame_rate": 9,
+          "play_on_proximity": true,
+          "prox_radius": 80
+        },
+        {
+          "image": "deco_postbox.webp",
+          "name": "📮 郵筒",
+          "type": "decoration",
+          "scale": 0.2,
+          "default_interaction": null,
+          "bbox_w_norm": 0.018,
+          "bbox_h_norm": 0.015
+        },
+        {
+          "image": "deco_trashcan.webp",
+          "name": "🗑️ 垃圾桶",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.022,
+          "bbox_h_norm": 0.018
+        },
+        {
+          "image": "deco_chairs.webp",
+          "name": "🪑 咖啡椅",
+          "type": "decoration",
+          "scale": 0.25,
+          "default_interaction": null,
+          "bbox_w_norm": 0.04,
+          "bbox_h_norm": 0.02
         }
       ]
     }

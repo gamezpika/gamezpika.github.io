@@ -316,7 +316,7 @@
         "name": "出版社",
         "category": "shop",
         "sprite": {
-          "image": "publisher_road_v4.webp",
+          "image": "publisher_road_v5.webp",
           "scale": 0.537,
           "anchor_x": 0.5,
           "anchor_y": 0.9889,

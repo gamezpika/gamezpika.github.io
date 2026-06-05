@@ -1439,7 +1439,7 @@
         "speed": 34,
         "interaction": {
           "type": "open_shop",
-          "shop_id": "npcintro:蒲松齡",
+          "shop_id": "npc_pusongling",
           "label": "蒲松齡",
           "radius": 150,
           "body": "我蒲松齡，愛聽鬼狐奇談，你可有故事？"
@@ -1478,7 +1478,7 @@
         "speed": 34,
         "interaction": {
           "type": "open_shop",
-          "shop_id": "npcintro:羅貫中",
+          "shop_id": "npc_luoguanzhong",
           "label": "羅貫中",
           "radius": 150,
           "body": "天下大勢，分久必合，合久必分。"

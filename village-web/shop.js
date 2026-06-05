@@ -573,7 +573,7 @@
   let caNpcId = null;
   async function caLoad() {
     if (CA_CONTENT) return CA_CONTENT;
-    const r = await fetch("chinese_academy.json?v=6");
+    const r = await fetch("chinese_academy.json?v=7");
     if (!r.ok) throw new Error("chinese academy HTTP " + r.status);
     CA_CONTENT = await r.json();
     return CA_CONTENT;
@@ -659,20 +659,29 @@
     caBubble(ov, a.intro || "");
     const box = ov.querySelector(".ao-content");
     const ids = Object.keys(npcs);
-    const group = (id) => {
+    // 一位師長可同時有主線與支線（如孔丘），按 line.chain 分區呈現
+    const group = (id, wantSide) => {
       const n = npcs[id];
-      const quests = (n.lines || []).reduce((acc, l) => acc.concat(l.quests || []), []);
+      const lines = (n.lines || []).filter((l) => (l.chain === "side") === wantSide);
+      if (!lines.length) return "";
+      const quests = lines.reduce((acc, l) => acc.concat(l.quests || []), []);
       return `<div class="ca-navgroup">
         <div class="ca-navhd"><img src="${aoEsc(n.img)}?v=1" draggable="false"><span class="ca-navnm">${aoEsc(n.name)}</span><i class="ca-navti">${aoEsc(n.title || "")}</i></div>
         ${quests.map((q) => `<div class="ca-navq"><span class="ca-navq-ic">${aoEsc(q.icon || "📜")}</span><span class="ca-navq-t">${aoEsc(q.title)}</span><span class="ca-navq-r">🎁 ${aoEsc(q.reward)}</span></div>`).join("")}
         <div class="ca-navgo">→ 去找路上的「${aoEsc(n.name)}」接取</div>
       </div>`;
     };
-    const mainIds = ids.filter((id) => !npcs[id].side);
-    const sideIds = ids.filter((id) => npcs[id].side);
+    const minSeq = (id, wantSide) => {
+      const ls = (npcs[id].lines || []).filter((l) => (l.chain === "side") === wantSide);
+      return ls.length ? Math.min.apply(null, ls.map((l) => Number(l.seq_start) || 999)) : 999;
+    };
+    const order = (wantSide) => ids.filter((id) => minSeq(id, wantSide) < 999)
+      .sort((a, b) => minSeq(a, wantSide) - minSeq(b, wantSide));
+    const mainIds = order(false);
+    const sideIds = order(true);
     let html = "";
-    if (mainIds.length) html += `<div class="ca-navsec">📘 主線任務</div>` + mainIds.map(group).join("");
-    if (sideIds.length) html += `<div class="ca-navsec">📙 支線任務</div>` + sideIds.map(group).join("");
+    if (mainIds.length) html += `<div class="ca-navsec">📘 主線任務</div>` + mainIds.map((id) => group(id, false)).join("");
+    if (sideIds.length) html += `<div class="ca-navsec">📙 支線任務</div>` + sideIds.map((id) => group(id, true)).join("");
     box.innerHTML = html || `<div class="jc-empty">目前沒有任務</div>`;
   }
 

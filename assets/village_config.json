@@ -121,8 +121,8 @@
         "radius": 120,
         "target_map": "shopping",
         "target_spawn": {
-          "x": 0.18,
-          "y": 0.5
+          "x": 0.1,
+          "y": 0.2
         },
         "label": "前往商店街"
       },

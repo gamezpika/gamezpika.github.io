@@ -4039,12 +4039,12 @@
       "name": "🛍️ 商店街",
       "engine": "phaser_iso",
       "config_path": "assets/shopping_config.json",
-      "background_path": "village-web/shopping_flat_bg.webp",
+      "background_path": "village-web/shopping_diag2_bg.webp",
       "sprite_base": "village-web/",
       "preview_url": "village-web/",
       "image_dimensions": {
-        "width": 2800,
-        "height": 1500
+        "width": 2200,
+        "height": 1400
       },
       "world_offset_y": 0,
       "sprite_library": [

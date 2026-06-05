@@ -445,8 +445,8 @@
     </div>
 
     <!-- 👤 Sprite mode 面板 -->
-    <div class="sprite-panel" id="spritePanel" style="display:none;">
-        <div style="padding:10px 12px; font-size:11px; color:#fdc500; font-weight:700; border-bottom:1px solid #0d1019; display:flex; align-items:center; justify-content:space-between;">
+    <div class="sprite-panel" id="spritePanel" style="display:none; flex-direction:column; flex:1; min-height:0;">
+        <div style="padding:10px 12px; font-size:11px; color:#fdc500; font-weight:700; border-bottom:1px solid #0d1019; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;">
             <span>🎨 Sprite 庫（點 sprite → 點地圖放）</span>
             <button id="btnUploadSprite" style="background:#444;color:#fdc500;border:1px solid #555;border-radius:4px;padding:3px 7px;font-size:11px;font-weight:700;cursor:pointer;">📤 上傳</button>
         </div>
@@ -455,13 +455,13 @@
         <div class="sprite-library" id="spriteLibrary" style="
             display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;
             padding:10px 12px; border-bottom:1px solid #0d1019;
-            max-height: 280px; overflow-y: auto;
+            max-height: 280px; overflow-y: auto; flex-shrink:0;
         "></div>
-        <div style="padding:8px 12px; font-size:11px; color:#888;">
-            已放置（<span id="spriteCount">0</span>）
+        <div style="padding:8px 12px; font-size:11px; color:#888; flex-shrink:0;">
+            已放置（<span id="spriteCount">0</span>）<span style="color:#666;">— 同類折疊，點展開</span>
         </div>
         <div class="placed-list" id="placedSpriteList" style="
-            max-height:200px; overflow-y:auto; border-bottom:1px solid #0d1019;
+            flex:1; min-height:0; overflow-y:auto; border-bottom:1px solid #0d1019;
         "></div>
     </div>
 
@@ -617,6 +617,7 @@ let ACTIVE_MAP = legacyActiveMap(pickActiveProject(FALLBACK_PROJECTS, _qMap));
 
 let mapConfig = null;
 let selectedBuildingId = null;
+let _placedExpanded = new Set();   // 已放置清單：展開中的同類群組名
 let mode = 'bbox';  // 'bbox' | 'path' | 'objects'
 
 // Phase 4: 給 ES module 端讀 mapConfig（避免 module / inline scope 衝突）
@@ -1888,7 +1889,7 @@ function setMode(newMode) {
     pathHint.classList.remove('show');
     objectHint.classList.toggle('show', newMode === 'objects');
     objectsPanel.style.display = newMode === 'objects' ? 'block' : 'none';
-    spritePanel.style.display = newMode === 'sprite' ? 'block' : 'none';
+    spritePanel.style.display = newMode === 'sprite' ? 'flex' : 'none';
     pathPanel.style.display = newMode === 'path' ? 'block' : 'none';
     const showBuildingPanel = (newMode === 'bbox');
     buildingList.style.display = showBuildingPanel ? 'block' : 'none';
@@ -2265,8 +2266,9 @@ function renderPlacedSpriteList() {
                                        scale: (n.sprite && n.sprite.scale) || 0.66 })),
     );
     document.getElementById('spriteCount').textContent = items.length;
-    el.innerHTML = items.map(it => `
-        <div class="placed-row" data-id="${it.id}" data-npc="${it.isNpc}" data-player="${it.isPlayer}" style="white-space:nowrap;">
+    // 單列 HTML（indent=true 為群組子項，往右縮排）
+    const rowHtml = (it, indent) => `
+        <div class="placed-row" data-id="${it.id}" data-npc="${it.isNpc}" data-player="${it.isPlayer}" style="white-space:nowrap;${indent ? 'padding-left:22px;background:#20263400;' : ''}">
             <span>${it.icon}</span>
             <span style="flex:1; overflow:hidden; text-overflow:ellipsis;">${it.name}</span>
             <input type="number" data-action="scale" value="${Number(it.scale).toFixed(2)}"
@@ -2275,8 +2277,37 @@ function renderPlacedSpriteList() {
             ${(!it.isNpc && !it.isPlayer) ? `<span style="color:#888;font-size:11px;">↻</span><input type="number" data-action="rotate" value="${it.rotdeg || 0}" step="5" title="旋轉角度°（路 tile 轉方向；碰撞框跟著轉）" style="width:48px;padding:2px 4px;background:#232938;color:#fff;border:1px solid #444;border-radius:3px;font-size:11px;">` : ''}
             ${it.isNpc ? '<button data-action="flip-side" title="翻轉 side 朝向（看到反了一鍵翻）" style="padding:2px 6px;background:#3a3f55;color:#fdc500;border:1px solid #555;border-radius:3px;font-size:11px;font-weight:700;cursor:pointer;">⇄</button>' : ''}
             ${it.isPlayer ? '<span style="width:34px;text-align:center;color:#666;font-size:10px;">主角</span>' : '<button data-action="delete">刪</button>'}
-        </div>
-    `).join('') || '<div style="padding:10px;color:#666;font-size:11px;">尚未放置</div>';
+        </div>`;
+    // 同類（同名）折疊：主角單列置頂；其餘按名分組，數量>1 折成群組標頭，=1 直接顯示（孤項）
+    const player = items.find(i => i.isPlayer);
+    const rest = items.filter(i => !i.isPlayer);
+    const order = []; const byName = {};
+    rest.forEach(it => {
+        if (!byName[it.name]) { byName[it.name] = { name: it.name, icon: it.icon, items: [] }; order.push(it.name); }
+        byName[it.name].items.push(it);
+    });
+    let html = player ? rowHtml(player, false) : '';
+    order.forEach(nm => {
+        const g = byName[nm];
+        if (g.items.length === 1) { html += rowHtml(g.items[0], false); return; }
+        const open = _placedExpanded.has(nm);
+        html += `<div class="placed-group" data-group="${encodeURIComponent(nm)}" style="display:flex;align-items:center;gap:8px;padding:8px 10px;cursor:pointer;background:#1e2433;border-bottom:1px solid #1a1f2e;white-space:nowrap;font-size:13px;">
+            <span style="width:12px;color:#fdc500;">${open ? '▾' : '▸'}</span>
+            <span>${g.icon}</span>
+            <span style="flex:1;overflow:hidden;text-overflow:ellipsis;">${g.name}</span>
+            <span style="color:#fdc500;font-weight:700;font-size:12px;">×${g.items.length}</span>
+        </div>`;
+        if (open) g.items.forEach(it => { html += rowHtml(it, true); });
+    });
+    el.innerHTML = html || '<div style="padding:10px;color:#666;font-size:11px;">尚未放置</div>';
+    // 群組標頭：點擊展開/收合
+    el.querySelectorAll('.placed-group').forEach(gh => {
+        gh.addEventListener('click', () => {
+            const nm = decodeURIComponent(gh.dataset.group);
+            if (_placedExpanded.has(nm)) _placedExpanded.delete(nm); else _placedExpanded.add(nm);
+            renderPlacedSpriteList();
+        });
+    });
 
     // scale 輸入：即時改 sprite.scale，建築物 bbox + polygon 以 anchor 為中心同比例縮放
     el.querySelectorAll('.placed-row input[data-action="scale"]').forEach(inp => {

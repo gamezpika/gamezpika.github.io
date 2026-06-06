@@ -896,7 +896,7 @@
       "name": "🏝️ 海島 Demo (village-web)",
       "engine": "phaser_iso",
       "config_path": "assets/island_config.json",
-      "background_path": "village-web/beach_ground.webp",
+      "background_path": "village-web/beach_coast_bg.webp",
       "sprite_base": "village-web/",
       "preview_url": "village-web/?map=island",
       "image_dimensions": {

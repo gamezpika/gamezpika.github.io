@@ -937,6 +937,21 @@
           "frame_rate": 8,
           "play_on_proximity": true,
           "prox_radius": 80
+        },
+        {
+          "image": "deco_wave.webp",
+          "name": "🌊 拍岸浪花",
+          "type": "decoration",
+          "scale": 0.45,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.01,
+          "frame_width": 460,
+          "frame_height": 260,
+          "grid_cols": 7,
+          "grid_rows": 2,
+          "frames": 14,
+          "frame_rate": 10
         }
       ]
     },
@@ -1877,6 +1892,21 @@
           "frame_rate": 8,
           "play_on_proximity": true,
           "prox_radius": 80
+        },
+        {
+          "image": "deco_wave.webp",
+          "name": "🌊 拍岸浪花",
+          "type": "decoration",
+          "scale": 0.45,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.01,
+          "frame_width": 460,
+          "frame_height": 260,
+          "grid_cols": 7,
+          "grid_rows": 2,
+          "frames": 14,
+          "frame_rate": 10
         }
       ]
     },
@@ -2817,6 +2847,21 @@
           "frame_rate": 8,
           "play_on_proximity": true,
           "prox_radius": 80
+        },
+        {
+          "image": "deco_wave.webp",
+          "name": "🌊 拍岸浪花",
+          "type": "decoration",
+          "scale": 0.45,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.01,
+          "frame_width": 460,
+          "frame_height": 260,
+          "grid_cols": 7,
+          "grid_rows": 2,
+          "frames": 14,
+          "frame_rate": 10
         }
       ]
     },
@@ -3751,6 +3796,21 @@
           "frame_rate": 8,
           "play_on_proximity": true,
           "prox_radius": 80
+        },
+        {
+          "image": "deco_wave.webp",
+          "name": "🌊 拍岸浪花",
+          "type": "decoration",
+          "scale": 0.45,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.01,
+          "frame_width": 460,
+          "frame_height": 260,
+          "grid_cols": 7,
+          "grid_rows": 2,
+          "frames": 14,
+          "frame_rate": 10
         }
       ]
     },
@@ -4691,6 +4751,21 @@
           "frame_rate": 8,
           "play_on_proximity": true,
           "prox_radius": 80
+        },
+        {
+          "image": "deco_wave.webp",
+          "name": "🌊 拍岸浪花",
+          "type": "decoration",
+          "scale": 0.45,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.01,
+          "frame_width": 460,
+          "frame_height": 260,
+          "grid_cols": 7,
+          "grid_rows": 2,
+          "frames": 14,
+          "frame_rate": 10
         }
       ]
     },
@@ -5676,6 +5751,21 @@
           "frame_rate": 8,
           "play_on_proximity": true,
           "prox_radius": 80
+        },
+        {
+          "image": "deco_wave.webp",
+          "name": "🌊 拍岸浪花",
+          "type": "decoration",
+          "scale": 0.45,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.01,
+          "frame_width": 460,
+          "frame_height": 260,
+          "grid_cols": 7,
+          "grid_rows": 2,
+          "frames": 14,
+          "frame_rate": 10
         }
       ]
     },
@@ -6616,6 +6706,21 @@
           "frame_rate": 8,
           "play_on_proximity": true,
           "prox_radius": 80
+        },
+        {
+          "image": "deco_wave.webp",
+          "name": "🌊 拍岸浪花",
+          "type": "decoration",
+          "scale": 0.45,
+          "default_interaction": null,
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.01,
+          "frame_width": 460,
+          "frame_height": 260,
+          "grid_cols": 7,
+          "grid_rows": 2,
+          "frames": 14,
+          "frame_rate": 10
         }
       ]
     }

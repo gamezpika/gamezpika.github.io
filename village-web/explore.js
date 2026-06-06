@@ -5,7 +5,7 @@
 const REGISTRY_URL = "../assets/projects_registry.json";
 const DPR = Math.max(1, window.devicePixelRatio || 1);
 // 草/花卉等地上小植物：可踩過去、不建碰撞（現有已放置的也一起生效）
-const WALKABLE_DECOR = new Set(["deco_grass.webp", "deco_flower.webp", "deco_flower_v2.webp"]);
+const WALKABLE_DECOR = new Set(["deco_grass.webp", "deco_flower.webp", "deco_flower_v2.webp", "deco_wave.webp"]);
 
 function _qParam(name) {
   try { return new URLSearchParams(window.location.search).get(name); } catch (e) { return null; }

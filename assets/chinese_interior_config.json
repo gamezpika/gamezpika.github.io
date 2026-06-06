@@ -62,33 +62,71 @@
         "label": "離開"
       }
     ],
-    "buildings": [
+    "buildings": [],
+    "obstacle_areas": [],
+    "npcs": [
       {
-        "id": "dean_kongqiu",
+        "id": "kongqiu",
         "name": "孔丘 院長",
-        "category": "decoration",
         "sprite": {
-          "image": "kongqiu_dean.webp",
-          "scale": 0.17,
-          "anchor_x": 0.5,
-          "anchor_y": 1,
-          "rotation": 0
+          "scale": 0.1,
+          "sprites": {
+            "side": {
+              "image": "kongqiu_npc_walk.webp",
+              "frame_width": 593,
+              "frame_height": 1264,
+              "frames": 6,
+              "frame_rate": 6,
+              "facing": "left"
+            },
+            "down": {
+              "image": "kongqiu_npc_walk_down.webp",
+              "frame_width": 531,
+              "frame_height": 1264,
+              "frames": 6,
+              "frame_rate": 6
+            },
+            "up": {
+              "image": "kongqiu_npc_walk_up.webp",
+              "frame_width": 532,
+              "frame_height": 1264,
+              "frames": 6,
+              "frame_rate": 6
+            }
+          }
         },
-        "anchor": {
+        "spawn": {
           "x": 0.5,
-          "y": 0.34
+          "y": 0.45
         },
+        "patrol": [
+          {
+            "x": 0.4,
+            "y": 0.42
+          },
+          {
+            "x": 0.6,
+            "y": 0.42
+          },
+          {
+            "x": 0.6,
+            "y": 0.55
+          },
+          {
+            "x": 0.4,
+            "y": 0.55
+          }
+        ],
+        "speed": 40,
         "interaction": {
           "type": "open_shop",
           "shop_id": "chinese_academy",
           "label": "孔丘 院長",
-          "body": "歡迎來到國語學院",
-          "radius": 170
+          "radius": 160,
+          "body": "歡迎來到國語學院"
         }
       }
     ],
-    "obstacle_areas": [],
-    "npcs": [],
     "objects": []
   }
 }

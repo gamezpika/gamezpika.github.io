@@ -731,10 +731,63 @@
     ],
     "npcs": [
       {
-        "id": "kongqiu",
-        "name": "孔丘 院長",
+        "id": "mengzi",
+        "name": "孟子",
         "sprite": {
-          "scale": 0.1,
+          "scale": 0.09,
+          "sprites": {
+            "side": {
+              "image": "mengzi_wfsheet.webp",
+              "frame_width": 769,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 8,
+              "facing": "left"
+            },
+            "down": {
+              "image": "mengzi_walk_down.webp",
+              "frame_width": 463,
+              "frame_height": 1264,
+              "frames": 6,
+              "frame_rate": 6
+            },
+            "up": {
+              "image": "mengzi_walk_up.webp",
+              "frame_width": 446,
+              "frame_height": 1264,
+              "frames": 6,
+              "frame_rate": 6
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.3,
+          "y": 0.42
+        },
+        "patrol": [
+          {
+            "x": 0.25,
+            "y": 0.42
+          },
+          {
+            "x": 0.35,
+            "y": 0.42
+          }
+        ],
+        "speed": 40,
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "npc_mengzi",
+          "label": "孟子",
+          "radius": 150,
+          "body": "吾乃孟軻，字詞魔王猖獗，與我一同討伐這群妖魔！"
+        }
+      },
+      {
+        "id": "kongqiu",
+        "name": "孔丘",
+        "sprite": {
+          "scale": 0.09,
           "sprites": {
             "side": {
               "image": "kongqiu_npc_walk.webp",
@@ -762,33 +815,379 @@
         },
         "spawn": {
           "x": 0.5,
-          "y": 0.45
+          "y": 0.42
         },
         "patrol": [
           {
-            "x": 0.4,
+            "x": 0.45,
             "y": 0.42
           },
           {
-            "x": 0.6,
+            "x": 0.55,
             "y": 0.42
-          },
-          {
-            "x": 0.6,
-            "y": 0.55
-          },
-          {
-            "x": 0.4,
-            "y": 0.55
           }
         ],
         "speed": 40,
         "interaction": {
           "type": "open_shop",
           "shop_id": "chinese_academy",
-          "label": "孔丘 院長",
-          "radius": 160,
-          "body": "歡迎來到國語學院"
+          "label": "孔丘",
+          "radius": 150,
+          "body": "吾乃孔丘，欲修國語者，可入吾學院。"
+        }
+      },
+      {
+        "id": "jinyong",
+        "name": "金庸",
+        "sprite": {
+          "scale": 0.09,
+          "sprites": {
+            "side": {
+              "image": "jinyong_wfsheet.webp",
+              "frame_width": 653,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 8,
+              "facing": "left"
+            },
+            "down": {
+              "image": "jinyong_fwfhnsheet.webp",
+              "frame_width": 579,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 8
+            },
+            "up": {
+              "image": "jinyong_bwfhnsheet.webp",
+              "frame_width": 542,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 8
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.7,
+          "y": 0.42
+        },
+        "patrol": [
+          {
+            "x": 0.65,
+            "y": 0.42
+          },
+          {
+            "x": 0.75,
+            "y": 0.42
+          }
+        ],
+        "speed": 40,
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "npc_jinyong",
+          "label": "金庸",
+          "radius": 150,
+          "body": "競技場以武會友、以文較高下，盼你成為常勝軍！"
+        }
+      },
+      {
+        "id": "zhuangzi",
+        "name": "莊周",
+        "sprite": {
+          "scale": 0.07,
+          "sprites": {
+            "side": {
+              "image": "zhuangzi_wfsheet2.webp",
+              "frame_width": 752,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 8,
+              "facing": "left"
+            },
+            "down": {
+              "image": "zhuangzi_npc_walk_down.webp",
+              "frame_width": 756,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 6
+            },
+            "up": {
+              "image": "zhuangzi_npc_walk_up.webp",
+              "frame_width": 649,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 6
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.32,
+          "y": 0.56
+        },
+        "patrol": [
+          {
+            "x": 0.27,
+            "y": 0.56
+          },
+          {
+            "x": 0.37,
+            "y": 0.56
+          }
+        ],
+        "speed": 40,
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "npc_zhuangzi",
+          "label": "莊周",
+          "radius": 150,
+          "body": "欲取得語文證照者，且來尋我莊周。"
+        }
+      },
+      {
+        "id": "caoxueqin",
+        "name": "曹雪芹",
+        "sprite": {
+          "scale": 0.07,
+          "sprites": {
+            "side": {
+              "image": "caoxueqin_wfsheet3.webp",
+              "frame_width": 705,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 8,
+              "facing": "left"
+            },
+            "down": {
+              "image": "caoxueqin_npc_walk_down.webp",
+              "frame_width": 607,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 6
+            },
+            "up": {
+              "image": "caoxueqin_npc_walk_up.webp",
+              "frame_width": 614,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 6
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.5,
+          "y": 0.56
+        },
+        "patrol": [
+          {
+            "x": 0.45,
+            "y": 0.56
+          },
+          {
+            "x": 0.55,
+            "y": 0.56
+          }
+        ],
+        "speed": 40,
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "npc_caoxueqin",
+          "label": "曹雪芹",
+          "radius": 150,
+          "body": "瑣事繁多，能否請你幫個小忙？"
+        }
+      },
+      {
+        "id": "zhuxi",
+        "name": "朱熹",
+        "sprite": {
+          "scale": 0.0893,
+          "sprites": {
+            "side": {
+              "image": "zhuxi_npc_walk.webp",
+              "frame_width": 582,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 6,
+              "facing": "left"
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.68,
+          "y": 0.56
+        },
+        "patrol": [
+          {
+            "x": 0.63,
+            "y": 0.56
+          },
+          {
+            "x": 0.73,
+            "y": 0.56
+          }
+        ],
+        "speed": 40,
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "npcintro:朱熹",
+          "label": "朱熹",
+          "radius": 150,
+          "body": "吾乃朱熹，格物致知，與你共勉。"
+        }
+      },
+      {
+        "id": "pusongling",
+        "name": "蒲松齡",
+        "sprite": {
+          "scale": 0.0893,
+          "sprites": {
+            "side": {
+              "image": "pusongling_npc_walk.webp",
+              "frame_width": 653,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 6,
+              "facing": "left"
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.28,
+          "y": 0.7
+        },
+        "patrol": [
+          {
+            "x": 0.23,
+            "y": 0.7
+          },
+          {
+            "x": 0.33,
+            "y": 0.7
+          }
+        ],
+        "speed": 40,
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "npc_pusongling",
+          "label": "蒲松齡",
+          "radius": 150,
+          "body": "我蒲松齡，愛聽鬼狐奇談，你可有故事？"
+        }
+      },
+      {
+        "id": "luoguanzhong",
+        "name": "羅貫中",
+        "sprite": {
+          "scale": 0.0893,
+          "sprites": {
+            "side": {
+              "image": "luoguanzhong_npc_walk.webp",
+              "frame_width": 569,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 6,
+              "facing": "left"
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.44,
+          "y": 0.7
+        },
+        "patrol": [
+          {
+            "x": 0.39,
+            "y": 0.7
+          },
+          {
+            "x": 0.49,
+            "y": 0.7
+          }
+        ],
+        "speed": 40,
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "npc_luoguanzhong",
+          "label": "羅貫中",
+          "radius": 150,
+          "body": "天下大勢，分久必合，合久必分。"
+        }
+      },
+      {
+        "id": "wuchengen",
+        "name": "吳承恩",
+        "sprite": {
+          "scale": 0.0893,
+          "sprites": {
+            "side": {
+              "image": "wuchengen_npc_walk.webp",
+              "frame_width": 612,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 6,
+              "facing": "left"
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.58,
+          "y": 0.7
+        },
+        "patrol": [
+          {
+            "x": 0.53,
+            "y": 0.7
+          },
+          {
+            "x": 0.63,
+            "y": 0.7
+          }
+        ],
+        "speed": 40,
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "npcintro:吳承恩",
+          "label": "吳承恩",
+          "radius": 150,
+          "body": "西天取經路迢迢，你可願同行？"
+        }
+      },
+      {
+        "id": "zhengbanqiao",
+        "name": "鄭板橋",
+        "sprite": {
+          "scale": 0.0893,
+          "sprites": {
+            "side": {
+              "image": "zhengbanqiao_npc_walk.webp",
+              "frame_width": 641,
+              "frame_height": 1276,
+              "frames": 6,
+              "frame_rate": 6,
+              "facing": "left"
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.72,
+          "y": 0.7
+        },
+        "patrol": [
+          {
+            "x": 0.67,
+            "y": 0.7
+          },
+          {
+            "x": 0.77,
+            "y": 0.7
+          }
+        ],
+        "speed": 40,
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "npcintro:鄭板橋",
+          "label": "鄭板橋",
+          "radius": 150,
+          "body": "難得糊塗，且來看我畫竹。"
         }
       }
     ],

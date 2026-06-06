@@ -176,8 +176,10 @@
 #enter-portal.show { display: block; }
 #enter-portal:active { transform: translateX(-50%) translateY(3px); box-shadow: 0 2px 0 #134f78; }
 @keyframes portal-glow {
-  0%, 100% { box-shadow: 0 5px 0 #134f78, 0 8px 18px rgba(0,0,0,.35); }
-  50%      { box-shadow: 0 5px 0 #134f78, 0 0 22px 5px rgba(150,220,255,.95); }
+  0%, 100% { transform: translateX(-50%) scale(1) translateY(0);
+             box-shadow: 0 5px 0 #134f78, 0 8px 18px rgba(0,0,0,.35); }
+  50%      { transform: translateX(-50%) scale(1.07) translateY(-4px);
+             box-shadow: 0 9px 0 #134f78, 0 0 28px 8px rgba(150,220,255,.98); }
 }
 
 /* ───────────── 職業介紹所 ───────────── */

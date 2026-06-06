@@ -84,6 +84,10 @@ class ExploreScene extends Phaser.Scene {
     if (!this.textures.exists(this.bgKey)) {
       this.load.image(this.bgKey, "../" + config.background + "?v=4");
     }
+    // 傳送點箭頭（有 portal 才載）
+    if ((config.portals || []).length && !this.textures.exists("portal_arrow")) {
+      this.load.image("portal_arrow", this.assetBase + "deco_portal_arrow.webp?v=1");
+    }
     // 河流（config.river 驅動，海島沒有就不載）
     if (config.river && !this.textures.exists("river")) {
       this.load.spritesheet("river", this.assetBase + config.river.image + "?v=3",
@@ -399,12 +403,13 @@ class ExploreScene extends Phaser.Scene {
       config.portals.forEach(pt => {
         if (!pt.anchor) return;
         const cx = this._nx(pt.anchor.x), cy = this._ny(pt.anchor.y);
-        // 地面脈動光圈：讓玩家看到出口在哪
-        const ring = this.add.ellipse(cx, cy, 90, 50, 0x66ccff, 0.32)
-          .setStrokeStyle(4, 0xffffff, 0.85).setDepth(cy - 6);
+        // 傳送點箭頭：指向出口方向（離地圖中心的方向）+ 脈動
+        const dir = Math.atan2(pt.anchor.y - 0.5, pt.anchor.x - 0.5);
+        const arrow = this.add.image(cx, cy, "portal_arrow")
+          .setRotation(dir).setScale(0.30).setAlpha(0.9).setDepth(cy - 6);
         this.tweens.add({
-          targets: ring, scaleX: { from: 0.8, to: 1.25 }, scaleY: { from: 0.8, to: 1.25 },
-          alpha: { from: 0.45, to: 0.12 }, duration: 1100, yoyo: true, repeat: -1,
+          targets: arrow, scale: { from: 0.26, to: 0.34 },
+          alpha: { from: 0.6, to: 1 }, duration: 850, yoyo: true, repeat: -1,
         });
         this.add.text(cx, cy - 64, (pt.label || "前往") + " →", {
           fontFamily: '"PingFang TC","Microsoft JhengHei",sans-serif', fontSize: "20px",

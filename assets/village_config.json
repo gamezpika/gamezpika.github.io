@@ -65,8 +65,8 @@
         "radius": 120,
         "target_map": "island",
         "target_spawn": {
-          "x": 0.3,
-          "y": 0.25
+          "x": 0.5,
+          "y": 0.12
         },
         "label": "前往海島"
       },

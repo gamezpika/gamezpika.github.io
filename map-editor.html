@@ -619,6 +619,17 @@ let ACTIVE_MAP = legacyActiveMap(pickActiveProject(FALLBACK_PROJECTS, _qMap));
 let mapConfig = null;
 let selectedBuildingId = null;
 let _placedExpanded = new Set();   // 已放置清單：展開中的同類群組名
+let _animSprites = [];             // 編輯器動畫預覽：放置的 spritesheet 物件清單(rAF 步進幀)
+// 編輯器動畫預覽迴圈：依時間步進每個 spritesheet 的 backgroundPosition（只更新樣式、不重繪、零閃爍）
+function _stepSpriteAnims(t) {
+    for (const a of _animSprites) {
+        const f = Math.floor(t / 1000 * a.rate) % a.frames;
+        const col = f % a.cols, row = Math.floor(f / a.cols);
+        a.el.style.backgroundPosition = `-${col * a.fw}px -${row * a.fh}px`;
+    }
+    requestAnimationFrame(_stepSpriteAnims);
+}
+requestAnimationFrame(_stepSpriteAnims);
 let mode = 'bbox';  // 'bbox' | 'path' | 'objects'
 
 // Phase 4: 給 ES module 端讀 mapConfig（避免 module / inline scope 衝突）
@@ -2050,6 +2061,7 @@ function placeSpriteAt(libIdx, normX, normY) {
 
 function renderSpriteMarkers() {
     document.querySelectorAll('#mapFrame .placed-sprite').forEach(el => el.remove());
+    _animSprites = [];   // 元素已重建，動畫清單重收集
     if (!mapConfig) return;
     if (!ACTIVE_PROJECT) return;
     // sprite mode 全互動 + 全不透明；bbox mode 顯示為參考（半透明、不可拖、不可選）
@@ -2094,6 +2106,13 @@ function renderSpriteMarkers() {
             el.style.backgroundImage = `url("../${ACTIVE_PROJECT.sprite_base}${bSprite.image}")`;
             el.style.backgroundSize = `${renderW * gridCols}px ${renderH * gridRows}px`;
             el.style.backgroundPosition = '0 0';
+            // 編輯器動畫預覽：收集到 _animSprites，rAF 步進 backgroundPosition（不重繪、不閃）
+            const _frames = bSprite.frames || meta.frames || (gridCols * gridRows);
+            if (_frames > 1) {
+                _animSprites.push({ el, cols: gridCols, frames: _frames,
+                                    rate: bSprite.frame_rate || meta.frame_rate || 8,
+                                    fw: renderW, fh: renderH });
+            }
         } else {
             // 靜態 image 用 <img>
             // 大小用「圖的真實尺寸」(寬高分開→非512/非正方形都對);圖載入前先用 fallback、onload 後校正

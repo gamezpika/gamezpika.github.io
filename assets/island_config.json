@@ -56,8 +56,8 @@
         "radius": 110,
         "target_map": "village",
         "target_spawn": {
-          "x": 0.5,
-          "y": 0.5
+          "x": 0.14,
+          "y": 0.84
         },
         "label": "回村莊"
       },

@@ -406,9 +406,9 @@ class ExploreScene extends Phaser.Scene {
         // 傳送點箭頭：指向出口方向（離地圖中心的方向）+ 脈動
         const dir = Math.atan2(pt.anchor.y - 0.5, pt.anchor.x - 0.5);
         const arrow = this.add.image(cx, cy, "portal_arrow")
-          .setRotation(dir).setScale(0.30).setAlpha(0.9).setDepth(cy - 6);
+          .setRotation(dir).setScale(0.18).setAlpha(0.9).setDepth(cy - 6);
         this.tweens.add({
-          targets: arrow, scale: { from: 0.26, to: 0.34 },
+          targets: arrow, scale: { from: 0.15, to: 0.21 },
           alpha: { from: 0.6, to: 1 }, duration: 850, yoyo: true, repeat: -1,
         });
         this.add.text(cx, cy - 64, (pt.label || "前往") + " →", {

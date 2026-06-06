@@ -60,6 +60,20 @@
           "y": 0.88
         },
         "label": "回村莊"
+      },
+      {
+        "id": "to_chinese_interior",
+        "anchor": {
+          "x": 0.247,
+          "y": 0.34
+        },
+        "radius": 150,
+        "target_map": "chinese_interior",
+        "target_spawn": {
+          "x": 0.5,
+          "y": 0.82
+        },
+        "label": "進入國語學院"
       }
     ],
     "buildings": [
@@ -87,13 +101,7 @@
           "x_max": 0.31282016685538383,
           "y_max": 0.285162172652473
         },
-        "interaction": {
-          "type": "open_shop",
-          "shop_id": "chinese_academy",
-          "label": "國語學院",
-          "body": "歡迎來到國語學院",
-          "radius": 200
-        },
+        "interaction": null,
         "polygon": [
           {
             "x": 0.1725258964728324,

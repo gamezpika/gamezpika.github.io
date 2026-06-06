@@ -1,0 +1,94 @@
+{
+  "map_config": {
+    "version": 1,
+    "dimensions": {
+      "image_width": 1536,
+      "image_height": 1024,
+      "world_width": 1536,
+      "world_height": 1024,
+      "world_offset_y": 0
+    },
+    "background": "village-web/academy_interior_bg.webp",
+    "asset_base": "village-web/",
+    "player": {
+      "spawn": {
+        "x": 0.5,
+        "y": 0.82
+      },
+      "scale": 0.2,
+      "speed": 220,
+      "sprites": {
+        "side": {
+          "image": "player3.webp",
+          "frame_width": 234,
+          "frame_height": 457,
+          "frames": 9,
+          "frame_rate": 6,
+          "facing": "left"
+        },
+        "down": {
+          "image": "player1.webp",
+          "frame_width": 221,
+          "frame_height": 500,
+          "frames": 9,
+          "frame_rate": 6
+        },
+        "up": {
+          "image": "player2.webp",
+          "frame_width": 218,
+          "frame_height": 498,
+          "frames": 9,
+          "frame_rate": 6
+        }
+      }
+    },
+    "camera": {
+      "sky_pad": 0,
+      "view_base_width": 1000
+    },
+    "portals": [
+      {
+        "id": "exit_to_academy",
+        "anchor": {
+          "x": 0.5,
+          "y": 0.93
+        },
+        "radius": 120,
+        "target_map": "academy",
+        "target_spawn": {
+          "x": 0.25,
+          "y": 0.4
+        },
+        "label": "離開"
+      }
+    ],
+    "buildings": [
+      {
+        "id": "dean_kongqiu",
+        "name": "孔丘 院長",
+        "category": "decoration",
+        "sprite": {
+          "image": "kongqiu_dean.webp",
+          "scale": 0.17,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "rotation": 0
+        },
+        "anchor": {
+          "x": 0.5,
+          "y": 0.34
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "chinese_academy",
+          "label": "孔丘 院長",
+          "body": "歡迎來到國語學院",
+          "radius": 170
+        }
+      }
+    ],
+    "obstacle_areas": [],
+    "npcs": [],
+    "objects": []
+  }
+}

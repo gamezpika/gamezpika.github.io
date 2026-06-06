@@ -1546,7 +1546,7 @@
         "name": "海盜船長",
         "category": "decoration",
         "sprite": {
-          "image": "deco_pirate.webp",
+          "image": "deco_pirate_v2.webp",
           "scale": 0.6,
           "anchor_x": 0.5,
           "anchor_y": 1,

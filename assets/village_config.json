@@ -87,8 +87,8 @@
       {
         "id": "to_campus",
         "anchor": {
-          "x": 0.9,
-          "y": 0.88
+          "x": 0.854,
+          "y": 0.924
         },
         "radius": 130,
         "target_map": "campus",
@@ -115,8 +115,8 @@
       {
         "id": "to_shopping",
         "anchor": {
-          "x": 0.93,
-          "y": 0.66
+          "x": 0.935,
+          "y": 0.639
         },
         "radius": 120,
         "target_map": "shopping",

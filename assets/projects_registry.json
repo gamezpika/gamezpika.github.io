@@ -873,6 +873,23 @@
           "frame_rate": 8,
           "play_on_proximity": true,
           "prox_radius": 80
+        },
+        {
+          "image": "deco_pirate.webp",
+          "name": "🏴‍☠️ 海盜船長",
+          "type": "decoration",
+          "scale": 0.5,
+          "default_interaction": null,
+          "bbox_w_norm": 0.07,
+          "bbox_h_norm": 0.04,
+          "frame_width": 394,
+          "frame_height": 540,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 9,
+          "play_on_proximity": true,
+          "prox_radius": 130
         }
       ]
     },
@@ -1749,6 +1766,23 @@
           "frame_rate": 8,
           "play_on_proximity": true,
           "prox_radius": 80
+        },
+        {
+          "image": "deco_pirate.webp",
+          "name": "🏴‍☠️ 海盜船長",
+          "type": "decoration",
+          "scale": 0.5,
+          "default_interaction": null,
+          "bbox_w_norm": 0.07,
+          "bbox_h_norm": 0.04,
+          "frame_width": 394,
+          "frame_height": 540,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 9,
+          "play_on_proximity": true,
+          "prox_radius": 130
         }
       ]
     },
@@ -2625,6 +2659,23 @@
           "frame_rate": 8,
           "play_on_proximity": true,
           "prox_radius": 80
+        },
+        {
+          "image": "deco_pirate.webp",
+          "name": "🏴‍☠️ 海盜船長",
+          "type": "decoration",
+          "scale": 0.5,
+          "default_interaction": null,
+          "bbox_w_norm": 0.07,
+          "bbox_h_norm": 0.04,
+          "frame_width": 394,
+          "frame_height": 540,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 9,
+          "play_on_proximity": true,
+          "prox_radius": 130
         }
       ]
     },
@@ -3495,6 +3546,23 @@
           "frame_rate": 8,
           "play_on_proximity": true,
           "prox_radius": 80
+        },
+        {
+          "image": "deco_pirate.webp",
+          "name": "🏴‍☠️ 海盜船長",
+          "type": "decoration",
+          "scale": 0.5,
+          "default_interaction": null,
+          "bbox_w_norm": 0.07,
+          "bbox_h_norm": 0.04,
+          "frame_width": 394,
+          "frame_height": 540,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 9,
+          "play_on_proximity": true,
+          "prox_radius": 130
         }
       ]
     },
@@ -4371,6 +4439,23 @@
           "frame_rate": 8,
           "play_on_proximity": true,
           "prox_radius": 80
+        },
+        {
+          "image": "deco_pirate.webp",
+          "name": "🏴‍☠️ 海盜船長",
+          "type": "decoration",
+          "scale": 0.5,
+          "default_interaction": null,
+          "bbox_w_norm": 0.07,
+          "bbox_h_norm": 0.04,
+          "frame_width": 394,
+          "frame_height": 540,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 9,
+          "play_on_proximity": true,
+          "prox_radius": 130
         }
       ]
     },
@@ -5292,6 +5377,23 @@
           "frame_rate": 8,
           "play_on_proximity": true,
           "prox_radius": 80
+        },
+        {
+          "image": "deco_pirate.webp",
+          "name": "🏴‍☠️ 海盜船長",
+          "type": "decoration",
+          "scale": 0.5,
+          "default_interaction": null,
+          "bbox_w_norm": 0.07,
+          "bbox_h_norm": 0.04,
+          "frame_width": 394,
+          "frame_height": 540,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 9,
+          "play_on_proximity": true,
+          "prox_radius": 130
         }
       ]
     },
@@ -6168,6 +6270,23 @@
           "frame_rate": 8,
           "play_on_proximity": true,
           "prox_radius": 80
+        },
+        {
+          "image": "deco_pirate.webp",
+          "name": "🏴‍☠️ 海盜船長",
+          "type": "decoration",
+          "scale": 0.5,
+          "default_interaction": null,
+          "bbox_w_norm": 0.07,
+          "bbox_h_norm": 0.04,
+          "frame_width": 394,
+          "frame_height": 540,
+          "grid_cols": 4,
+          "grid_rows": 3,
+          "frames": 12,
+          "frame_rate": 9,
+          "play_on_proximity": true,
+          "prox_radius": 130
         }
       ]
     }

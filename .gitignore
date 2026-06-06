@@ -4,3 +4,4 @@ tmp/
 assets/images/onboarding/.imagegen/
 *.pptx
 .imagegen/
+decor_src/

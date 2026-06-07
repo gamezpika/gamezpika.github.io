@@ -879,8 +879,8 @@
     });
 
     box.innerHTML = `
-      <div class="jc-tabs ao-tabs4" style="margin-bottom:6px;">${gradeTabs}</div>
-      <div class="jc-tabs ao-tabs4" style="margin-bottom:10px;">${pubTabs}</div>
+      <div class="jc-tabs ao-tabs4" style="margin-bottom:6px;flex-shrink:0;">${gradeTabs}</div>
+      <div class="jc-tabs ao-tabs4" style="margin-bottom:10px;flex-shrink:0;">${pubTabs}</div>
       <div>${list || `<div class="jc-empty">這個版本沒有章節</div>`}</div>`;
 
     box.querySelectorAll("[data-g]").forEach((b) => b.addEventListener("click", function () {

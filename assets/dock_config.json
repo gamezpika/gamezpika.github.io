@@ -68,12 +68,12 @@
           "y": 0.944
         },
         "radius": 110,
-        "target_map": "village",
+        "target_map": "island",
         "target_spawn": {
           "x": 0.5,
-          "y": 0.5
+          "y": 0.82
         },
-        "label": "🚢 搭船出發(待接下個地圖)"
+        "label": "🏝️ 前往海島"
       }
     ],
     "buildings": [

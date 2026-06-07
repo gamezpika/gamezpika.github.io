@@ -66,9 +66,9 @@
         "target_map": "island",
         "target_spawn": {
           "x": 0.5,
-          "y": 0.12
+          "y": 0.2
         },
-        "label": "前往學園碼頭"
+        "label": "前往海島"
       },
       {
         "id": "to_island_mainroad",

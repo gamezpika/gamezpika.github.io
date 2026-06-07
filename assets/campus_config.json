@@ -70,8 +70,8 @@
         "radius": 110,
         "target_map": "shopping",
         "target_spawn": {
-          "x": 0.27,
-          "y": 0.63
+          "x": 0.33,
+          "y": 0.87
         },
         "label": "前往商店街"
       },

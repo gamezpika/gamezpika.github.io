@@ -6624,7 +6624,7 @@
       "name": "🎡 遊樂場",
       "engine": "phaser_iso",
       "config_path": "assets/playground_config.json",
-      "background_path": "village-web/funpark_v3_bg.webp",
+      "background_path": "village-web/playground_full_bg.webp",
       "sprite_base": "village-web/",
       "preview_url": "village-web/",
       "image_dimensions": {

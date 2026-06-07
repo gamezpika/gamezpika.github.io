@@ -8,7 +8,7 @@
       "world_height": 1024,
       "world_offset_y": 0
     },
-    "background": "village-web/funpark_v3_bg.webp",
+    "background": "village-web/playground_full_bg.webp",
     "asset_base": "village-web/",
     "player": {
       "spawn": {
@@ -50,7 +50,7 @@
       {
         "id": "back_to_village",
         "anchor": {
-          "x": 0.8,
+          "x": 0.8055,
           "y": 0.5
         },
         "radius": 120,
@@ -65,7 +65,7 @@
         "id": "to_competitive",
         "anchor": {
           "x": 0.5,
-          "y": 0.05
+          "y": 0.06
         },
         "radius": 110,
         "target_map": "competitive",

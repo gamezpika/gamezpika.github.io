@@ -135,8 +135,8 @@
         "radius": 120,
         "target_map": "playground",
         "target_spawn": {
-          "x": 0.8,
-          "y": 0.5
+          "x": 0.8057,
+          "y": 0.4502
         },
         "label": "前往遊樂場"
       }

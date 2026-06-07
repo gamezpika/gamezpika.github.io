@@ -724,6 +724,11 @@
         }));
       }
     };
+    if (!demoToken() && !caProvisioned) {   // 沒走 onboarding 直接進村莊→先自動補身分
+      box.innerHTML = `<div class="jc-empty">任務載入中…</div>`;
+      ensureDemoPlayer().then(() => caRenderAcademy(ov));
+      return;
+    }
     if (demoToken() && !caMainAPI) {
       box.innerHTML = `<div class="jc-empty">任務載入中…</div>`;
       caLoadMainAPI().then((m) => { caMainAPI = m; renderOverview(); });
@@ -755,6 +760,34 @@
       return await r.json();
     } catch (e) { return { ok: false, error: "network" }; }
   }
+
+  /* ── 自動補身分：直接開村莊(沒走 onboarding)時，自動建一個展示玩家，讓孔丘永遠是真資料模式 ── */
+  let caProvisioned = false, caProvisioning = null;
+  function ensureDemoPlayer() {
+    if (demoToken()) return Promise.resolve(true);
+    if (caProvisioned) return Promise.resolve(!!demoToken());
+    if (!caProvisioning) caProvisioning = (async () => {
+      try {
+        const j = (r) => r.json();
+        const uid = "demo_" + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36);
+        await fetch(DEMO_API + "/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "web", userId: uid, name: "小訪客" }) }).then(j);
+        const ch = await fetch(DEMO_API + "/api/auth/child/create", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ platform: "web", platform_user_id: uid, child_name: "小訪客", grade: 2, semester: 1 }) }).then(j);
+        const cid = ch && ch.child && ch.child.id;
+        if (cid) {
+          const sel = await fetch(DEMO_API + "/api/auth/child/select", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ platform: "web", platform_user_id: uid, child_id: cid }) }).then(j);
+          if (sel && sel.token) {
+            localStorage.setItem("eduarena_demo_token", sel.token);
+            localStorage.setItem("eduarena_demo_uid", uid);
+            localStorage.setItem("eduarena_demo_child_id", String(cid));
+            await fetch(DEMO_API + "/api/demo/grant-stars?subject=chinese&pct=60", { method: "POST", headers: { "Authorization": "Bearer " + sel.token } }).then(j).catch(() => {});
+          }
+        }
+      } catch (e) { console.warn("[demo auto-provision] 失敗，退回唯讀版:", e); }
+      caProvisioned = true;
+    })();
+    return caProvisioning.then(() => !!demoToken());
+  }
+  try { ensureDemoPlayer(); } catch (e) {}   // 載入即先補，等玩家走到孔丘時通常已就緒
 
   /* ── 國語基礎練習：村莊內直接答題，用後台真題庫＋真算星星 ── */
   async function caOpenPractice(ov) {
@@ -835,6 +868,12 @@
     try { prog = Math.max(0, parseInt(localStorage.getItem(pkey) || "0", 10) || 0); } catch (e) { prog = 0; }
     const base = Number(ln.seq_start) || 1;
 
+    // 沒走 onboarding 直接進村莊 → 先自動補身分再讀真後台
+    if (chain === "main" && !demoToken() && !caProvisioned) {
+      box.innerHTML = `<div class="jc-empty">任務載入中…</div>`;
+      ensureDemoPlayer().then(() => caRenderNpc(ov));
+      return;
+    }
     // ★ 主線 + 有通行證 → 讀真後台（接取/領獎/進度都走 API）
     if (chain === "main" && demoToken()) {
       if (!caMainAPI) {

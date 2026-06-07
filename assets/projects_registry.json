@@ -945,7 +945,7 @@
       "name": "🚢 學園碼頭",
       "engine": "phaser_iso",
       "config_path": "assets/dock_config.json",
-      "background_path": "village-web/beach_coast_bg.webp",
+      "background_path": "village-web/dock_paint_bg.webp",
       "sprite_base": "village-web/",
       "preview_url": "village-web/?map=dock",
       "image_dimensions": {
@@ -1885,7 +1885,7 @@
       "name": "🏝️ 海島",
       "engine": "phaser_iso",
       "config_path": "assets/island_config.json",
-      "background_path": "village-web/island_bg.webp",
+      "background_path": "village-web/island_paint_bg.webp",
       "sprite_base": "village-web/",
       "preview_url": "village-web/?map=island",
       "image_dimensions": {
@@ -4699,7 +4699,7 @@
       "name": "🏟️ 競技場",
       "engine": "phaser_iso",
       "config_path": "assets/competitive_config.json",
-      "background_path": "village-web/arena_bg.webp",
+      "background_path": "village-web/arena_paint_bg.webp",
       "sprite_base": "village-web/",
       "preview_url": "village-web/",
       "image_dimensions": {
@@ -6624,7 +6624,7 @@
       "name": "🎡 遊樂場",
       "engine": "phaser_iso",
       "config_path": "assets/playground_config.json",
-      "background_path": "village-web/funpark_bg.webp",
+      "background_path": "village-web/funpark_paint_bg.webp",
       "sprite_base": "village-web/",
       "preview_url": "village-web/",
       "image_dimensions": {
@@ -8504,7 +8504,7 @@
       "name": "🌲 禁忌森林",
       "engine": "phaser_iso",
       "config_path": "assets/forest_config.json",
-      "background_path": "village-web/forest_bg.webp",
+      "background_path": "village-web/forest_paint_bg.webp",
       "sprite_base": "village-web/",
       "preview_url": "village-web/?map=forest",
       "image_dimensions": {
@@ -9444,7 +9444,7 @@
       "name": "🌑 禁忌森林深處",
       "engine": "phaser_iso",
       "config_path": "assets/forest_deep_config.json",
-      "background_path": "village-web/forest_deep_bg.webp",
+      "background_path": "village-web/forest_deep_paint_bg.webp",
       "sprite_base": "village-web/",
       "preview_url": "village-web/?map=forest_deep",
       "image_dimensions": {
@@ -10384,7 +10384,7 @@
       "name": "🏦 交易所",
       "engine": "phaser_iso",
       "config_path": "assets/exchange_config.json",
-      "background_path": "village-web/exchange_bg.webp",
+      "background_path": "village-web/exchange_paint_bg.webp",
       "sprite_base": "village-web/",
       "preview_url": "village-web/?map=exchange",
       "image_dimensions": {
@@ -11324,7 +11324,7 @@
       "name": "🗼 鎮魔塔",
       "engine": "phaser_iso",
       "config_path": "assets/tower_config.json",
-      "background_path": "village-web/tower_bg.webp",
+      "background_path": "village-web/tower_paint_bg.webp",
       "sprite_base": "village-web/",
       "preview_url": "village-web/?map=tower",
       "image_dimensions": {

@@ -8,7 +8,7 @@
       "world_height": 1024,
       "world_offset_y": 0
     },
-    "background": "village-web/forest_bg.webp",
+    "background": "village-web/forest_paint_bg.webp",
     "asset_base": "village-web/",
     "player": {
       "spawn": {

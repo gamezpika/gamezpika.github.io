@@ -677,12 +677,57 @@
     };
     const order = (wantSide) => ids.filter((id) => minSeq(id, wantSide) < 999)
       .sort((a, b) => minSeq(a, wantSide) - minSeq(b, wantSide));
-    const mainIds = order(false);
     const sideIds = order(true);
-    let html = "";
-    if (mainIds.length) html += `<div class="ca-navsec">📘 主線任務</div>` + mainIds.map((id) => group(id, false)).join("");
-    if (sideIds.length) html += `<div class="ca-navsec">📙 支線任務</div>` + sideIds.map((id) => group(id, true)).join("");
-    box.innerHTML = html || `<div class="jc-empty">目前沒有任務</div>`;
+
+    // demo 真後台：主線顯示真進度，當前可動的那關直接接取/領取（孔丘院長面板＝這裡）
+    const groupLive = (id) => {
+      const n = npcs[id];
+      const lines = (n.lines || []).filter((l) => l.chain !== "side");
+      if (!lines.length) return "";
+      let rows = "";
+      lines.forEach((l) => {
+        const base = Number(l.seq_start) || 1;
+        (l.quests || []).forEach((q, qi) => {
+          const aq = caMainAPI[base + qi];
+          const stt = aq ? aq.status : "locked";
+          let right;
+          if (stt === "completed") right = `<span class="ca-navq-st" style="color:#3a8f3a;font-weight:800">✓ 已完成</span>`;
+          else if (stt === "available") right = `<button class="jc-act ca-accept" data-key="${aq ? aoEsc(aq.key) : ""}">接取</button>`;
+          else if (stt === "active" && aq && aq.can_claim) right = `<button class="jc-act ca-claim" data-key="${aoEsc(aq.key)}">領取</button>`;
+          else if (stt === "active") right = `<span class="ca-navq-st" style="color:#c98a2b;font-weight:700">進行中 ${aq.current}/${aq.target}</span>`;
+          else right = `<span class="ca-navq-st" style="opacity:.45">🔒</span>`;
+          rows += `<div class="ca-navq"><span class="ca-navq-ic">${stt === "locked" ? "🔒" : aoEsc(q.icon || "📜")}</span><span class="ca-navq-t">${aoEsc(q.title)}</span><span class="ca-navq-r">🎁 ${aoEsc(q.reward)}</span>${right}</div>`;
+        });
+      });
+      return `<div class="ca-navgroup"><div class="ca-navhd"><img src="${aoEsc(n.img)}?v=1" draggable="false"><span class="ca-navnm">${aoEsc(n.name)}</span><i class="ca-navti">${aoEsc(n.title || "")}</i></div>${rows}</div>`;
+    };
+    const renderOverview = () => {
+      const mainIds = order(false);
+      const live = demoToken() && caMainAPI;
+      let html = "";
+      if (mainIds.length) html += `<div class="ca-navsec">📘 主線任務</div>` + mainIds.map((id) => live ? groupLive(id) : group(id, false)).join("");
+      if (sideIds.length) html += `<div class="ca-navsec">📙 支線任務</div>` + sideIds.map((id) => group(id, true)).join("");
+      box.innerHTML = html || `<div class="jc-empty">目前沒有任務</div>`;
+      if (live) {
+        const refresh = async () => { caMainAPI = await caLoadMainAPI(); caRenderAcademy(ov); };
+        box.querySelectorAll(".ca-accept").forEach((b) => b.addEventListener("click", async function (e) {
+          e.stopPropagation(); this.disabled = true; await caMainAction("accept", this.dataset.key); await refresh();
+        }));
+        box.querySelectorAll(".ca-claim").forEach((b) => b.addEventListener("click", async function (e) {
+          e.stopPropagation(); this.disabled = true;
+          const r = await caMainAction("claim", this.dataset.key);
+          if (r && r.ok) caBubble(ov, "獎勵入帳！" + (r.reward_label ? ("獲得「" + r.reward_label + "」") : ("+" + (r.reward_coins || 0) + " 金幣")));
+          else if (r && r.error === "condition_not_met") caBubble(ov, "還沒達成條件唷～");
+          await refresh();
+        }));
+      }
+    };
+    if (demoToken() && !caMainAPI) {
+      box.innerHTML = `<div class="jc-empty">任務載入中…</div>`;
+      caLoadMainAPI().then((m) => { caMainAPI = m; renderOverview(); });
+    } else {
+      renderOverview();
+    }
   }
 
   /* ── Demo 真後台：主線任務（孔丘那條鏈）改讀真 API；沒通行證就退回舊假版 ── */

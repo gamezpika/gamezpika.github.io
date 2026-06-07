@@ -64,8 +64,8 @@
       {
         "id": "to_competitive",
         "anchor": {
-          "x": 0.5,
-          "y": 0.308
+          "x": 0.639,
+          "y": 0.673
         },
         "radius": 110,
         "target_map": "competitive",
@@ -78,8 +78,8 @@
       {
         "id": "to_campus",
         "anchor": {
-          "x": 0.5,
-          "y": 0.692
+          "x": 0.744,
+          "y": 0.753
         },
         "radius": 110,
         "target_map": "campus",
@@ -92,8 +92,8 @@
       {
         "id": "to_exchange",
         "anchor": {
-          "x": 0.95,
-          "y": 0.52
+          "x": 0.759,
+          "y": 0.673
         },
         "radius": 110,
         "target_map": "exchange",

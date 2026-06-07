@@ -60,6 +60,34 @@
           "y": 0.33
         },
         "label": "回村莊"
+      },
+      {
+        "id": "to_playground",
+        "anchor": {
+          "x": 0.1,
+          "y": 0.5
+        },
+        "radius": 110,
+        "target_map": "playground",
+        "target_spawn": {
+          "x": 0.5,
+          "y": 0.18
+        },
+        "label": "前往遊樂場"
+      },
+      {
+        "id": "to_shopping",
+        "anchor": {
+          "x": 0.9,
+          "y": 0.5
+        },
+        "radius": 110,
+        "target_map": "shopping",
+        "target_spawn": {
+          "x": 0.5193,
+          "y": 0.1852
+        },
+        "label": "前往商店街"
       }
     ],
     "buildings": [],

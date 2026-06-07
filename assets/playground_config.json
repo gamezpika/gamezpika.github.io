@@ -60,6 +60,20 @@
           "y": 0.34
         },
         "label": "回村莊"
+      },
+      {
+        "id": "to_competitive",
+        "anchor": {
+          "x": 0.5,
+          "y": 0.1
+        },
+        "radius": 110,
+        "target_map": "competitive",
+        "target_spawn": {
+          "x": 0.15,
+          "y": 0.5
+        },
+        "label": "前往競技場"
       }
     ],
     "buildings": [],

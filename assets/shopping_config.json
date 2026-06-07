@@ -60,6 +60,34 @@
           "y": 0.66
         },
         "label": "回村莊"
+      },
+      {
+        "id": "to_competitive",
+        "anchor": {
+          "x": 0.5,
+          "y": 0.308
+        },
+        "radius": 110,
+        "target_map": "competitive",
+        "target_spawn": {
+          "x": 0.85,
+          "y": 0.5
+        },
+        "label": "前往競技場"
+      },
+      {
+        "id": "to_campus",
+        "anchor": {
+          "x": 0.5,
+          "y": 0.692
+        },
+        "radius": 110,
+        "target_map": "campus",
+        "target_spawn": {
+          "x": 0.85,
+          "y": 0.2
+        },
+        "label": "前往學員生活區"
       }
     ],
     "buildings": [

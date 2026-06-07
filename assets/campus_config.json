@@ -60,6 +60,34 @@
           "y": 0.85
         },
         "label": "回村莊"
+      },
+      {
+        "id": "to_shopping",
+        "anchor": {
+          "x": 0.85,
+          "y": 0.12
+        },
+        "radius": 110,
+        "target_map": "shopping",
+        "target_spawn": {
+          "x": 0.4307,
+          "y": 0.86
+        },
+        "label": "前往商店街"
+      },
+      {
+        "id": "to_academy",
+        "anchor": {
+          "x": 0.148,
+          "y": 0.676
+        },
+        "radius": 110,
+        "target_map": "academy",
+        "target_spawn": {
+          "x": 0.85,
+          "y": 0.5
+        },
+        "label": "前往五大學院"
       }
     ],
     "buildings": [

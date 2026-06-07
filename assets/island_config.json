@@ -74,6 +74,20 @@
           "y": 0.12
         },
         "label": "🚢 前往學園碼頭"
+      },
+      {
+        "id": "to_forest",
+        "anchor": {
+          "x": 0.2,
+          "y": 0.35
+        },
+        "radius": 110,
+        "target_map": "forest",
+        "target_spawn": {
+          "x": 0.8,
+          "y": 0.8
+        },
+        "label": "🌲 前往禁忌森林"
       }
     ],
     "buildings": [],

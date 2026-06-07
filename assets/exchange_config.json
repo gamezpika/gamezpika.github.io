@@ -1,0 +1,70 @@
+{
+  "map_config": {
+    "version": 1,
+    "dimensions": {
+      "image_width": 1536,
+      "image_height": 1024,
+      "world_width": 1536,
+      "world_height": 1024,
+      "world_offset_y": 0
+    },
+    "background": "village-web/exchange_bg.webp",
+    "asset_base": "village-web/",
+    "player": {
+      "spawn": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "scale": 0.25,
+      "speed": 220,
+      "sprites": {
+        "side": {
+          "image": "player3.webp",
+          "frame_width": 234,
+          "frame_height": 457,
+          "frames": 9,
+          "frame_rate": 6,
+          "facing": "left"
+        },
+        "down": {
+          "image": "player1.webp",
+          "frame_width": 221,
+          "frame_height": 500,
+          "frames": 9,
+          "frame_rate": 6
+        },
+        "up": {
+          "image": "player2.webp",
+          "frame_width": 218,
+          "frame_height": 498,
+          "frames": 9,
+          "frame_rate": 6
+        }
+      }
+    },
+    "camera": {
+      "sky_pad": 0,
+      "view_base_width": 1000
+    },
+    "portals": [
+      {
+        "id": "to_shopping",
+        "anchor": {
+          "x": 0.1,
+          "y": 0.5
+        },
+        "radius": 110,
+        "target_map": "shopping",
+        "target_spawn": {
+          "x": 0.89,
+          "y": 0.5
+        },
+        "label": "🛍️ 回商店街"
+      }
+    ],
+    "buildings": [],
+    "obstacle_areas": [],
+    "npcs": [],
+    "objects": []
+  }
+}

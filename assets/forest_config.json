@@ -1,0 +1,84 @@
+{
+  "map_config": {
+    "version": 1,
+    "dimensions": {
+      "image_width": 1536,
+      "image_height": 1024,
+      "world_width": 1536,
+      "world_height": 1024,
+      "world_offset_y": 0
+    },
+    "background": "village-web/forest_bg.webp",
+    "asset_base": "village-web/",
+    "player": {
+      "spawn": {
+        "x": 0.5,
+        "y": 0.55
+      },
+      "scale": 0.25,
+      "speed": 220,
+      "sprites": {
+        "side": {
+          "image": "player3.webp",
+          "frame_width": 234,
+          "frame_height": 457,
+          "frames": 9,
+          "frame_rate": 6,
+          "facing": "left"
+        },
+        "down": {
+          "image": "player1.webp",
+          "frame_width": 221,
+          "frame_height": 500,
+          "frames": 9,
+          "frame_rate": 6
+        },
+        "up": {
+          "image": "player2.webp",
+          "frame_width": 218,
+          "frame_height": 498,
+          "frames": 9,
+          "frame_rate": 6
+        }
+      }
+    },
+    "camera": {
+      "sky_pad": 0,
+      "view_base_width": 1000
+    },
+    "portals": [
+      {
+        "id": "to_island",
+        "anchor": {
+          "x": 0.85,
+          "y": 0.85
+        },
+        "radius": 110,
+        "target_map": "island",
+        "target_spawn": {
+          "x": 0.25,
+          "y": 0.4
+        },
+        "label": "🏝️ 前往海島"
+      },
+      {
+        "id": "to_forest_deep",
+        "anchor": {
+          "x": 0.5,
+          "y": 0.1
+        },
+        "radius": 110,
+        "target_map": "forest_deep",
+        "target_spawn": {
+          "x": 0.5,
+          "y": 0.82
+        },
+        "label": "🌑 前往森林深處"
+      }
+    ],
+    "buildings": [],
+    "obstacle_areas": [],
+    "npcs": [],
+    "objects": []
+  }
+}

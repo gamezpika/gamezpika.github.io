@@ -88,6 +88,20 @@
           "y": 0.2
         },
         "label": "前往學員生活區"
+      },
+      {
+        "id": "to_exchange",
+        "anchor": {
+          "x": 0.95,
+          "y": 0.52
+        },
+        "radius": 110,
+        "target_map": "exchange",
+        "target_spawn": {
+          "x": 0.18,
+          "y": 0.5
+        },
+        "label": "🏦 前往交易所"
       }
     ],
     "buildings": [

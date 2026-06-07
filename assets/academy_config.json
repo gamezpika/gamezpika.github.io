@@ -88,6 +88,20 @@
           "y": 0.6807
         },
         "label": "前往學員生活區"
+      },
+      {
+        "id": "to_tower",
+        "anchor": {
+          "x": 0.95,
+          "y": 0.5
+        },
+        "radius": 110,
+        "target_map": "tower",
+        "target_spawn": {
+          "x": 0.18,
+          "y": 0.5
+        },
+        "label": "🗼 前往鎮魔塔"
       }
     ],
     "buildings": [

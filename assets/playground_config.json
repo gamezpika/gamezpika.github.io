@@ -50,8 +50,8 @@
       {
         "id": "back_to_village",
         "anchor": {
-          "x": 0.9208,
-          "y": 0.2598
+          "x": 0.681,
+          "y": 0.9141
         },
         "radius": 120,
         "target_map": "village",
@@ -64,8 +64,8 @@
       {
         "id": "to_competitive",
         "anchor": {
-          "x": 0.7943,
-          "y": 0.0425
+          "x": 0.6146,
+          "y": 0.1006
         },
         "radius": 110,
         "target_map": "competitive",

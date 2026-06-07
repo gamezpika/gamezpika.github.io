@@ -8,7 +8,7 @@
       "world_height": 1400,
       "world_offset_y": 0
     },
-    "background": "village-web/shopping_seamless_bg.webp",
+    "background": "village-web/shopping_paths_bg.webp",
     "asset_base": "village-web/",
     "player": {
       "spawn": {
@@ -64,8 +64,8 @@
       {
         "id": "to_competitive",
         "anchor": {
-          "x": 0.639,
-          "y": 0.673
+          "x": 0.2025,
+          "y": 0.429
         },
         "radius": 110,
         "target_map": "competitive",
@@ -78,14 +78,14 @@
       {
         "id": "to_campus",
         "anchor": {
-          "x": 0.744,
-          "y": 0.753
+          "x": 0.22,
+          "y": 0.66
         },
         "radius": 110,
         "target_map": "campus",
         "target_spawn": {
-          "x": 0.85,
-          "y": 0.2
+          "x": 0.66,
+          "y": 0.14
         },
         "label": "前往學員生活區"
       },

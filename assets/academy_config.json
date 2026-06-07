@@ -84,16 +84,16 @@
         "radius": 110,
         "target_map": "campus",
         "target_spawn": {
-          "x": 0.1448,
-          "y": 0.6807
+          "x": 0.88,
+          "y": 0.85
         },
         "label": "前往學員生活區"
       },
       {
         "id": "to_tower",
         "anchor": {
-          "x": 0.95,
-          "y": 0.5
+          "x": 0.06,
+          "y": 0.42
         },
         "radius": 110,
         "target_map": "tower",

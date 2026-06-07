@@ -5639,7 +5639,7 @@
       "name": "🛍️ 商店街",
       "engine": "phaser_iso",
       "config_path": "assets/shopping_config.json",
-      "background_path": "village-web/shopping_seamless_bg.webp",
+      "background_path": "village-web/shopping_paths_bg.webp",
       "sprite_base": "village-web/",
       "preview_url": "village-web/",
       "image_dimensions": {

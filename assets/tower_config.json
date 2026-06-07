@@ -56,8 +56,8 @@
         "radius": 110,
         "target_map": "academy",
         "target_spawn": {
-          "x": 0.85,
-          "y": 0.5
+          "x": 0.12,
+          "y": 0.42
         },
         "label": "🏛️ 回五大學院"
       }

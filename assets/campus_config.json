@@ -64,27 +64,27 @@
       {
         "id": "to_shopping",
         "anchor": {
-          "x": 0.85,
-          "y": 0.12
+          "x": 0.68,
+          "y": 0.08
         },
         "radius": 110,
         "target_map": "shopping",
         "target_spawn": {
-          "x": 0.4307,
-          "y": 0.86
+          "x": 0.27,
+          "y": 0.63
         },
         "label": "前往商店街"
       },
       {
         "id": "to_academy",
         "anchor": {
-          "x": 0.148,
-          "y": 0.676
+          "x": 0.93,
+          "y": 0.9
         },
         "radius": 110,
         "target_map": "academy",
         "target_spawn": {
-          "x": 0.85,
+          "x": 0.84,
           "y": 0.5
         },
         "label": "前往五大學院"
@@ -3647,7 +3647,7 @@
     ],
     "npcs": [
       {
-        "id": "npc_01",
+        "id": "cow_campus",
         "name": "走路牛",
         "sprite": {
           "scale": 0.3,

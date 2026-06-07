@@ -282,8 +282,8 @@
         <div class="rw"><span class="e"><img class="gi gib" style="height:30px" src="assets/images/onboarding/scroll.png?v=1" alt=""></span>轉職道具</div>
       </div>
       <div style="margin-top:18px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-        <button class="btn" onclick="restart()"><img class="gi" style="height:20px" src="assets/images/onboarding/icon_replay.png?v=1" alt=""> 重看一次</button>
-        <a class="btn ghost" href="/ocean.html">▶ 看完整技術版</a>
+        <a class="btn" href="/village-web/index.html">🏫 進入學園</a>
+        <button class="btn ghost" onclick="restart()"><img class="gi" style="height:20px" src="assets/images/onboarding/icon_replay.png?v=1" alt=""> 重看一次</button>
       </div>
     </div>
   </section>
@@ -378,6 +378,31 @@ let stage = 0;
 let PLAYER = { name:'', gender:'', grade:'' };
 function next(){ stage++; run(); }
 
+// ── Demo 後台：建角色（pptx 第5-6頁的輸入姓名/性別/年級＝真的建一個 demo 玩家）──
+const DEMO_API = "https://eduarena-tutoring-production.up.railway.app";
+async function createDemoAccount(name, genderLabel, grade){
+  try{
+    const uid = "demo_" + Date.now().toString(36) + Math.floor(Math.random()*1e4).toString(36);
+    const j = (r)=>r.json();
+    await fetch(DEMO_API+"/api/auth", {method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({type:"web", userId:uid, name})}).then(j);
+    const created = await fetch(DEMO_API+"/api/auth/child/create", {method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({platform:"web", platform_user_id:uid, child_name:name, grade:Number(grade), semester:1})}).then(j);
+    const cid = created && created.child && created.child.id;
+    if(!cid) return;
+    const sel = await fetch(DEMO_API+"/api/auth/child/select", {method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({platform:"web", platform_user_id:uid, child_id:cid})}).then(j);
+    const token = sel && sel.token;
+    if(!token) return;
+    localStorage.setItem("eduarena_demo_token", token);
+    localStorage.setItem("eduarena_demo_uid", uid);
+    localStorage.setItem("eduarena_demo_child_id", String(cid));
+    // 方案A：灌一些國語星星，讓孔丘前幾關現場可演達成→領獎→解鎖
+    await fetch(DEMO_API+"/api/demo/grant-stars?subject=chinese&pct=60",
+      {method:"POST", headers:{"Authorization":"Bearer "+token}}).then(j).catch(()=>{});
+  }catch(e){ console.warn("[demo account] 建立失敗，劇情照常continue:", e); }
+}
+
 // S1 元素淡入/淡出
 function show(sel){ const e=$(sel); if(e){ e.hidden=false; requestAnimationFrame(()=>e.classList.add('in')); } }
 function hide(sel){ const e=$(sel); if(e){ e.classList.remove('in'); setTimeout(()=>{ e.hidden=true; }, 500); } }
@@ -441,6 +466,8 @@ function showCreator(){
     PLAYER={ name, gender:g.dataset.v, grade:gr.dataset.v };
     // 存性別給村莊/職業介紹所讀（女角職業圖用女版）
     try { localStorage.setItem('village_gender', g.dataset.v === '女生' ? 'female' : 'male'); } catch(e){}
+    // pptx 第5-6頁：輸入完 = 真的在 demo 後台建一個玩家（背景進行，不擋劇情）
+    createDemoAccount(name, g.dataset.v, gr.dataset.v);
     wrap.classList.add('leaving'); setTimeout(()=>wrap.remove(), 400);
     spawnOrb();
   };

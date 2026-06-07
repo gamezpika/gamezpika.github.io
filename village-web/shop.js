@@ -685,6 +685,30 @@
     box.innerHTML = html || `<div class="jc-empty">目前沒有任務</div>`;
   }
 
+  /* ── Demo 真後台：主線任務（孔丘那條鏈）改讀真 API；沒通行證就退回舊假版 ── */
+  const DEMO_API = "https://eduarena-tutoring-production.up.railway.app";
+  function demoToken() { try { return localStorage.getItem("eduarena_demo_token") || ""; } catch (e) { return ""; } }
+  let caMainAPI = null; // { seq: quest } 快取
+  async function caLoadMainAPI() {
+    const t = demoToken(); if (!t) return {};
+    try {
+      const r = await fetch(DEMO_API + "/api/main-quests?chain=chinese_main", { headers: { "Authorization": "Bearer " + t } });
+      const d = await r.json(); const by = {};
+      (d.quests || []).forEach((q) => { by[q.seq] = q; });
+      return by;
+    } catch (e) { return {}; }
+  }
+  async function caMainAction(path, quest_key) {
+    const t = demoToken(); if (!t) return { ok: false };
+    try {
+      const r = await fetch(DEMO_API + "/api/main-quests/" + path, {
+        method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + t },
+        body: JSON.stringify({ quest_key }),
+      });
+      return await r.json();
+    } catch (e) { return { ok: false, error: "network" }; }
+  }
+
   /* ── NPC 任務面板：單一師長立繪 + 對白 + 任務領取 ── */
   function caRenderNpc(ov) {
     const c = CA_CONTENT || {};
@@ -713,6 +737,54 @@
     let prog = 0;
     try { prog = Math.max(0, parseInt(localStorage.getItem(pkey) || "0", 10) || 0); } catch (e) { prog = 0; }
     const base = Number(ln.seq_start) || 1;
+
+    // ★ 主線 + 有通行證 → 讀真後台（接取/領獎/進度都走 API）
+    if (chain === "main" && demoToken()) {
+      if (!caMainAPI) {
+        box.innerHTML = `<div class="jc-empty">任務載入中…</div>`;
+        caLoadMainAPI().then((m) => { caMainAPI = m; caRenderNpc(ov); });
+        return;
+      }
+      box.innerHTML = (ln.quests || []).map((q, qi) => {
+        const seq = base + qi;
+        const aq = caMainAPI[seq];
+        const status = aq ? aq.status : "locked";  // available/active/completed/locked
+        const cls = status === "completed" ? "done" : (status === "locked" ? "locked" : "active");
+        let btn;
+        if (status === "completed") btn = `<button class="jc-act done" disabled>✓ 已完成</button>`;
+        else if (status === "available") btn = `<button class="jc-act ca-accept">接取</button>`;
+        else if (status === "active" && aq && aq.can_claim) btn = `<button class="jc-act ca-claim">領取</button>`;
+        else if (status === "active") btn = `<span class="ao-quest-lock">進行中 ${aq.current}/${aq.target}</span>`;
+        else btn = `<span class="ao-quest-lock">🔒 未解鎖</span>`;
+        const progTxt = (aq && status !== "completed" && status !== "locked") ? `${aq.current}/${aq.target}` : "";
+        return `<div class="ao-quest ${cls}" data-key="${aq ? aoEsc(aq.key) : ""}">
+          <div class="ao-quest-ic">${status === "locked" ? "🔒" : aoEsc(q.icon || "📜")}</div>
+          <div class="ao-quest-body">
+            <div class="ao-quest-title"><span class="ao-quest-seq">${seq}</span>${aoEsc(q.title)}</div>
+            <div class="ao-quest-desc">${aoEsc(q.desc)}</div>
+            ${q.dialog ? `<div class="ao-quest-dialog">「${aoEsc(q.dialog)}」</div>` : ""}
+            <div class="ao-quest-foot"><span class="ao-quest-reward">🎁 ${aoEsc(q.reward)}</span>${progTxt ? `<span class="ao-quest-prog">${progTxt}</span>` : ""}</div>
+          </div>
+          ${btn}
+        </div>`;
+      }).join("") || `<div class="jc-empty">目前沒有任務</div>`;
+      const refresh = async () => { caMainAPI = await caLoadMainAPI(); caRenderNpc(ov); };
+      box.querySelectorAll(".ca-accept").forEach((b) => b.addEventListener("click", async function (e) {
+        e.stopPropagation(); this.disabled = true;
+        const key = this.closest(".ao-quest").dataset.key;
+        await caMainAction("accept", key); await refresh();
+      }));
+      box.querySelectorAll(".ca-claim").forEach((b) => b.addEventListener("click", async function (e) {
+        e.stopPropagation(); this.disabled = true;
+        const key = this.closest(".ao-quest").dataset.key;
+        const r = await caMainAction("claim", key);
+        if (r && r.ok) caBubble(ov, "獎勵入帳！" + (r.reward_label ? ("獲得「" + r.reward_label + "」") : ("+" + (r.reward_coins || 0) + " 金幣")));
+        else if (r && r.error === "condition_not_met") caBubble(ov, "還沒達成條件唷～再去努力一下！");
+        await refresh();
+      }));
+      return;
+    }
+
     box.innerHTML = (ln.quests || []).map((q, qi) => {
       const seq = base + qi;
       const st = seq <= prog ? "done" : (seq === prog + 1 ? "active" : "locked");

@@ -705,11 +705,13 @@
       const mainIds = order(false);
       const live = demoToken() && caMainAPI;
       let html = "";
+      if (live) html += `<div style="text-align:center;margin:2px 0 12px;"><button class="jc-act ca-practice" style="font-size:15px;padding:10px 20px;">📝 去基礎練習（答題賺星星）</button></div>`;
       if (mainIds.length) html += `<div class="ca-navsec">📘 主線任務</div>` + mainIds.map((id) => live ? groupLive(id) : group(id, false)).join("");
       if (sideIds.length) html += `<div class="ca-navsec">📙 支線任務</div>` + sideIds.map((id) => group(id, true)).join("");
       box.innerHTML = html || `<div class="jc-empty">目前沒有任務</div>`;
       if (live) {
         const refresh = async () => { caMainAPI = await caLoadMainAPI(); caRenderAcademy(ov); };
+        box.querySelectorAll(".ca-practice").forEach((b) => b.addEventListener("click", () => caOpenPractice(ov)));
         box.querySelectorAll(".ca-accept").forEach((b) => b.addEventListener("click", async function (e) {
           e.stopPropagation(); this.disabled = true; await caMainAction("accept", this.dataset.key); await refresh();
         }));
@@ -752,6 +754,56 @@
       });
       return await r.json();
     } catch (e) { return { ok: false, error: "network" }; }
+  }
+
+  /* ── 國語基礎練習：村莊內直接答題，用後台真題庫＋真算星星 ── */
+  async function caOpenPractice(ov) {
+    const t = demoToken(); if (!t) { caBubble(ov, "請先建立角色～"); return; }
+    const hdr = { "Content-Type": "application/json", "Authorization": "Bearer " + t };
+    const box = ov.querySelector(".ao-content");
+    ov.querySelector(".shop-title").textContent = "國語 · 基礎練習";
+    box.innerHTML = `<div class="jc-empty">題目載入中…</div>`;
+    let topics; try { topics = await fetch(DEMO_API + "/api/chinese/topics", { headers: hdr }).then((r) => r.json()); } catch (e) { box.innerHTML = `<div class="jc-empty">載入失敗，請再試一次</div>`; return; }
+    const list = (topics.zhuyin || []).filter((c) => c.unlocked);
+    const pick = list.find((c) => (c.stars || 0) < 3) || list[0];
+    if (!pick) { box.innerHTML = `<div class="jc-empty">目前沒有可練習的單元</div>`; return; }
+    let sess; try { sess = await fetch(DEMO_API + "/api/chinese/session/start", { method: "POST", headers: hdr, body: JSON.stringify({ topic_id: pick.id, game: "zhuyin" }) }).then((r) => r.json()); } catch (e) { box.innerHTML = `<div class="jc-empty">開始失敗</div>`; return; }
+    if (sess.error || !(sess.questions || []).length) { box.innerHTML = `<div class="jc-empty">這個單元暫無題目（${aoEsc(sess.error || "")}）</div>`; return; }
+    caBubble(ov, `來練習「${aoEsc(pick.name)}」吧！答對越多，星星越多～`);
+    const qs = sess.questions; let idx = 0, correct = 0;
+    const renderQ = () => {
+      const q = qs[idx];
+      const choices = (q.choices || []).map((c) => `<button class="ca-choice jc-act" data-c="${aoEsc(c)}" style="width:100%;text-align:center;font-size:18px;padding:12px;">${aoEsc(c)}</button>`).join("");
+      box.innerHTML = `<div style="text-align:center;padding:6px 4px;">
+        <div style="font-size:13px;color:#8a6d3b;">第 ${idx + 1} / ${qs.length} 題　答對 ${correct}</div>
+        <div style="font-size:15px;margin:8px 0 2px;color:#5a4630;">${aoEsc(q.prompt || "")}</div>
+        ${q.display ? `<div style="font-size:52px;font-weight:900;margin:6px 0;color:#3a2c1a;">${aoEsc(q.display)}</div>` : ""}
+        <div class="ca-choices" style="display:flex;flex-direction:column;gap:8px;max-width:320px;margin:10px auto 0;">${choices}</div>
+        <div class="ca-fb" style="height:24px;margin-top:10px;font-weight:800;"></div></div>`;
+      box.querySelectorAll(".ca-choice").forEach((btn) => btn.addEventListener("click", async function () {
+        box.querySelectorAll(".ca-choice").forEach((b) => { b.disabled = true; });
+        const ans = this.dataset.c; let r;
+        try { r = await fetch(DEMO_API + "/api/chinese/session/answer", { method: "POST", headers: hdr, body: JSON.stringify({ session_id: sess.session_id, question_id: q.id, answer: ans, time_ms: 0 }) }).then((x) => x.json()); } catch (e) { r = {}; }
+        const fb = box.querySelector(".ca-fb");
+        if (r.correct) { correct++; this.style.background = "#bfe6bf"; fb.textContent = "✓ 答對了！"; fb.style.color = "#3a8f3a"; }
+        else { this.style.background = "#f0b9b9"; fb.textContent = "✗ 正解：" + aoEsc(r.correct_answer || ""); fb.style.color = "#c0392b"; box.querySelectorAll(".ca-choice").forEach((b) => { if (b.dataset.c === String(r.correct_answer)) b.style.background = "#bfe6bf"; }); }
+        setTimeout(() => { idx++; (idx < qs.length) ? renderQ() : finish(); }, 1100);
+      }));
+    };
+    const finish = async () => {
+      box.innerHTML = `<div class="jc-empty">結算中…</div>`;
+      let end; try { end = await fetch(DEMO_API + "/api/chinese/session/end", { method: "POST", headers: hdr, body: JSON.stringify({ session_id: sess.session_id }) }).then((r) => r.json()); } catch (e) { end = {}; }
+      const stars = Number(end.stars || 0);
+      caMainAPI = await caLoadMainAPI();   // 刷新主線進度（星星已累積）
+      box.innerHTML = `<div style="text-align:center;padding:22px 10px;">
+        <div style="font-size:20px;font-weight:900;color:#3a2c1a;">練習完成！</div>
+        <div style="font-size:15px;margin:10px 0;color:#5a4630;">答對 ${correct} / ${qs.length} 題</div>
+        <div style="font-size:34px;margin:6px 0;">${"⭐".repeat(stars)}${"☆".repeat(Math.max(0, 3 - stars))}</div>
+        <div style="font-size:13px;color:#8a6d3b;">星星已累積到國語進度，回去找孔丘領獎吧！</div>
+        <button class="jc-act ca-back" style="margin-top:16px;">← 回到孔丘</button></div>`;
+      box.querySelector(".ca-back").addEventListener("click", () => { caTab = "overview"; caRenderAcademy(ov); });
+    };
+    renderQ();
   }
 
   /* ── NPC 任務面板：單一師長立繪 + 對白 + 任務領取 ── */

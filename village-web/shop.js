@@ -694,7 +694,11 @@
           if (stt === "completed") right = `<span class="ca-navq-st" style="color:#3a8f3a;font-weight:800">✓ 已完成</span>`;
           else if (stt === "available") right = `<button class="jc-act ca-accept" data-key="${aq ? aoEsc(aq.key) : ""}">接取</button>`;
           else if (stt === "active" && aq && aq.can_claim) right = `<button class="jc-act ca-claim" data-key="${aoEsc(aq.key)}">領取</button>`;
-          else if (stt === "active") right = `<span class="ca-navq-st" style="color:#c98a2b;font-weight:700">進行中 ${aq.current}/${aq.target}</span>`;
+          else if (stt === "active") {
+            const lbl = caActLabel(aq.cond_type);
+            right = `<span class="ca-navq-st" style="color:#c98a2b;font-weight:700">進行中 ${aq.current}/${aq.target}</span>`
+              + (lbl ? ` <button class="jc-act ca-fulfill" data-key="${aoEsc(aq.key)}">${lbl}</button>` : "");
+          }
           else right = `<span class="ca-navq-st" style="opacity:.45">🔒</span>`;
           rows += `<div class="ca-navq"><span class="ca-navq-ic">${stt === "locked" ? "🔒" : aoEsc(q.icon || "📜")}</span><span class="ca-navq-t">${aoEsc(q.title)}</span><span class="ca-navq-r">🎁 ${aoEsc(q.reward)}</span>${right}</div>`;
         });
@@ -704,16 +708,26 @@
     const renderOverview = () => {
       const mainIds = order(false);
       const live = demoToken() && caMainAPI;
+      if (live && caAwards === null) { caLoadAwards().then((aw) => { caAwards = aw; renderOverview(); }); }
       let html = "";
       if (live) html += `<div style="text-align:center;margin:2px 0 12px;"><button class="jc-act ca-practice" style="font-size:15px;padding:10px 20px;">📝 去基礎練習（答題賺星星）</button></div>`;
+      if (live && caAwards && caAwards.length) {
+        html += `<div class="ca-navsec">🏅 已獲成就</div><div style="display:flex;flex-wrap:wrap;gap:6px;padding:2px 4px 10px;">`
+          + caAwards.map((aw) => `<span style="display:inline-block;background:#fff4d6;border:1px solid #e6c873;border-radius:14px;padding:4px 12px;font-size:13px;font-weight:700;color:#8a6a1e;">${aw.kind === "title" ? "🏆" : "📜"} ${aoEsc(aw.label)}</span>`).join("")
+          + `</div>`;
+      }
       if (mainIds.length) html += `<div class="ca-navsec">📘 主線任務</div>` + mainIds.map((id) => live ? groupLive(id) : group(id, false)).join("");
       if (sideIds.length) html += `<div class="ca-navsec">📙 支線任務</div>` + sideIds.map((id) => group(id, true)).join("");
       box.innerHTML = html || `<div class="jc-empty">目前沒有任務</div>`;
       if (live) {
-        const refresh = async () => { caMainAPI = await caLoadMainAPI(); caRenderAcademy(ov); };
+        const refresh = async () => { caMainAPI = await caLoadMainAPI(); caAwards = await caLoadAwards(); caRenderAcademy(ov); };
         box.querySelectorAll(".ca-practice").forEach((b) => b.addEventListener("click", () => caOpenPractice(ov)));
         box.querySelectorAll(".ca-accept").forEach((b) => b.addEventListener("click", async function (e) {
           e.stopPropagation(); this.disabled = true; await caMainAction("accept", this.dataset.key); await refresh();
+        }));
+        box.querySelectorAll(".ca-fulfill").forEach((b) => b.addEventListener("click", async function (e) {
+          e.stopPropagation(); this.disabled = true; this.textContent = "完成中…";
+          await caFulfillQuest(this.dataset.key); await refresh();
         }));
         box.querySelectorAll(".ca-claim").forEach((b) => b.addEventListener("click", async function (e) {
           e.stopPropagation(); this.disabled = true;
@@ -759,6 +773,32 @@
       });
       return await r.json();
     } catch (e) { return { ok: false, error: "network" }; }
+  }
+
+  // 打王 / 競技場 / 模擬考型任務，村莊裡沒玩法可走 → demo「一鍵達成」按鈕文案
+  function caActLabel(ct) {
+    return ct === "boss_clear" ? "⚔️ 去挑戰禁忌森林"
+      : ct === "pvp_win" ? "🏟️ 去競技場挑戰"
+        : ct === "exam_pass" ? "📝 去考檢定" : "";
+  }
+  // demo 一鍵達成：後台灌剛好足夠的紀錄，讓這關可領獎（顆星型不走這裡，用去基礎練習）
+  async function caFulfillQuest(quest_key) {
+    const t = demoToken(); if (!t) return { ok: false };
+    try {
+      const r = await fetch(DEMO_API + "/api/demo/fulfill-quest?quest_key=" + encodeURIComponent(quest_key), {
+        method: "POST", headers: { "Authorization": "Bearer " + t },
+      });
+      return await r.json();
+    } catch (e) { return { ok: false, error: "network" }; }
+  }
+  // 已獲成就（主線終獎的稱號/證書），門面顯示用
+  let caAwards = null;
+  async function caLoadAwards() {
+    const t = demoToken(); if (!t) return [];
+    try {
+      const r = await fetch(DEMO_API + "/api/awards", { headers: { "Authorization": "Bearer " + t } });
+      const d = await r.json(); return Array.isArray(d.awards) ? d.awards : [];
+    } catch (e) { return []; }
   }
 
   /* ── 自動補身分：直接開村莊(沒走 onboarding)時，自動建一個展示玩家，讓孔丘永遠是真資料模式 ── */
@@ -890,7 +930,7 @@
         if (status === "completed") btn = `<button class="jc-act done" disabled>✓ 已完成</button>`;
         else if (status === "available") btn = `<button class="jc-act ca-accept">接取</button>`;
         else if (status === "active" && aq && aq.can_claim) btn = `<button class="jc-act ca-claim">領取</button>`;
-        else if (status === "active") btn = `<span class="ao-quest-lock">進行中 ${aq.current}/${aq.target}</span>`;
+        else if (status === "active") { const lbl = caActLabel(aq.cond_type); btn = lbl ? `<button class="jc-act ca-fulfill">${lbl}</button>` : `<span class="ao-quest-lock">進行中 ${aq.current}/${aq.target}</span>`; }
         else btn = `<span class="ao-quest-lock">🔒 未解鎖</span>`;
         const progTxt = (aq && status !== "completed" && status !== "locked") ? `${aq.current}/${aq.target}` : "";
         return `<div class="ao-quest ${cls}" data-key="${aq ? aoEsc(aq.key) : ""}">
@@ -909,6 +949,11 @@
         e.stopPropagation(); this.disabled = true;
         const key = this.closest(".ao-quest").dataset.key;
         await caMainAction("accept", key); await refresh();
+      }));
+      box.querySelectorAll(".ca-fulfill").forEach((b) => b.addEventListener("click", async function (e) {
+        e.stopPropagation(); this.disabled = true; this.textContent = "完成中…";
+        const key = this.closest(".ao-quest").dataset.key;
+        await caFulfillQuest(key); await refresh();
       }));
       box.querySelectorAll(".ca-claim").forEach((b) => b.addEventListener("click", async function (e) {
         e.stopPropagation(); this.disabled = true;

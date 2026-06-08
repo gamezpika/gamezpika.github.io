@@ -413,10 +413,50 @@
   {
    "name": "歐幾里得",
    "badge": "副教授",
-   "img": "fig_zuchongzhi.webp",
+   "img": "euclid_side.webp",
    "era": "古希臘",
    "works": "《幾何原本》",
    "desc": "「幾何之父」，以公理化體系奠定幾何學基礎。"
+  },
+  {
+   "name": "歐拉",
+   "badge": "副教授",
+   "img": "euler_side.webp",
+   "era": "18世紀瑞士",
+   "works": "歐拉恆等式",
+   "desc": "史上最多產的數學家，e^{iπ}+1=0 被譽為最美公式。"
+  },
+  {
+   "name": "秦九韶",
+   "badge": "副教授",
+   "img": "qinjiushao_side.webp",
+   "era": "南宋",
+   "works": "《數書九章》",
+   "desc": "提出大衍求一術與秦九韶算法，中世紀數學巨擘。"
+  },
+  {
+   "name": "劉徽",
+   "badge": "副教授",
+   "img": "liuhui_side.webp",
+   "era": "曹魏",
+   "works": "《九章算術注》",
+   "desc": "以割圓術逼近圓周率，奠定中國古代幾何基礎。"
+  },
+  {
+   "name": "朱世傑",
+   "badge": "副教授",
+   "img": "zhushijie_side.webp",
+   "era": "元朝",
+   "works": "《四元玉鑑》",
+   "desc": "四元術解多元高次方程，中國古代代數巔峰。"
+  },
+  {
+   "name": "華羅庚",
+   "badge": "副教授",
+   "img": "hualuogeng_side.webp",
+   "era": "20世紀中國",
+   "works": "《堆壘素數論》",
+   "desc": "中國解析數論奠基者，自學成才的數學大師。"
   }
  ]
 }

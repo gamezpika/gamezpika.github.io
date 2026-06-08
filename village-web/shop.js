@@ -171,7 +171,8 @@
     if (shopId === "dorm") { openDormHub(onClose); return; }
     if (shopId === "chinese_academy") { caSubject = "chinese"; caMainAPI = null; caAwards = null; openChineseAcademy(onClose); return; }
     if (shopId === "math_academy") { caSubject = "math"; caMainAPI = null; caAwards = null; openChineseAcademy(onClose); return; }
-    if (shopId.indexOf("npcintro:") === 0) { openNpcIntro(shopId.slice(9), onClose); return; }
+    if (shopId.indexOf("mnpcintro:") === 0) { caSubject = "math"; caMainAPI = null; caAwards = null; openNpcIntro(shopId.slice(10), onClose); return; }
+    if (shopId.indexOf("npcintro:") === 0) { caSubject = "chinese"; openNpcIntro(shopId.slice(9), onClose); return; }
     if (shopId.indexOf("mnpc_") === 0) { caSubject = "math"; caMainAPI = null; caAwards = null; openNpcQuest(shopId.slice(5), onClose); return; }
     if (shopId.indexOf("npc_") === 0) { caSubject = "chinese"; caMainAPI = null; caAwards = null; openNpcQuest(shopId.slice(4), onClose); return; }
     onCloseCb = onClose || null;

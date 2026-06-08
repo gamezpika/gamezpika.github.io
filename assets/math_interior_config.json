@@ -761,26 +761,16 @@
           }
         },
         "spawn": {
-          "x": 0.3,
-          "y": 0.42
+          "x": 0.5,
+          "y": 0.46
         },
-        "patrol": [
-          {
-            "x": 0.25,
-            "y": 0.42
-          },
-          {
-            "x": 0.35,
-            "y": 0.42
-          }
-        ],
-        "speed": 40,
+        "face": "down",
         "interaction": {
           "type": "open_shop",
           "shop_id": "math_academy",
           "label": "阿基米德",
           "radius": 150,
-          "body": "吾乃阿基米德，數學學院院長。給我一個支點，我便能撬起地球；給你足夠練習，你能征服一切難題！"
+          "body": "吾乃阿基米德，數學學院院長。給我一個支點，我就能撬起整個地球！"
         }
       },
       {
@@ -814,26 +804,132 @@
           }
         },
         "spawn": {
-          "x": 0.5,
-          "y": 0.42
+          "x": 0.34,
+          "y": 0.49
         },
-        "patrol": [
-          {
-            "x": 0.45,
-            "y": 0.42
-          },
-          {
-            "x": 0.55,
-            "y": 0.42
-          }
-        ],
-        "speed": 40,
+        "face": "right",
         "interaction": {
           "type": "open_shop",
           "shop_id": "mnpc_newton",
           "label": "牛頓",
           "radius": 150,
           "body": "算式魔王作亂，與我牛頓一同以數理之力討伐牠！"
+        }
+      },
+      {
+        "id": "euler",
+        "name": "歐拉",
+        "sprite": {
+          "scale": 0.09,
+          "sprites": {
+            "side": {
+              "image": "euler_side.webp",
+              "frame_width": 700,
+              "frame_height": 1264,
+              "frames": 1,
+              "frame_rate": 6,
+              "facing": "left"
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.34,
+          "y": 0.555
+        },
+        "face": "right",
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "mnpcintro:歐拉",
+          "label": "歐拉",
+          "radius": 150,
+          "body": "歐拉恆等式 e^{iπ}+1=0，數學中最美的公式，與你共賞。"
+        }
+      },
+      {
+        "id": "qinjiushao",
+        "name": "秦九韶",
+        "sprite": {
+          "scale": 0.09,
+          "sprites": {
+            "side": {
+              "image": "qinjiushao_side.webp",
+              "frame_width": 700,
+              "frame_height": 1264,
+              "frames": 1,
+              "frame_rate": 6,
+              "facing": "left"
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.34,
+          "y": 0.62
+        },
+        "face": "right",
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "mnpcintro:秦九韶",
+          "label": "秦九韶",
+          "radius": 150,
+          "body": "《數書九章》大衍求一術，你可聽過？"
+        }
+      },
+      {
+        "id": "liuhui",
+        "name": "劉徽",
+        "sprite": {
+          "scale": 0.09,
+          "sprites": {
+            "side": {
+              "image": "liuhui_side.webp",
+              "frame_width": 700,
+              "frame_height": 1264,
+              "frames": 1,
+              "frame_rate": 6,
+              "facing": "left"
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.34,
+          "y": 0.685
+        },
+        "face": "right",
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "mnpcintro:劉徽",
+          "label": "劉徽",
+          "radius": 150,
+          "body": "割圓術以盡精微，數學之道在於窮理。"
+        }
+      },
+      {
+        "id": "zhushijie",
+        "name": "朱世傑",
+        "sprite": {
+          "scale": 0.09,
+          "sprites": {
+            "side": {
+              "image": "zhushijie_side.webp",
+              "frame_width": 700,
+              "frame_height": 1264,
+              "frames": 1,
+              "frame_rate": 6,
+              "facing": "left"
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.34,
+          "y": 0.75
+        },
+        "face": "right",
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "mnpcintro:朱世傑",
+          "label": "朱世傑",
+          "radius": 150,
+          "body": "《四元玉鑑》四元術，代數之巔，來探究竟。"
         }
       },
       {
@@ -867,20 +963,10 @@
           }
         },
         "spawn": {
-          "x": 0.68,
-          "y": 0.42
+          "x": 0.66,
+          "y": 0.52
         },
-        "patrol": [
-          {
-            "x": 0.63,
-            "y": 0.42
-          },
-          {
-            "x": 0.73,
-            "y": 0.42
-          }
-        ],
-        "speed": 40,
+        "face": "left",
         "interaction": {
           "type": "open_shop",
           "shop_id": "mnpc_gauss",
@@ -920,26 +1006,74 @@
           }
         },
         "spawn": {
-          "x": 0.84,
-          "y": 0.42
+          "x": 0.66,
+          "y": 0.6
         },
-        "patrol": [
-          {
-            "x": 0.8,
-            "y": 0.42
-          },
-          {
-            "x": 0.88,
-            "y": 0.42
-          }
-        ],
-        "speed": 40,
+        "face": "left",
         "interaction": {
           "type": "open_shop",
           "shop_id": "mnpc_zuchongzhi",
           "label": "祖沖之",
           "radius": 150,
-          "body": "學問之外尚須證照傍身，去考試院通過模擬考吧！"
+          "body": "圓周率精算到小數七位，你也辦得到。去考證照吧！"
+        }
+      },
+      {
+        "id": "euclid",
+        "name": "歐幾里得",
+        "sprite": {
+          "scale": 0.09,
+          "sprites": {
+            "side": {
+              "image": "euclid_side.webp",
+              "frame_width": 700,
+              "frame_height": 1264,
+              "frames": 1,
+              "frame_rate": 6,
+              "facing": "left"
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.66,
+          "y": 0.68
+        },
+        "face": "left",
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "mnpcintro:歐幾里得",
+          "label": "歐幾里得",
+          "radius": 150,
+          "body": "《幾何原本》乃萬學之基，從一點一線學起吧。"
+        }
+      },
+      {
+        "id": "hualuogeng",
+        "name": "華羅庚",
+        "sprite": {
+          "scale": 0.09,
+          "sprites": {
+            "side": {
+              "image": "hualuogeng_side.webp",
+              "frame_width": 700,
+              "frame_height": 1264,
+              "frames": 1,
+              "frame_rate": 6,
+              "facing": "left"
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.66,
+          "y": 0.76
+        },
+        "face": "left",
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "mnpcintro:華羅庚",
+          "label": "華羅庚",
+          "radius": 150,
+          "body": "聰明在於勤奮，天才在於積累。一同鑽研數學吧！"
         }
       }
     ],

@@ -166,8 +166,8 @@
         "name": "國語學院",
         "category": "house",
         "sprite": {
-          "image": "guoyu_academy.webp",
-          "scale": 0.35,
+          "image": "guoyu_academy_iso.webp",
+          "scale": 0.4698,
           "anchor_x": 0.5,
           "anchor_y": 1
         },
@@ -1516,8 +1516,8 @@
         "name": "數學學院",
         "category": "house",
         "sprite": {
-          "image": "shuxue_academy.webp",
-          "scale": 0.35,
+          "image": "shuxue_academy_iso.webp",
+          "scale": 0.4231,
           "anchor_x": 0.5,
           "anchor_y": 1
         },
@@ -1564,8 +1564,8 @@
         "name": "自然學院",
         "category": "house",
         "sprite": {
-          "image": "science_academy.webp",
-          "scale": 0.35,
+          "image": "science_academy_iso.webp",
+          "scale": 0.4425,
           "anchor_x": 0.5,
           "anchor_y": 1
         },
@@ -1612,8 +1612,8 @@
         "name": "社會學院",
         "category": "house",
         "sprite": {
-          "image": "social_academy.webp",
-          "scale": 0.35,
+          "image": "social_academy_iso.webp",
+          "scale": 0.4236,
           "anchor_x": 0.5,
           "anchor_y": 1
         },
@@ -1796,8 +1796,8 @@
         "name": "英文學院",
         "category": "house",
         "sprite": {
-          "image": "english_academy.webp",
-          "scale": 0.35,
+          "image": "english_academy_iso.webp",
+          "scale": 0.3884,
           "anchor_x": 0.5,
           "anchor_y": 1
         },

@@ -368,6 +368,24 @@ class ExploreScene extends Phaser.Scene {
           npc.bubble.setVisible(false);
         }
 
+        // 靜止 NPC（沒 patrol）：站定不播走路動畫，依 cfg.face 設初始朝向。
+        // （_updateNpc 對無 patrol 的 NPC 會 early-return，不會再翻面/同步深度，所以在這裡定好）
+        if (!npcCfg.patrol || npcCfg.patrol.length === 0) {
+          const face = npcCfg.face || "down";
+          if (face === "down") npc.sprite.setTexture(dDown.tex, 0);
+          else if (face === "up") npc.sprite.setTexture(dUp.tex, 0);
+          else {
+            npc.sprite.setTexture(dSide.tex, 0);
+            const fwdRight = (((npcCfg.sprite && npcCfg.sprite.sprites && npcCfg.sprite.sprites.side) || {}).facing || "right") === "right";
+            npc.sprite.setFlipX(face === "right" ? !fwdRight : fwdRight);
+          }
+          npc.sprite.stop();
+          npc.sprite.setFrame(0);
+          npc.sprite.setDepth(npc.sprite.y);
+          npc.shadow.setDepth(npc.sprite.y - 1);
+          if (npc.bubble) npc.bubble.setDepth(npc.sprite.y + 1);
+        }
+
         this.npcs.push(npc);
       });
     }

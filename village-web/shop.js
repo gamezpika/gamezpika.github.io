@@ -169,9 +169,11 @@
     if (shopId === "job_center") { openJobCenter(onClose); return; }
     if (shopId === "academy_office") { openAcademyOffice(onClose); return; }
     if (shopId === "dorm") { openDormHub(onClose); return; }
-    if (shopId === "chinese_academy") { openChineseAcademy(onClose); return; }
+    if (shopId === "chinese_academy") { caSubject = "chinese"; caMainAPI = null; caAwards = null; openChineseAcademy(onClose); return; }
+    if (shopId === "math_academy") { caSubject = "math"; caMainAPI = null; caAwards = null; openChineseAcademy(onClose); return; }
     if (shopId.indexOf("npcintro:") === 0) { openNpcIntro(shopId.slice(9), onClose); return; }
-    if (shopId.indexOf("npc_") === 0) { openNpcQuest(shopId.slice(4), onClose); return; }
+    if (shopId.indexOf("mnpc_") === 0) { caSubject = "math"; caMainAPI = null; caAwards = null; openNpcQuest(shopId.slice(5), onClose); return; }
+    if (shopId.indexOf("npc_") === 0) { caSubject = "chinese"; caMainAPI = null; caAwards = null; openNpcQuest(shopId.slice(4), onClose); return; }
     onCloseCb = onClose || null;
     let cat;
     try {
@@ -571,12 +573,24 @@
   let caTab = 0;          // 門面:'overview'/'fig'；NPC:line index
   let caMode = "academy"; // "academy" 建築門面 / "npc" 任務面板
   let caNpcId = null;
+  let caSubject = "chinese";        // 目前學院科目：chinese / math（決定載哪個 *_academy.json、*_main 鏈、哪科練習）
+  const CA_CACHE = {};              // 各科內容快取（避免切科互相覆蓋）
+  // 各科練習端點/文案對照（顆星型「去基礎練習」用）
+  const CA_SUBJ = {
+    chinese: { label: "國語", game: "zhuyin" },
+    math: { label: "數學", game: "arithmetic" },
+  };
+  function caSubjConf() { return CA_SUBJ[caSubject] || CA_SUBJ.chinese; }
+  function caDeanName() { return (((CA_CONTENT || {}).academy || {}).dean_name) || "院長"; }
   async function caLoad() {
-    if (CA_CONTENT) return CA_CONTENT;
-    const r = await fetch("chinese_academy.json?v=7");
-    if (!r.ok) throw new Error("chinese academy HTTP " + r.status);
-    CA_CONTENT = await r.json();
-    return CA_CONTENT;
+    const subj = caSubject;                              // 鎖定本次載入科目，避免 await 後被切換污染
+    if (CA_CACHE[subj]) { if (caSubject === subj) CA_CONTENT = CA_CACHE[subj]; return CA_CACHE[subj]; }
+    const r = await fetch(subj + "_academy.json?v=1");
+    if (!r.ok) throw new Error(subj + " academy HTTP " + r.status);
+    const data = await r.json();
+    CA_CACHE[subj] = data;
+    if (caSubject === subj) CA_CONTENT = data;            // 只有當下科目沒被切走才更新全域
+    return data;
   }
   function caBuildOverlay() {
     let ov = document.getElementById("ca-overlay");
@@ -608,7 +622,7 @@
   }
   function caFigBadgeCls(b) { return b === "院長" ? "dean" : (b === "教授" ? "prof" : "assoc"); }
   function caRenderFigures(ov, figs) {
-    caBubble(ov, "這些都是國語學院的師長，點一張卡片認識他們吧！");
+    caBubble(ov, "這些都是" + (((CA_CONTENT || {}).academy || {}).title || "學院") + "的師長，點一張卡片認識他們吧！");
     const box = ov.querySelector(".ao-content");
     box.innerHTML = `<div class="ca-figs">` + figs.map((f, i) => `
       <div class="ca-fig" data-fi="${i}">
@@ -633,8 +647,8 @@
       ? `<div class="ca-navsec">${title}</div><div class="ca-books">` + arr.map((bk) =>
           `<div class="ca-book ${cls}"><span class="ca-book-ic">${aoEsc(bk.icon || "📖")}</span><span class="ca-book-nm">${aoEsc(bk.name)}</span><span class="ca-book-rate">${tag}</span></div>`).join("") + `</div>`
       : "";
-    box.innerHTML = sec("📘 必定掉落 · 四書", books.guaranteed || [], "g", "必掉")
-                  + sec("📕 稀有掉落 · 國語小說", books.rare || [], "r", "20%")
+    box.innerHTML = sec("📘 必定掉落 · 典籍", books.guaranteed || [], "g", "必掉")
+                  + sec("📕 稀有掉落 · 藏書", books.rare || [], "r", "20%")
                   || `<div class="jc-empty">尚無典籍</div>`;
   }
 
@@ -757,10 +771,12 @@
   let caMainAPI = null; // { seq: quest } 快取
   async function caLoadMainAPI() {
     const t = demoToken(); if (!t) return {};
+    const subj = caSubject;                              // 鎖定科目，await 後若已切走則丟棄
     try {
-      const r = await fetch(DEMO_API + "/api/main-quests?chain=chinese_main", { headers: { "Authorization": "Bearer " + t } });
+      const r = await fetch(DEMO_API + "/api/main-quests?chain=" + subj + "_main", { headers: { "Authorization": "Bearer " + t } });
       const d = await r.json(); const by = {};
       (d.quests || []).forEach((q) => { by[q.seq] = q; });
+      if (caSubject !== subj) return {};                 // 切換到別科了，這份資料作廢
       return by;
     } catch (e) { return {}; }
   }
@@ -838,9 +854,9 @@
     const t = demoToken(); if (!t) { caBubble(ov, "請先建立角色～"); return; }
     const hdr = { "Content-Type": "application/json", "Authorization": "Bearer " + t };
     const box = ov.querySelector(".ao-content");
-    ov.querySelector(".shop-title").textContent = "國語 · 選擇章節";
+    ov.querySelector(".shop-title").textContent = caSubjConf().label + " · 選擇章節";
     box.innerHTML = `<div class="jc-empty">章節載入中…</div>`;
-    let topics; try { topics = await fetch(DEMO_API + "/api/chinese/topics", { headers: hdr }).then((r) => r.json()); } catch (e) { box.innerHTML = `<div class="jc-empty">載入失敗，請再試一次</div>`; return; }
+    let topics; try { topics = await fetch(DEMO_API + "/api/" + caSubject + "/topics", { headers: hdr }).then((r) => r.json()); } catch (e) { box.innerHTML = `<div class="jc-empty">載入失敗，請再試一次</div>`; return; }
     caPractGroups = (Array.isArray(topics.curriculum) ? topics.curriculum : []).filter((g) => (g.chapters || []).length);
     caPractGrade = null; caPractPub = null;   // 每次開重設→預設停在目前年級
     caRenderPractice(ov);
@@ -899,9 +915,9 @@
     const t = demoToken(); if (!t) { caBubble(ov, "請先建立角色～"); return; }
     const hdr = { "Content-Type": "application/json", "Authorization": "Bearer " + t };
     const box = ov.querySelector(".ao-content");
-    ov.querySelector(".shop-title").textContent = "國語 · 基礎練習";
+    ov.querySelector(".shop-title").textContent = caSubjConf().label + " · 基礎練習";
     box.innerHTML = `<div class="jc-empty">題目載入中…</div>`;
-    let sess; try { sess = await fetch(DEMO_API + "/api/chinese/session/start", { method: "POST", headers: hdr, body: JSON.stringify({ topic_id: pick.id, game: "zhuyin" }) }).then((r) => r.json()); } catch (e) { box.innerHTML = `<div class="jc-empty">開始失敗</div>`; return; }
+    let sess; try { sess = await fetch(DEMO_API + "/api/" + caSubject + "/session/start", { method: "POST", headers: hdr, body: JSON.stringify({ topic_id: pick.id, game: caSubjConf().game }) }).then((r) => r.json()); } catch (e) { box.innerHTML = `<div class="jc-empty">開始失敗</div>`; return; }
     if (sess.error || !(sess.questions || []).length) { box.innerHTML = `<div class="jc-empty">這個章節暫無題目（${aoEsc(sess.error || "")}）<div style="margin-top:14px;"><button class="jc-act ca-backpick">← 換一章</button></div></div>`; const bb = box.querySelector(".ca-backpick"); if (bb) bb.addEventListener("click", () => caOpenPractice(ov)); return; }
     caBubble(ov, `來練習「${aoEsc(pick.name)}」吧！答對越多，星星越多～`);
     const qs = sess.questions; let idx = 0, correct = 0;
@@ -917,7 +933,7 @@
       box.querySelectorAll(".ca-choice").forEach((btn) => btn.addEventListener("click", async function () {
         box.querySelectorAll(".ca-choice").forEach((b) => { b.disabled = true; });
         const ans = this.dataset.c; let r;
-        try { r = await fetch(DEMO_API + "/api/chinese/session/answer", { method: "POST", headers: hdr, body: JSON.stringify({ session_id: sess.session_id, question_id: q.id, answer: ans, time_ms: 0 }) }).then((x) => x.json()); } catch (e) { r = {}; }
+        try { r = await fetch(DEMO_API + "/api/" + caSubject + "/session/answer", { method: "POST", headers: hdr, body: JSON.stringify({ session_id: sess.session_id, question_id: q.id, answer: ans, time_ms: 0 }) }).then((x) => x.json()); } catch (e) { r = {}; }
         const fb = box.querySelector(".ca-fb");
         if (r.correct) { correct++; this.style.background = "#bfe6bf"; fb.textContent = "✓ 答對了！"; fb.style.color = "#3a8f3a"; }
         else { this.style.background = "#f0b9b9"; fb.textContent = "✗ 正解：" + aoEsc(r.correct_answer || ""); fb.style.color = "#c0392b"; box.querySelectorAll(".ca-choice").forEach((b) => { if (b.dataset.c === String(r.correct_answer)) b.style.background = "#bfe6bf"; }); }
@@ -926,17 +942,17 @@
     };
     const finish = async () => {
       box.innerHTML = `<div class="jc-empty">結算中…</div>`;
-      let end; try { end = await fetch(DEMO_API + "/api/chinese/session/end", { method: "POST", headers: hdr, body: JSON.stringify({ session_id: sess.session_id }) }).then((r) => r.json()); } catch (e) { end = {}; }
+      let end; try { end = await fetch(DEMO_API + "/api/" + caSubject + "/session/end", { method: "POST", headers: hdr, body: JSON.stringify({ session_id: sess.session_id }) }).then((r) => r.json()); } catch (e) { end = {}; }
       const stars = Number(end.stars || 0);
       caMainAPI = await caLoadMainAPI();   // 刷新主線進度（星星已累積）
       box.innerHTML = `<div style="text-align:center;padding:22px 10px;">
         <div style="font-size:20px;font-weight:900;color:#3a2c1a;">練習完成！</div>
         <div style="font-size:15px;margin:10px 0;color:#5a4630;">答對 ${correct} / ${qs.length} 題</div>
         <div style="font-size:34px;margin:6px 0;">${"⭐".repeat(stars)}${"☆".repeat(Math.max(0, 3 - stars))}</div>
-        <div style="font-size:13px;color:#8a6d3b;">星星已累積到國語進度，回去找孔丘領獎吧！</div>
+        <div style="font-size:13px;color:#8a6d3b;">星星已累積到${caSubjConf().label}進度，回去找${caDeanName()}領獎吧！</div>
         <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:nowrap;">
           <button class="jc-act ca-backpick">📖 再選章節</button>
-          <button class="jc-act ca-back">← 回到孔丘</button></div></div>`;
+          <button class="jc-act ca-back">← 回到${caDeanName()}</button></div></div>`;
       box.querySelector(".ca-back").addEventListener("click", () => { caTab = "overview"; caRenderAcademy(ov); });
       box.querySelector(".ca-backpick").addEventListener("click", () => caOpenPractice(ov));
     };
@@ -967,7 +983,7 @@
     const box = ov.querySelector(".ao-content");
     // 順序解鎖：主線(chain=main)1→20跨NPC一條鏈、支線(side)各自；進度存 localStorage
     const chain = ln.chain === "side" ? "side" : "main";
-    const pkey = chain === "side" ? "village_chinese_side" : "village_chinese_main";
+    const pkey = "village_" + caSubject + "_" + chain;
     let prog = 0;
     try { prog = Math.max(0, parseInt(localStorage.getItem(pkey) || "0", 10) || 0); } catch (e) { prog = 0; }
     const base = Number(ln.seq_start) || 1;

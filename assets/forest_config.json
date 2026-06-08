@@ -50,8 +50,8 @@
       {
         "id": "to_island",
         "anchor": {
-          "x": 0.1497,
-          "y": 0.4805
+          "x": 0.9787,
+          "y": 0.7305
         },
         "radius": 110,
         "target_map": "island",
@@ -64,8 +64,8 @@
       {
         "id": "to_forest_deep",
         "anchor": {
-          "x": 0.5,
-          "y": 0.1
+          "x": 0.0233,
+          "y": 0.3057
         },
         "radius": 110,
         "target_map": "forest_deep",

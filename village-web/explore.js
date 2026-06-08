@@ -421,8 +421,19 @@ class ExploreScene extends Phaser.Scene {
       config.portals.forEach(pt => {
         if (!pt.anchor) return;
         const cx = this._nx(pt.anchor.x), cy = this._ny(pt.anchor.y);
-        // 傳送點箭頭：指向出口方向（離地圖中心的方向）+ 脈動
-        const dir = Math.atan2(pt.anchor.y - 0.5, pt.anchor.x - 0.5);
+        // 傳送點箭頭方向：一般門指向地圖外（離中心），但「進入室內」的學院入口改指向其建築
+        // （門通常在建築正下方，朝外會背對建築 → 改指最近的建築門口）+ 脈動
+        let dir = Math.atan2(pt.anchor.y - 0.5, pt.anchor.x - 0.5);
+        if (/_interior$/.test(pt.target_map || "")) {
+          let best = null, bestD = Infinity;
+          (config.buildings || []).forEach(b => {
+            const bx = b.anchor && b.anchor.x, by = b.anchor && b.anchor.y;
+            if (bx == null || by == null) return;
+            const d = Math.hypot(bx - pt.anchor.x, by - pt.anchor.y);
+            if (d < bestD) { bestD = d; best = b; }
+          });
+          if (best && bestD < 0.2) dir = Math.atan2(best.anchor.y - pt.anchor.y, best.anchor.x - pt.anchor.x);
+        }
         const arrow = this.add.image(cx, cy, "portal_arrow")
           .setRotation(dir).setScale(0.18).setAlpha(0.9).setDepth(cy - 6);
         this.tweens.add({

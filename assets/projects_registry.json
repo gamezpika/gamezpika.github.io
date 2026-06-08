@@ -2047,7 +2047,7 @@
       "name": "🏝️ 海島",
       "engine": "phaser_iso",
       "config_path": "assets/island_config.json",
-      "background_path": "village-web/island_paint_bg.webp",
+      "background_path": "village-web/island_bridge_bg.webp",
       "sprite_base": "village-web/",
       "preview_url": "village-web/?map=island",
       "image_dimensions": {

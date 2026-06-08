@@ -50,8 +50,8 @@
       {
         "id": "to_island",
         "anchor": {
-          "x": 0.85,
-          "y": 0.85
+          "x": 0.1497,
+          "y": 0.4805
         },
         "radius": 110,
         "target_map": "island",
@@ -70,8 +70,8 @@
         "radius": 110,
         "target_map": "forest_deep",
         "target_spawn": {
-          "x": 0.5,
-          "y": 0.82
+          "x": 0.8,
+          "y": 0.7
         },
         "label": "🌑 前往森林深處"
       }

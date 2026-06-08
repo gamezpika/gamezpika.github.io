@@ -50,14 +50,14 @@
       {
         "id": "to_forest",
         "anchor": {
-          "x": 0.5,
-          "y": 0.9
+          "x": 0.8275,
+          "y": 0.7363
         },
         "radius": 110,
         "target_map": "forest",
         "target_spawn": {
           "x": 0.5,
-          "y": 0.18
+          "y": 0.16
         },
         "label": "🌲 離開深處"
       }

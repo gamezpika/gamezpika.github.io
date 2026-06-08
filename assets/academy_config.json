@@ -87,7 +87,7 @@
           "x": 0.88,
           "y": 0.85
         },
-        "label": "前往學員生活區"
+        "label": "前往學園生活區"
       },
       {
         "id": "to_tower",
@@ -101,7 +101,7 @@
           "x": 0.18,
           "y": 0.5
         },
-        "label": "🗼 前往鎮魔塔"
+        "label": "前往鎮魔塔"
       },
       {
         "id": "to_math_interior",
@@ -116,6 +116,34 @@
           "y": 0.82
         },
         "label": "進入數學學院"
+      },
+      {
+        "id": "to_science_interior",
+        "anchor": {
+          "x": 0.26,
+          "y": 0.83
+        },
+        "radius": 150,
+        "target_map": "science_interior",
+        "target_spawn": {
+          "x": 0.5,
+          "y": 0.82
+        },
+        "label": "進入自然學院"
+      },
+      {
+        "id": "to_social_interior",
+        "anchor": {
+          "x": 0.73,
+          "y": 0.83
+        },
+        "radius": 150,
+        "target_map": "social_interior",
+        "target_spawn": {
+          "x": 0.5,
+          "y": 0.82
+        },
+        "label": "進入社會學院"
       }
     ],
     "buildings": [
@@ -1510,6 +1538,102 @@
           {
             "x": 0.63493,
             "y": 0.294256
+          }
+        ],
+        "path": [],
+        "render_order": 337,
+        "mask_color": "#FF3B30",
+        "interaction_type": "open_shop"
+      },
+      {
+        "id": "science_academy",
+        "name": "自然學院",
+        "category": "house",
+        "sprite": {
+          "image": "science_academy.webp",
+          "scale": 0.35,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.26,
+          "y": 0.8
+        },
+        "center": {
+          "x": 0.26,
+          "y": 0.8
+        },
+        "bounding_box": {
+          "x_min": 0.172776,
+          "y_min": 0.735564,
+          "x_max": 0.336453,
+          "y_max": 0.794256
+        },
+        "interaction": null,
+        "polygon": [
+          {
+            "x": 0.172776,
+            "y": 0.737
+          },
+          {
+            "x": 0.336453,
+            "y": 0.735564
+          },
+          {
+            "x": 0.321733,
+            "y": 0.789469
+          },
+          {
+            "x": 0.17493,
+            "y": 0.794256
+          }
+        ],
+        "path": [],
+        "render_order": 337,
+        "mask_color": "#FF3B30",
+        "interaction_type": "open_shop"
+      },
+      {
+        "id": "social_academy",
+        "name": "社會學院",
+        "category": "house",
+        "sprite": {
+          "image": "social_academy.webp",
+          "scale": 0.35,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.73,
+          "y": 0.8
+        },
+        "center": {
+          "x": 0.73,
+          "y": 0.8
+        },
+        "bounding_box": {
+          "x_min": 0.642776,
+          "y_min": 0.735564,
+          "x_max": 0.806453,
+          "y_max": 0.794256
+        },
+        "interaction": null,
+        "polygon": [
+          {
+            "x": 0.642776,
+            "y": 0.737
+          },
+          {
+            "x": 0.806453,
+            "y": 0.735564
+          },
+          {
+            "x": 0.791733,
+            "y": 0.789469
+          },
+          {
+            "x": 0.64493,
+            "y": 0.794256
           }
         ],
         "path": [],

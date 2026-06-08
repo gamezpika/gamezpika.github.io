@@ -429,10 +429,22 @@ class ExploreScene extends Phaser.Scene {
           targets: arrow, scale: { from: 0.15, to: 0.21 },
           alpha: { from: 0.6, to: 1 }, duration: 850, yoyo: true, repeat: -1,
         });
-        this.add.text(cx, cy - 64, (pt.label || "前往") + " →", {
-          fontFamily: '"PingFang TC","Microsoft JhengHei",sans-serif', fontSize: "20px",
-          color: "#ffffff", backgroundColor: "#2a7fd0", padding: { x: 10, y: 6 }, fontStyle: "bold",
-        }).setOrigin(0.5, 1).setDepth(cy + 2);
+        // 傳送點標籤：圓角膠囊（呼應底部按鈕的藍漸層白邊風格，取代舊的直角純色塊）
+        const lbl = this.add.text(0, 0, (pt.label || "前往") + "  ›", {
+          fontFamily: '"PingFang TC","Microsoft JhengHei",sans-serif', fontSize: "19px",
+          color: "#eaf6ff", fontStyle: "bold",
+        }).setOrigin(0.5);
+        lbl.setShadow(0, 1, "rgba(8,30,50,0.55)", 3, false, true);
+        const pw = Math.ceil(lbl.width) + 30, ph = Math.ceil(lbl.height) + 16, pr = ph / 2;
+        const pg = this.add.graphics();
+        pg.fillStyle(0x08233a, 0.32); pg.fillRoundedRect(-pw / 2, -ph / 2 + 4, pw, ph, pr);          // 落影
+        pg.fillStyle(0x1f6fa8, 1); pg.fillRoundedRect(-pw / 2, -ph / 2, pw, ph, pr);                  // 主體（下深）
+        pg.fillStyle(0x3a9bd8, 1); pg.fillRoundedRect(-pw / 2, -ph / 2, pw, ph * 0.52,                // 上亮（假漸層）
+          { tl: pr, tr: pr, bl: 0, br: 0 });
+        pg.fillStyle(0xffffff, 0.16); pg.fillRoundedRect(-pw / 2 + 3, -ph / 2 + 3, pw - 6, ph * 0.34, // 頂高光
+          { tl: pr - 3, tr: pr - 3, bl: 0, br: 0 });
+        pg.lineStyle(2, 0xdff1ff, 0.9); pg.strokeRoundedRect(-pw / 2, -ph / 2, pw, ph, pr);           // 亮邊框
+        this.add.container(cx, cy - 66, [pg, lbl]).setDepth(cy + 2);
         this.portals.push({
           id: pt.id, cx, cy, radius: pt.radius || 130,
           target_map: pt.target_map, target_spawn: pt.target_spawn, facing: pt.facing,

@@ -8,7 +8,7 @@
       "world_height": 1400,
       "world_offset_y": 0
     },
-    "background": "village-web/shopping_paths_v3_bg.webp",
+    "background": "village-web/shopping_paths_v6_bg.webp",
     "asset_base": "village-web/",
     "player": {
       "spawn": {

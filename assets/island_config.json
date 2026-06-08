@@ -84,8 +84,8 @@
         "radius": 110,
         "target_map": "forest",
         "target_spawn": {
-          "x": 0.9287,
-          "y": 0.7005
+          "x": 0.5,
+          "y": 0.84
         },
         "label": "前往禁忌森林"
       }

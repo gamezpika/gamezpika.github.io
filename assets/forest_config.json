@@ -8,12 +8,12 @@
       "world_height": 1024,
       "world_offset_y": 0
     },
-    "background": "village-web/forest_paint_bg.webp",
+    "background": "village-web/forest_hub_bg.webp",
     "asset_base": "village-web/",
     "player": {
       "spawn": {
         "x": 0.5,
-        "y": 0.55
+        "y": 0.84
       },
       "scale": 0.25,
       "speed": 220,
@@ -50,8 +50,8 @@
       {
         "id": "to_island",
         "anchor": {
-          "x": 0.9787,
-          "y": 0.7305
+          "x": 0.5,
+          "y": 0.93
         },
         "radius": 110,
         "target_map": "island",
@@ -64,8 +64,8 @@
       {
         "id": "to_forest_deep",
         "anchor": {
-          "x": 0.0233,
-          "y": 0.3057
+          "x": 0.5,
+          "y": 0.1
         },
         "radius": 110,
         "target_map": "forest_deep",
@@ -73,10 +73,146 @@
           "x": 0.8,
           "y": 0.7
         },
-        "label": "前往森林深處"
+        "label": "通往禁忌森林深處"
       }
     ],
-    "buildings": [],
+    "buildings": [
+      {
+        "id": "forest_science",
+        "name": "自然禁忌森林",
+        "category": "house",
+        "sprite": {
+          "image": "forest_mansion_science.webp",
+          "scale": 0.26,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.12,
+          "y": 0.6
+        },
+        "bounding_box": {
+          "x_min": 0.065,
+          "y_min": 0.51,
+          "x_max": 0.175,
+          "y_max": 0.595
+        },
+        "interaction": {
+          "type": "open_modal",
+          "label": "自然禁忌森林",
+          "body": "自然魔王即將甦醒…\n敬請期待！",
+          "radius": 140
+        }
+      },
+      {
+        "id": "forest_social",
+        "name": "社會禁忌森林",
+        "category": "house",
+        "sprite": {
+          "image": "forest_mansion_social.webp",
+          "scale": 0.26,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.22,
+          "y": 0.32
+        },
+        "bounding_box": {
+          "x_min": 0.165,
+          "y_min": 0.23,
+          "x_max": 0.275,
+          "y_max": 0.315
+        },
+        "interaction": {
+          "type": "open_modal",
+          "label": "社會禁忌森林",
+          "body": "社會魔王即將甦醒…\n敬請期待！",
+          "radius": 140
+        }
+      },
+      {
+        "id": "forest_english",
+        "name": "英語禁忌森林",
+        "category": "house",
+        "sprite": {
+          "image": "forest_mansion_english.webp",
+          "scale": 0.26,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.74,
+          "y": 0.43
+        },
+        "bounding_box": {
+          "x_min": 0.685,
+          "y_min": 0.34,
+          "x_max": 0.795,
+          "y_max": 0.425
+        },
+        "interaction": {
+          "type": "open_modal",
+          "label": "英語禁忌森林",
+          "body": "英語魔王即將甦醒…\n敬請期待！",
+          "radius": 140
+        }
+      },
+      {
+        "id": "forest_math",
+        "name": "數學禁忌森林",
+        "category": "house",
+        "sprite": {
+          "image": "forest_mansion_math.webp",
+          "scale": 0.26,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.86,
+          "y": 0.58
+        },
+        "bounding_box": {
+          "x_min": 0.805,
+          "y_min": 0.49,
+          "x_max": 0.915,
+          "y_max": 0.575
+        },
+        "interaction": {
+          "type": "open_modal",
+          "label": "數學禁忌森林",
+          "body": "數學魔王即將甦醒…\n敬請期待！",
+          "radius": 140
+        }
+      },
+      {
+        "id": "forest_chinese",
+        "name": "國語禁忌森林",
+        "category": "house",
+        "sprite": {
+          "image": "forest_mansion_chinese.webp",
+          "scale": 0.26,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.8,
+          "y": 0.88
+        },
+        "bounding_box": {
+          "x_min": 0.745,
+          "y_min": 0.79,
+          "x_max": 0.855,
+          "y_max": 0.875
+        },
+        "interaction": {
+          "type": "open_modal",
+          "label": "國語禁忌森林",
+          "body": "國語魔王即將甦醒…\n敬請期待！",
+          "radius": 140
+        }
+      }
+    ],
     "obstacle_areas": [],
     "npcs": [],
     "objects": []

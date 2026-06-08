@@ -56,8 +56,8 @@
         "radius": 110,
         "target_map": "forest",
         "target_spawn": {
-          "x": 0.0733,
-          "y": 0.3357
+          "x": 0.5,
+          "y": 0.18
         },
         "label": "離開深處"
       }

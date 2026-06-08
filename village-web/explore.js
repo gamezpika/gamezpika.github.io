@@ -484,7 +484,9 @@ class ExploreScene extends Phaser.Scene {
   _hideEnter() { if (this.enterEl) this.enterEl.classList.remove("show"); }
 
   _enterNearShop() {
-    if (this.modalOpen || !this._nearShop || !window.openShop) return;
+    if (this.modalOpen || !this._nearShop) return;
+    if (this._nearShop.type === "open_modal") { this._hideEnter(); this._showModal(this._nearShop); return; }
+    if (!window.openShop) return;
     const id = this._nearShop.shop_id;
     this.modalOpen = true;
     this._hideEnter();
@@ -860,9 +862,10 @@ class ExploreScene extends Phaser.Scene {
       }
     }
 
-    if (nearest && nearest.type === "open_shop" && !this.modalOpen) {
+    if (nearest && (nearest.type === "open_shop" || nearest.type === "open_modal") && !this.modalOpen) {
       this._nearShop = nearest;
-      this._showEnter(nearest.npc ? ("📜 找 " + nearest.label) : ("🛒 進入 " + nearest.label));
+      const verb = nearest.type === "open_modal" ? "探查 " : (nearest.npc ? "📜 找 " : "🛒 進入 ");
+      this._showEnter(verb + nearest.label);
     } else {
       this._nearShop = null; this._hideEnter();
     }

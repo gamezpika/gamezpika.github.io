@@ -56,8 +56,8 @@
         "radius": 120,
         "target_map": "academy",
         "target_spawn": {
-          "x": 0.72,
-          "y": 0.4
+          "x": 0.487,
+          "y": 0.953
         },
         "label": "離開"
       }

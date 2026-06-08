@@ -864,7 +864,9 @@ class ExploreScene extends Phaser.Scene {
 
     if (nearest && (nearest.type === "open_shop" || nearest.type === "open_modal") && !this.modalOpen) {
       this._nearShop = nearest;
-      const verb = nearest.type === "open_modal" ? "探查 " : (nearest.npc ? "📜 找 " : "🛒 進入 ");
+      const verb = nearest.type === "open_modal" ? "探查 "
+        : (nearest.shop_id && nearest.shop_id.indexOf("fpract:") === 0) ? "📖 進入 "
+        : (nearest.npc ? "📜 找 " : "🛒 進入 ");
       this._showEnter(verb + nearest.label);
     } else {
       this._nearShop = null; this._hideEnter();

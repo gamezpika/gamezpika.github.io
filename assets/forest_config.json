@@ -257,9 +257,9 @@
           "y_max": 0.48194834267582154
         },
         "interaction": {
-          "type": "open_modal",
+          "type": "open_shop",
+          "shop_id": "fpract:math",
           "label": "數學禁忌森林",
-          "body": "數學魔王即將甦醒…\n敬請期待！",
           "radius": 140
         },
         "path": [],
@@ -310,9 +310,9 @@
           "y_max": 0.324340767092706
         },
         "interaction": {
-          "type": "open_modal",
+          "type": "open_shop",
+          "shop_id": "fpract:chinese",
           "label": "國語禁忌森林",
-          "body": "國語魔王即將甦醒…\n敬請期待！",
           "radius": 140
         },
         "path": [],

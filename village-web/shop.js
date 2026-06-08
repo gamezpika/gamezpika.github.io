@@ -171,6 +171,8 @@
     if (shopId === "dorm") { openDormHub(onClose); return; }
     if (shopId === "chinese_academy") { caSubject = "chinese"; caMainAPI = null; caAwards = null; openChineseAcademy(onClose); return; }
     if (shopId === "math_academy") { caSubject = "math"; caMainAPI = null; caAwards = null; openChineseAcademy(onClose); return; }
+    // 禁忌森林課本練習（A/B 版）：fpract:<subj>
+    if (shopId.indexOf("fpract:") === 0) { caSubject = shopId.slice(7); caMainAPI = null; caAwards = null; openForestPractice(onClose); return; }
     // 通用學院路由（任何科目）：acad:<subj> 院長門面 / anpc:<subj>:<id> 任務面板 / afig:<subj>:<名> 圖鑑卡
     if (shopId.indexOf("acad:") === 0) { caSubject = shopId.slice(5); caMainAPI = null; caAwards = null; openChineseAcademy(onClose); return; }
     if (shopId.indexOf("anpc:") === 0) { const p = shopId.split(":"); caSubject = p[1]; caMainAPI = null; caAwards = null; openNpcQuest(p.slice(2).join(":"), onClose); return; }
@@ -624,6 +626,7 @@
   }
   function caBubble(ov, txt) { ov.querySelector(".ao-bubble").textContent = txt || ""; }
   function caSetPrincipal(ov, img, owner) {
+    const prin = ov.querySelector(".ao-principal"); if (prin) prin.style.display = "";   // 森林練習會隱藏它，這裡還原（overlay 單例重用）
     if (img) ov.querySelector(".ao-principal-img").src = img + "?v=1";
     ov.querySelector(".ao-owner").textContent = owner || "";
   }
@@ -742,7 +745,7 @@
       box.innerHTML = html || `<div class="jc-empty">目前沒有任務</div>`;
       if (live) {
         const refresh = async () => { caMainAPI = await caLoadMainAPI(); caAwards = await caLoadAwards(); caRenderAcademy(ov); };
-        box.querySelectorAll(".ca-practice").forEach((b) => b.addEventListener("click", () => caOpenPractice(ov)));
+        box.querySelectorAll(".ca-practice").forEach((b) => b.addEventListener("click", () => caOpenPractice(ov, ["基礎練習"])));
         box.querySelectorAll(".ca-accept").forEach((b) => b.addEventListener("click", async function (e) {
           e.stopPropagation(); this.disabled = true; await caMainAction("accept", this.dataset.key); await refresh();
         }));
@@ -855,9 +858,10 @@
   /* ── 國語基礎練習：分頁挑章節（年級 → 版本 → 章節），再進去答題 ── */
   function caStars(n) { n = Math.max(0, Math.min(3, Number(n) || 0)); return "⭐".repeat(n) + "☆".repeat(3 - n); }
   const CA_PUB_ORDER = ["基礎練習", "A 版", "B 版"];
-  let caPractGroups = null, caPractGrade = null, caPractPub = null;
+  let caPractGroups = null, caPractGrade = null, caPractPub = null, caPractFilter = null;
 
-  async function caOpenPractice(ov) {
+  async function caOpenPractice(ov, pubFilter) {
+    caPractFilter = (pubFilter && pubFilter.length) ? pubFilter : null;   // null=全部版本；["基礎練習"]=只基礎；["A 版","B 版"]=只課本
     const t = demoToken(); if (!t) { caBubble(ov, "請先建立角色～"); return; }
     const hdr = { "Content-Type": "application/json", "Authorization": "Bearer " + t };
     const box = ov.querySelector(".ao-content");
@@ -879,8 +883,9 @@
     const grades = [...new Set(groups.map((g) => g.grade))].sort((a, b) => a - b);
     if (caPractGrade == null || !grades.includes(caPractGrade)) caPractGrade = (groups.find((g) => g.is_current) || {}).grade || grades[0];
     const gGroups = groups.filter((g) => g.grade === caPractGrade);
-    const pubs = [...new Set(gGroups.map((g) => g.publisher_name))]
+    let pubs = [...new Set(gGroups.map((g) => g.publisher_name))]
       .sort((a, b) => ((CA_PUB_ORDER.indexOf(a) + 1) || 99) - ((CA_PUB_ORDER.indexOf(b) + 1) || 99));
+    if (caPractFilter) pubs = pubs.filter((p) => caPractFilter.includes(p));   // 學院只留基礎練習、禁忌森林只留 A/B 版
     if (!pubs.includes(caPractPub)) caPractPub = pubs[0];
     const sel = gGroups.filter((g) => g.publisher_name === caPractPub);
 
@@ -901,9 +906,10 @@
       });
     });
 
+    const pubTabsRow = pubs.length > 1 ? `<div class="jc-tabs ao-tabs4" style="margin-bottom:10px;flex-shrink:0;">${pubTabs}</div>` : "";
     box.innerHTML = `
       <div class="jc-tabs ao-tabs4" style="margin-bottom:6px;flex-shrink:0;">${gradeTabs}</div>
-      <div class="jc-tabs ao-tabs4" style="margin-bottom:10px;flex-shrink:0;">${pubTabs}</div>
+      ${pubTabsRow}
       <div>${list || `<div class="jc-empty">這個版本沒有章節</div>`}</div>`;
 
     box.querySelectorAll("[data-g]").forEach((b) => b.addEventListener("click", function () {
@@ -922,7 +928,7 @@
     const t = demoToken(); if (!t) { caBubble(ov, "請先建立角色～"); return; }
     const hdr = { "Content-Type": "application/json", "Authorization": "Bearer " + t };
     const box = ov.querySelector(".ao-content");
-    ov.querySelector(".shop-title").textContent = caSubjConf().label + " · 基礎練習";
+    ov.querySelector(".shop-title").textContent = caSubjConf().label + " · 練習";
     box.innerHTML = `<div class="jc-empty">題目載入中…</div>`;
     let sess; try { sess = await fetch(DEMO_API + "/api/" + caSubject + "/session/start", { method: "POST", headers: hdr, body: JSON.stringify({ topic_id: pick.id, game: caSubjConf().game }) }).then((r) => r.json()); } catch (e) { box.innerHTML = `<div class="jc-empty">開始失敗</div>`; return; }
     if (sess.error || !(sess.questions || []).length) { box.innerHTML = `<div class="jc-empty">這個章節暫無題目（${aoEsc(sess.error || "")}）<div style="margin-top:14px;"><button class="jc-act ca-backpick">← 換一章</button></div></div>`; const bb = box.querySelector(".ca-backpick"); if (bb) bb.addEventListener("click", () => caOpenPractice(ov)); return; }
@@ -1110,6 +1116,18 @@
     catch (e) { console.warn("npc intro 載入失敗", e); }
     caRenderIntro(ov, figName);
     ov.classList.add("open");
+  }
+
+  // 禁忌森林：直接進該科「課本練習」（A/B 版），重用學院 overlay 與練習選擇器
+  async function openForestPractice(onClose) {
+    onCloseCb = onClose || null;
+    const ov = caBuildOverlay();
+    caMode = "academy";
+    const prin = ov.querySelector(".ao-principal"); if (prin) prin.style.display = "none";   // 森林練習不需院長立繪
+    ov.classList.add("open");
+    try { await ensureDemoPlayer(); } catch (e) {}
+    await caOpenPractice(ov, ["A 版", "B 版"]);
+    const tt = ov.querySelector(".shop-title"); if (tt) tt.textContent = caSubjConf().label + "禁忌森林 · 課本練習";
   }
 
   async function openChineseAcademy(onClose) {

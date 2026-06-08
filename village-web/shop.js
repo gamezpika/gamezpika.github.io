@@ -171,6 +171,10 @@
     if (shopId === "dorm") { openDormHub(onClose); return; }
     if (shopId === "chinese_academy") { caSubject = "chinese"; caMainAPI = null; caAwards = null; openChineseAcademy(onClose); return; }
     if (shopId === "math_academy") { caSubject = "math"; caMainAPI = null; caAwards = null; openChineseAcademy(onClose); return; }
+    // 通用學院路由（任何科目）：acad:<subj> 院長門面 / anpc:<subj>:<id> 任務面板 / afig:<subj>:<名> 圖鑑卡
+    if (shopId.indexOf("acad:") === 0) { caSubject = shopId.slice(5); caMainAPI = null; caAwards = null; openChineseAcademy(onClose); return; }
+    if (shopId.indexOf("anpc:") === 0) { const p = shopId.split(":"); caSubject = p[1]; caMainAPI = null; caAwards = null; openNpcQuest(p.slice(2).join(":"), onClose); return; }
+    if (shopId.indexOf("afig:") === 0) { const p = shopId.split(":"); caSubject = p[1]; caMainAPI = null; caAwards = null; openNpcIntro(p.slice(2).join(":"), onClose); return; }
     if (shopId.indexOf("mnpcintro:") === 0) { caSubject = "math"; caMainAPI = null; caAwards = null; openNpcIntro(shopId.slice(10), onClose); return; }
     if (shopId.indexOf("npcintro:") === 0) { caSubject = "chinese"; openNpcIntro(shopId.slice(9), onClose); return; }
     if (shopId.indexOf("mnpc_") === 0) { caSubject = "math"; caMainAPI = null; caAwards = null; openNpcQuest(shopId.slice(5), onClose); return; }
@@ -580,6 +584,8 @@
   const CA_SUBJ = {
     chinese: { label: "國語", game: "zhuyin" },
     math: { label: "數學", game: "arithmetic" },
+    science: { label: "自然", game: "science" },
+    social: { label: "社會", game: "social" },
   };
   function caSubjConf() { return CA_SUBJ[caSubject] || CA_SUBJ.chinese; }
   function caDeanName() { return (((CA_CONTENT || {}).academy || {}).dean_name) || "院長"; }

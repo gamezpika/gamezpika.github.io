@@ -1,0 +1,379 @@
+{
+ "academy": {
+  "title": "社會學院",
+  "dean_name": "韋伯",
+  "dean_title": "社會學院 · 院長",
+  "dean_img": "weber_front.webp",
+  "intro": "歡迎來到社會學院！吾乃韋伯。理解社會從觀察人開始，去尋訪本院師長吧。",
+  "books": {
+   "guaranteed": [
+    {
+     "icon": "📘",
+     "name": "社會契約論"
+    },
+    {
+     "icon": "📘",
+     "name": "管子"
+    },
+    {
+     "icon": "📘",
+     "name": "資本論 · 上"
+    },
+    {
+     "icon": "📘",
+     "name": "實證哲學教程"
+    },
+    {
+     "icon": "📘",
+     "name": "鄉土中國"
+    }
+   ],
+   "rare": [
+    {
+     "icon": "📕",
+     "name": "新教倫理與資本主義精神"
+    },
+    {
+     "icon": "📕",
+     "name": "天演論"
+    },
+    {
+     "icon": "📕",
+     "name": "商君書"
+    },
+    {
+     "icon": "📕",
+     "name": "萬曆十五年"
+    },
+    {
+     "icon": "📕",
+     "name": "一條鞭法"
+    }
+   ]
+  }
+ },
+ "npcs": {
+  "weber": {
+   "name": "韋伯",
+   "title": "社會學院 · 院長",
+   "img": "weber_front.webp",
+   "lines": [
+    {
+     "id": "skill",
+     "tab": "社會技能",
+     "chain": "main",
+     "seq_start": 1,
+     "intro": "勤學乃立身之本，先把社會基礎練紮實吧！",
+     "quests": [
+      {
+       "icon": "🏛",
+       "title": "社會學院報到",
+       "desc": "在社會基礎練習取得 9 顆星",
+       "reward": "1000 金幣",
+       "progress": "0 / 9 ⭐",
+       "dialog": "新生報到都要做最基礎的練習，有成果後回來跟我報告吧！"
+      },
+      {
+       "icon": "🏛",
+       "title": "社會技能熟練",
+       "desc": "在社會基礎練習取得 18 顆星",
+       "reward": "1500 金幣",
+       "progress": "0 / 18 ⭐",
+       "dialog": "看來你有一定的程度了，繼續加油，再把社會學得更好！"
+      },
+      {
+       "icon": "🏛",
+       "title": "社會技能精通",
+       "desc": "在社會基礎練習取得 24 顆星",
+       "reward": "2000 金幣",
+       "progress": "0 / 24 ⭐",
+       "dialog": "不錯！越來越進步了！有沒有考慮為社會做出貢獻啊～"
+      },
+      {
+       "icon": "🏛",
+       "title": "社會技能全精通",
+       "desc": "在社會基礎練習取得 30 顆星",
+       "reward": "圖鑑「社會精通證書」",
+       "progress": "0 / 30 ⭐",
+       "dialog": "政治是並施熱情與判斷力、緩慢穿透硬木板的工作。加油！我看好你！"
+      }
+     ]
+    }
+   ]
+  },
+  "rousseau": {
+   "name": "盧梭",
+   "title": "社會學院 · 教授",
+   "img": "rousseau_front.webp",
+   "lines": [
+    {
+     "id": "forest",
+     "tab": "禁忌森林",
+     "chain": "main",
+     "seq_start": 5,
+     "intro": "教育的最高目的在於培養自由人。去禁忌森林歷練吧！",
+     "quests": [
+      {
+       "icon": "🌲",
+       "title": "挑戰禁忌森林1",
+       "desc": "通關社會禁忌森林 3 次",
+       "reward": "1000 金幣",
+       "progress": "0 / 3",
+       "dialog": "教育的最高目的在於培養自由人。挑戰禁忌森林吧！"
+      },
+      {
+       "icon": "🌲",
+       "title": "挑戰禁忌森林2",
+       "desc": "通關社會禁忌森林 6 次",
+       "reward": "1500 金幣",
+       "progress": "0 / 6",
+       "dialog": "最好的教育就是無所作為的教育，於無形中影響學生。"
+      },
+      {
+       "icon": "🌲",
+       "title": "挑戰禁忌森林3",
+       "desc": "通關社會禁忌森林 9 次",
+       "reward": "2000 金幣",
+       "progress": "0 / 9",
+       "dialog": "要使兒童聰明，先培養他強健的體魄。"
+      },
+      {
+       "icon": "🌲",
+       "title": "挑戰禁忌森林4",
+       "desc": "通關社會禁忌森林 12 次",
+       "reward": "稱號「社會觀察家」",
+       "progress": "0 / 12",
+       "dialog": "重要的不是教各種學問，而是培養他愛好學問的興趣。"
+      }
+     ]
+    }
+   ]
+  },
+  "marx": {
+   "name": "馬克思",
+   "title": "社會學院 · 教授",
+   "img": "marx_front.webp",
+   "lines": [
+    {
+     "id": "boss",
+     "tab": "城邦守衛",
+     "chain": "main",
+     "seq_start": 9,
+     "intro": "城邦守衛作亂，用你的社會知識討伐牠！",
+     "quests": [
+      {
+       "icon": "👹",
+       "title": "討伐城邦守衛1",
+       "desc": "討伐魔王成功 3 次",
+       "reward": "1000 金幣",
+       "progress": "0 / 3",
+       "dialog": "魔王入侵了！你的社會好像還不錯，趕快去討伐牠！"
+      },
+      {
+       "icon": "👹",
+       "title": "討伐城邦守衛2",
+       "desc": "討伐魔王成功 6 次",
+       "reward": "1500 金幣",
+       "progress": "0 / 6",
+       "dialog": "真理如燧石，敲打越厲害，火花越燦爛。"
+      },
+      {
+       "icon": "👹",
+       "title": "討伐城邦守衛3",
+       "desc": "討伐魔王成功 9 次",
+       "reward": "2000 金幣",
+       "progress": "0 / 9",
+       "dialog": "全部社會生活在本質上是實踐的。"
+      },
+      {
+       "icon": "👹",
+       "title": "討伐城邦守衛4",
+       "desc": "討伐魔王成功 12 次",
+       "reward": "稱號「社會專家」",
+       "progress": "0 / 12",
+       "dialog": "越是多讀書，越感到自己知識貧乏。"
+      }
+     ]
+    }
+   ]
+  },
+  "shangyang": {
+   "name": "商鞅",
+   "title": "社會學院 · 副教授",
+   "img": "shangyang_front.webp",
+   "lines": [
+    {
+     "id": "arena",
+     "tab": "競技場",
+     "chain": "main",
+     "seq_start": 13,
+     "intro": "去競技場證明你的實力吧！",
+     "quests": [
+      {
+       "icon": "🏆",
+       "title": "競技場常勝軍1",
+       "desc": "通關社會競技場 3 次",
+       "reward": "1000 金幣",
+       "progress": "0 / 3",
+       "dialog": "聽聞你討伐魔王的事蹟，去參加社會比賽看看吧！"
+      },
+      {
+       "icon": "🏆",
+       "title": "競技場常勝軍2",
+       "desc": "通關社會競技場 6 次",
+       "reward": "1500 金幣",
+       "progress": "0 / 6",
+       "dialog": "當時而立法，因事而制禮。"
+      },
+      {
+       "icon": "🏆",
+       "title": "競技場常勝軍3",
+       "desc": "通關社會競技場 9 次",
+       "reward": "2000 金幣",
+       "progress": "0 / 9",
+       "dialog": "法者，所以愛民也；禮者，所以便事也。"
+      },
+      {
+       "icon": "🏆",
+       "title": "競技場常勝軍4",
+       "desc": "通關社會競技場 12 次",
+       "reward": "稱號「社會比賽高手」",
+       "progress": "0 / 12",
+       "dialog": "能勝強敵者，先自勝者也。"
+      }
+     ]
+    }
+   ]
+  },
+  "comte": {
+   "name": "孔德",
+   "title": "社會學院 · 教授",
+   "img": "comte_front.webp",
+   "lines": [
+    {
+     "id": "cert",
+     "tab": "社會證照",
+     "chain": "main",
+     "seq_start": 17,
+     "intro": "去考試院通過模擬考，取得證照吧！",
+     "quests": [
+      {
+       "icon": "🎓",
+       "title": "獲得社會證照1",
+       "desc": "通過社會模擬考 1 次",
+       "reward": "1000 金幣",
+       "progress": "0 / 1",
+       "dialog": "你的進度超越很多人了！但想更進一步就必須有證照！"
+      },
+      {
+       "icon": "🎓",
+       "title": "獲得社會證照2",
+       "desc": "通過社會模擬考 2 次",
+       "reward": "1500 金幣",
+       "progress": "0 / 2",
+       "dialog": "愛為原則，秩序為基礎，進步為目的。"
+      },
+      {
+       "icon": "🎓",
+       "title": "獲得社會證照3",
+       "desc": "通過社會模擬考 3 次",
+       "reward": "2000 金幣",
+       "progress": "0 / 3",
+       "dialog": "沒有理論的指導，事實是無法被觀察的。"
+      },
+      {
+       "icon": "🎓",
+       "title": "獲得社會證照4",
+       "desc": "通過社會模擬考 4 次",
+       "reward": "轉職道具「社會證照」",
+       "progress": "0 / 4",
+       "dialog": "人類概念經歷神學、形上學與科學三階段。恭喜你通過培訓，頒發證照給你。"
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "figures": [
+  {
+   "name": "韋伯",
+   "badge": "院長",
+   "img": "weber_front.webp",
+   "era": "19-20世紀",
+   "works": "《新教倫理與資本主義精神》",
+   "desc": "現代社會學奠基者之一。社會學院院長。"
+  },
+  {
+   "name": "盧梭",
+   "badge": "教授",
+   "img": "rousseau_front.webp",
+   "era": "18世紀",
+   "works": "《社會契約論》",
+   "desc": "啟蒙思想家，主張社會契約與人民主權。"
+  },
+  {
+   "name": "馬克思",
+   "badge": "教授",
+   "img": "marx_front.webp",
+   "era": "19世紀",
+   "works": "《資本論》",
+   "desc": "哲學家、經濟學家，創立歷史唯物論。"
+  },
+  {
+   "name": "孔德",
+   "badge": "教授",
+   "img": "comte_front.webp",
+   "era": "19世紀",
+   "works": "實證主義",
+   "desc": "社會學之父，提出實證主義與三階段論。"
+  },
+  {
+   "name": "管仲",
+   "badge": "副教授",
+   "img": "guanzhong_front.webp",
+   "era": "春秋",
+   "works": "《管子》",
+   "desc": "輔佐齊桓公成霸業的政治家、經濟改革家。"
+  },
+  {
+   "name": "商鞅",
+   "badge": "副教授",
+   "img": "shangyang_front.webp",
+   "era": "戰國",
+   "works": "商鞅變法",
+   "desc": "法家代表，主持變法使秦國富強。"
+  },
+  {
+   "name": "王安石",
+   "badge": "副教授",
+   "img": "wonganshi_front.webp",
+   "era": "北宋",
+   "works": "熙寧變法",
+   "desc": "北宋改革家、文學家，推行新法。"
+  },
+  {
+   "name": "張居正",
+   "badge": "副教授",
+   "img": "zhangjuzheng_front.webp",
+   "era": "明朝",
+   "works": "萬曆新政",
+   "desc": "明代政治家，推行一條鞭法與考成法。"
+  },
+  {
+   "name": "嚴復",
+   "badge": "副教授",
+   "img": "yanfu_front.webp",
+   "era": "晚清",
+   "works": "《天演論》",
+   "desc": "翻譯家、啟蒙思想家，引進西方社會思想。"
+  },
+  {
+   "name": "費孝通",
+   "badge": "副教授",
+   "img": "feixiaotong_front.webp",
+   "era": "20世紀",
+   "works": "《鄉土中國》",
+   "desc": "中國社會學與人類學奠基人。"
+  }
+ ]
+}

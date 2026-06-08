@@ -9233,7 +9233,7 @@
       "name": "🌲 禁忌森林",
       "engine": "phaser_iso",
       "config_path": "assets/forest_config.json",
-      "background_path": "village-web/forest_paint_bg.webp",
+      "background_path": "village-web/forest_hub_bg.webp",
       "sprite_base": "village-web/",
       "preview_url": "village-web/?map=forest",
       "image_dimensions": {

@@ -64,8 +64,8 @@
       {
         "id": "to_chinese_interior",
         "anchor": {
-          "x": 0.247,
-          "y": 0.34
+          "x": 0.266,
+          "y": 0.327
         },
         "radius": 150,
         "target_map": "chinese_interior",
@@ -106,8 +106,8 @@
       {
         "id": "to_math_interior",
         "anchor": {
-          "x": 0.72,
-          "y": 0.33
+          "x": 0.487,
+          "y": 0.953
         },
         "radius": 150,
         "target_map": "math_interior",
@@ -120,8 +120,8 @@
       {
         "id": "to_science_interior",
         "anchor": {
-          "x": 0.26,
-          "y": 0.83
+          "x": 0.186,
+          "y": 0.81
         },
         "radius": 150,
         "target_map": "science_interior",
@@ -134,8 +134,8 @@
       {
         "id": "to_social_interior",
         "anchor": {
-          "x": 0.73,
-          "y": 0.83
+          "x": 0.724,
+          "y": 0.334
         },
         "radius": 150,
         "target_map": "social_interior",
@@ -148,8 +148,8 @@
       {
         "id": "to_english_interior",
         "anchor": {
-          "x": 0.49,
-          "y": 0.83
+          "x": 0.822,
+          "y": 0.847
         },
         "radius": 150,
         "target_map": "english_interior",

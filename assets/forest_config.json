@@ -97,12 +97,7 @@
           "x_max": 0.1812328430164305,
           "y_max": 0.9308911337307567
         },
-        "interaction": {
-          "type": "open_modal",
-          "label": "自然禁忌森林",
-          "body": "自然魔王即將甦醒…\n敬請期待！",
-          "radius": 140
-        },
+        "interaction": null,
         "path": [],
         "center": {
           "x": 0.10719438147796881,
@@ -150,12 +145,7 @@
           "x_max": 0.9591881066139666,
           "y_max": 0.5408521840553697
         },
-        "interaction": {
-          "type": "open_modal",
-          "label": "社會禁忌森林",
-          "body": "社會魔王即將甦醒…\n敬請期待！",
-          "radius": 140
-        },
+        "interaction": null,
         "path": [],
         "center": {
           "x": 0.8851496450755049,
@@ -203,12 +193,7 @@
           "x_max": 0.9602494371236491,
           "y_max": 0.9786510051195797
         },
-        "interaction": {
-          "type": "open_modal",
-          "label": "英語禁忌森林",
-          "body": "英語魔王即將甦醒…\n敬請期待！",
-          "radius": 140
-        },
+        "interaction": null,
         "path": [],
         "center": {
           "x": 0.8862109755851877,

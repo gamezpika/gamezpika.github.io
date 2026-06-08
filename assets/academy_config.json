@@ -144,6 +144,20 @@
           "y": 0.82
         },
         "label": "進入社會學院"
+      },
+      {
+        "id": "to_english_interior",
+        "anchor": {
+          "x": 0.49,
+          "y": 0.83
+        },
+        "radius": 150,
+        "target_map": "english_interior",
+        "target_spawn": {
+          "x": 0.5,
+          "y": 0.82
+        },
+        "label": "進入英文學院"
       }
     ],
     "buildings": [
@@ -1776,6 +1790,54 @@
         "mask_color": "#FF3B30",
         "render_order": 500,
         "interaction_type": "open_modal"
+      },
+      {
+        "id": "english_academy",
+        "name": "英文學院",
+        "category": "house",
+        "sprite": {
+          "image": "english_academy.webp",
+          "scale": 0.35,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.49,
+          "y": 0.8
+        },
+        "center": {
+          "x": 0.49,
+          "y": 0.8
+        },
+        "bounding_box": {
+          "x_min": 0.402776,
+          "y_min": 0.735564,
+          "x_max": 0.566453,
+          "y_max": 0.794256
+        },
+        "interaction": null,
+        "polygon": [
+          {
+            "x": 0.402776,
+            "y": 0.737
+          },
+          {
+            "x": 0.566453,
+            "y": 0.735564
+          },
+          {
+            "x": 0.551733,
+            "y": 0.789469
+          },
+          {
+            "x": 0.40493,
+            "y": 0.794256
+          }
+        ],
+        "path": [],
+        "render_order": 337,
+        "mask_color": "#FF3B30",
+        "interaction_type": "open_shop"
       }
     ],
     "obstacle_areas": [],

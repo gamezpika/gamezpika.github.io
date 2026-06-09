@@ -107,9 +107,9 @@
           "y": 0.2
         },
         "interaction": {
-          "type": "open_modal",
+          "type": "open_shop",
+          "shop_id": "enseal:magic_layer2:andersen",
           "label": "封印之門",
-          "body": "通往第二層的封印之門。淨化本層的入魔師長後即可開啟。（第二層樣板尚未建置，確認手感後再複製）",
           "radius": 150
         },
         "render_order": 200

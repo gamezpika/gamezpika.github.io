@@ -178,6 +178,8 @@
     if (shopId === "english_board") { caSubject = "english"; caMainAPI = null; caAwards = null; enOpenBoard(onClose); return; }
     if (shopId.indexOf("enpurify:") === 0) { enOpenDuel(shopId.slice(9), onClose); return; }
     if (shopId.indexOf("enclear:") === 0) { enOpenCleared(shopId.slice(8), onClose); return; }
+    // 封印之門：enseal:<下一層地圖>:<本層師長id> → 淨化本層才開門
+    if (shopId.indexOf("enseal:") === 0) { const p = shopId.split(":"); enOpenSeal(p[1], p[2], onClose); return; }
     // 通用學院路由（任何科目）：acad:<subj> 院長門面 / anpc:<subj>:<id> 任務面板 / afig:<subj>:<名> 圖鑑卡
     if (shopId.indexOf("acad:") === 0) { caSubject = shopId.slice(5); caMainAPI = null; caAwards = null; openChineseAcademy(onClose); return; }
     if (shopId.indexOf("anpc:") === 0) { const p = shopId.split(":"); caSubject = p[1]; caMainAPI = null; caAwards = null; openNpcQuest(p.slice(2).join(":"), onClose); return; }
@@ -1159,12 +1161,32 @@
   window.openNpcQuest = openNpcQuest;
 
   /* ───────────────────── 英文學院 · 魔法陣（樣板：入口 + 第一層）───────────────────── */
-  // 入魔師長資料（demo 樣板先做安徒生一位；之後每層各一位）
+  // 入魔師長資料（魔法陣每層一位；第 5 層為魔王汀其假扮院長）
   const EN_NPC = {
     andersen: {
       name: "安徒生", wake: "清醒的安徒生", layer: 1,
       darkLine: "嘿嘿……黑暗的力量真是舒服。想救我？先在答題對決中勝過我吧！",
-      wakeLine: "謝謝你淨化了我！我終於清醒了……第二層的封印之門已經鬆動，去看看吧！",
+      wakeLine: "謝謝你淨化了我！我終於清醒了……前往下一層，救救其他師長吧！",
+    },
+    hemingway: {
+      name: "海明威", wake: "清醒的海明威", layer: 2,
+      darkLine: "黑暗讓我的文字更冷酷。哼，用你的英語贏過我再說吧！",
+      wakeLine: "你贏了，乾淨俐落。謝謝你喚醒我——再深處還有同伴等著你。",
+    },
+    hugo: {
+      name: "雨果", wake: "清醒的雨果", layer: 3,
+      darkLine: "悲慘世界？現在輪到你嚐嚐絕望了！答得出來就試試看！",
+      wakeLine: "正義終究戰勝了黑暗。謝謝你，孩子，繼續前進吧！",
+    },
+    milton: {
+      name: "約翰彌爾頓", wake: "清醒的約翰彌爾頓", layer: 4,
+      darkLine: "失樂園……你也將墜入其中。除非你能在答題中勝過我！",
+      wakeLine: "光明重返樂園。最深處的魔王正等著你——小心，他假扮成院長。",
+    },
+    tinch: {
+      name: "汀其", wake: "真正的院長已歸位", layer: 5, boss: true, last: true,
+      darkLine: "哈哈哈！我才是這座魔法陣真正的主人！區區學生，也想阻止我？放馬過來！",
+      wakeLine: "可惡……被你看穿了。魔王汀其被擊退，英文學院的光輝完全恢復了！",
     },
   };
   let enOnClose = null;
@@ -1250,11 +1272,14 @@
     const ov = enBuildOverlay();
     enFace(ov, npcId + "_front.webp", d.wakeLine, "✨ " + d.wake);
     ov.querySelector(".shop-title").textContent = "魔法陣 · 第 " + (d.layer || 1) + " 層";
+    const hint = d.last
+      ? "🎉 你已淨化全部師長，通關英文學院魔法陣！"
+      : "封印之門已開啟，走到上方的門即可前往下一層。";
     ov.querySelector(".en-content").innerHTML = `
       <div style="text-align:center;padding:18px 8px;">
-        <div style="font-size:42px;">✨</div>
-        <div style="font-size:16px;font-weight:800;color:#3a2c1a;margin:8px 0;">${aoEsc(d.wake)} 已恢復清醒</div>
-        <div style="font-size:13px;color:#8a6d3b;">（第二層樣板尚未建置，確認手感後再複製）</div>
+        <div style="font-size:42px;">${d.last ? "🏆" : "✨"}</div>
+        <div style="font-size:16px;font-weight:800;color:#3a2c1a;margin:8px 0;">${aoEsc(d.wake)}</div>
+        <div style="font-size:13px;color:#8a6d3b;">${aoEsc(hint)}</div>
         <div style="margin-top:16px;"><button class="jc-act en-x" style="width:auto;">離開</button></div>
       </div>`;
     ov.classList.add("open");
@@ -1267,14 +1292,14 @@
     const d = EN_NPC[npcId] || { name: npcId, wake: "清醒的" + npcId, layer: 1, darkLine: "想救我？先勝過我！", wakeLine: "謝謝你淨化了我！" };
     if (enIsPurified(npcId)) { enOpenCleared(npcId, onClose); return; }
     const ov = enBuildOverlay();
-    enFace(ov, npcId + "_dark.webp", d.darkLine, "👹 入魔的 " + d.name);
-    ov.querySelector(".shop-title").textContent = "魔法陣 · 第 " + d.layer + " 層";
+    enFace(ov, npcId + "_dark.webp", d.darkLine, (d.boss ? "😈 魔王 " : "👹 入魔的 ") + d.name);
+    ov.querySelector(".shop-title").textContent = "魔法陣 · 第 " + d.layer + " 層" + (d.boss ? "（魔王）" : "");
     ov.classList.add("open");
     const box = ov.querySelector(".en-content");
     box.innerHTML = `
       <div style="text-align:center;padding:14px 8px;">
-        <div style="font-size:14px;color:#5a4630;line-height:1.7;margin-bottom:14px;">⚔️ 用英語答題對決他。<br>答對六成以上即可淨化他、開啟下一層！</div>
-        <button class="jc-act en-start" style="width:auto;background:linear-gradient(135deg,#7b4dd8,#a06bf0);color:#fff;">⚔️ 開始淨化對決</button>
+        <div style="font-size:14px;color:#5a4630;line-height:1.7;margin-bottom:14px;">⚔️ 用英語答題對決他。<br>答對六成以上即可${d.boss ? "擊退魔王、通關魔法陣" : "淨化他、開啟下一層"}！</div>
+        <button class="jc-act en-start" style="width:auto;background:linear-gradient(135deg,#7b4dd8,#a06bf0);color:#fff;">⚔️ ${d.boss ? "開始魔王決戰" : "開始淨化對決"}</button>
       </div>`;
     box.querySelector(".en-start").addEventListener("click", () => enRunDuel(ov, npcId, d));
   }
@@ -1322,13 +1347,14 @@
         enSetPurified(npcId);
         enFace(ov, npcId + "_front.webp", d.wakeLine, "✨ " + d.wake);
         box.innerHTML = `<div style="text-align:center;padding:18px 8px;">
-          <div style="font-size:44px;">✨</div>
-          <div style="font-size:18px;font-weight:900;color:#7b4dd8;margin:8px 0;">淨化成功！</div>
-          <div style="font-size:14px;color:#5a4630;">答對 ${correct}/${qs.length}　${aoEsc(d.name)} 恢復清醒了！</div>
+          <div style="font-size:44px;">${d.boss ? "🏆" : "✨"}</div>
+          <div style="font-size:18px;font-weight:900;color:#7b4dd8;margin:8px 0;">${d.boss ? "魔王擊退！通關！" : "淨化成功！"}</div>
+          <div style="font-size:14px;color:#5a4630;">答對 ${correct}/${qs.length}　${d.boss ? "英文學院光輝恢復了！" : aoEsc(d.name) + " 恢復清醒了！"}</div>
+          <div style="font-size:13px;color:#8a6d3b;margin-top:6px;">${d.last ? "" : "封印之門已開啟，走到上方的門前往下一層。"}</div>
           <div style="margin-top:16px;"><button class="jc-act en-done" style="width:auto;background:linear-gradient(135deg,#7b4dd8,#a06bf0);color:#fff;">離開魔法陣</button></div></div>`;
         box.querySelector(".en-done").addEventListener("click", () => {
           enClose();
-          if (window.__exploreReload) window.__exploreReload();   // 重載本層 → 安徒生變清醒立繪
+          if (window.__exploreReload) window.__exploreReload();   // 重載本層 → 立繪變清醒、封印之門開通
         });
       } else {
         box.innerHTML = `<div style="text-align:center;padding:18px 8px;">
@@ -1343,6 +1369,28 @@
       }
     };
     renderQ();
+  }
+
+  // 封印之門：淨化本層師長後才開啟，通往下一層。reqId=本層師長 id；nextMap=下一層地圖
+  function enOpenSeal(nextMap, reqId, onClose) {
+    onCloseCb = onClose || null;
+    if (enIsPurified(reqId)) {                 // 已淨化 → 直接前往下一層
+      release();                                // 釋放這次 tap 的 modal 鎖
+      if (window.__exploreGoMap) window.__exploreGoMap(nextMap, { x: 0.5, y: 0.86 });
+      return;
+    }
+    const d = EN_NPC[reqId] || { name: "本層師長" };
+    const ov = enBuildOverlay();
+    enFace(ov, "shakespeare_front.webp", "封印之門緊閉著……必須先淨化本層的入魔師長，門才會開啟。", "🔒 封印之門");
+    ov.querySelector(".shop-title").textContent = "封印之門";
+    ov.querySelector(".en-content").innerHTML = `
+      <div style="text-align:center;padding:20px 8px;">
+        <div style="font-size:44px;">🔒</div>
+        <div style="font-size:15px;color:#5a4630;margin:10px 0;line-height:1.7;">先淨化「入魔的 ${aoEsc(d.name)}」<br>封印之門才會開啟。</div>
+        <div style="margin-top:14px;"><button class="jc-act en-x" style="width:auto;">知道了</button></div>
+      </div>`;
+    ov.classList.add("open");
+    ov.querySelector(".en-x").addEventListener("click", enClose);
   }
   window.enOpenEntrance = enOpenEntrance;
 

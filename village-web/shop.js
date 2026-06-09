@@ -1164,27 +1164,27 @@
   // 入魔師長資料（魔法陣每層一位；第 5 層為魔王汀其假扮院長）
   const EN_NPC = {
     andersen: {
-      name: "安徒生", wake: "清醒的安徒生", layer: 1,
+      name: "安徒生", wake: "清醒的安徒生", layer: 1, grade: 1,
       darkLine: "嘿嘿……黑暗的力量真是舒服。想救我？先在答題對決中勝過我吧！",
       wakeLine: "謝謝你淨化了我！我終於清醒了……前往下一層，救救其他師長吧！",
     },
     hemingway: {
-      name: "海明威", wake: "清醒的海明威", layer: 2,
+      name: "海明威", wake: "清醒的海明威", layer: 2, grade: 2,
       darkLine: "黑暗讓我的文字更冷酷。哼，用你的英語贏過我再說吧！",
       wakeLine: "你贏了，乾淨俐落。謝謝你喚醒我——再深處還有同伴等著你。",
     },
     hugo: {
-      name: "雨果", wake: "清醒的雨果", layer: 3,
+      name: "雨果", wake: "清醒的雨果", layer: 3, grade: 3,
       darkLine: "悲慘世界？現在輪到你嚐嚐絕望了！答得出來就試試看！",
       wakeLine: "正義終究戰勝了黑暗。謝謝你，孩子，繼續前進吧！",
     },
     milton: {
-      name: "約翰彌爾頓", wake: "清醒的約翰彌爾頓", layer: 4,
+      name: "約翰彌爾頓", wake: "清醒的約翰彌爾頓", layer: 4, grade: 4,
       darkLine: "失樂園……你也將墜入其中。除非你能在答題中勝過我！",
       wakeLine: "光明重返樂園。最深處的魔王正等著你——小心，他假扮成院長。",
     },
     tinch: {
-      name: "汀其", wake: "真正的院長已歸位", layer: 5, boss: true, last: true,
+      name: "汀其", wake: "真正的院長已歸位", layer: 5, grade: 6, boss: true, last: true,
       darkLine: "哈哈哈！我才是這座魔法陣真正的主人！區區學生，也想阻止我？放馬過來！",
       wakeLine: "可惡……被你看穿了。魔王汀其被擊退，英文學院的光輝完全恢復了！",
     },
@@ -1234,18 +1234,77 @@
       <div style="font-size:13px;color:#8a6d3b;line-height:1.7;margin-bottom:12px;">
         🔮 <b>魔法陣共五層</b>，每層有一位入魔的師長。<br>
         用答題對決勝過他，就能淨化他、開啟下一層。<br>
-        <span style="opacity:.7;">（解鎖門檻：集滿四院教師證 + 英語禁忌森林/模擬考/檢定考次數 — 樣板暫時開放）</span>
+        <span style="opacity:.7;">（需先集滿四院教師證 + 英語禁忌森林/模擬考/檢定考次數）</span>
       </div>
       <div style="display:flex;flex-direction:column;gap:10px;">
         <button class="jc-act en-board" style="width:100%;">📋 英語基礎練習（布告欄）</button>
-        <button class="jc-act en-enter" style="width:100%;background:linear-gradient(135deg,#7b4dd8,#a06bf0);color:#fff;">🔮 進入魔法陣 · 第一層</button>
+        <button class="jc-act en-enter" style="width:100%;background:linear-gradient(135deg,#7b4dd8,#a06bf0);color:#fff;">🔮 進入魔法陣</button>
       </div>`;
     ov.classList.add("open");
     ov.querySelector(".en-board").addEventListener("click", () => {
       ov.classList.remove("open");          // 收起入口、保留 modal 鎖，去開練習面板
       enOpenBoard(enOnClose);
     });
-    ov.querySelector(".en-enter").addEventListener("click", () => {
+    ov.querySelector(".en-enter").addEventListener("click", () => enOpenGate());
+  }
+
+  // 解鎖門檻面板（軟門檻）：讀真實進度顯示，demo 一律可試玩直接進
+  async function enOpenGate() {
+    const ov = enBuildOverlay();
+    enFace(ov, "shakespeare_front.webp", "進入魔法陣前，先看看你的修行進度吧。", "🔮 魔法陣 · 解鎖條件");
+    ov.querySelector(".shop-title").textContent = "魔法陣 · 解鎖條件";
+    const box = ov.querySelector(".en-content");
+    box.innerHTML = `<div class="jc-empty">讀取進度中…</div>`;
+    ov.classList.add("open");
+    // 讀真實進度：教師證(四院檢定通過) / 英語模擬考 / 英語檢定考 / 英語禁忌森林通關
+    let teacher = 0, mock = 0, cert = 0, forest = 0;
+    const t = demoToken();
+    if (t) {
+      const hdr = { "Authorization": "Bearer " + t };
+      try {
+        const ex = await fetch(DEMO_API + "/api/exam/history?limit=100", { headers: hdr }).then((r) => r.json());
+        const recs = (ex && ex.records) || [];
+        const certSubj = new Set();
+        recs.forEach((r) => {
+          if (r.exam_type === "certification" && r.passed && ["chinese", "math", "science", "social"].includes(r.subject_key)) certSubj.add(r.subject_key);
+          if (r.subject_key === "english" && r.exam_type === "mock") mock++;
+          if (r.subject_key === "english" && r.exam_type === "certification" && r.passed) cert++;
+        });
+        teacher = certSubj.size;
+      } catch (e) {}
+      try {
+        const ac = await fetch(DEMO_API + "/api/activity/recent?limit=50", { headers: hdr }).then((r) => r.json());
+        (ac && ac.activities || []).forEach((a) => {
+          const s = JSON.stringify(a || {});
+          if (/boss/.test(s) && /english/.test(s)) forest++;
+        });
+      } catch (e) {}
+    }
+    const reqs = [
+      { ic: "🎓", label: "四院教師證", cur: teacher, target: 4 },
+      { ic: "🌲", label: "英語禁忌森林通關", cur: forest, target: 5 },
+      { ic: "📝", label: "英語模擬考", cur: mock, target: 5 },
+      { ic: "📜", label: "英語檢定考", cur: cert, target: 3 },
+    ];
+    const allMet = reqs.every((r) => r.cur >= r.target);
+    const rows = reqs.map((r) => {
+      const ok = r.cur >= r.target;
+      return `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;margin:5px 0;border-radius:10px;background:${ok ? "#e7f6e7" : "#f6efe2"};">
+        <span style="font-size:14px;color:#5a4630;">${r.ic} ${r.label}</span>
+        <span style="font-size:14px;font-weight:800;color:${ok ? "#3a8f3a" : "#c98a2b"};white-space:nowrap;">${ok ? "✅ 達成" : r.cur + " / " + r.target}</span>
+      </div>`;
+    }).join("");
+    box.innerHTML = `
+      <div style="padding:4px 2px;">
+        ${rows}
+        <div style="text-align:center;margin-top:10px;font-size:13px;color:${allMet ? "#3a8f3a" : "#8a6d3b"};">
+          ${allMet ? "✅ 條件已達成，魔法陣為你開啟！" : "（demo 展示：條件未達成也可直接試玩）"}
+        </div>
+        <div style="margin-top:14px;text-align:center;">
+          <button class="jc-act en-go" style="width:auto;background:linear-gradient(135deg,#7b4dd8,#a06bf0);color:#fff;">${allMet ? "🔮 正式進入魔法陣" : "🎮 demo 試玩直接進入"}</button>
+        </div>
+      </div>`;
+    box.querySelector(".en-go").addEventListener("click", () => {
       enClose();
       if (window.__exploreGoMap) window.__exploreGoMap("magic_layer1", { x: 0.5, y: 0.86 });
     });
@@ -1312,9 +1371,15 @@
     // 取英語章節（AI 生來源），挑一個可玩的章節當對決題庫
     let topics; try { topics = await fetch(DEMO_API + "/api/english/topics", { headers: hdr }).then((r) => r.json()); } catch (e) { box.innerHTML = `<div class="jc-empty">題庫載入失敗，請再試一次</div>`; return; }
     const chs = [];
-    (Array.isArray(topics.curriculum) ? topics.curriculum : []).forEach((g) => (g.chapters || []).forEach((c) => chs.push(c)));
+    (Array.isArray(topics.curriculum) ? topics.curriculum : []).forEach((g) => (g.chapters || []).forEach((c) => chs.push(Object.assign({ _grade: c.grade || g.grade || 1 }, c))));
     const pool = chs.filter((c) => c.source !== "uploaded");
-    const pick = pool.find((c) => c.unlocked) || pool[0] || chs[0];
+    // 各層難度按年級遞增：取「年級 ≤ 本層目標、且已解鎖」中最接近目標的章節；fallback 任何已解鎖最高年級 → 任何章節（永不卡）
+    const tg = d.grade || d.layer || 1;
+    const unlocked = pool.filter((c) => c.unlocked);
+    const byGradeDesc = (a, b) => b._grade - a._grade;
+    const pick = unlocked.filter((c) => c._grade <= tg).sort(byGradeDesc)[0]
+      || unlocked.slice().sort(byGradeDesc)[0]
+      || pool[0] || chs[0];
     if (!pick) { box.innerHTML = `<div class="jc-empty">目前沒有英語題目可對決</div><div style="text-align:center;margin-top:12px;"><button class="jc-act en-x">離開</button></div>`; box.querySelector(".en-x").addEventListener("click", enClose); return; }
     let sess; try { sess = await fetch(DEMO_API + "/api/english/session/start", { method: "POST", headers: hdr, body: JSON.stringify({ topic_id: pick.id, game: "vocab" }) }).then((r) => r.json()); } catch (e) { sess = {}; }
     const qs = (sess && sess.questions) || [];

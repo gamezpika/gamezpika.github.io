@@ -541,6 +541,12 @@ class ExploreScene extends Phaser.Scene {
     this._pinchStart = null;  // { dist, zoom } 雙指開始狀態
 
     this.input.on("pointerdown", (pointer) => {
+      // 失效保險：modalOpen 卡住但畫面上其實沒任何面板開著(DOM overlay 都關了、也沒 Phaser modal)
+      // → 自我解鎖。防某些面板關閉路徑漏掉重置 modalOpen，害玩家卡死完全不能動。
+      if (this.modalOpen && !this.modalContainer &&
+          !document.querySelector("#ca-overlay.open,#ao-overlay.open,#jc-overlay.open,#shop-overlay.open,#eq-overlay.open,#dh-overlay.open")) {
+        this.modalOpen = false;
+      }
       if (this.modalOpen || this._transitioning) return;
       // 雙指開始 = pinch zoom，不觸發 tap-to-move
       if (this.input.pointer1.isDown && this.input.pointer2 && this.input.pointer2.isDown) {

@@ -57,6 +57,14 @@
     },
     "portals": [
       {
+        "id": "to_exam_interior",
+        "anchor": { "x": 0.165, "y": 0.72 },
+        "radius": 120,
+        "target_map": "exam_interior",
+        "target_spawn": { "x": 0.5, "y": 0.9 },
+        "label": "進入考試院"
+      },
+      {
         "id": "to_island_bridge",
         "anchor": {
           "x": 0.1,
@@ -162,12 +170,7 @@
           "x_max": 0.2594106809126877,
           "y_max": 0.6894617696468797
         },
-        "interaction": {
-          "type": "open_modal",
-          "title": "考試院",
-          "body": "考試院（功能建置中，敬請期待）",
-          "radius": 150
-        },
+        "interaction": null,
         "polygon": [
           {
             "x": 0.14629884194158133,

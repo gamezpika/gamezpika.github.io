@@ -180,6 +180,9 @@
     if (shopId.indexOf("enclear:") === 0) { enOpenCleared(shopId.slice(8), onClose); return; }
     // 封印之門：enseal:<下一層地圖>:<本層師長id> → 淨化本層才開門
     if (shopId.indexOf("enseal:") === 0) { const p = shopId.split(":"); enOpenSeal(p[1], p[2], onClose); return; }
+    // 考試院：歐陽修(模擬考) / 笛卡兒(檢定考)
+    if (shopId === "exam_mock") { exOpen("mock", onClose); return; }
+    if (shopId === "exam_cert") { exOpen("cert", onClose); return; }
     // 通用學院路由（任何科目）：acad:<subj> 院長門面 / anpc:<subj>:<id> 任務面板 / afig:<subj>:<名> 圖鑑卡
     if (shopId.indexOf("acad:") === 0) { caSubject = shopId.slice(5); caMainAPI = null; caAwards = null; openChineseAcademy(onClose); return; }
     if (shopId.indexOf("anpc:") === 0) { const p = shopId.split(":"); caSubject = p[1]; caMainAPI = null; caAwards = null; openNpcQuest(p.slice(2).join(":"), onClose); return; }
@@ -1458,6 +1461,125 @@
     ov.querySelector(".en-x").addEventListener("click", enClose);
   }
   window.enOpenEntrance = enOpenEntrance;
+
+  /* ───────────────────── 考試院（歐陽修 模擬考 / 笛卡兒 檢定考；導入後端考試系統，demo 自做精簡答題）───────────────────── */
+  const EX_NPC = {
+    mock: { img: "ouyang_front.webp", name: "歐陽修", title: "考試院 · 模擬考官",
+            intro: "模擬考純練習，不影響等級。挑一科、選年級，磨練一下吧！" },
+    cert: { img: "descartes_front.webp", name: "笛卡兒", title: "考試院 · 檢定考官",
+            intro: "檢定考全對才過、過了就升級。準備好證明自己了嗎？" },
+  };
+  let exType = "mock", exStatus = null;
+
+  async function exOpen(type, onClose) {
+    onCloseCb = onClose || null;
+    exType = type;
+    const d = EX_NPC[type] || EX_NPC.mock;
+    const ov = caBuildOverlay();
+    caSetPrincipal(ov, d.img, "📜 " + d.title + " " + d.name);
+    caBubble(ov, d.intro);
+    ov.querySelector(".shop-title").textContent = (type === "mock" ? "模擬考 · 歐陽修" : "檢定考 · 笛卡兒");
+    ov.classList.add("open");
+    ov.querySelector(".ao-content").innerHTML = `<div class="jc-empty">載入考試狀態中…</div>`;
+    try { await ensureDemoPlayer(); } catch (e) {}
+    await exRenderSubjects(ov);
+  }
+
+  async function exRenderSubjects(ov) {
+    const box = ov.querySelector(".ao-content");
+    const t = demoToken(); const hdr = { "Authorization": "Bearer " + t };
+    try { exStatus = await fetch(DEMO_API + "/api/exam/center/status", { headers: hdr }).then((r) => r.json()); } catch (e) { exStatus = null; }
+    const smap = {}; ((exStatus && exStatus.subjects) || []).forEach((s) => { smap[s.subject_key] = s; });
+    caBubble(ov, "選一科" + (exType === "mock" ? "模擬考" : "檢定考") + "：");
+    const order = ["chinese", "math", "english", "science", "social"];
+    let html = `<div style="display:flex;flex-direction:column;gap:8px;">`;
+    order.forEach((k) => {
+      const s = smap[k] || { grade_max: 1, challenge: { state: "ready", grade: 1 } };
+      let right;
+      if (exType === "mock") right = "≤ " + (s.grade_max || 1) + " 年級";
+      else {
+        const ch = s.challenge || {};
+        right = ch.state === "topped" ? "已封頂 🏆"
+              : ch.state === "cooldown" ? "冷卻 " + ch.cooldown_minutes + " 分"
+              : "挑戰 G" + (ch.grade || s.grade_max || 1);
+      }
+      html += `<button class="jc-act ex-subj" data-k="${k}" style="display:flex;justify-content:space-between;align-items:center;width:100%;padding:11px 14px;"><span>${aoEsc(SUBJ[k] || k)}</span><span style="font-size:13px;opacity:.8;white-space:nowrap;">${aoEsc(right)}</span></button>`;
+    });
+    html += `</div>`;
+    box.innerHTML = html;
+    box.querySelectorAll(".ex-subj").forEach((b) => b.addEventListener("click", function () {
+      exPickGrade(ov, this.dataset.k, smap[this.dataset.k]);
+    }));
+  }
+
+  function exPickGrade(ov, subjectKey, s) {
+    const box = ov.querySelector(".ao-content");
+    const gmax = (s && s.grade_max) || 1;
+    if (exType === "cert") {   // 檢定考：直接挑戰目前等級（放寬：不在前端擋冷卻/封頂，後端若擋再友善顯示）
+      const g = (s && s.challenge && s.challenge.grade) || gmax;
+      exStartExam(ov, subjectKey, g);
+      return;
+    }
+    caBubble(ov, (SUBJ[subjectKey] || subjectKey) + " 模擬考 · 選年級：");
+    let html = `<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">`;
+    for (let g = 1; g <= gmax; g++) html += `<button class="jc-act ex-g" data-g="${g}" style="min-width:84px;">${g} 年級</button>`;
+    html += `</div><div style="text-align:center;margin-top:14px;"><button class="jc-act ex-back" style="width:auto;">← 換一科</button></div>`;
+    box.innerHTML = html;
+    box.querySelectorAll(".ex-g").forEach((b) => b.addEventListener("click", function () { exStartExam(ov, subjectKey, Number(this.dataset.g)); }));
+    box.querySelector(".ex-back").addEventListener("click", () => exRenderSubjects(ov));
+  }
+
+  async function exStartExam(ov, subjectKey, grade) {
+    const box = ov.querySelector(".ao-content");
+    box.innerHTML = `<div class="jc-empty">出題中…</div>`;
+    const hdr = { "Content-Type": "application/json", "Authorization": "Bearer " + demoToken() };
+    const path = exType === "mock" ? "/api/exam/mock/start" : "/api/exam/cert/start";
+    let sess; try { sess = await fetch(DEMO_API + path, { method: "POST", headers: hdr, body: JSON.stringify({ subject_key: subjectKey, grade: grade }) }).then((r) => r.json()); } catch (e) { sess = {}; }
+    const qs = (sess && sess.questions) || [];
+    if (!qs.length) {
+      const msg = sess.detail || sess.error || "目前無法開始考試（可能冷卻中或題庫不足）";
+      box.innerHTML = `<div style="text-align:center;padding:18px 8px;"><div style="font-size:36px;">⏳</div><div style="font-size:14px;color:#5a4630;margin:10px 0;line-height:1.6;">${aoEsc(String(msg))}</div><button class="jc-act ex-back" style="width:auto;">← 返回</button></div>`;
+      box.querySelector(".ex-back").addEventListener("click", () => exRenderSubjects(ov));
+      return;
+    }
+    const sid = sess.session_id, answers = {}, total = qs.length;
+    let idx = 0;
+    const renderQ = () => {
+      const q = qs[idx];
+      const choices = (q.choices || []).map((c) => `<button class="ex-choice jc-act" data-c="${aoEsc(c)}" style="width:100%;text-align:center;font-size:17px;padding:11px;">${aoEsc(c)}</button>`).join("");
+      box.innerHTML = `<div style="text-align:center;padding:6px 4px;">
+        <div style="font-size:13px;color:#8a6d3b;font-weight:700;">${exType === "mock" ? "📝 模擬考" : "📜 檢定考"}　第 ${idx + 1}/${total} 題</div>
+        <div style="font-size:15px;margin:8px 0 2px;color:#5a4630;">${aoEsc(q.prompt || "")}</div>
+        ${q.display ? `<div style="font-size:40px;font-weight:900;margin:6px 0;color:#3a2c1a;">${aoEsc(q.display)}</div>` : ""}
+        <div style="display:flex;flex-direction:column;gap:8px;max-width:340px;margin:10px auto 0;">${choices}</div></div>`;
+      box.querySelectorAll(".ex-choice").forEach((btn) => btn.addEventListener("click", function () {
+        answers[String(q.question_id)] = this.dataset.c;
+        idx++;
+        (idx < total) ? renderQ() : exSubmit();
+      }));
+    };
+    const exSubmit = async () => {
+      box.innerHTML = `<div class="jc-empty">閱卷中…</div>`;
+      let res; try { res = await fetch(DEMO_API + "/api/exam/submit", { method: "POST", headers: hdr, body: JSON.stringify({ session_id: sid, answers: answers }) }).then((r) => r.json()); } catch (e) { res = {}; }
+      const correct = res.correct_count != null ? res.correct_count : 0;
+      const score = res.score != null ? res.score : 0;
+      const passed = !!res.passed;
+      const passLine = exType === "cert"
+        ? (passed ? "🏆 全對通過！等級提升！" : "未通過（檢定考需全對），再接再厲！")
+        : "模擬考完成，純練習不影響等級～";
+      box.innerHTML = `<div style="text-align:center;padding:20px 8px;">
+        <div style="font-size:44px;">${passed ? "🏆" : (exType === "cert" ? "💪" : "✅")}</div>
+        <div style="font-size:22px;font-weight:900;color:#7b4dd8;margin:8px 0;">${score} 分</div>
+        <div style="font-size:14px;color:#5a4630;">答對 ${correct} / ${total} 題</div>
+        <div style="font-size:13px;color:#8a6d3b;margin-top:6px;">${aoEsc(passLine)}</div>
+        <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;">
+          <button class="jc-act ex-again" style="width:auto;">📚 再考一科</button>
+          <button class="jc-act ex-x" style="width:auto;">離開</button></div></div>`;
+      box.querySelector(".ex-again").addEventListener("click", () => exRenderSubjects(ov));
+      box.querySelector(".ex-x").addEventListener("click", caClose);
+    };
+    renderQ();
+  }
 
   /* ───────────────────── 裝備欄（純展示：左=目前造型 / 右=帽子·武器·寵物項圈配件）───────────────────── */
   const EQ_KEY = "village_equip";

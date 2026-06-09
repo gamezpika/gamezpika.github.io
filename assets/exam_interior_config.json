@@ -1,0 +1,62 @@
+{
+  "map_config": {
+    "version": 1,
+    "dimensions": {
+      "image_width": 1536,
+      "image_height": 1024,
+      "world_width": 1536,
+      "world_height": 1024,
+      "world_offset_y": 0
+    },
+    "background": "village-web/exam_courtyard_bg.webp",
+    "asset_base": "village-web/",
+    "player": {
+      "spawn": { "x": 0.5, "y": 0.9 },
+      "scale": 0.2,
+      "speed": 220,
+      "sprites": {
+        "side": { "image": "player3.webp", "frame_width": 234, "frame_height": 457, "frames": 9, "frame_rate": 6, "facing": "left" },
+        "down": { "image": "player1.webp", "frame_width": 221, "frame_height": 500, "frames": 9, "frame_rate": 6 },
+        "up":   { "image": "player2.webp", "frame_width": 218, "frame_height": 498, "frames": 9, "frame_rate": 6 }
+      }
+    },
+    "camera": { "sky_pad": 0, "view_base_width": 1100 },
+    "portals": [
+      {
+        "id": "back_to_village",
+        "anchor": { "x": 0.5, "y": 0.975 },
+        "radius": 110,
+        "target_map": "village",
+        "target_spawn": { "x": 0.165, "y": 0.78 },
+        "label": "回村莊"
+      }
+    ],
+    "buildings": [
+      {
+        "id": "ouyang_examiner",
+        "name": "歐陽修（模擬考官）",
+        "category": "npc",
+        "sprite": { "image": "ouyang_front.webp", "scale": 0.1, "anchor_x": 0.5, "anchor_y": 1 },
+        "anchor": { "x": 0.27, "y": 0.47 },
+        "bounding_box": { "x_min": 0.23, "y_min": 0.42, "x_max": 0.31, "y_max": 0.465 },
+        "interaction": { "type": "open_shop", "shop_id": "exam_mock", "label": "歐陽修 · 模擬考", "radius": 160 },
+        "render_order": 337,
+        "mask_color": "#FF3B30"
+      },
+      {
+        "id": "descartes_examiner",
+        "name": "笛卡兒（檢定考官）",
+        "category": "npc",
+        "sprite": { "image": "descartes_front.webp", "scale": 0.12, "anchor_x": 0.5, "anchor_y": 1 },
+        "anchor": { "x": 0.73, "y": 0.47 },
+        "bounding_box": { "x_min": 0.69, "y_min": 0.42, "x_max": 0.77, "y_max": 0.465 },
+        "interaction": { "type": "open_shop", "shop_id": "exam_cert", "label": "笛卡兒 · 檢定考", "radius": 160 },
+        "render_order": 337,
+        "mask_color": "#FF3B30"
+      }
+    ],
+    "obstacle_areas": [],
+    "npcs": [],
+    "objects": []
+  }
+}

@@ -585,9 +585,17 @@ class ExploreScene extends Phaser.Scene {
     this.MIN_USER_ZOOM = 0.5;
     this.MAX_USER_ZOOM = 3.0;
     this._pinchStart = null;  // { dist, zoom } 雙指開始狀態
+    this._nDown = 0; this._lastDownT = 0;  // 自管觸控數+最後觸控時間(修卡住第二指)
 
     this.input.on("pointerdown", (pointer) => {
       this._pdCount++;   // 診斷：點擊有傳到 Phaser 就會增加
+      // 自管觸控計數（不靠會卡住的 pointer2.isDown）：距上次觸控 >400ms = 全新手勢
+      // → 清掉卡住的計數。pinch 只在「兩指真的在 400ms 內同時落下」才成立。
+      // 修「卡住的第二指害每次點擊被當縮放、永遠不能走」的根因。
+      const _now = this.time.now;
+      if (_now - (this._lastDownT || 0) > 400) this._nDown = 0;
+      this._lastDownT = _now;
+      this._nDown = (this._nDown || 0) + 1;
       // 失效保險：modalOpen 或 _transitioning 卡住，但畫面其實已穩定(沒任何 DOM 面板開著、
       // 沒黑幕轉場、也沒 Phaser modal)→ 兩個旗標都強制解鎖。防面板關閉/場景切換漏掉重置某旗標，
       // 害玩家卡死完全不能動（_transitioning 卡死之前的保險救不到，這裡補上）。
@@ -599,8 +607,8 @@ class ExploreScene extends Phaser.Scene {
         this._transitioning = false;
       }
       if (this.modalOpen || this._transitioning) return;
-      // 雙指開始 = pinch zoom，不觸發 tap-to-move
-      if (this.input.pointer1.isDown && this.input.pointer2 && this.input.pointer2.isDown) {
+      // 雙指真的同時觸控才是 pinch（用自管計數，避免卡住的 pointer2.isDown 害每次點擊都被當縮放→不能走）
+      if (this._nDown >= 2 && this.input.pointer2 && this.input.pointer2.isDown) {
         this._beginPinch();
         return;
       }
@@ -626,9 +634,11 @@ class ExploreScene extends Phaser.Scene {
       }
     });
     this.input.on("pointerup", () => {
-      // 任一指放開就結束 pinch
-      this._pinchStart = null;
+      this._nDown = Math.max(0, (this._nDown || 0) - 1);
+      this._pinchStart = null;   // 任一指放開就結束 pinch
     });
+    this.input.on("pointerupoutside", () => { this._nDown = Math.max(0, (this._nDown || 0) - 1); });
+    this.input.on("gameout", () => { this._nDown = 0; this._pinchStart = null; });   // 手指移出畫布→清觸控計數,防卡住
 
     // 滾輪縮放（桌面）
     this.input.on("wheel", (pointer, _go, _dx, dy) => {
@@ -939,7 +949,7 @@ class ExploreScene extends Phaser.Scene {
       this._dbgEl.textContent =
         "map:" + this.mapId + "\nmodalOpen:" + this.modalOpen + " trans:" + this._transitioning +
         "\nplayer:" + !!this.player + " target:" + !!this.moveTarget +
-        "\npd:" + this._pdCount + " p1:" + this.input.pointer1.isDown + " p2:" + p2 +
+        "\npd:" + this._pdCount + " p1:" + this.input.pointer1.isDown + " p2:" + p2 + " nDown:" + this._nDown +
         "\nopenOv:" + (ov ? ov.id : "-") + " fade:" + !!(f && f.classList.contains("show")) +
         "\ninputEnabled:" + this.input.enabled;
     }

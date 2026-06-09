@@ -1476,6 +1476,7 @@
     exType = type;
     const d = EX_NPC[type] || EX_NPC.mock;
     const ov = caBuildOverlay();
+    const tabs = ov.querySelector(".ao-tabs4"); if (tabs) tabs.innerHTML = "";   // 清掉學院殘留的任務/圖鑑分頁，避免污染考試
     caSetPrincipal(ov, d.img, "📜 " + d.title + " " + d.name);
     caBubble(ov, d.intro);
     ov.querySelector(".shop-title").textContent = (type === "mock" ? "模擬考 · 歐陽修" : "檢定考 · 笛卡兒");
@@ -1560,7 +1561,15 @@
     };
     const exSubmit = async () => {
       box.innerHTML = `<div class="jc-empty">閱卷中…</div>`;
-      let res; try { res = await fetch(DEMO_API + "/api/exam/submit", { method: "POST", headers: hdr, body: JSON.stringify({ session_id: sid, answers: answers }) }).then((r) => r.json()); } catch (e) { res = {}; }
+      let res = null, ok = false;
+      try { const r = await fetch(DEMO_API + "/api/exam/submit", { method: "POST", headers: hdr, body: JSON.stringify({ session_id: sid, answers: answers }) }); ok = r.ok; res = await r.json().catch(() => null); } catch (e) { ok = false; }
+      if (!ok || !res || res.correct_count == null) {   // 交卷失敗：別把網路/4xx/5xx 誤判成 0 分成績
+        const msg = (res && (res.detail || res.error)) || "交卷失敗，請再送一次";
+        box.innerHTML = `<div style="text-align:center;padding:18px 8px;"><div style="font-size:36px;">⚠️</div><div style="font-size:14px;color:#c0392b;margin:10px 0;">${aoEsc(String(msg))}</div><div style="display:flex;gap:10px;justify-content:center;"><button class="jc-act ex-resend" style="width:auto;">↻ 再送出</button><button class="jc-act ex-x" style="width:auto;">離開</button></div></div>`;
+        box.querySelector(".ex-resend").addEventListener("click", exSubmit);
+        box.querySelector(".ex-x").addEventListener("click", caClose);
+        return;
+      }
       const correct = res.correct_count != null ? res.correct_count : 0;
       const score = res.score != null ? res.score : 0;
       const passed = !!res.passed;

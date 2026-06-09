@@ -62,7 +62,37 @@
         "label": "離開"
       }
     ],
-    "buildings": [],
+    "buildings": [
+      {
+        "id": "shakespeare_dean",
+        "name": "莎士比亞院長",
+        "category": "npc",
+        "sprite": {
+          "image": "shakespeare_front.webp",
+          "scale": 0.12,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.5,
+          "y": 0.58
+        },
+        "bounding_box": {
+          "x_min": 0.46,
+          "y_min": 0.53,
+          "x_max": 0.54,
+          "y_max": 0.575
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "english_entrance",
+          "label": "莎士比亞院長",
+          "radius": 160
+        },
+        "render_order": 337,
+        "mask_color": "#FF3B30"
+      }
+    ],
     "obstacle_areas": [
       {
         "id": "area_001",

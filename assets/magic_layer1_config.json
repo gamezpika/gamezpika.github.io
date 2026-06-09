@@ -1,0 +1,122 @@
+{
+  "map_config": {
+    "version": 1,
+    "dimensions": {
+      "image_width": 1536,
+      "image_height": 1024,
+      "world_width": 1536,
+      "world_height": 1024,
+      "world_offset_y": 0
+    },
+    "background": "village-web/magic_layer1_bg.webp",
+    "asset_base": "village-web/",
+    "player": {
+      "spawn": {
+        "x": 0.5,
+        "y": 0.8
+      },
+      "scale": 0.2,
+      "speed": 220,
+      "sprites": {
+        "side": {
+          "image": "player3.webp",
+          "frame_width": 234,
+          "frame_height": 457,
+          "frames": 9,
+          "frame_rate": 6,
+          "facing": "left"
+        },
+        "down": {
+          "image": "player1.webp",
+          "frame_width": 221,
+          "frame_height": 500,
+          "frames": 9,
+          "frame_rate": 6
+        },
+        "up": {
+          "image": "player2.webp",
+          "frame_width": 218,
+          "frame_height": 498,
+          "frames": 9,
+          "frame_rate": 6
+        }
+      }
+    },
+    "camera": {
+      "sky_pad": 0,
+      "view_base_width": 1000
+    },
+    "portals": [
+      {
+        "id": "exit_to_entrance",
+        "anchor": {
+          "x": 0.5,
+          "y": 0.97
+        },
+        "radius": 110,
+        "target_map": "english_interior",
+        "target_spawn": {
+          "x": 0.5,
+          "y": 0.78
+        },
+        "label": "離開魔法陣"
+      }
+    ],
+    "buildings": [
+      {
+        "id": "andersen",
+        "name": "入魔的安徒生",
+        "category": "npc",
+        "sprite": {
+          "image": "andersen_dark.webp",
+          "scale": 0.11,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.45,
+          "y": 0.52
+        },
+        "bounding_box": {
+          "x_min": 0.41,
+          "y_min": 0.47,
+          "x_max": 0.49,
+          "y_max": 0.515
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "enpurify:andersen",
+          "label": "入魔的安徒生",
+          "radius": 170
+        },
+        "state_key": "village_en_purify_andersen",
+        "purified": {
+          "sprite_image": "andersen_front.webp",
+          "shop_id": "enclear:andersen",
+          "label": "清醒的安徒生"
+        },
+        "render_order": 337,
+        "mask_color": "#FF3B30"
+      },
+      {
+        "id": "seal_door",
+        "name": "封印之門",
+        "category": "decoration",
+        "anchor": {
+          "x": 0.5,
+          "y": 0.2
+        },
+        "interaction": {
+          "type": "open_modal",
+          "label": "封印之門",
+          "body": "通往第二層的封印之門。淨化本層的入魔師長後即可開啟。（第二層樣板尚未建置，確認手感後再複製）",
+          "radius": 150
+        },
+        "render_order": 200
+      }
+    ],
+    "obstacle_areas": [],
+    "npcs": [],
+    "objects": []
+  }
+}

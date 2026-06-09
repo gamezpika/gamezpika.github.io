@@ -265,13 +265,13 @@
 }
 
 /* ───────────── 學院辦公室（沿用 .jc-panel 骨架）───────────── */
-#ao-overlay, #ca-overlay {
+#ao-overlay, #ca-overlay, #en-overlay {
   position: fixed; inset: 0; z-index: 5000; display: none;
   background: rgba(20, 14, 8, 0.55); backdrop-filter: blur(2px);
   font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
-#ao-overlay.open, #ca-overlay.open { display: flex; align-items: center; justify-content: center; }
+#ao-overlay.open, #ca-overlay.open, #en-overlay.open { display: flex; align-items: center; justify-content: center; }
 /* 更新日誌 */
 .ao-log { background: #fffaf0; border: 3px solid #e3c089; border-radius: 14px;
   padding: 10px 12px; box-shadow: 0 2px 0 #e3c089; }
@@ -334,8 +334,8 @@
   box-shadow: 0 3px 0 rgba(0,0,0,.18); z-index: 2;
 }
 /* 國語學院孔丘正面立繪為瘦高全身圖，縮小並下移避免頭頂蓋住上方對話氣泡（只作用國語面板，不影響學院辦公室蘇格拉底） */
-#ca-overlay .ao-principal { padding-top: 56px; box-sizing: border-box; }
-#ca-overlay .ao-principal-img { max-height: 80%; }
+#ca-overlay .ao-principal, #en-overlay .ao-principal { padding-top: 56px; box-sizing: border-box; }
+#ca-overlay .ao-principal-img, #en-overlay .ao-principal-img { max-height: 80%; }
 /* 右側分頁 + 內容 */
 .ao-right {
   flex: 1; margin-top: 52px; padding: 12px; min-width: 0;
@@ -433,8 +433,8 @@
   .ao-bubble::after { left: 50%; margin-left: -8px; }
   .ao-principal-img { width: auto; max-width: 100%; max-height: 26vh; }
   /* 手機 column 版還原：抵銷桌面 #ca-overlay scoped 的 padding/縮放 */
-  #ca-overlay .ao-principal { padding-top: 4px; }
-  #ca-overlay .ao-principal-img { max-height: 26vh; }
+  #ca-overlay .ao-principal, #en-overlay .ao-principal { padding-top: 4px; }
+  #ca-overlay .ao-principal-img, #en-overlay .ao-principal-img { max-height: 26vh; }
   .ao-right { margin-top: 0; }
   .ao-quest { flex-wrap: wrap; }
   .ao-quest-claim { align-self: flex-end; }

@@ -105,6 +105,10 @@ class ExploreScene extends Phaser.Scene {
           }
         }
       }
+      // 清醒立繪（狀態切換）也先載好，避免淨化後重載閃一下
+      if (b.purified && b.purified.sprite_image && !this.textures.exists(b.purified.sprite_image)) {
+        this.load.image(b.purified.sprite_image, this.assetBase + b.purified.sprite_image + "?v=12");
+      }
     });
     // Player sprites（3 方向，所有地圖共用同一個玩家 → 用固定 key、已載就跳過）
     const ps = config.player.sprites;
@@ -198,8 +202,20 @@ class ExploreScene extends Phaser.Scene {
     this.interactables = [];
     this.obstacles = this.physics.add.staticGroup();
     (config.buildings || []).forEach(b => {
+      // 狀態切換（英文學院入魔↔清醒）：state_key 存在且 localStorage 已標記 → 換清醒立繪/互動
+      let sImg = b.sprite && b.sprite.image;
+      let bShop = (b.interaction && b.interaction.shop_id) || "";
+      let bLabel = (b.interaction && b.interaction.label) || b.name;
+      if (b.state_key && b.purified) {
+        let on = false; try { on = !!localStorage.getItem(b.state_key); } catch (e) {}
+        if (on) {
+          if (b.purified.sprite_image) sImg = b.purified.sprite_image;
+          if (b.purified.shop_id) bShop = b.purified.shop_id;
+          if (b.purified.label) bLabel = b.purified.label;
+        }
+      }
       // Sprite
-      if (b.sprite && b.sprite.image && this.textures.exists(b.sprite.image)) {
+      if (b.sprite && sImg && this.textures.exists(sImg)) {
         const anchor = { x: this._nx(b.anchor.x), y: this._ny(b.anchor.y) };
         let spr;
         if (b.sprite.frame_width && b.sprite.frame_height) {
@@ -225,7 +241,7 @@ class ExploreScene extends Phaser.Scene {
             spr.play(animKey);
           }
         } else {
-          spr = this.add.image(anchor.x, anchor.y, b.sprite.image);
+          spr = this.add.image(anchor.x, anchor.y, sImg);
         }
         spr.setOrigin(b.sprite.anchor_x || 0.5, b.sprite.anchor_y || 1.0);
         spr.setScale(b.sprite.scale || 1.0);
@@ -253,9 +269,9 @@ class ExploreScene extends Phaser.Scene {
           cx: this._nx(a.x), cy: this._ny(a.y),
           radius: b.interaction.radius || 110,
           type: b.interaction.type,
-          label: b.interaction.label || b.name,
+          label: bLabel,
           body: b.interaction.body || "",
-          shop_id: b.interaction.shop_id || "",
+          shop_id: bShop,
         });
       }
     });
@@ -476,6 +492,19 @@ class ExploreScene extends Phaser.Scene {
     this._transitioning = false;
     const fade = document.getElementById("map-fade");
     if (fade) this.time.delayedCall(30, () => fade.classList.remove("show"));
+
+    // 12. 給 DOM 面板用的場景切換鉤子（英文學院魔法陣：面板按鈕進場 / 淨化後重載本層）
+    window.__exploreGoMap = (mapId, spawn) => {
+      if (fade) fade.classList.add("show");
+      this.modalOpen = false;
+      this.time.delayedCall(180, () => this.scene.restart({ mapId: mapId, spawn: spawn }));
+    };
+    window.__exploreReload = () => {
+      if (fade) fade.classList.add("show");
+      this.modalOpen = false;
+      const mid = this.mapId;
+      this.time.delayedCall(180, () => this.scene.restart({ mapId: mid, spawn: { x: 0.5, y: 0.86 } }));
+    };
   }
 
   _showEnter(text) {
@@ -544,7 +573,7 @@ class ExploreScene extends Phaser.Scene {
       // 失效保險：modalOpen 卡住但畫面上其實沒任何面板開著(DOM overlay 都關了、也沒 Phaser modal)
       // → 自我解鎖。防某些面板關閉路徑漏掉重置 modalOpen，害玩家卡死完全不能動。
       if (this.modalOpen && !this.modalContainer &&
-          !document.querySelector("#ca-overlay.open,#ao-overlay.open,#jc-overlay.open,#shop-overlay.open,#eq-overlay.open,#dh-overlay.open")) {
+          !document.querySelector("#ca-overlay.open,#ao-overlay.open,#jc-overlay.open,#shop-overlay.open,#eq-overlay.open,#dh-overlay.open,#en-overlay.open")) {
         this.modalOpen = false;
       }
       if (this.modalOpen || this._transitioning) return;

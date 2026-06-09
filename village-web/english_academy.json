@@ -1,0 +1,18 @@
+{
+  "academy": {
+    "title": "英文學院",
+    "dean_name": "莎士比亞",
+    "dean_title": "英文學院 · 院長",
+    "dean_img": "shakespeare_front.webp",
+    "intro": "歡迎來到英文學院！我是院長莎士比亞。魔法陣中的師長被黑暗力量入魔了，逐層淨化他們，便能恢復學院的光輝。",
+    "books": { "guaranteed": [], "rare": [] }
+  },
+  "figures": [
+    { "name": "莎士比亞", "badge": "院長", "img": "shakespeare_front.webp", "era": "文藝復興", "works": "《哈姆雷特》《羅密歐與茱麗葉》", "desc": "英國文學巨匠，戲劇與十四行詩之王。英文學院院長。" },
+    { "name": "安徒生", "badge": "魔法陣 · 第一層", "img": "andersen_front.webp", "era": "19 世紀", "works": "《醜小鴨》《賣火柴的小女孩》", "desc": "丹麥童話大師，以溫柔的筆觸寫進每個孩子的心。" },
+    { "name": "海明威", "badge": "魔法陣 · 第二層", "img": "hemingway_front.webp", "era": "20 世紀", "works": "《老人與海》", "desc": "美國小說家，冰山理論，簡潔有力的文字風格。" },
+    { "name": "雨果", "badge": "魔法陣 · 第三層", "img": "hugo_front.webp", "era": "19 世紀", "works": "《悲慘世界》《鐘樓怪人》", "desc": "法國浪漫主義文豪，為弱者與正義發聲。" },
+    { "name": "約翰彌爾頓", "badge": "魔法陣 · 第四層", "img": "milton_front.webp", "era": "17 世紀", "works": "《失樂園》", "desc": "英國詩人，史詩巨作探討善惡與自由。" }
+  ],
+  "npcs": {}
+}

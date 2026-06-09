@@ -173,6 +173,11 @@
     if (shopId === "math_academy") { caSubject = "math"; caMainAPI = null; caAwards = null; openChineseAcademy(onClose); return; }
     // 禁忌森林課本練習（A/B 版）：fpract:<subj>
     if (shopId.indexOf("fpract:") === 0) { caSubject = shopId.slice(7); caMainAPI = null; caAwards = null; openForestPractice(onClose); return; }
+    // 英文學院（魔法陣樣板）：入口院長 / 布告欄基礎練習 / 入魔NPC答題淨化對決 / 已淨化NPC對話
+    if (shopId === "english_entrance") { enOpenEntrance(onClose); return; }
+    if (shopId === "english_board") { caSubject = "english"; caMainAPI = null; caAwards = null; enOpenBoard(onClose); return; }
+    if (shopId.indexOf("enpurify:") === 0) { enOpenDuel(shopId.slice(9), onClose); return; }
+    if (shopId.indexOf("enclear:") === 0) { enOpenCleared(shopId.slice(8), onClose); return; }
     // 通用學院路由（任何科目）：acad:<subj> 院長門面 / anpc:<subj>:<id> 任務面板 / afig:<subj>:<名> 圖鑑卡
     if (shopId.indexOf("acad:") === 0) { caSubject = shopId.slice(5); caMainAPI = null; caAwards = null; openChineseAcademy(onClose); return; }
     if (shopId.indexOf("anpc:") === 0) { const p = shopId.split(":"); caSubject = p[1]; caMainAPI = null; caAwards = null; openNpcQuest(p.slice(2).join(":"), onClose); return; }
@@ -588,6 +593,7 @@
     math: { label: "數學", game: "arithmetic" },
     science: { label: "自然", game: "science" },
     social: { label: "社會", game: "social" },
+    english: { label: "英語", game: "vocab" },
   };
   function caSubjConf() { return CA_SUBJ[caSubject] || CA_SUBJ.chinese; }
   function caDeanName() { return (((CA_CONTENT || {}).academy || {}).dean_name) || "院長"; }
@@ -1149,6 +1155,193 @@
   }
   window.openChineseAcademy = openChineseAcademy;
   window.openNpcQuest = openNpcQuest;
+
+  /* ───────────────────── 英文學院 · 魔法陣（樣板：入口 + 第一層）───────────────────── */
+  // 入魔師長資料（demo 樣板先做安徒生一位；之後每層各一位）
+  const EN_NPC = {
+    andersen: {
+      name: "安徒生", wake: "清醒的安徒生", layer: 1,
+      darkLine: "嘿嘿……黑暗的力量真是舒服。想救我？先在答題對決中勝過我吧！",
+      wakeLine: "謝謝你淨化了我！我終於清醒了……第二層的封印之門已經鬆動，去看看吧！",
+    },
+  };
+  let enOnClose = null;
+  function enKey(id) { return "village_en_purify_" + id; }
+  function enIsPurified(id) { try { return !!localStorage.getItem(enKey(id)); } catch (e) { return false; } }
+  function enSetPurified(id) { try { localStorage.setItem(enKey(id), "1"); } catch (e) {} }
+  function enBuildOverlay() {
+    let ov = document.getElementById("en-overlay");
+    if (ov) return ov;
+    ov = el("div"); ov.id = "en-overlay";
+    ov.innerHTML = `
+      <div class="shop-panel ao-panel">
+        <div class="shop-title">英文學院</div>
+        <button class="shop-close" aria-label="關閉">×</button>
+        <div class="ao-principal">
+          <div class="ao-bubble"></div>
+          <img class="ao-principal-img" src="shakespeare_front.webp?v=1" alt="英文學院" draggable="false">
+          <div class="ao-owner"></div>
+        </div>
+        <div class="ao-right"><div class="jc-content ao-content en-content"></div></div>
+      </div>`;
+    document.body.appendChild(ov);
+    ov.querySelector(".shop-close").addEventListener("click", enClose);
+    ov.addEventListener("click", (e) => { if (e.target === ov) enClose(); });
+    return ov;
+  }
+  function enClose() {
+    const ov = document.getElementById("en-overlay");
+    if (ov) ov.classList.remove("open");
+    release();
+  }
+  function enFace(ov, img, bubble, owner) {
+    ov.querySelector(".ao-principal-img").src = img + "?v=1";
+    ov.querySelector(".ao-bubble").textContent = bubble || "";
+    ov.querySelector(".ao-owner").textContent = owner || "";
+  }
+
+  // 入口：莎士比亞院長 → 布告欄(基礎練習) + 進入魔法陣第一層
+  async function enOpenEntrance(onClose) {
+    onCloseCb = onClose || null; enOnClose = onClose || null;
+    const ov = enBuildOverlay();
+    enFace(ov, "shakespeare_front.webp", "歡迎來到英文學院！我是院長莎士比亞。魔法陣中的師長們被黑暗力量入魔了，需要你逐層淨化他們。", "👑 英文學院 · 院長 莎士比亞");
+    ov.querySelector(".shop-title").textContent = "英文學院";
+    ov.querySelector(".en-content").innerHTML = `
+      <div style="font-size:13px;color:#8a6d3b;line-height:1.7;margin-bottom:12px;">
+        🔮 <b>魔法陣共五層</b>，每層有一位入魔的師長。<br>
+        用答題對決勝過他，就能淨化他、開啟下一層。<br>
+        <span style="opacity:.7;">（解鎖門檻：集滿四院教師證 + 英語禁忌森林/模擬考/檢定考次數 — 樣板暫時開放）</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="jc-act en-board" style="width:100%;">📋 英語基礎練習（布告欄）</button>
+        <button class="jc-act en-enter" style="width:100%;background:linear-gradient(135deg,#7b4dd8,#a06bf0);color:#fff;">🔮 進入魔法陣 · 第一層</button>
+      </div>`;
+    ov.classList.add("open");
+    ov.querySelector(".en-board").addEventListener("click", () => {
+      ov.classList.remove("open");          // 收起入口、保留 modal 鎖，去開練習面板
+      enOpenBoard(enOnClose);
+    });
+    ov.querySelector(".en-enter").addEventListener("click", () => {
+      enClose();
+      if (window.__exploreGoMap) window.__exploreGoMap("magic_layer1", { x: 0.5, y: 0.86 });
+    });
+  }
+
+  // 布告欄：英語基礎練習（重用學院練習面板，AI 生來源）
+  async function enOpenBoard(onClose) {
+    onCloseCb = onClose || null;
+    caSubject = "english"; caMainAPI = null; caAwards = null;
+    const ov = caBuildOverlay();
+    const prin = ov.querySelector(".ao-principal"); if (prin) prin.style.display = "none";
+    ov.classList.add("open");
+    try { await caLoad(); } catch (e) {}          // 載 english_academy.json（讓「回到院長」能正確渲染）
+    try { await ensureDemoPlayer(); } catch (e) {}
+    await caOpenPractice(ov, "ai");
+    const tt = ov.querySelector(".shop-title"); if (tt) tt.textContent = "英語基礎練習 · 布告欄";
+  }
+
+  // 已淨化的師長：清醒對話
+  function enOpenCleared(npcId, onClose) {
+    onCloseCb = onClose || null;
+    const d = EN_NPC[npcId] || { wake: "清醒的師長", wakeLine: "謝謝你淨化了我！" };
+    const ov = enBuildOverlay();
+    enFace(ov, npcId + "_front.webp", d.wakeLine, "✨ " + d.wake);
+    ov.querySelector(".shop-title").textContent = "魔法陣 · 第 " + (d.layer || 1) + " 層";
+    ov.querySelector(".en-content").innerHTML = `
+      <div style="text-align:center;padding:18px 8px;">
+        <div style="font-size:42px;">✨</div>
+        <div style="font-size:16px;font-weight:800;color:#3a2c1a;margin:8px 0;">${aoEsc(d.wake)} 已恢復清醒</div>
+        <div style="font-size:13px;color:#8a6d3b;">（第二層樣板尚未建置，確認手感後再複製）</div>
+        <div style="margin-top:16px;"><button class="jc-act en-x" style="width:auto;">離開</button></div>
+      </div>`;
+    ov.classList.add("open");
+    ov.querySelector(".en-x").addEventListener("click", enClose);
+  }
+
+  // 答題對決（PK）：勝過入魔師長就淨化他
+  async function enOpenDuel(npcId, onClose) {
+    onCloseCb = onClose || null;
+    const d = EN_NPC[npcId] || { name: npcId, wake: "清醒的" + npcId, layer: 1, darkLine: "想救我？先勝過我！", wakeLine: "謝謝你淨化了我！" };
+    if (enIsPurified(npcId)) { enOpenCleared(npcId, onClose); return; }
+    const ov = enBuildOverlay();
+    enFace(ov, npcId + "_dark.webp", d.darkLine, "👹 入魔的 " + d.name);
+    ov.querySelector(".shop-title").textContent = "魔法陣 · 第 " + d.layer + " 層";
+    ov.classList.add("open");
+    const box = ov.querySelector(".en-content");
+    box.innerHTML = `
+      <div style="text-align:center;padding:14px 8px;">
+        <div style="font-size:14px;color:#5a4630;line-height:1.7;margin-bottom:14px;">⚔️ 用英語答題對決他。<br>答對六成以上即可淨化他、開啟下一層！</div>
+        <button class="jc-act en-start" style="width:auto;background:linear-gradient(135deg,#7b4dd8,#a06bf0);color:#fff;">⚔️ 開始淨化對決</button>
+      </div>`;
+    box.querySelector(".en-start").addEventListener("click", () => enRunDuel(ov, npcId, d));
+  }
+
+  async function enRunDuel(ov, npcId, d) {
+    const box = ov.querySelector(".en-content");
+    box.innerHTML = `<div class="jc-empty">準備對決中…</div>`;
+    const t = demoToken(); if (!t) { try { await ensureDemoPlayer(); } catch (e) {} }
+    const hdr = { "Content-Type": "application/json", "Authorization": "Bearer " + demoToken() };
+    // 取英語章節（AI 生來源），挑一個可玩的章節當對決題庫
+    let topics; try { topics = await fetch(DEMO_API + "/api/english/topics", { headers: hdr }).then((r) => r.json()); } catch (e) { box.innerHTML = `<div class="jc-empty">題庫載入失敗，請再試一次</div>`; return; }
+    const chs = [];
+    (Array.isArray(topics.curriculum) ? topics.curriculum : []).forEach((g) => (g.chapters || []).forEach((c) => chs.push(c)));
+    const pool = chs.filter((c) => c.source !== "uploaded");
+    const pick = pool.find((c) => c.unlocked) || pool[0] || chs[0];
+    if (!pick) { box.innerHTML = `<div class="jc-empty">目前沒有英語題目可對決</div><div style="text-align:center;margin-top:12px;"><button class="jc-act en-x">離開</button></div>`; box.querySelector(".en-x").addEventListener("click", enClose); return; }
+    let sess; try { sess = await fetch(DEMO_API + "/api/english/session/start", { method: "POST", headers: hdr, body: JSON.stringify({ topic_id: pick.id, game: "vocab" }) }).then((r) => r.json()); } catch (e) { sess = {}; }
+    const qs = (sess && sess.questions) || [];
+    if (sess.error || !qs.length) { box.innerHTML = `<div class="jc-empty">這位師長暫時無法對決（${aoEsc(sess.error || "無題目")}）</div><div style="text-align:center;margin-top:12px;"><button class="jc-act en-x">離開</button></div>`; box.querySelector(".en-x").addEventListener("click", enClose); return; }
+    let idx = 0, correct = 0;
+    const need = Math.max(1, Math.ceil(qs.length * 0.6));
+    const renderQ = () => {
+      const q = qs[idx];
+      const choices = (q.choices || []).map((c) => `<button class="en-choice jc-act" data-c="${aoEsc(c)}" style="width:100%;text-align:center;font-size:18px;padding:12px;">${aoEsc(c)}</button>`).join("");
+      box.innerHTML = `<div style="text-align:center;padding:6px 4px;">
+        <div style="font-size:13px;color:#7b4dd8;font-weight:800;">⚔️ 對決中　第 ${idx + 1}/${qs.length} 題　答對 ${correct}（需 ${need}）</div>
+        <div style="font-size:15px;margin:8px 0 2px;color:#5a4630;">${aoEsc(q.prompt || "")}</div>
+        ${q.display ? `<div style="font-size:40px;font-weight:900;margin:6px 0;color:#3a2c1a;">${aoEsc(q.display)}</div>` : ""}
+        <div style="display:flex;flex-direction:column;gap:8px;max-width:320px;margin:10px auto 0;">${choices}</div>
+        <div class="en-fb" style="height:24px;margin-top:10px;font-weight:800;"></div></div>`;
+      box.querySelectorAll(".en-choice").forEach((btn) => btn.addEventListener("click", async function () {
+        box.querySelectorAll(".en-choice").forEach((b) => { b.disabled = true; });
+        let r; try { r = await fetch(DEMO_API + "/api/english/session/answer", { method: "POST", headers: hdr, body: JSON.stringify({ session_id: sess.session_id, question_id: q.id, answer: this.dataset.c, time_ms: 0 }) }).then((x) => x.json()); } catch (e) { r = {}; }
+        const fb = box.querySelector(".en-fb");
+        if (r.correct) { correct++; this.style.background = "#bfe6bf"; fb.textContent = "✓ 答對！"; fb.style.color = "#3a8f3a"; }
+        else { this.style.background = "#f0b9b9"; fb.textContent = "✗ 正解：" + aoEsc(r.correct_answer || ""); fb.style.color = "#c0392b"; box.querySelectorAll(".en-choice").forEach((b) => { if (b.dataset.c === String(r.correct_answer)) b.style.background = "#bfe6bf"; }); }
+        setTimeout(() => { idx++; (idx < qs.length) ? renderQ() : finish(); }, 1000);
+      }));
+    };
+    const finish = async () => {
+      box.innerHTML = `<div class="jc-empty">結算中…</div>`;
+      try { await fetch(DEMO_API + "/api/english/session/end", { method: "POST", headers: hdr, body: JSON.stringify({ session_id: sess.session_id }) }); } catch (e) {}
+      const win = correct >= need;
+      if (win) {
+        enSetPurified(npcId);
+        enFace(ov, npcId + "_front.webp", d.wakeLine, "✨ " + d.wake);
+        box.innerHTML = `<div style="text-align:center;padding:18px 8px;">
+          <div style="font-size:44px;">✨</div>
+          <div style="font-size:18px;font-weight:900;color:#7b4dd8;margin:8px 0;">淨化成功！</div>
+          <div style="font-size:14px;color:#5a4630;">答對 ${correct}/${qs.length}　${aoEsc(d.name)} 恢復清醒了！</div>
+          <div style="margin-top:16px;"><button class="jc-act en-done" style="width:auto;background:linear-gradient(135deg,#7b4dd8,#a06bf0);color:#fff;">離開魔法陣</button></div></div>`;
+        box.querySelector(".en-done").addEventListener("click", () => {
+          enClose();
+          if (window.__exploreReload) window.__exploreReload();   // 重載本層 → 安徒生變清醒立繪
+        });
+      } else {
+        box.innerHTML = `<div style="text-align:center;padding:18px 8px;">
+          <div style="font-size:44px;">💢</div>
+          <div style="font-size:18px;font-weight:900;color:#c0392b;margin:8px 0;">對決失敗…</div>
+          <div style="font-size:14px;color:#5a4630;">只答對 ${correct}/${qs.length}（需 ${need}）。再加強英語，回來挑戰！</div>
+          <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;">
+            <button class="jc-act en-retry" style="width:auto;">⚔️ 再挑戰</button>
+            <button class="jc-act en-x" style="width:auto;">離開</button></div></div>`;
+        box.querySelector(".en-retry").addEventListener("click", () => enRunDuel(ov, npcId, d));
+        box.querySelector(".en-x").addEventListener("click", enClose);
+      }
+    };
+    renderQ();
+  }
+  window.enOpenEntrance = enOpenEntrance;
 
   /* ───────────────────── 裝備欄（純展示：左=目前造型 / 右=帽子·武器·寵物項圈配件）───────────────────── */
   const EQ_KEY = "village_equip";

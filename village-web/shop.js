@@ -1189,7 +1189,8 @@
       { id: "pet_panda", name: "熊貓", img: "equip/pet_panda.webp", acc_img: "equip/acc_bamboo.webp", acc_name: "竹子" },
     ] },
   };
-  const EQ_SLOTS = ["hat", "weapon", "pet"]; // 右側三格
+  const EQ_SLOTS = ["hat", "body", "weapon"]; // 中間三格：帽子 / 衣服 / 武器
+  const EQ_SLOT_LB = { hat: "帽子", body: "衣服", weapon: "武器" };
   const EQ_ALL = ["body", "hat", "weapon", "pet"];
   function setEquip(cat, id) {
     const s = getEquip(); s[cat] = id;
@@ -1209,11 +1210,15 @@
     ov = el("div"); ov.id = "eq-overlay";
     ov.innerHTML = `
       <div class="shop-panel jc-panel eq-panel">
-        <div class="shop-title">裝備 / 寵物</div>
+        <div class="shop-title">人物裝備</div>
         <button class="shop-close" aria-label="關閉">×</button>
         <div class="eq-main">
           <div class="eq-portrait"><img id="eq-port" alt="目前造型"></div>
           <div class="eq-slots"></div>
+          <div class="eq-backpack">
+            <div class="eq-bp-head">背包</div>
+            <div class="eq-bp-grid"></div>
+          </div>
         </div>
       </div>`;
     document.body.appendChild(ov);
@@ -1222,21 +1227,23 @@
     return ov;
   }
 
-  // 純展示：左=目前造型(衣服店)，右三格=帽子/武器/寵物配件(依寵物)
+  // 純展示：左=目前造型立繪 / 中三格=帽子·衣服·武器 / 右=背包(30格)
+  const EQ_BP_SLOTS = 30;
   function eqRender(ov) {
     const s = getEquip();
     // 左大立繪 = 目前造型
     ov.querySelector("#eq-port").src = eqItem("body", s.body).img + "?v=1";
-    // 右三格
+    // 中三格 帽子/衣服/武器
     ov.querySelector(".eq-slots").innerHTML = EQ_SLOTS.map((cat) => {
       const it = eqItem(cat, s[cat]);
-      const img = cat === "pet" ? it.acc_img : it.img;
-      const nm = cat === "pet" ? it.acc_name : it.name;
       return `<div class="eq-slot" data-cat="${cat}">
-          <div class="eq-slot-ic"><img src="${img}?v=1" alt="${nm}"></div>
-          <div class="eq-slot-tx"><div class="eq-slot-lb">${EQUIP[cat].label}</div><div class="eq-slot-nm">${nm}</div></div>
+          <div class="eq-slot-ic"><img src="${it.img}?v=1" alt="${it.name}"></div>
+          <div class="eq-slot-tx"><div class="eq-slot-lb">${EQ_SLOT_LB[cat]}</div><div class="eq-slot-nm">${it.name}</div></div>
         </div>`;
     }).join("");
+    // 右背包 30 格（純展示，目前空）
+    ov.querySelector(".eq-bp-grid").innerHTML =
+      Array.from({ length: EQ_BP_SLOTS }, () => `<div class="eq-bp-cell"></div>`).join("");
   }
 
   function openEquip() {

@@ -436,6 +436,8 @@
   #ca-overlay .ao-principal, #en-overlay .ao-principal { padding-top: 4px; }
   #ca-overlay .ao-principal-img, #en-overlay .ao-principal-img { max-height: 26vh; }
   .ao-right { margin-top: 0; }
+  /* 森林練習/英語布告欄隱藏院長立繪時，.ao-right 要自己補回標題列間距，否則年級分頁被標題蓋住點不到 */
+  .ao-noprincipal .ao-right { margin-top: 52px; }
   .ao-quest { flex-wrap: wrap; }
   .ao-quest-claim { align-self: flex-end; }
 }

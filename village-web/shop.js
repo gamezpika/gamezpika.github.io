@@ -633,6 +633,7 @@
   function caBubble(ov, txt) { ov.querySelector(".ao-bubble").textContent = txt || ""; }
   function caSetPrincipal(ov, img, owner) {
     const prin = ov.querySelector(".ao-principal"); if (prin) prin.style.display = "";   // 森林練習會隱藏它，這裡還原（overlay 單例重用）
+    ov.classList.remove("ao-noprincipal");
     if (img) ov.querySelector(".ao-principal-img").src = img + "?v=1";
     ov.querySelector(".ao-owner").textContent = owner || "";
   }
@@ -1124,6 +1125,7 @@
     const ov = caBuildOverlay();
     caMode = "academy";
     const prin = ov.querySelector(".ao-principal"); if (prin) prin.style.display = "none";   // 森林練習不需院長立繪
+    ov.classList.add("ao-noprincipal");   // 手機版讓 .ao-right 補回標題列間距(沒立繪撐空間)
     ov.classList.add("open");
     try { await ensureDemoPlayer(); } catch (e) {}
     await caOpenPractice(ov, 'uploaded');
@@ -1233,6 +1235,7 @@
     caSubject = "english"; caMainAPI = null; caAwards = null;
     const ov = caBuildOverlay();
     const prin = ov.querySelector(".ao-principal"); if (prin) prin.style.display = "none";
+    ov.classList.add("ao-noprincipal");   // 手機版讓 .ao-right 補回標題列間距(沒立繪撐空間)
     ov.classList.add("open");
     try { await caLoad(); } catch (e) {}          // 載 english_academy.json（讓「回到院長」能正確渲染）
     try { await ensureDemoPlayer(); } catch (e) {}

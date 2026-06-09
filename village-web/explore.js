@@ -505,6 +505,18 @@ class ExploreScene extends Phaser.Scene {
       const mid = this.mapId;
       this.time.delayedCall(180, () => this.scene.restart({ mapId: mid, spawn: { x: 0.5, y: 0.86 } }));
     };
+
+    // 卡死診斷 HUD（網址加 ?dbg=1 才顯示）：即時印出移動相關狀態，抓「卡死不能動」真因
+    this._pdCount = 0;
+    if (location.search.indexOf("dbg") >= 0) {
+      let d = document.getElementById("__dbg");
+      if (!d) {
+        d = document.createElement("div"); d.id = "__dbg";
+        d.style.cssText = "position:fixed;top:4px;left:4px;z-index:99999;background:rgba(0,0,0,.82);color:#0f0;font:11px/1.4 monospace;padding:5px 7px;white-space:pre;pointer-events:none;border-radius:5px;";
+        document.body.appendChild(d);
+      }
+      this._dbgEl = d;
+    }
   }
 
   _showEnter(text) {
@@ -575,6 +587,7 @@ class ExploreScene extends Phaser.Scene {
     this._pinchStart = null;  // { dist, zoom } 雙指開始狀態
 
     this.input.on("pointerdown", (pointer) => {
+      this._pdCount++;   // 診斷：點擊有傳到 Phaser 就會增加
       // 失效保險：modalOpen 或 _transitioning 卡住，但畫面其實已穩定(沒任何 DOM 面板開著、
       // 沒黑幕轉場、也沒 Phaser modal)→ 兩個旗標都強制解鎖。防面板關閉/場景切換漏掉重置某旗標，
       // 害玩家卡死完全不能動（_transitioning 卡死之前的保險救不到，這裡補上）。
@@ -919,6 +932,17 @@ class ExploreScene extends Phaser.Scene {
   }
 
   update(time, delta) {
+    if (this._dbgEl) {
+      const ov = document.querySelector("#ca-overlay.open,#ao-overlay.open,#jc-overlay.open,#shop-overlay.open,#eq-overlay.open,#dh-overlay.open,#en-overlay.open");
+      const f = document.getElementById("map-fade");
+      const p2 = this.input.pointer2 && this.input.pointer2.isDown;
+      this._dbgEl.textContent =
+        "map:" + this.mapId + "\nmodalOpen:" + this.modalOpen + " trans:" + this._transitioning +
+        "\nplayer:" + !!this.player + " target:" + !!this.moveTarget +
+        "\npd:" + this._pdCount + " p1:" + this.input.pointer1.isDown + " p2:" + p2 +
+        "\nopenOv:" + (ov ? ov.id : "-") + " fade:" + !!(f && f.classList.contains("show")) +
+        "\ninputEnabled:" + this.input.enabled;
+    }
     if (!this.player) return;  // scene loading
     // 轉場中：凍結玩家、不處理輸入（等黑幕淡入後 scene.restart）
     if (this._transitioning) { if (this.player.body) this.player.body.setVelocity(0, 0); return; }

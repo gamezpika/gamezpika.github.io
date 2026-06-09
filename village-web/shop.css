@@ -449,8 +449,9 @@
 }
 #eq-overlay.open { display: flex; align-items: center; justify-content: center; }
 /* 高度自適應：內容到哪面板到哪，不留下方大片空白 */
-.eq-panel { height: auto; max-height: 90vh; width: min(880px, 94vw); }
-.eq-main { display: flex; gap: 12px; align-items: stretch; }
+.eq-panel { height: min(90vh, 640px); width: min(880px, 94vw); }
+.eq-main { width: 100%; height: 100%; box-sizing: border-box; padding: 62px 14px 14px;
+  overflow-y: auto; overflow-x: hidden; display: flex; gap: 12px; align-items: stretch; }
 .eq-portrait {
   flex: 0 0 27%; background: radial-gradient(ellipse at 50% 80%, #ffe7b0 0%, #fffaf0 70%);
   border: 3px solid #e3c089; border-radius: 14px; display: flex; align-items: flex-end;
@@ -484,7 +485,7 @@
   .eq-slots { flex: 1; }
   .eq-backpack { flex: 1 0 100%; }
   .eq-slot-ic { width: 44px; height: 44px; }
-  .eq-bp-grid { grid-template-columns: repeat(5, 1fr); }
+  .eq-bp-grid { grid-template-columns: repeat(5, 1fr); overflow: visible; flex: none; }
 }
 /* ───────────── 個人小屋 hub（學生宿舍，商店式左預覽+右分頁）───────────── */
 #dh-overlay {

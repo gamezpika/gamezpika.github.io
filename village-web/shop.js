@@ -1198,6 +1198,23 @@
   }
   function eqItem(cat, id) { return EQUIP[cat].items.find((it) => it.id === id) || EQUIP[cat].items[0]; }
 
+  /* ── 背包道具欄（真實 inventory）：addToBag 給未來「獲得道具」用；demo 先放 25 職業道具看看 ── */
+  const BAG_KEY = "village_bag", BAG_MAX = 30;
+  const BAG_DEMO = Object.keys(JOBS).map((k) => ({ id: k, sprite: JOBS[k].sprite, name: JOBS[k].name }));
+  function bagRead() { let b; try { b = JSON.parse(localStorage.getItem(BAG_KEY) || "null"); } catch (e) {} return Array.isArray(b) ? b : null; }
+  function getBag() {
+    let b = bagRead();
+    if (!b) { b = BAG_DEMO.slice(); try { localStorage.setItem(BAG_KEY, JSON.stringify(b)); } catch (e) {} }
+    return b.slice(0, BAG_MAX);
+  }
+  // 未來「獲得道具」呼叫：addToBag({id, sprite, name})；背包滿 30 回 false
+  function addToBag(item) {
+    const b = bagRead() || [];
+    if (b.length >= BAG_MAX) return false;
+    b.push(item); try { localStorage.setItem(BAG_KEY, JSON.stringify(b)); } catch (e) {} return true;
+  }
+  window.addToBag = addToBag;
+
   function eqBuildOverlay() {
     let ov = document.getElementById("eq-overlay");
     if (ov) return ov;
@@ -1235,9 +1252,15 @@
           <div class="eq-slot-tx"><div class="eq-slot-lb">${EQ_SLOT_LB[cat]}</div><div class="eq-slot-nm">${it.name}</div></div>
         </div>`;
     }).join("");
-    // 右背包 30 格（純展示，目前空）
+    // 右背包：道具欄（真實 inventory，demo 放 25 職業道具）
+    const bag = getBag();
     ov.querySelector(".eq-bp-grid").innerHTML =
-      Array.from({ length: EQ_BP_SLOTS }, () => `<div class="eq-bp-cell"></div>`).join("");
+      Array.from({ length: EQ_BP_SLOTS }, (_, i) => {
+        const it = bag[i];
+        return it
+          ? `<div class="eq-bp-cell filled" title="${it.name}">${spriteImg(it.sprite, it.name)}</div>`
+          : `<div class="eq-bp-cell"></div>`;
+      }).join("");
   }
 
   function openEquip() {

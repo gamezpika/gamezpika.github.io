@@ -537,6 +537,11 @@ class ExploreScene extends Phaser.Scene {
     this.time.delayedCall(300, () => {
       this.scene.restart({ mapId: portal.target_map, spawn: portal.target_spawn, facing: portal.facing });
     });
+    // 轉場逾時自救：3 秒內 scene.restart 沒跑完(目標圖載入失敗等)→ 解凍+收黑幕，避免永久卡死。
+    // (restart 成功的話本場景被關閉、此 timer 自動被 Phaser 取消，不會誤觸發)
+    this.time.delayedCall(3000, () => {
+      if (this._transitioning) { this._transitioning = false; const f = document.getElementById("map-fade"); if (f) f.classList.remove("show"); }
+    });
   }
 
   _updatePortals() {
@@ -570,11 +575,15 @@ class ExploreScene extends Phaser.Scene {
     this._pinchStart = null;  // { dist, zoom } 雙指開始狀態
 
     this.input.on("pointerdown", (pointer) => {
-      // 失效保險：modalOpen 卡住但畫面上其實沒任何面板開著(DOM overlay 都關了、也沒 Phaser modal)
-      // → 自我解鎖。防某些面板關閉路徑漏掉重置 modalOpen，害玩家卡死完全不能動。
-      if (this.modalOpen && !this.modalContainer &&
+      // 失效保險：modalOpen 或 _transitioning 卡住，但畫面其實已穩定(沒任何 DOM 面板開著、
+      // 沒黑幕轉場、也沒 Phaser modal)→ 兩個旗標都強制解鎖。防面板關閉/場景切換漏掉重置某旗標，
+      // 害玩家卡死完全不能動（_transitioning 卡死之前的保險救不到，這裡補上）。
+      const _fade = document.getElementById("map-fade");
+      const _fadeShow = _fade && _fade.classList.contains("show");
+      if ((this.modalOpen || this._transitioning) && !this.modalContainer && !_fadeShow &&
           !document.querySelector("#ca-overlay.open,#ao-overlay.open,#jc-overlay.open,#shop-overlay.open,#eq-overlay.open,#dh-overlay.open,#en-overlay.open")) {
         this.modalOpen = false;
+        this._transitioning = false;
       }
       if (this.modalOpen || this._transitioning) return;
       // 雙指開始 = pinch zoom，不觸發 tap-to-move

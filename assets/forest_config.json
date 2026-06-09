@@ -97,7 +97,12 @@
           "x_max": 0.22368606340374486,
           "y_max": 0.9499950822862858
         },
-        "interaction": null,
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "fpract:science",
+          "label": "自然禁忌森林",
+          "radius": 140
+        },
         "path": [],
         "center": {
           "x": 0.10719438147796881,
@@ -145,7 +150,12 @@
           "x_max": 0.9889053608850866,
           "y_max": 0.5408521840553697
         },
-        "interaction": null,
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "fpract:social",
+          "label": "社會禁忌森林",
+          "radius": 140
+        },
         "path": [],
         "center": {
           "x": 0.8851496450755049,

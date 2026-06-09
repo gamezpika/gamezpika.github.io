@@ -745,7 +745,7 @@
       box.innerHTML = html || `<div class="jc-empty">目前沒有任務</div>`;
       if (live) {
         const refresh = async () => { caMainAPI = await caLoadMainAPI(); caAwards = await caLoadAwards(); caRenderAcademy(ov); };
-        box.querySelectorAll(".ca-practice").forEach((b) => b.addEventListener("click", () => caOpenPractice(ov, ["基礎練習"])));
+        box.querySelectorAll(".ca-practice").forEach((b) => b.addEventListener("click", () => caOpenPractice(ov, 'ai')));
         box.querySelectorAll(".ca-accept").forEach((b) => b.addEventListener("click", async function (e) {
           e.stopPropagation(); this.disabled = true; await caMainAction("accept", this.dataset.key); await refresh();
         }));
@@ -857,66 +857,57 @@
 
   /* ── 國語基礎練習：分頁挑章節（年級 → 版本 → 章節），再進去答題 ── */
   function caStars(n) { n = Math.max(0, Math.min(3, Number(n) || 0)); return "⭐".repeat(n) + "☆".repeat(3 - n); }
-  const CA_PUB_ORDER = ["基礎練習", "A 版", "B 版"];
-  let caPractGroups = null, caPractGrade = null, caPractPub = null, caPractFilter = null;
+  function caStars(n) { n = Math.max(0, Math.min(3, Number(n) || 0)); return "⭐".repeat(n) + "☆".repeat(3 - n); }
+  let caPractChs = null, caPractGrade = null, caPractSource = null;
 
-  async function caOpenPractice(ov, pubFilter) {
-    caPractFilter = (pubFilter && pubFilter.length) ? pubFilter : null;   // null=全部版本；["基礎練習"]=只基礎；["A 版","B 版"]=只課本
+  async function caOpenPractice(ov, sourceFilter) {
+    if (sourceFilter !== undefined) caPractSource = sourceFilter || null;   // 'ai'=基礎練習(五大學院)；'uploaded'=課本(禁忌森林)；不帶參數=沿用(換一章用)
     const t = demoToken(); if (!t) { caBubble(ov, "請先建立角色～"); return; }
     const hdr = { "Content-Type": "application/json", "Authorization": "Bearer " + t };
     const box = ov.querySelector(".ao-content");
     ov.querySelector(".shop-title").textContent = caSubjConf().label + " · 選擇章節";
     box.innerHTML = `<div class="jc-empty">章節載入中…</div>`;
     let topics; try { topics = await fetch(DEMO_API + "/api/" + caSubject + "/topics", { headers: hdr }).then((r) => r.json()); } catch (e) { box.innerHTML = `<div class="jc-empty">載入失敗，請再試一次</div>`; return; }
-    caPractGroups = (Array.isArray(topics.curriculum) ? topics.curriculum : []).filter((g) => (g.chapters || []).length);
-    caPractGrade = null; caPractPub = null;   // 每次開重設→預設停在目前年級
+    // 攝平所有章節，帶上年級與學期標籤；依 source 過濾(ai=基礎練習、uploaded=課本)
+    const chs = [];
+    (Array.isArray(topics.curriculum) ? topics.curriculum : []).forEach((g) => {
+      (g.chapters || []).forEach((c) => chs.push(Object.assign({ _vol: g.volume_label || "", _grade: c.grade || g.grade }, c)));
+    });
+    caPractChs = caPractSource ? chs.filter((c) => (c.source || "ai") === caPractSource) : chs;
+    caPractGrade = null;
     caRenderPractice(ov);
   }
 
-  // 分頁渲染：年級 tabs → 版本 tabs → 該年級該版本的章節清單（同款 .jc-tabs.ao-tabs4 可橫向捲）
+  // 渲染：年級 tabs → 該年級章節清單(依學期小標分段)。已依 source 過濾，不再有版本分頁。
   function caRenderPractice(ov) {
     const box = ov.querySelector(".ao-content");
-    const groups = caPractGroups || [];
-    if (!groups.length) { box.innerHTML = `<div class="jc-empty">目前沒有可練習的章節</div>`; return; }
-    caBubble(ov, "先選年級，再選版本，最後挑章節練習～");
+    const chs = caPractChs || [];
+    if (!chs.length) { box.innerHTML = `<div class="jc-empty">目前沒有可練習的章節</div>`; return; }
+    caBubble(ov, "選年級，再挑章節練習～");
 
-    const grades = [...new Set(groups.map((g) => g.grade))].sort((a, b) => a - b);
-    if (caPractGrade == null || !grades.includes(caPractGrade)) caPractGrade = (groups.find((g) => g.is_current) || {}).grade || grades[0];
-    const gGroups = groups.filter((g) => g.grade === caPractGrade);
-    let pubs = [...new Set(gGroups.map((g) => g.publisher_name))]
-      .sort((a, b) => ((CA_PUB_ORDER.indexOf(a) + 1) || 99) - ((CA_PUB_ORDER.indexOf(b) + 1) || 99));
-    if (caPractFilter) pubs = pubs.filter((p) => caPractFilter.includes(p));   // 學院只留基礎練習、禁忌森林只留 A/B 版
-    if (!pubs.includes(caPractPub)) caPractPub = pubs[0];
-    const sel = gGroups.filter((g) => g.publisher_name === caPractPub);
+    const grades = [...new Set(chs.map((c) => c._grade))].sort((a, b) => a - b);
+    if (caPractGrade == null || !grades.includes(caPractGrade)) caPractGrade = grades[0];
+    const sel = chs.filter((c) => c._grade === caPractGrade);
 
     const gradeTabs = grades.map((gr) => `<button class="jc-tab${gr === caPractGrade ? " active" : ""}" data-g="${gr}">${gr} 年級</button>`).join("");
-    const pubTabs = pubs.map((pb) => `<button class="jc-tab${pb === caPractPub ? " active" : ""}" data-p="${aoEsc(pb)}">${aoEsc(pb)}</button>`).join("");
 
-    let list = "";
-    sel.forEach((g) => {
-      const chs = g.chapters || [];
-      if (sel.length > 1) list += `<div class="ca-navsec" style="font-size:13px;">${aoEsc(g.volume_label || "")}</div>`;
-      chs.forEach((c) => {
-        const right = `<span style="white-space:nowrap;font-size:13px;">${caStars(c.stars)}</span>`;
-        if (c.unlocked) {
-          list += `<button class="jc-act ca-pick" data-id="${c.id}" data-name="${aoEsc(c.name)}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;white-space:nowrap;margin:4px 0;padding:10px 14px;"><span style="overflow:hidden;text-overflow:ellipsis;">${aoEsc(c.name)}</span>${right}</button>`;
-        } else {
-          list += `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;white-space:nowrap;margin:4px 0;padding:10px 14px;opacity:.45;font-size:14px;">🔒 ${aoEsc(c.name)} ${right}</div>`;
-        }
-      });
+    let list = "", lastVol = null;
+    sel.forEach((c) => {
+      if (c._vol && c._vol !== lastVol) { list += `<div class="ca-navsec" style="font-size:13px;">${aoEsc(c._vol)}</div>`; lastVol = c._vol; }
+      const right = `<span style="white-space:nowrap;font-size:13px;">${caStars(c.stars)}</span>`;
+      if (c.unlocked) {
+        list += `<button class="jc-act ca-pick" data-id="${c.id}" data-name="${aoEsc(c.name)}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;white-space:nowrap;margin:4px 0;padding:10px 14px;"><span style="overflow:hidden;text-overflow:ellipsis;">${aoEsc(c.name)}</span>${right}</button>`;
+      } else {
+        list += `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;white-space:nowrap;margin:4px 0;padding:10px 14px;opacity:.45;font-size:14px;">🔒 ${aoEsc(c.name)} ${right}</div>`;
+      }
     });
 
-    const pubTabsRow = pubs.length > 1 ? `<div class="jc-tabs ao-tabs4" style="margin-bottom:10px;flex-shrink:0;">${pubTabs}</div>` : "";
     box.innerHTML = `
-      <div class="jc-tabs ao-tabs4" style="margin-bottom:6px;flex-shrink:0;">${gradeTabs}</div>
-      ${pubTabsRow}
-      <div>${list || `<div class="jc-empty">這個版本沒有章節</div>`}</div>`;
+      <div class="jc-tabs ao-tabs4" style="margin-bottom:10px;flex-shrink:0;">${gradeTabs}</div>
+      <div>${list || `<div class="jc-empty">這個年級沒有章節</div>`}</div>`;
 
     box.querySelectorAll("[data-g]").forEach((b) => b.addEventListener("click", function () {
-      caPractGrade = Number(this.dataset.g); caPractPub = null; caRenderPractice(ov);
-    }));
-    box.querySelectorAll("[data-p]").forEach((b) => b.addEventListener("click", function () {
-      caPractPub = this.dataset.p; caRenderPractice(ov);
+      caPractGrade = Number(this.dataset.g); caRenderPractice(ov);
     }));
     box.querySelectorAll(".ca-pick").forEach((b) => b.addEventListener("click", function () {
       caRunPractice(ov, { id: Number(this.dataset.id), name: this.dataset.name });
@@ -1126,7 +1117,7 @@
     const prin = ov.querySelector(".ao-principal"); if (prin) prin.style.display = "none";   // 森林練習不需院長立繪
     ov.classList.add("open");
     try { await ensureDemoPlayer(); } catch (e) {}
-    await caOpenPractice(ov, ["A 版", "B 版"]);
+    await caOpenPractice(ov, 'uploaded');
     const tt = ov.querySelector(".shop-title"); if (tt) tt.textContent = caSubjConf().label + "禁忌森林 · 課本練習";
   }
 

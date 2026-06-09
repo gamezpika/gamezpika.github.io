@@ -873,7 +873,10 @@
     (Array.isArray(topics.curriculum) ? topics.curriculum : []).forEach((g) => {
       (g.chapters || []).forEach((c) => chs.push(Object.assign({ _vol: g.volume_label || "", _grade: c.grade || g.grade }, c)));
     });
-    caPractChs = caPractSource ? chs.filter((c) => (c.source || "ai") === caPractSource) : chs;
+    // 互斥又窮盡：禁忌森林=只 uploaded(課本)；五大學院=其餘全收(ai/無題目/任何其他來源)→不會有章節兩邊都不顯示
+    caPractChs = caPractSource === "uploaded" ? chs.filter((c) => c.source === "uploaded")
+               : caPractSource === "ai" ? chs.filter((c) => c.source !== "uploaded")
+               : chs;
     caPractGrade = null;
     caRenderPractice(ov);
   }

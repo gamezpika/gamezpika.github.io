@@ -1198,20 +1198,37 @@
   }
   function eqItem(cat, id) { return EQUIP[cat].items.find((it) => it.id === id) || EQUIP[cat].items[0]; }
 
-  /* ── 背包道具欄（真實 inventory）：addToBag 給未來「獲得道具」用；demo 先放 25 職業道具看看 ── */
-  const BAG_KEY = "village_bag", BAG_MAX = 30;
-  const BAG_DEMO = Object.keys(JOBS).map((k) => ({ id: k, sprite: JOBS[k].sprite, name: JOBS[k].name }));
-  function bagRead() { let b; try { b = JSON.parse(localStorage.getItem(BAG_KEY) || "null"); } catch (e) {} return Array.isArray(b) ? b : null; }
-  function getBag() {
-    let b = bagRead();
-    if (!b) { b = BAG_DEMO.slice(); try { localStorage.setItem(BAG_KEY, JSON.stringify(b)); } catch (e) {} }
-    return b.slice(0, BAG_MAX);
+  /* ── 背包道具欄（真實 inventory）：addToBag 給未來「獲得道具」用；demo 放 16 職業道具(jobtools 真圖)看看 ── */
+  const BAG_KEY = "village_bag", BAG_MAX = 30, JT_IMG = "../assets/images/jobtools/";
+  const BAG_DEMO = [
+    { id: "cert_chinese", img: "cert_chinese.png", name: "國語證照" },
+    { id: "cert_math", img: "cert_math.png", name: "數學證照" },
+    { id: "cert_english", img: "cert_english.png", name: "英語證照" },
+    { id: "cert_science", img: "cert_science.png", name: "自然證照" },
+    { id: "cert_social", img: "cert_social.png", name: "社會證照" },
+    { id: "cert_teacher", img: "cert_teacher.png", name: "教師證" },
+    { id: "tool_reporter", img: "tool_reporter.png", name: "記者證" },
+    { id: "tool_writer", img: "tool_writer.png", name: "靈感鋼筆" },
+    { id: "tool_trader", img: "tool_trader.png", name: "財金人員資格證" },
+    { id: "tool_accountant", img: "tool_accountant.png", name: "會計師資格證" },
+    { id: "tool_translator", img: "tool_translator.png", name: "超級電子字典" },
+    { id: "tool_foreign_corp", img: "tool_foreign_corp.png", name: "外商員工證" },
+    { id: "tool_engineer", img: "tool_engineer.png", name: "科技業員工證" },
+    { id: "tool_researcher", img: "tool_researcher.png", name: "研究人員資格證" },
+    { id: "tool_social_worker", img: "tool_social_worker.png", name: "社工證" },
+    { id: "tool_congress_aide", img: "tool_congress_aide.png", name: "助理證" },
+  ].map((it) => ({ id: it.id, img: JT_IMG + it.img, name: it.name }));
+  function bagWrite(b) { try { localStorage.setItem(BAG_KEY, JSON.stringify(b)); } catch (e) {} }
+  function bagCurrent() {
+    let b; try { b = JSON.parse(localStorage.getItem(BAG_KEY) || "null"); } catch (e) {}
+    if (!Array.isArray(b) || (b.length && !b[0].img)) { b = BAG_DEMO.slice(); bagWrite(b); }   // 未設或舊格式→重 seed
+    return b;
   }
-  // 未來「獲得道具」呼叫：addToBag({id, sprite, name})；背包滿 30 回 false
+  function getBag() { return bagCurrent().slice(0, BAG_MAX); }
+  // 未來「獲得道具」呼叫：addToBag({id, img, name})；背包滿 30 回 false
   function addToBag(item) {
-    const b = bagRead() || [];
-    if (b.length >= BAG_MAX) return false;
-    b.push(item); try { localStorage.setItem(BAG_KEY, JSON.stringify(b)); } catch (e) {} return true;
+    const b = bagCurrent(); if (b.length >= BAG_MAX) return false;
+    b.push(item); bagWrite(b); return true;
   }
   window.addToBag = addToBag;
 
@@ -1258,7 +1275,7 @@
       Array.from({ length: EQ_BP_SLOTS }, (_, i) => {
         const it = bag[i];
         return it
-          ? `<div class="eq-bp-cell filled" title="${it.name}">${spriteImg(it.sprite, it.name)}</div>`
+          ? `<div class="eq-bp-cell filled" title="${it.name}"><img src="${it.img}?v=1" alt="${it.name}"></div>`
           : `<div class="eq-bp-cell"></div>`;
       }).join("");
   }

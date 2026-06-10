@@ -963,6 +963,8 @@
 
   // 進入某一章節答題（章節由玩家在 caOpenPractice 挑）
   async function caRunPractice(ov, pick) {
+    // 開始時就鎖定來源：caPractSource 是共用狀態，結算才讀的話，中途關掉換開另一邊會用錯畫面
+    const isForest = caPractSource === "uploaded";
     const t = demoToken(); if (!t) { caBubble(ov, "請先建立角色～"); return; }
     const hdr = { "Content-Type": "application/json", "Authorization": "Bearer " + t };
     const box = ov.querySelector(".ao-content");
@@ -970,7 +972,7 @@
     box.innerHTML = `<div class="jc-empty">題目載入中…</div>`;
     let sess; try { sess = await fetch(DEMO_API + "/api/" + caSubject + "/session/start", { method: "POST", headers: hdr, body: JSON.stringify({ topic_id: pick.id, game: caSubjConf().game }) }).then((r) => r.json()); } catch (e) { box.innerHTML = `<div class="jc-empty">開始失敗</div>`; return; }
     if (sess.error || !(sess.questions || []).length) { box.innerHTML = `<div class="jc-empty">這個章節暫無題目（${aoEsc(sess.error || "")}）<div style="margin-top:14px;"><button class="jc-act ca-backpick">← 換一章</button></div></div>`; const bb = box.querySelector(".ca-backpick"); if (bb) bb.addEventListener("click", () => caOpenPractice(ov)); return; }
-    caBubble(ov, `來練習「${aoEsc(pick.name)}」吧！答對越多，星星越多～`);
+    caBubble(ov, isForest ? `來練習「${aoEsc(pick.name)}」吧！` : `來練習「${aoEsc(pick.name)}」吧！答對越多，星星越多～`);
     const qs = sess.questions; let idx = 0, correct = 0;
     const renderQ = () => {
       const q = qs[idx];
@@ -995,15 +997,19 @@
       let end; try { end = await fetch(DEMO_API + "/api/" + caSubject + "/session/end", { method: "POST", headers: hdr, body: JSON.stringify({ session_id: sess.session_id }) }).then((r) => r.json()); } catch (e) { end = {}; }
       const stars = Number(end.stars || 0);
       caMainAPI = await caLoadMainAPI();   // 刷新主線進度（星星已累積）
+      // 森林(課本)不搜集星星：結尾不顯示星星與主線文案；也沒有院長可回(回去會跳學院總覽)→改「離開」
       box.innerHTML = `<div style="text-align:center;padding:22px 10px;">
         <div style="font-size:20px;font-weight:900;color:#3a2c1a;">練習完成！</div>
         <div style="font-size:15px;margin:10px 0;color:#5a4630;">答對 ${correct} / ${qs.length} 題</div>
-        <div style="font-size:34px;margin:6px 0;">${"⭐".repeat(stars)}${"☆".repeat(Math.max(0, 3 - stars))}</div>
-        <div style="font-size:13px;color:#8a6d3b;">${caPractSource === "uploaded" ? "課本練習的星星只用來解鎖下一章，不列入主線進度" : `星星已累積到${caSubjConf().label}進度，回去找${caDeanName()}領獎吧！`}</div>
+        ${isForest ? "" : `<div style="font-size:34px;margin:6px 0;">${"⭐".repeat(stars)}${"☆".repeat(Math.max(0, 3 - stars))}</div>
+        <div style="font-size:13px;color:#8a6d3b;">星星已累積到${caSubjConf().label}進度，回去找${caDeanName()}領獎吧！</div>`}
         <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:nowrap;">
           <button class="jc-act ca-backpick">📖 再選章節</button>
-          <button class="jc-act ca-back">← 回到${caDeanName()}</button></div></div>`;
-      box.querySelector(".ca-back").addEventListener("click", () => { caTab = "overview"; caRenderAcademy(ov); });
+          ${isForest ? `<button class="jc-act ca-leave">← 離開</button>` : `<button class="jc-act ca-back">← 回到${caDeanName()}</button>`}</div></div>`;
+      const bk = box.querySelector(".ca-back");
+      if (bk) bk.addEventListener("click", () => { caTab = "overview"; caRenderAcademy(ov); });
+      const lv = box.querySelector(".ca-leave");
+      if (lv) lv.addEventListener("click", () => caClose());
       box.querySelector(".ca-backpick").addEventListener("click", () => caOpenPractice(ov));
     };
     renderQ();

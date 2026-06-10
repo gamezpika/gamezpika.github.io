@@ -929,6 +929,37 @@
     }));
   }
 
+  /* ── 共用題目渲染（四個答題畫面共用：基礎練習/禁忌森林/魔法陣/考試）──
+     處理：圖片題(image_url)、一二年級注音(bopomofo/zhuyin ruby)、字級一致 ── */
+  function qZhuyin(q) { return (q && (q.bopomofo || q.zhuyin)) || null; }
+  function qRuby(text, zh) {
+    const s = String(text == null ? "" : text);
+    if (!zh) return aoEsc(s);
+    let out = "";
+    for (const ch of s) out += zh[ch] ? `<ruby>${aoEsc(ch)}<rt>${aoEsc(zh[ch])}</rt></ruby>` : aoEsc(ch);
+    return out;
+  }
+  // 題目圖片放在正式版 static(web-production)，demo 後台沒有那些檔→用正式版當圖床(img 顯示不需 CORS)
+  const Q_IMG_BASE = "https://web-production-48b09.up.railway.app";
+  // 題幹區（圖片 + display 大字 + prompt）；字級統一，display 上限 30px(原本 52px 太大不一致)
+  function qBodyHTML(q) {
+    const zh = qZhuyin(q);
+    let h = "";
+    if (q.image_url) { const isrc = /^https?:/.test(q.image_url) ? q.image_url : (Q_IMG_BASE + q.image_url); h += `<img src="${isrc}" alt="題目圖" style="max-width:100%;max-height:38vh;object-fit:contain;display:block;margin:6px auto;border-radius:8px;">`; }
+    const disp = String(q.display || "").trim(), prom = String(q.prompt || "").trim();
+    if (disp) {
+      h += `<div style="font-size:30px;font-weight:900;line-height:1.6;margin:6px 0;color:#3a2c1a;">${qRuby(disp, zh)}</div>`;
+      if (prom) h += `<div style="font-size:15px;line-height:1.9;margin:4px 0;color:#5a4630;">${qRuby(prom, zh)}</div>`;
+    } else if (prom) {
+      h += `<div style="font-size:19px;line-height:1.9;margin:6px 0;color:#5a4630;">${qRuby(prom, zh)}</div>`;
+    }
+    return h;
+  }
+  // 單一選項按鈕（含注音）；cls=各畫面的選項 class（ca-choice/en-choice/ex-choice）
+  function qChoiceHTML(c, q, cls) {
+    return `<button class="${cls} jc-act" data-c="${aoEsc(c)}" style="width:100%;text-align:center;font-size:18px;padding:11px;">${qRuby(c, qZhuyin(q))}</button>`;
+  }
+
   // 進入某一章節答題（章節由玩家在 caOpenPractice 挑）
   async function caRunPractice(ov, pick) {
     const t = demoToken(); if (!t) { caBubble(ov, "請先建立角色～"); return; }
@@ -942,11 +973,10 @@
     const qs = sess.questions; let idx = 0, correct = 0;
     const renderQ = () => {
       const q = qs[idx];
-      const choices = (q.choices || []).map((c) => `<button class="ca-choice jc-act" data-c="${aoEsc(c)}" style="width:100%;text-align:center;font-size:18px;padding:12px;">${aoEsc(c)}</button>`).join("");
+      const choices = (q.choices || []).map((c) => qChoiceHTML(c, q, "ca-choice")).join("");
       box.innerHTML = `<div style="text-align:center;padding:6px 4px;">
         <div style="font-size:13px;color:#8a6d3b;">第 ${idx + 1} / ${qs.length} 題　答對 ${correct}</div>
-        <div style="font-size:15px;margin:8px 0 2px;color:#5a4630;">${aoEsc(q.prompt || "")}</div>
-        ${q.display ? `<div style="font-size:52px;font-weight:900;margin:6px 0;color:#3a2c1a;">${aoEsc(q.display)}</div>` : ""}
+        ${qBodyHTML(q)}
         <div class="ca-choices" style="display:flex;flex-direction:column;gap:8px;max-width:320px;margin:10px auto 0;">${choices}</div>
         <div class="ca-fb" style="height:24px;margin-top:10px;font-weight:800;"></div></div>`;
       box.querySelectorAll(".ca-choice").forEach((btn) => btn.addEventListener("click", async function () {
@@ -1428,15 +1458,14 @@
     };
     const renderQ = () => {
       const q = qs[idx];
-      const choices = (q.choices || []).map((c) => `<button class="en-choice jc-act" data-c="${aoEsc(c)}" style="width:100%;text-align:center;font-size:18px;padding:12px;">${aoEsc(c)}</button>`).join("");
+      const choices = (q.choices || []).map((c) => qChoiceHTML(c, q, "en-choice")).join("");
       box.innerHTML = `<div style="padding:4px 4px;">
         <div style="display:flex;gap:10px;margin-bottom:8px;">
           <div style="flex:1;"><div style="font-size:12px;color:#3a8f3a;font-weight:700;">你 ❤️ ${Math.max(0, pHP)}/${pMaxHP}</div>${bar(pHP, pMaxHP, "#48b048")}</div>
           <div style="flex:1;"><div style="font-size:12px;color:#c0392b;font-weight:700;text-align:right;">${d.boss ? "魔王" : "入魔"}的${aoEsc(d.name)} 💀 ${Math.max(0, eHP)}/${eMaxHP}</div>${bar(eHP, eMaxHP, "#d8503a")}</div>
         </div>
         <div style="text-align:center;font-size:12px;color:#7b4dd8;">答對攻擊 −${dmgToEnemy}／答錯被扣 −${dmgToPlayer}</div>
-        <div style="text-align:center;font-size:15px;margin:8px 0 2px;color:#5a4630;">${aoEsc(q.prompt || "")}</div>
-        ${q.display ? `<div style="text-align:center;font-size:40px;font-weight:900;margin:6px 0;color:#3a2c1a;">${aoEsc(q.display)}</div>` : ""}
+        <div style="text-align:center;">${qBodyHTML(q)}</div>
         <div style="display:flex;flex-direction:column;gap:8px;max-width:320px;margin:10px auto 0;">${choices}</div>
         <div class="en-fb" style="height:22px;margin-top:8px;font-weight:800;text-align:center;"></div></div>`;
       box.querySelectorAll(".en-choice").forEach((btn) => btn.addEventListener("click", async function () {
@@ -1591,11 +1620,10 @@
     let idx = 0;
     const renderQ = () => {
       const q = qs[idx];
-      const choices = (q.choices || []).map((c) => `<button class="ex-choice jc-act" data-c="${aoEsc(c)}" style="width:100%;text-align:center;font-size:17px;padding:11px;">${aoEsc(c)}</button>`).join("");
+      const choices = (q.choices || []).map((c) => qChoiceHTML(c, q, "ex-choice")).join("");
       box.innerHTML = `<div style="text-align:center;padding:6px 4px;">
         <div style="font-size:13px;color:#8a6d3b;font-weight:700;">${exType === "mock" ? "📝 模擬考" : "📜 檢定考"}　第 ${idx + 1}/${total} 題</div>
-        <div style="font-size:15px;margin:8px 0 2px;color:#5a4630;">${aoEsc(q.prompt || "")}</div>
-        ${q.display ? `<div style="font-size:40px;font-weight:900;margin:6px 0;color:#3a2c1a;">${aoEsc(q.display)}</div>` : ""}
+        ${qBodyHTML(q)}
         <div style="display:flex;flex-direction:column;gap:8px;max-width:340px;margin:10px auto 0;">${choices}</div></div>`;
       box.querySelectorAll(".ex-choice").forEach((btn) => btn.addEventListener("click", function () {
         answers[String(q.question_id)] = this.dataset.c;

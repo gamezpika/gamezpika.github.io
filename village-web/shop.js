@@ -1375,18 +1375,31 @@
     let topics; try { topics = await fetch(DEMO_API + "/api/english/topics", { headers: hdr }).then((r) => r.json()); } catch (e) { box.innerHTML = `<div class="jc-empty">題庫載入失敗，請再試一次</div>`; return; }
     const chs = [];
     (Array.isArray(topics.curriculum) ? topics.curriculum : []).forEach((g) => (g.chapters || []).forEach((c) => chs.push(Object.assign({ _grade: c.grade || g.grade || 1 }, c))));
-    const pool = chs.filter((c) => c.source !== "uploaded");
-    // 各層難度按年級遞增：取「年級 ≤ 本層目標、且已解鎖」中最接近目標的章節；fallback 任何已解鎖最高年級 → 任何章節（永不卡）
+    // 候選：英語 ai 題庫，排除「聽力」章(要聽音檔、選項全中文，不適合文字對決)
+    const hasCJK = (s) => /[一-鿿]/.test(String(s || ""));
+    // 濾掉「選項全中文」的單題(中譯/聽力題)，只留有英文答案的題；剩太少(<3)就不濾以免沒題
+    const enOnly = (arr) => { const f = (arr || []).filter((q) => (q.choices || []).some((ch) => !hasCJK(ch))); return f.length >= 3 ? f : (arr || []); };
     const tg = d.grade || d.layer || 1;
-    const unlocked = pool.filter((c) => c.unlocked);
-    const byGradeDesc = (a, b) => b._grade - a._grade;
-    const pick = unlocked.filter((c) => c._grade <= tg).sort(byGradeDesc)[0]
-      || unlocked.slice().sort(byGradeDesc)[0]
-      || pool[0] || chs[0];
-    if (!pick) { box.innerHTML = `<div class="jc-empty">目前沒有英語題目可對決</div><div style="text-align:center;margin-top:12px;"><button class="jc-act en-x">離開</button></div>`; box.querySelector(".en-x").addEventListener("click", enClose); return; }
-    let sess; try { sess = await fetch(DEMO_API + "/api/english/session/start", { method: "POST", headers: hdr, body: JSON.stringify({ topic_id: pick.id, game: "vocab" }) }).then((r) => r.json()); } catch (e) { sess = {}; }
-    let qs = (sess && sess.questions) || [];
-    if (sess.error || !qs.length) { box.innerHTML = `<div class="jc-empty">這位師長暫時無法對決（${aoEsc(sess.error || "無題目")}）</div><div style="text-align:center;margin-top:12px;"><button class="jc-act en-x">離開</button></div>`; box.querySelector(".en-x").addEventListener("click", enClose); return; }
+    const cands = chs.filter((c) => c.source !== "uploaded" && !/聽力/.test(c.name || ""));
+    // 排序：已解鎖優先 → 年級≤目標且最接近 → 其餘（各層難度仍遞增）
+    cands.sort((a, b) => {
+      const sc = (c) => (c.unlocked ? 0 : 1000) + (c._grade > tg ? 100 : 0) + Math.abs(c._grade - tg);
+      return sc(a) - sc(b);
+    });
+    if (!cands.length) { box.innerHTML = `<div class="jc-empty">目前沒有英語題目可對決</div><div style="text-align:center;margin-top:12px;"><button class="jc-act en-x">離開</button></div>`; box.querySelector(".en-x").addEventListener("click", enClose); return; }
+    // 逐個試開 session，挑「選項是英文」的章節(避開中譯/聽力題)；最多試 6 個，都不行用第一個有題的保底
+    const isEnglishQs = (q) => { const a = (q || []).slice(0, 3); const ok = a.filter((x) => (x.choices || []).some((ch) => !hasCJK(ch))).length; return a.length > 0 && ok >= Math.ceil(a.length / 2); };
+    let pick = null, sess = null, qs = [], fbPick = null, fbSess = null, fbQs = [];
+    for (let i = 0; i < cands.length && i < 6; i++) {
+      let s; try { s = await fetch(DEMO_API + "/api/english/session/start", { method: "POST", headers: hdr, body: JSON.stringify({ topic_id: cands[i].id, game: "vocab" }) }).then((r) => r.json()); } catch (e) { continue; }
+      const q = (s && s.questions) || [];
+      if (!q.length) continue;
+      if (!fbSess) { fbPick = cands[i]; fbSess = s; fbQs = q; }
+      if (isEnglishQs(q)) { pick = cands[i]; sess = s; qs = q; break; }
+    }
+    if (!sess) { pick = fbPick; sess = fbSess; qs = fbQs; }
+    if (!sess || !qs.length) { box.innerHTML = `<div class="jc-empty">這位師長暫時無法對決（無題目）</div><div style="text-align:center;margin-top:12px;"><button class="jc-act en-x">離開</button></div>`; box.querySelector(".en-x").addEventListener("click", enClose); return; }
+    qs = enOnly(qs);   // 同章節內混入的全中文題也濾掉
     // 血量制戰鬥：玩家攻防血(裝備加成) vs 敵人血量/攻擊
     const st = playerStats();
     const pMaxHP = st.hp;
@@ -1405,7 +1418,7 @@
       if (idx >= qs.length) {
         box.innerHTML = `<div class="jc-empty">敵人換招中…</div>`;
         let ns; try { ns = await fetch(DEMO_API + "/api/english/session/start", { method: "POST", headers: hdr, body: JSON.stringify({ topic_id: pick.id, game: "vocab" }) }).then((r) => r.json()); } catch (e) { ns = null; }
-        const nq = (ns && ns.questions) || [];
+        const nq = enOnly((ns && ns.questions) || []);
         if (!nq.length) { return finish((eHP / eMaxHP) <= (pHP / pMaxHP)); }   // 沒新題：血量比例低的一方輸
         sess = ns; qs = nq; idx = 0;
       }

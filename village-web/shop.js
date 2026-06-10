@@ -885,9 +885,9 @@
     (Array.isArray(topics.curriculum) ? topics.curriculum : []).forEach((g) => {
       (g.chapters || []).forEach((c) => chs.push(Object.assign({ _vol: g.volume_label || "", _grade: c.grade || g.grade }, c)));
     });
-    // 互斥又窮盡：禁忌森林=只 uploaded(課本)；五大學院=其餘全收(ai/無題目/任何其他來源)→不會有章節兩邊都不顯示
-    caPractChs = caPractSource === "uploaded" ? chs.filter((c) => c.source === "uploaded")
-               : caPractSource === "ai" ? chs.filter((c) => c.source !== "uploaded")
+    // 禁忌森林=全題庫(課本+AI,一到六有什麼秀什麼;派派 6/10 不鎖年級)；五大學院=只 AI(非課本)
+    // 注意:caPractSource 值 'uploaded' 現在是「森林模式」記號(沿用,UI 文案/按鈕靠它分流),不再代表只濾課本
+    caPractChs = caPractSource === "ai" ? chs.filter((c) => c.source !== "uploaded")
                : chs;
     caPractGrade = null;
     caRenderPractice(ov);

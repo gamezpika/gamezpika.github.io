@@ -581,9 +581,12 @@ class ExploreScene extends Phaser.Scene {
       .setVisible(false);
 
     // userZoom：派派手動縮放倍率（最終 zoom = base × userZoom）
-    this.userZoom = 1;
-    this.MIN_USER_ZOOM = 0.5;
+    // 一進地圖一律最遠景：起始倍率壓到 cover（剛好蓋滿地圖、不露綠），每張地圖一致
+    const zp = this._zoomParts();
+    this.userZoom = Math.min(1, zp.cover / zp.base);
+    this.MIN_USER_ZOOM = Math.min(0.5, this.userZoom);
     this.MAX_USER_ZOOM = 3.0;
+    this._adjustZoom();
     this._pinchStart = null;  // { dist, zoom } 雙指開始狀態
     this._nDown = 0; this._lastDownT = 0;  // 自管觸控數+最後觸控時間(修卡住第二指)
 
@@ -681,23 +684,32 @@ class ExploreScene extends Phaser.Scene {
     return c;
   }
 
-  _adjustZoom() {
+  _zoomParts() {
     const sw = this.scale.width, sh = this.scale.height;
     const aspectThreshold = this.VIEW_BASE_WIDTH / this.WORLD_H;  // ~1.111
-    let z = (sw / sh) >= aspectThreshold ? sw / this.VIEW_BASE_WIDTH : sh / this.WORLD_H;
+    let base = (sw / sh) >= aspectThreshold ? sw / this.VIEW_BASE_WIDTH : sh / this.WORLD_H;
     // 手機 portrait（高 > 寬）視野放大，避免世界看起來太小
-    const isPortrait = sh > sw;
-    if (isPortrait) z *= 1.5;
+    if (sh > sw) base *= 1.5;
+    // cover = 剛好填滿世界：相機縮到這裡就是最遠，再遠會露出地圖邊界(底色綠)
+    const cover = Math.max(sw / this.WORLD_W, sh / this.WORLD_H);
+    return { base, cover };
+  }
+
+  _adjustZoom() {
+    const { base, cover } = this._zoomParts();
     // 派派手動縮放倍率
-    z *= (this.userZoom || 1);
-    // 最小縮放 = 剛好填滿世界（cover）：相機永遠不准縮到露出地圖邊界(底色綠)。
-    // 不論螢幕比例、不論雙指縮小，都不會再 letterbox 露綠。
-    const zCover = Math.max(sw / this.WORLD_W, sh / this.WORLD_H);
-    if (z < zCover) z = zCover;
+    let z = base * (this.userZoom || 1);
+    // 最小縮放 = cover：不論螢幕比例、不論雙指縮小，都不會 letterbox 露綠。
+    if (z < cover) z = cover;
     this.cameras.main.setZoom(z);
   }
 
   _onResize() {
+    // 旋轉/改視窗後重算縮放下限，確保任何方向都縮得回最遠景（不卡在進場時的舊下限）
+    if (this.userZoom != null) {
+      const zp = this._zoomParts();
+      this.MIN_USER_ZOOM = Math.min(0.5, zp.cover / zp.base);
+    }
     this._adjustZoom();
   }
 

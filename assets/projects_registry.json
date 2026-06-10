@@ -7201,10 +7201,37 @@
       "world_offset_y": 0,
       "sprite_library": [
         {
-          "image": "arcade_cabinet.webp",
-          "name": "🕹️ 統一街機(插牌)",
+          "image": "arcade_cabinet_coral.webp",
+          "name": "🕹️ 街機·珊瑚紅(插牌)",
           "type": "building",
-          "scale": 0.21,
+          "scale": 0.41,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.075,
+          "bbox_h_norm": 0.035
+        },
+        {
+          "image": "arcade_cabinet_mint.webp",
+          "name": "🕹️ 街機·薄荷綠(插牌)",
+          "type": "building",
+          "scale": 0.41,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.075,
+          "bbox_h_norm": 0.035
+        },
+        {
+          "image": "arcade_cabinet_blue.webp",
+          "name": "🕹️ 街機·天空藍(插牌)",
+          "type": "building",
+          "scale": 0.41,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.075,
+          "bbox_h_norm": 0.035
+        },
+        {
+          "image": "arcade_cabinet_yellow.webp",
+          "name": "🕹️ 街機·陽光黃(插牌)",
+          "type": "building",
+          "scale": 0.41,
           "default_interaction": "open_modal",
           "bbox_w_norm": 0.075,
           "bbox_h_norm": 0.035

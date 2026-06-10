@@ -1386,8 +1386,8 @@
         "name": "統一街機(插牌)",
         "category": "building",
         "sprite": {
-          "image": "arcade_cabinet.webp",
-          "scale": 0.21,
+          "image": "arcade_cabinet_yellow.webp",
+          "scale": 0.41,
           "anchor_x": 0.5,
           "anchor_y": 1,
           "rotation": 0
@@ -1440,8 +1440,8 @@
         "name": "打地鼠：九九挑戰",
         "category": "building",
         "sprite": {
-          "image": "arcade_cabinet.webp",
-          "scale": 0.21,
+          "image": "arcade_cabinet_coral.webp",
+          "scale": 0.41,
           "anchor_x": 0.5,
           "anchor_y": 1
         },
@@ -1469,8 +1469,8 @@
         "name": "聽力重組小火車",
         "category": "building",
         "sprite": {
-          "image": "arcade_cabinet.webp",
-          "scale": 0.21,
+          "image": "arcade_cabinet_mint.webp",
+          "scale": 0.41,
           "anchor_x": 0.5,
           "anchor_y": 1
         },
@@ -1498,8 +1498,8 @@
         "name": "名人九宮格",
         "category": "building",
         "sprite": {
-          "image": "arcade_cabinet.webp",
-          "scale": 0.21,
+          "image": "arcade_cabinet_blue.webp",
+          "scale": 0.41,
           "anchor_x": 0.5,
           "anchor_y": 1
         },

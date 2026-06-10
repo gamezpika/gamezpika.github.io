@@ -253,14 +253,19 @@ class ExploreScene extends Phaser.Scene {
         if (b.interaction && b.interaction.type === "fountain_splash") {
           this._addFountainParticles(anchor.x, anchor.y);
         }
-        // 插牌動態名（遊樂場統一街機）：sign_text 寫在建築頂端的空白木牌上
+        // 插牌動態名（遊樂場統一街機）：sign_text 置中寫在建築頂端的空白木牌裡
         if (b.sign_text) {
           const sh = spr.displayHeight;
-          const tx = this.add.text(anchor.x, anchor.y - sh * (typeof b.sign_text_y === "number" ? b.sign_text_y : 0.93), b.sign_text, {
-            fontFamily: '"PingFang TC","Microsoft JhengHei",sans-serif',
-            fontSize: Math.max(13, Math.round(sh * 0.072)) + "px",
-            fontStyle: "bold", color: "#5a3c14", align: "center",
+          // 木牌中心=素材頂部約 9% 高處（量自 arcade_cabinet 四色素材，可用 sign_text_y 覆寫）
+          const tx = this.add.text(anchor.x, anchor.y - sh * (typeof b.sign_text_y === "number" ? b.sign_text_y : 0.91), b.sign_text, {
+            fontFamily: '"Yuanti TC","YouYuan","PingFang TC","Microsoft JhengHei",sans-serif',
+            fontSize: Math.max(15, Math.round(sh * 0.085)) + "px",
+            fontStyle: "bold", color: "#6b4316", align: "center",
+            stroke: "#fff3da", strokeThickness: Math.max(3, Math.round(sh * 0.014)),
           }).setOrigin(0.5, 0.5);
+          // 字寬不准超出牌面：超過就整段等比縮小
+          const maxW = spr.displayWidth * 0.8;
+          if (tx.width > maxW) tx.setScale(maxW / tx.width);
           tx.setDepth((typeof b.render_depth === "number" ? b.render_depth : anchor.y) + 0.1);
         }
       }

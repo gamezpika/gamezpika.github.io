@@ -1385,7 +1385,7 @@
       || pool[0] || chs[0];
     if (!pick) { box.innerHTML = `<div class="jc-empty">目前沒有英語題目可對決</div><div style="text-align:center;margin-top:12px;"><button class="jc-act en-x">離開</button></div>`; box.querySelector(".en-x").addEventListener("click", enClose); return; }
     let sess; try { sess = await fetch(DEMO_API + "/api/english/session/start", { method: "POST", headers: hdr, body: JSON.stringify({ topic_id: pick.id, game: "vocab" }) }).then((r) => r.json()); } catch (e) { sess = {}; }
-    const qs = (sess && sess.questions) || [];
+    let qs = (sess && sess.questions) || [];
     if (sess.error || !qs.length) { box.innerHTML = `<div class="jc-empty">這位師長暫時無法對決（${aoEsc(sess.error || "無題目")}）</div><div style="text-align:center;margin-top:12px;"><button class="jc-act en-x">離開</button></div>`; box.querySelector(".en-x").addEventListener("click", enClose); return; }
     // 血量制戰鬥：玩家攻防血(裝備加成) vs 敵人血量/攻擊
     const st = playerStats();
@@ -1397,8 +1397,22 @@
     const dmgToPlayer = Math.max(1, Math.round(eAtk - st.def / 2)); // 防5→扣8；防+10→少扣5
     let idx = 0, correct = 0, asked = 0;
     const bar = (cur, max, color) => `<div style="background:#e0d6c0;border-radius:6px;height:14px;overflow:hidden;"><div style="width:${Math.max(0, Math.round(cur / max * 100))}%;height:100%;background:${color};transition:width .25s;"></div></div>`;
+    // 題目用完換一批新 session（避免同 session 重送同 question_id）；拿不到新題則依血量比例判勝負
+    const advance = async () => {
+      if (eHP <= 0) return finish(true);
+      if (pHP <= 0) return finish(false);
+      idx++;
+      if (idx >= qs.length) {
+        box.innerHTML = `<div class="jc-empty">敵人換招中…</div>`;
+        let ns; try { ns = await fetch(DEMO_API + "/api/english/session/start", { method: "POST", headers: hdr, body: JSON.stringify({ topic_id: pick.id, game: "vocab" }) }).then((r) => r.json()); } catch (e) { ns = null; }
+        const nq = (ns && ns.questions) || [];
+        if (!nq.length) { return finish((eHP / eMaxHP) <= (pHP / pMaxHP)); }   // 沒新題：血量比例低的一方輸
+        sess = ns; qs = nq; idx = 0;
+      }
+      renderQ();
+    };
     const renderQ = () => {
-      const q = qs[idx % qs.length];
+      const q = qs[idx];
       const choices = (q.choices || []).map((c) => `<button class="en-choice jc-act" data-c="${aoEsc(c)}" style="width:100%;text-align:center;font-size:18px;padding:12px;">${aoEsc(c)}</button>`).join("");
       box.innerHTML = `<div style="padding:4px 4px;">
         <div style="display:flex;gap:10px;margin-bottom:8px;">
@@ -1417,11 +1431,7 @@
         const fb = box.querySelector(".en-fb");
         if (r.correct) { correct++; eHP -= dmgToEnemy; this.style.background = "#bfe6bf"; fb.textContent = "✓ 答對！對敵人造成 " + dmgToEnemy + " 傷害"; fb.style.color = "#3a8f3a"; }
         else { pHP -= dmgToPlayer; this.style.background = "#f0b9b9"; fb.textContent = "✗ 正解：" + aoEsc(r.correct_answer || "") + "（你被扣 " + dmgToPlayer + " 血）"; fb.style.color = "#c0392b"; box.querySelectorAll(".en-choice").forEach((b) => { if (b.dataset.c === String(r.correct_answer)) b.style.background = "#bfe6bf"; }); }
-        setTimeout(() => {
-          if (eHP <= 0) finish(true);
-          else if (pHP <= 0) finish(false);
-          else { idx++; renderQ(); }
-        }, 1000);
+        setTimeout(advance, 1000);
       }));
     };
     const finish = async (win) => {
@@ -1681,11 +1691,12 @@
     const m = getMastery(), e = m[subj];
     if (e.lv >= MASTERY_CAP) { e.exp = 0; saveMastery(m); return { subj, gained: 0, lv: e.lv, leveled: false }; }
     const before = e.lv;
-    e.exp += e.lv * mult;
+    const gained = e.lv * mult;   // 經驗用「升級前 LV」算，顯示才正確
+    e.exp += gained;
     while (e.lv < MASTERY_CAP && e.exp >= e.lv * 500) { e.exp -= e.lv * 500; e.lv++; }
     if (e.lv >= MASTERY_CAP) { e.lv = MASTERY_CAP; e.exp = 0; }
     saveMastery(m);
-    return { subj, gained: e.lv * mult, lv: e.lv, leveled: e.lv > before };
+    return { subj, gained, lv: e.lv, leveled: e.lv > before };
   }
   window.gainMastery = gainMastery;
   const EQ_SLOTS = ["hat", "body", "weapon"]; // 中間三格：帽子 / 衣服 / 武器

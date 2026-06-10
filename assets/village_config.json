@@ -58,10 +58,16 @@
     "portals": [
       {
         "id": "to_exam_interior",
-        "anchor": { "x": 0.165, "y": 0.72 },
+        "anchor": {
+          "x": 0.165,
+          "y": 0.72
+        },
         "radius": 120,
         "target_map": "exam_interior",
-        "target_spawn": { "x": 0.5, "y": 0.9 },
+        "target_spawn": {
+          "x": 0.5,
+          "y": 0.9
+        },
         "label": "進入考試院"
       },
       {
@@ -143,8 +149,8 @@
         "radius": 120,
         "target_map": "playground",
         "target_spawn": {
-          "x": 0.78,
-          "y": 0.73
+          "x": 0.9,
+          "y": 0.55
         },
         "label": "前往遊樂場"
       }

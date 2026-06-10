@@ -7191,15 +7191,24 @@
       "name": "🎡 遊樂場",
       "engine": "phaser_iso",
       "config_path": "assets/playground_config.json",
-      "background_path": "village-web/playground_ground_bg.webp",
+      "background_path": "village-web/playground_arcade_bg.webp",
       "sprite_base": "village-web/",
       "preview_url": "village-web/",
       "image_dimensions": {
-        "width": 1536,
-        "height": 1024
+        "width": 2200,
+        "height": 1400
       },
       "world_offset_y": 0,
       "sprite_library": [
+        {
+          "image": "arcade_cabinet.webp",
+          "name": "🕹️ 統一街機(插牌)",
+          "type": "building",
+          "scale": 0.21,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.075,
+          "bbox_h_norm": 0.035
+        },
         {
           "image": "academy_office.webp",
           "name": "🏛️ 學院辦公室",

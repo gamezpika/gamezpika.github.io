@@ -946,7 +946,7 @@
     const zh = qZhuyin(q);
     let h = "";
     const rawImg = typeof q.image_url === "string" ? q.image_url.trim() : "";
-    if (rawImg) { const isrc = /^https?:/i.test(rawImg) ? rawImg : (Q_IMG_BASE + rawImg); h += `<img src="${aoEsc(isrc)}" alt="題目圖" style="max-width:100%;max-height:38vh;object-fit:contain;display:block;margin:6px auto;border-radius:8px;">`; }
+    if (rawImg) { const isrc = /^https?:/i.test(rawImg) ? rawImg : (Q_IMG_BASE + rawImg); h += `<img src="${aoEsc(isrc)}" alt="題目圖" onerror="this.style.display='none'" style="max-width:100%;max-height:38vh;object-fit:contain;display:block;margin:6px auto;border-radius:8px;">`; }
     const disp = String(q.display || "").trim(), prom = String(q.prompt || "").trim();
     if (disp) {
       h += `<div style="font-size:30px;font-weight:900;line-height:1.6;margin:6px 0;color:#3a2c1a;">${qRuby(disp, zh)}</div>`;

@@ -1387,38 +1387,57 @@
     let sess; try { sess = await fetch(DEMO_API + "/api/english/session/start", { method: "POST", headers: hdr, body: JSON.stringify({ topic_id: pick.id, game: "vocab" }) }).then((r) => r.json()); } catch (e) { sess = {}; }
     const qs = (sess && sess.questions) || [];
     if (sess.error || !qs.length) { box.innerHTML = `<div class="jc-empty">這位師長暫時無法對決（${aoEsc(sess.error || "無題目")}）</div><div style="text-align:center;margin-top:12px;"><button class="jc-act en-x">離開</button></div>`; box.querySelector(".en-x").addEventListener("click", enClose); return; }
-    let idx = 0, correct = 0;
-    const need = Math.max(1, Math.ceil(qs.length * 0.6));
+    // 血量制戰鬥：玩家攻防血(裝備加成) vs 敵人血量/攻擊
+    const st = playerStats();
+    const pMaxHP = st.hp;
+    let pHP = pMaxHP;
+    const eMaxHP = d.boss ? 50 : 40;   // 魔王 50 / 入魔師長 40
+    let eHP = eMaxHP, eAtk = 10;
+    const dmgToEnemy = Math.max(1, Math.round(st.atk / 2 + 2.5));   // 攻5→5；攻+10→多扣5
+    const dmgToPlayer = Math.max(1, Math.round(eAtk - st.def / 2)); // 防5→扣8；防+10→少扣5
+    let idx = 0, correct = 0, asked = 0;
+    const bar = (cur, max, color) => `<div style="background:#e0d6c0;border-radius:6px;height:14px;overflow:hidden;"><div style="width:${Math.max(0, Math.round(cur / max * 100))}%;height:100%;background:${color};transition:width .25s;"></div></div>`;
     const renderQ = () => {
-      const q = qs[idx];
+      const q = qs[idx % qs.length];
       const choices = (q.choices || []).map((c) => `<button class="en-choice jc-act" data-c="${aoEsc(c)}" style="width:100%;text-align:center;font-size:18px;padding:12px;">${aoEsc(c)}</button>`).join("");
-      box.innerHTML = `<div style="text-align:center;padding:6px 4px;">
-        <div style="font-size:13px;color:#7b4dd8;font-weight:800;">⚔️ 對決中　第 ${idx + 1}/${qs.length} 題　答對 ${correct}（需 ${need}）</div>
-        <div style="font-size:15px;margin:8px 0 2px;color:#5a4630;">${aoEsc(q.prompt || "")}</div>
-        ${q.display ? `<div style="font-size:40px;font-weight:900;margin:6px 0;color:#3a2c1a;">${aoEsc(q.display)}</div>` : ""}
+      box.innerHTML = `<div style="padding:4px 4px;">
+        <div style="display:flex;gap:10px;margin-bottom:8px;">
+          <div style="flex:1;"><div style="font-size:12px;color:#3a8f3a;font-weight:700;">你 ❤️ ${Math.max(0, pHP)}/${pMaxHP}</div>${bar(pHP, pMaxHP, "#48b048")}</div>
+          <div style="flex:1;"><div style="font-size:12px;color:#c0392b;font-weight:700;text-align:right;">${d.boss ? "魔王" : "入魔"}的${aoEsc(d.name)} 💀 ${Math.max(0, eHP)}/${eMaxHP}</div>${bar(eHP, eMaxHP, "#d8503a")}</div>
+        </div>
+        <div style="text-align:center;font-size:12px;color:#7b4dd8;">答對攻擊 −${dmgToEnemy}／答錯被扣 −${dmgToPlayer}</div>
+        <div style="text-align:center;font-size:15px;margin:8px 0 2px;color:#5a4630;">${aoEsc(q.prompt || "")}</div>
+        ${q.display ? `<div style="text-align:center;font-size:40px;font-weight:900;margin:6px 0;color:#3a2c1a;">${aoEsc(q.display)}</div>` : ""}
         <div style="display:flex;flex-direction:column;gap:8px;max-width:320px;margin:10px auto 0;">${choices}</div>
-        <div class="en-fb" style="height:24px;margin-top:10px;font-weight:800;"></div></div>`;
+        <div class="en-fb" style="height:22px;margin-top:8px;font-weight:800;text-align:center;"></div></div>`;
       box.querySelectorAll(".en-choice").forEach((btn) => btn.addEventListener("click", async function () {
         box.querySelectorAll(".en-choice").forEach((b) => { b.disabled = true; });
+        asked++;
         let r; try { r = await fetch(DEMO_API + "/api/english/session/answer", { method: "POST", headers: hdr, body: JSON.stringify({ session_id: sess.session_id, question_id: q.id, answer: this.dataset.c, time_ms: 0 }) }).then((x) => x.json()); } catch (e) { r = {}; }
         const fb = box.querySelector(".en-fb");
-        if (r.correct) { correct++; this.style.background = "#bfe6bf"; fb.textContent = "✓ 答對！"; fb.style.color = "#3a8f3a"; }
-        else { this.style.background = "#f0b9b9"; fb.textContent = "✗ 正解：" + aoEsc(r.correct_answer || ""); fb.style.color = "#c0392b"; box.querySelectorAll(".en-choice").forEach((b) => { if (b.dataset.c === String(r.correct_answer)) b.style.background = "#bfe6bf"; }); }
-        setTimeout(() => { idx++; (idx < qs.length) ? renderQ() : finish(); }, 1000);
+        if (r.correct) { correct++; eHP -= dmgToEnemy; this.style.background = "#bfe6bf"; fb.textContent = "✓ 答對！對敵人造成 " + dmgToEnemy + " 傷害"; fb.style.color = "#3a8f3a"; }
+        else { pHP -= dmgToPlayer; this.style.background = "#f0b9b9"; fb.textContent = "✗ 正解：" + aoEsc(r.correct_answer || "") + "（你被扣 " + dmgToPlayer + " 血）"; fb.style.color = "#c0392b"; box.querySelectorAll(".en-choice").forEach((b) => { if (b.dataset.c === String(r.correct_answer)) b.style.background = "#bfe6bf"; }); }
+        setTimeout(() => {
+          if (eHP <= 0) finish(true);
+          else if (pHP <= 0) finish(false);
+          else { idx++; renderQ(); }
+        }, 1000);
       }));
     };
-    const finish = async () => {
+    const finish = async (win) => {
       box.innerHTML = `<div class="jc-empty">結算中…</div>`;
       try { await fetch(DEMO_API + "/api/english/session/end", { method: "POST", headers: hdr, body: JSON.stringify({ session_id: sess.session_id }) }); } catch (e) {}
-      const win = correct >= need;
       if (win) {
         enSetPurified(npcId);
+        const gm = gainMastery("english", 50);   // 魔法陣通關給英語精通經驗 LV×50
+        const expLine = gm ? `英語精通值 +${gm.gained}（LV.${gm.lv}${gm.leveled ? " ⬆️升級！" : ""}）` : "";
         enFace(ov, npcId + "_front.webp", d.wakeLine, "✨ " + d.wake);
         box.innerHTML = `<div style="text-align:center;padding:18px 8px;">
           <div style="font-size:44px;">${d.boss ? "🏆" : "✨"}</div>
           <div style="font-size:18px;font-weight:900;color:#7b4dd8;margin:8px 0;">${d.boss ? "魔王擊退！通關！" : "淨化成功！"}</div>
-          <div style="font-size:14px;color:#5a4630;">答對 ${correct}/${qs.length}　${d.boss ? "英文學院光輝恢復了！" : aoEsc(d.name) + " 恢復清醒了！"}</div>
-          <div style="font-size:13px;color:#8a6d3b;margin-top:6px;">${d.last ? "" : "封印之門已開啟，走到上方的門前往下一層。"}</div>
+          <div style="font-size:14px;color:#5a4630;">${d.boss ? "英文學院光輝恢復了！" : aoEsc(d.name) + " 恢復清醒了！"}</div>
+          <div style="font-size:13px;color:#3a8f3a;font-weight:700;margin-top:6px;">${aoEsc(expLine)}</div>
+          <div style="font-size:13px;color:#8a6d3b;margin-top:4px;">${d.last ? "" : "封印之門已開啟，走到上方的門前往下一層。"}</div>
           <div style="margin-top:16px;"><button class="jc-act en-done" style="width:auto;background:linear-gradient(135deg,#7b4dd8,#a06bf0);color:#fff;">離開魔法陣</button></div></div>`;
         box.querySelector(".en-done").addEventListener("click", () => {
           enClose();
@@ -1426,9 +1445,9 @@
         });
       } else {
         box.innerHTML = `<div style="text-align:center;padding:18px 8px;">
-          <div style="font-size:44px;">💢</div>
-          <div style="font-size:18px;font-weight:900;color:#c0392b;margin:8px 0;">對決失敗…</div>
-          <div style="font-size:14px;color:#5a4630;">只答對 ${correct}/${qs.length}（需 ${need}）。再加強英語，回來挑戰！</div>
+          <div style="font-size:44px;">💀</div>
+          <div style="font-size:18px;font-weight:900;color:#c0392b;margin:8px 0;">你被擊倒了…</div>
+          <div style="font-size:14px;color:#5a4630;">血量歸零。提升裝備（攻/防/血）或多答對幾題，再回來挑戰！</div>
           <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;">
             <button class="jc-act en-retry" style="width:auto;">⚔️ 再挑戰</button>
             <button class="jc-act en-x" style="width:auto;">離開</button></div></div>`;
@@ -1576,11 +1595,17 @@
       const passLine = exType === "cert"
         ? (passed ? "🏆 全對通過！等級提升！" : "未通過（檢定考需全對），再接再厲！")
         : "模擬考完成，純練習不影響等級～";
+      // 給精通經驗：檢定考通過 LV×50、模擬考 LV×30（pptx 規則）
+      let gm = null;
+      if (exType === "cert" && passed) gm = gainMastery(subjectKey, 50);
+      else if (exType === "mock") gm = gainMastery(subjectKey, 30);
+      const expLine = gm && gm.gained ? `${SUBJ[subjectKey] || subjectKey}精通值 +${gm.gained}（LV.${gm.lv}${gm.leveled ? " ⬆️升級！" : ""}）` : "";
       box.innerHTML = `<div style="text-align:center;padding:20px 8px;">
         <div style="font-size:44px;">${passed ? "🏆" : (exType === "cert" ? "💪" : "✅")}</div>
         <div style="font-size:22px;font-weight:900;color:#7b4dd8;margin:8px 0;">${score} 分</div>
         <div style="font-size:14px;color:#5a4630;">答對 ${correct} / ${total} 題</div>
         <div style="font-size:13px;color:#8a6d3b;margin-top:6px;">${aoEsc(passLine)}</div>
+        ${expLine ? `<div style="font-size:13px;color:#3a8f3a;font-weight:700;margin-top:4px;">${aoEsc(expLine)}</div>` : ""}
         <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;">
           <button class="jc-act ex-again" style="width:auto;">📚 再考一科</button>
           <button class="jc-act ex-x" style="width:auto;">離開</button></div></div>`;
@@ -1592,37 +1617,77 @@
 
   /* ───────────────────── 裝備欄（純展示：左=目前造型 / 右=帽子·武器·寵物項圈配件）───────────────────── */
   const EQ_KEY = "village_equip";
+  // 裝備加成（角色系統 C）：武器+攻擊、衣服(造型)+防禦、帽子/寵物+血量
   const EQUIP = {
-    // body=目前造型(衣服店買的)，顯示在左大立繪，不放右格
+    // body=目前造型(衣服店買的)，顯示在左大立繪，不放右格；def=防禦加成
     body: { label: "造型", items: [
-      { id: "f_academic", img: "outfits/f_academic.webp", name: "學院風" },
-      { id: "f_dress", img: "outfits/f_dress.webp", name: "洋裝" },
-      { id: "f_elf", img: "outfits/f_elf.webp", name: "精靈裝" },
-      { id: "f_kawaii", img: "outfits/f_kawaii.webp", name: "可愛風" },
-      { id: "m_knight", img: "outfits/m_knight.webp", name: "騎士裝" },
-      { id: "m_sports", img: "outfits/m_sports.webp", name: "運動服" },
-      { id: "m_superhero", img: "outfits/m_superhero.webp", name: "英雄裝" },
-      { id: "m_wizard_kid", img: "outfits/m_wizard_kid.webp", name: "小巫師" },
+      { id: "f_academic", img: "outfits/f_academic.webp", name: "學院風", def: 5 },
+      { id: "f_dress", img: "outfits/f_dress.webp", name: "洋裝", def: 4 },
+      { id: "f_elf", img: "outfits/f_elf.webp", name: "精靈裝", def: 6 },
+      { id: "f_kawaii", img: "outfits/f_kawaii.webp", name: "可愛風", def: 4 },
+      { id: "m_knight", img: "outfits/m_knight.webp", name: "騎士裝", def: 10 },
+      { id: "m_sports", img: "outfits/m_sports.webp", name: "運動服", def: 6 },
+      { id: "m_superhero", img: "outfits/m_superhero.webp", name: "英雄裝", def: 8 },
+      { id: "m_wizard_kid", img: "outfits/m_wizard_kid.webp", name: "小巫師", def: 7 },
     ] },
     hat: { label: "帽子", items: [
-      { id: "hat_student", img: "equip/hat_student.webp", name: "學生帽" },
-      { id: "hat_wizard", img: "equip/hat_wizard.webp", name: "巫師帽" },
-      { id: "hat_crown", img: "equip/hat_crown.webp", name: "皇冠" },
-      { id: "hat_catear", img: "equip/hat_catear.webp", name: "貓耳髮箍" },
-      { id: "hat_straw", img: "equip/hat_straw.webp", name: "草帽" },
+      { id: "hat_student", img: "equip/hat_student.webp", name: "學生帽", hp: 20 },
+      { id: "hat_wizard", img: "equip/hat_wizard.webp", name: "巫師帽", hp: 35 },
+      { id: "hat_crown", img: "equip/hat_crown.webp", name: "皇冠", hp: 50 },
+      { id: "hat_catear", img: "equip/hat_catear.webp", name: "貓耳髮箍", hp: 25 },
+      { id: "hat_straw", img: "equip/hat_straw.webp", name: "草帽", hp: 30 },
     ] },
     weapon: { label: "武器", items: [
-      { id: "knife", img: "../assets/images/onboarding/knife.png", name: "巨大美工刀" },
+      { id: "knife", img: "../assets/images/onboarding/knife.png", name: "巨大美工刀", atk: 8 },
     ] },
-    // 寵物項圈格：依目前寵物顯示「對應配件」(acc_*)；img=寵物本體圖(寵物頁用)
+    // 寵物項圈格：依目前寵物顯示「對應配件」(acc_*)；img=寵物本體圖(寵物頁用)；hp=血量加成
     pet: { label: "寵物項圈", items: [
-      { id: "pet_cat", name: "小貓", img: "equip/pet_cat.webp", acc_img: "equip/acc_yarn.webp", acc_name: "毛線球" },
-      { id: "pet_bunny", name: "兔子", img: "equip/pet_bunny.webp", acc_img: "equip/acc_carrot.webp", acc_name: "紅蘿蔔" },
-      { id: "pet_puppy", name: "小狗", img: "equip/pet_puppy.webp", acc_img: "equip/acc_collar.webp", acc_name: "項圈" },
-      { id: "pet_penguin", name: "企鵝", img: "equip/pet_penguin.webp", acc_img: "equip/acc_fish.webp", acc_name: "小魚" },
-      { id: "pet_panda", name: "熊貓", img: "equip/pet_panda.webp", acc_img: "equip/acc_bamboo.webp", acc_name: "竹子" },
+      { id: "pet_cat", name: "小貓", img: "equip/pet_cat.webp", acc_img: "equip/acc_yarn.webp", acc_name: "毛線球", hp: 20 },
+      { id: "pet_bunny", name: "兔子", img: "equip/pet_bunny.webp", acc_img: "equip/acc_carrot.webp", acc_name: "紅蘿蔔", hp: 25 },
+      { id: "pet_puppy", name: "小狗", img: "equip/pet_puppy.webp", acc_img: "equip/acc_collar.webp", acc_name: "項圈", hp: 30 },
+      { id: "pet_penguin", name: "企鵝", img: "equip/pet_penguin.webp", acc_img: "equip/acc_fish.webp", acc_name: "小魚", hp: 35 },
+      { id: "pet_panda", name: "熊貓", img: "equip/pet_panda.webp", acc_img: "equip/acc_bamboo.webp", acc_name: "竹子", hp: 50 },
     ] },
   };
+  // 角色三圍（角色系統）：初始攻5/防5/血100 + 裝備加成
+  const BASE_ATK = 5, BASE_DEF = 5, BASE_HP = 100;
+  function playerStats() {
+    const s = getEquip();
+    const atk = BASE_ATK + (eqItem("weapon", s.weapon).atk || 0);
+    const def = BASE_DEF + (eqItem("body", s.body).def || 0);
+    const hp = BASE_HP + (eqItem("hat", s.hat).hp || 0) + (eqItem("pet", s.pet).hp || 0);
+    return { atk, def, hp };
+  }
+  window.playerStats = playerStats;
+
+  /* ── 精通值經驗系統（角色系統，前端 localStorage）──
+     每級所需經驗 = 該科目前 LV × 500；上限 LV 100。
+     通關給經驗 = 該科目前 LV × mult（魔王/檢定 50、模擬 30、小怪 20、任務 0）。 */
+  const MASTERY_KEY = "village_mastery", MASTERY_CAP = 100;
+  const MASTERY_SUBJ = ["chinese", "math", "english", "science", "social"];
+  function getMastery() {
+    let m = {};
+    try { const p = JSON.parse(localStorage.getItem(MASTERY_KEY) || "{}"); if (p && typeof p === "object") m = p; } catch (e) {}
+    MASTERY_SUBJ.forEach((k) => {
+      if (!m[k] || typeof m[k] !== "object") m[k] = { lv: 1, exp: 0 };
+      if (typeof m[k].lv !== "number") m[k].lv = 1;
+      if (typeof m[k].exp !== "number") m[k].exp = 0;
+    });
+    return m;
+  }
+  function saveMastery(m) { try { localStorage.setItem(MASTERY_KEY, JSON.stringify(m)); } catch (e) {} }
+  function gainMastery(subj, mult) {
+    if (!MASTERY_SUBJ.includes(subj)) return null;
+    const m = getMastery(), e = m[subj];
+    if (e.lv >= MASTERY_CAP) { e.exp = 0; saveMastery(m); return { subj, gained: 0, lv: e.lv, leveled: false }; }
+    const before = e.lv;
+    e.exp += e.lv * mult;
+    while (e.lv < MASTERY_CAP && e.exp >= e.lv * 500) { e.exp -= e.lv * 500; e.lv++; }
+    if (e.lv >= MASTERY_CAP) { e.lv = MASTERY_CAP; e.exp = 0; }
+    saveMastery(m);
+    return { subj, gained: e.lv * mult, lv: e.lv, leveled: e.lv > before };
+  }
+  window.gainMastery = gainMastery;
   const EQ_SLOTS = ["hat", "body", "weapon"]; // 中間三格：帽子 / 衣服 / 武器
   const EQ_SLOT_LB = { hat: "帽子", body: "衣服", weapon: "武器" };
   const EQ_ALL = ["body", "hat", "weapon", "pet"];
@@ -1681,7 +1746,7 @@
         <div class="shop-title">人物裝備</div>
         <button class="shop-close" aria-label="關閉">×</button>
         <div class="eq-main">
-          <div class="eq-portrait"><img id="eq-port" alt="目前造型"></div>
+          <div class="eq-portrait"><img id="eq-port" alt="目前造型"><button class="jc-act eq-charbtn" style="margin-top:8px;width:100%;">📊 角色數值</button></div>
           <div class="eq-slots"></div>
           <div class="eq-backpack">
             <div class="eq-bp-head">背包</div>
@@ -1692,6 +1757,7 @@
     document.body.appendChild(ov);
     ov.querySelector(".shop-close").addEventListener("click", eqClose);
     ov.addEventListener("click", (e) => { if (e.target === ov) eqClose(); });
+    ov.querySelector(".eq-charbtn").addEventListener("click", () => { eqClose(); openCharSheet(); });
     return ov;
   }
 
@@ -1727,6 +1793,47 @@
   }
   function eqClose() { const ov = document.getElementById("eq-overlay"); if (ov) ov.classList.remove("open"); }
   window.openEquip = openEquip;
+
+  /* ── 角色頁面（人物系統）：立繪 + 姓名/年級/職業 + 攻防血 + 5 科精通值 LV ── */
+  async function openCharSheet() {
+    onCloseCb = null;
+    const ov = caBuildOverlay();
+    const tabs = ov.querySelector(".ao-tabs4"); if (tabs) tabs.innerHTML = "";
+    const s = getEquip();
+    caSetPrincipal(ov, eqItem("body", s.body).img, "👤 角色資訊");
+    caBubble(ov, "這是你的角色狀態～");
+    ov.querySelector(".shop-title").textContent = "角色頁面";
+    ov.classList.add("open");
+    const box = ov.querySelector(".ao-content");
+    box.innerHTML = `<div class="jc-empty">載入中…</div>`;
+    let name = "小訪客", grade = "—";
+    const t = demoToken();
+    if (t) { try { const u = await fetch(DEMO_API + "/api/user/status", { headers: { Authorization: "Bearer " + t } }).then((r) => r.json()); if (u && !u.error) { name = u.name || name; grade = (u.grade != null) ? (u.grade + " 年級") : grade; } } catch (e) {} }
+    const jobKey = (typeof getJob === "function") ? getJob() : null;
+    const jobName = (jobKey && typeof JOBS !== "undefined" && JOBS[jobKey]) ? JOBS[jobKey].name : "見習生";
+    const st = playerStats();
+    const m = getMastery();
+    const ORDER = [["chinese", "國語"], ["math", "數學"], ["science", "自然"], ["social", "社會"], ["english", "英語"]];
+    const rows = ORDER.map(([k, lb]) => {
+      const e = m[k], need = e.lv * 500;
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 2px;font-size:14px;color:#5a4630;border-bottom:1px solid #efe2c8;">
+        <span>${lb}精通值</span>
+        <span style="font-weight:800;color:#7b4dd8;">LV.${e.lv}<span style="font-size:11px;color:#8a6d3b;font-weight:400;margin-left:5px;">${e.lv >= MASTERY_CAP ? "(MAX)" : e.exp + "/" + need}</span></span></div>`;
+    }).join("");
+    box.innerHTML = `<div style="padding:2px 4px;">
+      <div style="font-size:15px;color:#3a2c1a;margin-bottom:4px;">姓名：<b>${aoEsc(name)}</b></div>
+      <div style="font-size:15px;color:#3a2c1a;margin-bottom:4px;">年級：<b>${aoEsc(String(grade))}</b></div>
+      <div style="font-size:15px;color:#3a2c1a;margin-bottom:10px;">當前職業：<b>${aoEsc(jobName)}</b></div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <div style="flex:1;text-align:center;background:#fdecea;border-radius:10px;padding:8px 4px;"><div style="font-size:12px;color:#c0392b;">⚔️ 攻擊力</div><div style="font-size:20px;font-weight:900;color:#c0392b;">${st.atk}</div></div>
+        <div style="flex:1;text-align:center;background:#eaf2fb;border-radius:10px;padding:8px 4px;"><div style="font-size:12px;color:#2b6cb0;">🛡️ 防禦力</div><div style="font-size:20px;font-weight:900;color:#2b6cb0;">${st.def}</div></div>
+        <div style="flex:1;text-align:center;background:#eafaea;border-radius:10px;padding:8px 4px;"><div style="font-size:12px;color:#3a8f3a;">❤️ 血量</div><div style="font-size:20px;font-weight:900;color:#3a8f3a;">${st.hp}</div></div>
+      </div>
+      ${rows}
+      <div style="font-size:11px;color:#8a6d3b;margin-top:10px;opacity:.85;line-height:1.5;">攻防血由裝備加成（武器+攻／衣服+防／帽子·寵物+血）；精通值靠通關累積（每級需 LV×500 經驗）。</div>
+    </div>`;
+  }
+  window.openCharSheet = openCharSheet;
 
   /* ───────────────────── 個人小屋 hub（學生宿舍：更衣室 / 角色裝備 / 寵物 / 圖鑑，純展示）───────────────────── */
   let dhTab = "outfit";

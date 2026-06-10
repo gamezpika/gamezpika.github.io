@@ -1376,9 +1376,11 @@
     const chs = [];
     (Array.isArray(topics.curriculum) ? topics.curriculum : []).forEach((g) => (g.chapters || []).forEach((c) => chs.push(Object.assign({ _grade: c.grade || g.grade || 1 }, c))));
     // 候選：英語 ai 題庫，排除「聽力」章(要聽音檔、選項全中文，不適合文字對決)
-    const hasCJK = (s) => /[一-鿿]/.test(String(s || ""));
+    const hasCJK = (s) => /[㐀-䶿一-鿿豈-﫿぀-ヿ가-힯]/.test(String(s || ""));
+    const choicesOf = (q) => (q && Array.isArray(q.choices)) ? q.choices : [];
+    const hasEnglishChoice = (q) => choicesOf(q).some((ch) => !hasCJK(ch));
     // 濾掉「選項全中文」的單題(中譯/聽力題)，只留有英文答案的題；剩太少(<3)就不濾以免沒題
-    const enOnly = (arr) => { const f = (arr || []).filter((q) => (q.choices || []).some((ch) => !hasCJK(ch))); return f.length >= 3 ? f : (arr || []); };
+    const enOnly = (arr) => { const a = Array.isArray(arr) ? arr : []; const f = a.filter(hasEnglishChoice); return f.length >= 3 ? f : a; };
     const tg = d.grade || d.layer || 1;
     const cands = chs.filter((c) => c.source !== "uploaded" && !/聽力/.test(c.name || ""));
     // 排序：已解鎖優先 → 年級≤目標且最接近 → 其餘（各層難度仍遞增）
@@ -1388,7 +1390,7 @@
     });
     if (!cands.length) { box.innerHTML = `<div class="jc-empty">目前沒有英語題目可對決</div><div style="text-align:center;margin-top:12px;"><button class="jc-act en-x">離開</button></div>`; box.querySelector(".en-x").addEventListener("click", enClose); return; }
     // 逐個試開 session，挑「選項是英文」的章節(避開中譯/聽力題)；最多試 6 個，都不行用第一個有題的保底
-    const isEnglishQs = (q) => { const a = (q || []).slice(0, 3); const ok = a.filter((x) => (x.choices || []).some((ch) => !hasCJK(ch))).length; return a.length > 0 && ok >= Math.ceil(a.length / 2); };
+    const isEnglishQs = (q) => { const a = (Array.isArray(q) ? q : []).slice(0, 3); const ok = a.filter(hasEnglishChoice).length; return a.length > 0 && ok >= Math.ceil(a.length / 2); };
     let pick = null, sess = null, qs = [], fbPick = null, fbSess = null, fbQs = [];
     for (let i = 0; i < cands.length && i < 6; i++) {
       let s; try { s = await fetch(DEMO_API + "/api/english/session/start", { method: "POST", headers: hdr, body: JSON.stringify({ topic_id: cands[i].id, game: "vocab" }) }).then((r) => r.json()); } catch (e) { continue; }

@@ -999,7 +999,7 @@
         <div style="font-size:20px;font-weight:900;color:#3a2c1a;">練習完成！</div>
         <div style="font-size:15px;margin:10px 0;color:#5a4630;">答對 ${correct} / ${qs.length} 題</div>
         <div style="font-size:34px;margin:6px 0;">${"⭐".repeat(stars)}${"☆".repeat(Math.max(0, 3 - stars))}</div>
-        <div style="font-size:13px;color:#8a6d3b;">星星已累積到${caSubjConf().label}進度，回去找${caDeanName()}領獎吧！</div>
+        <div style="font-size:13px;color:#8a6d3b;">${caPractSource === "uploaded" ? "課本練習的星星只用來解鎖下一章，不列入主線進度" : `星星已累積到${caSubjConf().label}進度，回去找${caDeanName()}領獎吧！`}</div>
         <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:nowrap;">
           <button class="jc-act ca-backpick">📖 再選章節</button>
           <button class="jc-act ca-back">← 回到${caDeanName()}</button></div></div>`;

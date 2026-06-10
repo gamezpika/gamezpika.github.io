@@ -1757,7 +1757,10 @@
         <div class="shop-title">人物裝備</div>
         <button class="shop-close" aria-label="關閉">×</button>
         <div class="eq-main">
-          <div class="eq-portrait"><img id="eq-port" alt="目前造型"><button class="jc-act eq-charbtn" style="margin-top:8px;width:100%;">📊 角色數值</button></div>
+          <div class="eq-left">
+            <div class="eq-portrait"><img id="eq-port" alt="目前造型"></div>
+            <button class="jc-act eq-charbtn">📊 角色數值</button>
+          </div>
           <div class="eq-slots"></div>
           <div class="eq-backpack">
             <div class="eq-bp-head">背包</div>

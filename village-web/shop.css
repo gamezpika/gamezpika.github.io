@@ -454,13 +454,15 @@
 .eq-panel { height: min(90vh, 640px); width: min(880px, 94vw); }
 .eq-main { width: 100%; height: 100%; box-sizing: border-box; padding: 62px 14px 14px;
   overflow-y: auto; overflow-x: hidden; display: flex; gap: 12px; align-items: stretch; }
+.eq-left { flex: 0 0 27%; display: flex; flex-direction: column; gap: 8px; min-height: 320px; }
 .eq-portrait {
-  flex: 0 0 27%; background: radial-gradient(ellipse at 50% 80%, #ffe7b0 0%, #fffaf0 70%);
+  flex: 1; width: 100%; background: radial-gradient(ellipse at 50% 80%, #ffe7b0 0%, #fffaf0 70%);
   border: 3px solid #e3c089; border-radius: 14px; display: flex; align-items: flex-end;
-  justify-content: center; min-height: 320px; overflow: hidden;
+  justify-content: center; min-height: 0; overflow: hidden; box-sizing: border-box;
 }
-.eq-portrait img { width: 100%; max-height: 360px; object-fit: contain;
+.eq-portrait img { width: 100%; max-height: 100%; object-fit: contain;
   filter: drop-shadow(0 6px 8px rgba(0,0,0,.25)); }
+.eq-charbtn { flex: 0 0 auto; width: 100%; box-sizing: border-box; }
 .eq-slots { flex: 0 0 19%; display: flex; flex-direction: column; gap: 10px; justify-content: center; }
 .eq-slot { display: flex; flex-direction: column; align-items: center; gap: 6px;
   background: #fffaf0; border: 3px solid #e3c089; border-radius: 14px; padding: 8px 6px;
@@ -485,7 +487,8 @@
 .eq-bp-cell.filled img { width: 100%; height: 100%; object-fit: contain; }
 @media (max-width: 640px) {
   .eq-main { flex-wrap: wrap; }
-  .eq-portrait { flex: 0 0 38%; min-height: 200px; }
+  .eq-left { flex: 0 0 38%; min-height: 220px; }
+  .eq-portrait { min-height: 0; }
   .eq-slots { flex: 1; }
   .eq-backpack { flex: 1 0 100%; }
   .eq-slot-ic { width: 44px; height: 44px; }

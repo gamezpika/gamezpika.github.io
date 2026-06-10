@@ -1775,23 +1775,23 @@
   /* ── 背包道具欄（真實 inventory）：addToBag 給未來「獲得道具」用；demo 放 16 職業道具(jobtools 真圖)看看 ── */
   const BAG_KEY = "village_bag", BAG_MAX = 30, JT_IMG = "../assets/images/jobtools/";
   const BAG_DEMO = [
-    { id: "cert_chinese", img: "cert_chinese.png", name: "國語證照" },
-    { id: "cert_math", img: "cert_math.png", name: "數學證照" },
-    { id: "cert_english", img: "cert_english.png", name: "英語證照" },
-    { id: "cert_science", img: "cert_science.png", name: "自然證照" },
-    { id: "cert_social", img: "cert_social.png", name: "社會證照" },
-    { id: "cert_teacher", img: "cert_teacher.png", name: "教師證" },
-    { id: "tool_reporter", img: "tool_reporter.png", name: "記者證" },
-    { id: "tool_writer", img: "tool_writer.png", name: "靈感鋼筆" },
-    { id: "tool_trader", img: "tool_trader.png", name: "財金人員資格證" },
-    { id: "tool_accountant", img: "tool_accountant.png", name: "會計師資格證" },
-    { id: "tool_translator", img: "tool_translator.png", name: "超級電子字典" },
-    { id: "tool_foreign_corp", img: "tool_foreign_corp.png", name: "外商員工證" },
-    { id: "tool_engineer", img: "tool_engineer.png", name: "科技業員工證" },
-    { id: "tool_researcher", img: "tool_researcher.png", name: "研究人員資格證" },
-    { id: "tool_social_worker", img: "tool_social_worker.png", name: "社工證" },
-    { id: "tool_congress_aide", img: "tool_congress_aide.png", name: "助理證" },
-  ].map((it) => ({ id: it.id, img: JT_IMG + it.img, name: it.name }));
+    { id: "cert_chinese", img: "cert_chinese.png", name: "國語證照", desc: "通過國語認證的專業證書，成為國語執業人員的憑證。" },
+    { id: "cert_math", img: "cert_math.png", name: "數學證照", desc: "通過數學認證的專業證書，數學執業人員的憑證。" },
+    { id: "cert_english", img: "cert_english.png", name: "英語證照", desc: "通過英語認證的專業證書，英語執業人員的憑證。" },
+    { id: "cert_science", img: "cert_science.png", name: "自然證照", desc: "通過自然認證的專業證書，自然執業人員的憑證。" },
+    { id: "cert_social", img: "cert_social.png", name: "社會證照", desc: "通過社會認證的專業證書，社會執業人員的憑證。" },
+    { id: "cert_teacher", img: "cert_teacher.png", name: "教師證", desc: "取得教師資格的證書，五大學院老師的共同憑證。" },
+    { id: "tool_reporter", img: "tool_reporter.png", name: "記者證", desc: "記者的身分證明，憑它追逐真相、報導世界。" },
+    { id: "tool_writer", img: "tool_writer.png", name: "靈感鋼筆", desc: "作家的靈感泉源，握筆時文思泉湧、創造故事。" },
+    { id: "tool_trader", img: "tool_trader.png", name: "財金人員資格證", desc: "金融市場的入場券，交易員運籌帷幄的證明。" },
+    { id: "tool_accountant", img: "tool_accountant.png", name: "會計師資格證", desc: "會計師的專業資格，與數字為伍的理財憑證。" },
+    { id: "tool_translator", img: "tool_translator.png", name: "超級電子字典", desc: "翻譯的好幫手，跨越語言隔閡、即時查詢。" },
+    { id: "tool_foreign_corp", img: "tool_foreign_corp.png", name: "外商員工證", desc: "外商企業的員工證，通往國際舞台的門票。" },
+    { id: "tool_engineer", img: "tool_engineer.png", name: "科技業員工證", desc: "科技業的員工證，用科學打造未來的憑證。" },
+    { id: "tool_researcher", img: "tool_researcher.png", name: "研究人員資格證", desc: "研究人員的資格證，在實驗室追尋真理的證明。" },
+    { id: "tool_social_worker", img: "tool_social_worker.png", name: "社工證", desc: "社工的專業證照，用愛心幫助他人的憑證。" },
+    { id: "tool_congress_aide", img: "tool_congress_aide.png", name: "助理證", desc: "國會助理的識別證，在議事殿堂幕後奔走。" },
+  ].map((it) => ({ id: it.id, img: JT_IMG + it.img, name: it.name, desc: it.desc }));
   function bagWrite(b) { try { localStorage.setItem(BAG_KEY, JSON.stringify(b)); } catch (e) {} }
   function bagCurrent() {
     let b; try { b = JSON.parse(localStorage.getItem(BAG_KEY) || "null"); } catch (e) {}
@@ -1815,14 +1815,24 @@
         <div class="shop-title">人物裝備</div>
         <button class="shop-close" aria-label="關閉">×</button>
         <div class="eq-main">
-          <div class="eq-left">
-            <div class="eq-portrait"><img id="eq-port" alt="目前造型"></div>
+          <div class="eq-leftcol">
+            <div class="eq-charbox">
+              <div class="eq-portrait"><img id="eq-port" alt="目前造型"></div>
+              <div class="eq-slots"></div>
+            </div>
             <button class="jc-act eq-charbtn">📊 角色數值</button>
           </div>
-          <div class="eq-slots"></div>
           <div class="eq-backpack">
             <div class="eq-bp-head">背包</div>
             <div class="eq-bp-grid"></div>
+          </div>
+        </div>
+        <div class="eq-item-pop" style="display:none;">
+          <div class="eq-item-card">
+            <button class="eq-item-x" aria-label="關閉">×</button>
+            <div class="eq-item-ic"><img class="eq-item-img" alt=""></div>
+            <div class="eq-item-nm"></div>
+            <div class="eq-item-desc"></div>
           </div>
         </div>
       </div>`;
@@ -1830,6 +1840,9 @@
     ov.querySelector(".shop-close").addEventListener("click", eqClose);
     ov.addEventListener("click", (e) => { if (e.target === ov) eqClose(); });
     ov.querySelector(".eq-charbtn").addEventListener("click", () => { eqClose(); openCharSheet(); });
+    const pop = ov.querySelector(".eq-item-pop");
+    pop.querySelector(".eq-item-x").addEventListener("click", () => { pop.style.display = "none"; });
+    pop.addEventListener("click", (e) => { if (e.target === pop) pop.style.display = "none"; });
     return ov;
   }
 
@@ -1847,15 +1860,28 @@
           <div class="eq-slot-tx"><div class="eq-slot-lb">${EQ_SLOT_LB[cat]}</div><div class="eq-slot-nm">${it.name}</div></div>
         </div>`;
     }).join("");
-    // 右背包：道具欄（真實 inventory，demo 放 25 職業道具）
+    // 右背包：道具欄（真實 inventory，demo 放 16 職業道具）；點道具→顯示介紹
     const bag = getBag();
-    ov.querySelector(".eq-bp-grid").innerHTML =
+    const grid = ov.querySelector(".eq-bp-grid");
+    grid.innerHTML =
       Array.from({ length: EQ_BP_SLOTS }, (_, i) => {
         const it = bag[i];
         return it
-          ? `<div class="eq-bp-cell filled" title="${it.name}"><img src="${it.img}?v=1" alt="${it.name}"></div>`
+          ? `<div class="eq-bp-cell filled" data-idx="${i}" title="${it.name}"><img src="${it.img}?v=1" alt="${it.name}"></div>`
           : `<div class="eq-bp-cell"></div>`;
       }).join("");
+    grid.querySelectorAll(".eq-bp-cell.filled").forEach((c) =>
+      c.addEventListener("click", () => eqShowItem(ov, bag[Number(c.dataset.idx)])));
+  }
+
+  // 點背包道具 → 顯示介紹彈窗
+  function eqShowItem(ov, it) {
+    if (!it) return;
+    const pop = ov.querySelector(".eq-item-pop");
+    pop.querySelector(".eq-item-img").src = it.img + "?v=1";
+    pop.querySelector(".eq-item-nm").textContent = it.name || "";
+    pop.querySelector(".eq-item-desc").textContent = it.desc || "（暫無介紹）";
+    pop.style.display = "flex";
   }
 
   function openEquip() {

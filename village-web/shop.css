@@ -454,25 +454,40 @@
 .eq-panel { height: min(90vh, 640px); width: min(880px, 94vw); }
 .eq-main { width: 100%; height: 100%; box-sizing: border-box; padding: 62px 14px 14px;
   overflow-y: auto; overflow-x: hidden; display: flex; gap: 12px; align-items: stretch; }
-.eq-left { flex: 0 0 27%; display: flex; flex-direction: column; gap: 8px; min-height: 320px; }
+.eq-leftcol { flex: 0 0 46%; display: flex; flex-direction: column; gap: 8px; min-height: 360px; }
+/* 立繪 + 帽子/衣服/武器 三格 同一個框、同高（三格等分高度→帽子對頭、衣服對身、武器對下半身）*/
+.eq-charbox { flex: 1; display: flex; gap: 10px; min-height: 0; box-sizing: border-box;
+  background: #fffaf0; border: 3px solid #e3c089; border-radius: 16px; padding: 10px; box-shadow: 0 2px 0 #e3c089; }
 .eq-portrait {
-  flex: 1; width: 100%; background: radial-gradient(ellipse at 50% 80%, #ffe7b0 0%, #fffaf0 70%);
-  border: 3px solid #e3c089; border-radius: 14px; display: flex; align-items: flex-end;
-  justify-content: center; min-height: 0; overflow: hidden; box-sizing: border-box;
+  flex: 1 1 56%; min-width: 0; background: radial-gradient(ellipse at 50% 80%, #ffe7b0 0%, #fffaf0 70%);
+  border: 2px solid #ecd3a3; border-radius: 12px; display: flex; align-items: center;
+  justify-content: center; min-height: 0; overflow: hidden;
 }
-.eq-portrait img { width: 100%; max-height: 100%; object-fit: contain;
+.eq-portrait img { width: 100%; height: 100%; object-fit: contain;
   filter: drop-shadow(0 6px 8px rgba(0,0,0,.25)); }
 .eq-charbtn { flex: 0 0 auto; width: 100%; box-sizing: border-box; }
-.eq-slots { flex: 0 0 19%; display: flex; flex-direction: column; gap: 10px; justify-content: center; }
-.eq-slot { display: flex; flex-direction: column; align-items: center; gap: 6px;
-  background: #fffaf0; border: 3px solid #e3c089; border-radius: 14px; padding: 8px 6px;
+.eq-slots { flex: 0 0 40%; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+.eq-slot { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  background: #fff; border: 2px solid #d8a85a; border-radius: 12px; padding: 6px 4px;
   box-shadow: 0 2px 0 #e3c089; }
-.eq-slot-ic { width: 54px; height: 54px; flex-shrink: 0; background: #fff;
-  border: 2px solid #d8a85a; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+.eq-slot-ic { width: 46px; height: 46px; flex-shrink: 0; background: #fffaf0;
+  border: 2px solid #e3c089; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
 .eq-slot-ic img { width: 90%; height: 90%; object-fit: contain; }
 .eq-slot-tx { text-align: center; }
 .eq-slot-lb { font-size: 13px; font-weight: 900; color: #b06a1f; }
-.eq-slot-nm { font-size: 12px; font-weight: 800; color: #5a3a18; }
+.eq-slot-nm { font-size: 11px; font-weight: 800; color: #5a3a18; }
+/* 道具介紹彈窗（點背包道具） */
+.eq-item-pop { position: absolute; inset: 0; z-index: 6; display: flex; align-items: center; justify-content: center;
+  background: rgba(20,14,8,0.45); border-radius: 19px; }
+.eq-item-card { position: relative; width: min(80%, 320px); background: #fffaf0; border: 3px solid #d8a85a;
+  border-radius: 16px; padding: 20px 16px 16px; text-align: center; box-shadow: 0 10px 26px rgba(0,0,0,.4); }
+.eq-item-x { position: absolute; top: 6px; right: 8px; width: 30px; height: 30px; border-radius: 50%;
+  background: #e8533a; color: #fff; border: 2px solid #fff2dd; font-size: 18px; font-weight: 900; cursor: pointer; line-height: 1; }
+.eq-item-ic { width: 92px; height: 92px; margin: 2px auto 12px; background: #fff; border: 2px solid #e3c089;
+  border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+.eq-item-ic img { width: 86%; height: 86%; object-fit: contain; }
+.eq-item-nm { font-size: 18px; font-weight: 900; color: #5a3a18; margin-bottom: 8px; }
+.eq-item-desc { font-size: 14px; color: #7a5a30; line-height: 1.6; }
 /* 右側背包 */
 .eq-backpack { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .eq-bp-head { background: #fffaf0; border: 3px solid #e3c089; border-radius: 12px;
@@ -487,11 +502,9 @@
 .eq-bp-cell.filled img { width: 100%; height: 100%; object-fit: contain; }
 @media (max-width: 640px) {
   .eq-main { flex-wrap: wrap; }
-  .eq-left { flex: 0 0 38%; min-height: 220px; }
-  .eq-portrait { min-height: 0; }
-  .eq-slots { flex: 1; }
+  .eq-leftcol { flex: 1 0 100%; min-height: 250px; }
   .eq-backpack { flex: 1 0 100%; }
-  .eq-slot-ic { width: 44px; height: 44px; }
+  .eq-slot-ic { width: 40px; height: 40px; }
   .eq-bp-grid { grid-template-columns: repeat(5, 1fr); overflow: visible; flex: none; }
 }
 /* ───────────── 個人小屋 hub（學生宿舍，商店式左預覽+右分頁）───────────── */

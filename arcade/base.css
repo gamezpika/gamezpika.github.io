@@ -1,0 +1,44 @@
+/* arcade 獨立頁基礎殼樣式：補上 LIFF app style.css 裡遊戲畫面依賴的共用 class */
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+  background: #f7efe2;
+  color: #3a2c1a;
+  min-height: 100vh;
+}
+.screen { display: none; min-height: 100vh; flex-direction: column; }
+.screen.active { display: flex; }
+.screen-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, #8a5a2b, #a9743c);
+  color: #fff; font-weight: 800; font-size: 18px;
+  position: sticky; top: 0; z-index: 5;
+}
+.screen-title { display: flex; align-items: center; gap: 6px; }
+.btn-back {
+  background: rgba(255,255,255,.18); color: #fff; border: none;
+  width: 38px; height: 38px; border-radius: 10px;
+  font-size: 20px; font-weight: 900; cursor: pointer; flex-shrink: 0;
+}
+.btn-back:active { background: rgba(255,255,255,.32); }
+.emo { width: 20px; height: 20px; vertical-align: -4px; }
+.emo.lg { width: 36px; height: 36px; vertical-align: -8px; }
+/* puzzle 用的統計列 */
+.game-stats {
+  display: flex; justify-content: center; gap: 18px;
+  padding: 10px 12px; font-weight: 800; font-size: 16px; color: #6a4e26;
+}
+/* whack 結算用的共用 result class */
+.result-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 24px 16px; text-align: center; }
+.result-score { font-size: 30px; font-weight: 900; }
+.result-detail { font-size: 15px; color: #6a4e26; }
+.result-coins { font-size: 19px; font-weight: 800; color: #b07b1f; }
+.result-actions { display: flex; gap: 12px; margin-top: 14px; flex-wrap: nowrap; }
+.btn-action {
+  border: none; border-radius: 14px; padding: 12px 20px;
+  font-size: 16px; font-weight: 800; cursor: pointer;
+  background: #e8d7b8; color: #5a4630; white-space: nowrap;
+}
+.btn-action.btn-replay { background: linear-gradient(135deg, #67b26f, #4ca2cd); color: #fff; }

@@ -166,6 +166,14 @@
   }
 
   async function openShop(shopId, onClose) {
+    // 遊樂場機台：arcade:<key> → 跳獨立遊戲頁（頁內自建 demo 身分、玩完導回遊樂場）
+    if (shopId.indexOf("arcade:") === 0) {
+      const ARCADE_PAGES = { whack: "arcade-whack.html", listen: "arcade-listen.html", figures: "figures.html?from=playground" };
+      const page = ARCADE_PAGES[shopId.slice(7)];
+      if (page) { location.href = "../" + page; return; }
+      if (onClose) onClose();
+      return;
+    }
     if (shopId === "job_center") { openJobCenter(onClose); return; }
     if (shopId === "academy_office") { openAcademyOffice(onClose); return; }
     if (shopId === "dorm") { openDormHub(onClose); return; }

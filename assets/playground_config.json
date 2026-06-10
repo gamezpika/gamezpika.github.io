@@ -1434,6 +1434,93 @@
         "mask_color": "#FF3B30",
         "render_order": 500,
         "interaction_type": "open_modal"
+      },
+      {
+        "id": "arcade_whack",
+        "name": "打地鼠：九九挑戰",
+        "category": "building",
+        "sprite": {
+          "image": "arcade_cabinet.webp",
+          "scale": 0.21,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.171,
+          "y": 0.518
+        },
+        "sign_text": "打地鼠九九",
+        "bounding_box": {
+          "x_min": 0.1335,
+          "y_min": 0.483,
+          "x_max": 0.2085,
+          "y_max": 0.518
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "arcade:whack",
+          "label": "打地鼠：九九挑戰",
+          "radius": 150
+        },
+        "render_order": 100
+      },
+      {
+        "id": "arcade_listen",
+        "name": "聽力重組小火車",
+        "category": "building",
+        "sprite": {
+          "image": "arcade_cabinet.webp",
+          "scale": 0.21,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.272,
+          "y": 0.518
+        },
+        "sign_text": "聽力小火車",
+        "bounding_box": {
+          "x_min": 0.2345,
+          "y_min": 0.483,
+          "x_max": 0.3095,
+          "y_max": 0.518
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "arcade:listen",
+          "label": "聽力重組小火車",
+          "radius": 150
+        },
+        "render_order": 100
+      },
+      {
+        "id": "arcade_figures",
+        "name": "名人九宮格",
+        "category": "building",
+        "sprite": {
+          "image": "arcade_cabinet.webp",
+          "scale": 0.21,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.378,
+          "y": 0.518
+        },
+        "sign_text": "名人九宮格",
+        "bounding_box": {
+          "x_min": 0.3405,
+          "y_min": 0.483,
+          "x_max": 0.4155,
+          "y_max": 0.518
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "arcade:figures",
+          "label": "名人九宮格",
+          "radius": 150
+        },
+        "render_order": 100
       }
     ],
     "obstacle_areas": [

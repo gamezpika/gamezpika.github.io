@@ -1,0 +1,511 @@
+/* 英文 Puzzle 句子重組（P1 派派 5/12）
+ * 對齊 EduArena 暗紫科技風（boss-phaser/pvp-v2 同調）*/
+
+#screen-en-puzzle, #screen-en-puzzle-result {
+    background: #1a0a2e;
+    color: #fff;
+}
+
+/* Hub 入口按鈕 */
+.en-puzzle-entry {
+    display: flex; align-items: center; gap: 14px;
+    width: 100%; padding: 14px 18px; margin-top: 12px;
+    background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+    border: none; border-radius: 14px;
+    color: #fff; cursor: pointer;
+    box-shadow: 0 6px 18px rgba(124, 58, 237, 0.4);
+    transition: transform 0.1s, box-shadow 0.1s;
+    -webkit-tap-highlight-color: transparent;
+}
+.en-puzzle-entry:active {
+    transform: scale(0.98);
+    box-shadow: 0 3px 10px rgba(124, 58, 237, 0.5);
+}
+.en-puzzle-entry .enp-emoji { font-size: 28px; }
+.en-puzzle-entry .enp-text { flex: 1; text-align: left; }
+.en-puzzle-entry .enp-title {
+    font-size: 16px; font-weight: 700; margin-bottom: 2px;
+}
+.en-puzzle-entry .enp-sub {
+    font-size: 12px; opacity: 0.85;
+}
+
+/* Puzzle 主畫面 */
+.enp-area {
+    padding: 16px;
+    display: flex; flex-direction: column; gap: 14px;
+    height: calc(100% - 100px); overflow-y: auto;
+}
+/* 長句（16 字）修：子元素一律不被 flex 壓縮，否則答案框/字塊池被壓扁
+ * 而字塊溢出框外又疊到下排 → 視覺超範圍 + 點到錯的字塊（要點很多次）。
+ * 不壓縮 → 內容變高時整個 .enp-area 乾淨往下捲（本來就 overflow-y:auto）。*/
+.enp-area > * { flex-shrink: 0; }
+
+/* P4 聽力模式喇叭按鈕 */
+.en-puzzle-entry-listen {
+    background: linear-gradient(135deg, #f59e0b 0%, #ec4899 100%) !important;
+    box-shadow: 0 6px 18px rgba(245, 158, 11, 0.4) !important;
+}
+.enp-listen-btn {
+    background: linear-gradient(135deg, #f59e0b 0%, #ec4899 100%);
+    color: #fff; border: none; border-radius: 14px;
+    padding: 18px 16px; font-size: 18px; font-weight: 700;
+    cursor: pointer; font-family: inherit;
+    box-shadow: 0 6px 18px rgba(245, 158, 11, 0.4);
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.1s;
+}
+.enp-listen-btn:active { transform: scale(0.97); }
+.enp-prompt {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px; padding: 18px 16px;
+    font-size: 17px; font-weight: 500; line-height: 1.5;
+    text-align: center; color: #fff;
+    min-height: 60px;
+}
+
+/* 答案格（玩家拖字塊填這） */
+.enp-answer-slots {
+    min-height: 60px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 12px; padding: 12px;
+    display: flex; flex-wrap: wrap; gap: 8px;
+    align-items: center; align-content: flex-start;
+}
+.enp-answer-slots.empty::before {
+    content: "點下方字塊組成英文句子";
+    color: rgba(255, 255, 255, 0.4); font-size: 13px; width: 100%;
+    text-align: center;
+}
+
+/* 字塊池 */
+.enp-chip-pool {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 12px; padding: 12px;
+    display: flex; flex-wrap: wrap; gap: 8px;
+    min-height: 90px;
+}
+
+/* 字塊本身 */
+.enp-chip {
+    display: inline-block;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: #fff; padding: 8px 14px;
+    border-radius: 10px; font-size: 15px; font-weight: 600;
+    cursor: pointer; user-select: none;
+    border: none; font-family: inherit;
+    box-shadow: 0 3px 8px rgba(99, 102, 241, 0.3);
+    transition: transform 0.1s, box-shadow 0.1s, opacity 0.15s;
+    -webkit-tap-highlight-color: transparent;
+}
+.enp-chip:active {
+    transform: scale(0.94);
+}
+.enp-chip.used {
+    opacity: 0.3; pointer-events: none;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: none;
+}
+.enp-chip.correct {
+    background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%) !important;
+    animation: enp-bounce 0.4s ease-out;
+}
+.enp-chip.wrong {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%) !important;
+    animation: enp-shake 0.4s ease-out;
+}
+@keyframes enp-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+@keyframes enp-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+}
+
+/* 回饋區（答對 / 答錯訊息） */
+.enp-feedback {
+    min-height: 40px; padding: 8px 12px; font-size: 14px;
+    border-radius: 10px; text-align: center;
+    opacity: 0; transition: opacity 0.2s;
+}
+.enp-feedback.show { opacity: 1; }
+.enp-feedback.correct {
+    background: rgba(22, 163, 74, 0.2); color: #86efac;
+}
+.enp-feedback.wrong {
+    background: rgba(220, 38, 38, 0.2); color: #fca5a5;
+}
+
+/* 「答案詳解」結構化統一版型（派派：很模糊+格式統一）。深底→任何場景
+ * 背景圖上都清楚；只 scope #enp-feedback，字配圖 #enip-feedback 不受影響。*/
+#enp-feedback.show {
+    background: rgba(18, 14, 38, 0.84);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #fff;
+    text-align: left;
+    padding: 12px 14px;
+}
+#enp-feedback .enp-fb-head {
+    font-size: 15px; font-weight: 800;
+    text-align: center; margin-bottom: 7px;
+}
+#enp-feedback.correct .enp-fb-head { color: #7ee7a6; }
+#enp-feedback.wrong .enp-fb-head { color: #ff9b9b; }
+#enp-feedback .enp-fb-row {
+    display: flex; gap: 10px;
+    font-size: 14px; line-height: 1.55; margin-top: 3px;
+}
+#enp-feedback .enp-fb-k {
+    flex: 0 0 4.2em; color: rgba(255, 255, 255, 0.6);
+}
+#enp-feedback .enp-fb-v {
+    flex: 1; font-weight: 600; word-break: break-word;
+}
+
+/* 動作按鈕 */
+.enp-actions {
+    display: flex; gap: 10px;
+}
+.enp-btn {
+    flex: 1; padding: 12px 18px;
+    border: none; border-radius: 12px;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    font-family: inherit;
+    transition: filter 0.1s, transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+}
+.enp-btn:active { transform: scale(0.97); }
+.enp-btn-primary {
+    background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+}
+.enp-btn-primary:disabled {
+    opacity: 0.4; cursor: not-allowed;
+}
+.enp-btn-secondary {
+    background: rgba(255, 255, 255, 0.1); color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* 字配圖 (P3) */
+#screen-en-img-puzzle { background: #1a0a2e; color: #fff; }
+.en-puzzle-entry-img {
+    background: linear-gradient(135deg, #06b6d4 0%, #7c3aed 100%) !important;
+    box-shadow: 0 6px 18px rgba(6, 182, 212, 0.4) !important;
+}
+.enip-area {
+    padding: 12px;
+    display: flex; flex-direction: column; gap: 10px;
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+.enip-word {
+    font-size: 36px; font-weight: 800;
+    text-align: center;
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding: 8px 0 2px;
+    letter-spacing: 1px;
+    word-break: break-all;
+}
+.enip-sub {
+    text-align: center; font-size: 13px;
+    color: rgba(255, 255, 255, 0.7); margin-bottom: 2px;
+}
+.enip-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.enip-choice {
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    padding: 8px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: transform 0.1s, border-color 0.15s, background 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    aspect-ratio: 1;
+    box-sizing: border-box;
+    min-width: 0;
+    overflow: hidden;
+}
+.enip-choice img {
+    max-width: 100%; max-height: 100%; object-fit: contain;
+    display: block;
+}
+.enip-choice:active { transform: scale(0.95); }
+.enip-choice.disabled { pointer-events: none; opacity: 0.7; }
+.enip-choice.correct {
+    background: rgba(22, 163, 74, 0.3);
+    border-color: #22c55e;
+    animation: enp-bounce 0.4s ease-out;
+}
+.enip-choice.wrong {
+    background: rgba(220, 38, 38, 0.3);
+    border-color: #ef4444;
+    animation: enp-shake 0.4s ease-out;
+}
+
+/* ════════════════════════════════════════════════════════════════
+ * 🚂 聽力重組「小火車車廂」主題（原型，2026-05-19）
+ * 全部 scope 在 .enp-area.enp-train（JS 只在 listen mode 加此 class）；
+ * 句子重組 mode 無此 class＝外觀完全不變。純裝飾、不動 DOM/盒模型/
+ * flex-shrink:0（長句 16 字溢出修正不受影響：輪子/軌道皆 absolute 偽
+ * 元素或背景，不進 flow、不改字塊量測高度）。
+ * ════════════════════════════════════════════════════════════════ */
+
+/* 場景：白天天空 + 草地（預設/fallback；JS 在 listen mode 每題輪一個
+ * scene-* class 做「旅程感」。只罩遊戲區，header/stats 不動）。
+ * 場景純用多層 background（天空+地形/海/天際線/星月），不另開 ::before
+ * → 免 z-index/overflow 坑，內容自然疊在背景上。 */
+.enp-area.enp-train {
+    background:
+        linear-gradient(180deg,
+            #bfe9ff 0%, #d8f3ff 42%,
+            #cdeebf 62%, #aee08f 100%);
+    border-radius: 16px;
+}
+/* 4 場景改用 Gemini 生的繪本插畫背景（派派：CSS 漸層很醜）。
+ * cover 鋪滿、center；圖本身上方留大片天空、中段乾淨 → 字塊/詳解疊上去
+ * 仍清楚（字塊有自有底色+描邊、詳解面板深底、答案格半透明白底）。 */
+.enp-area.enp-train.scene-grass {
+    background: url("img/puzzle/_enp_scene_grass.png?v=1") center/cover no-repeat;
+}
+.enp-area.enp-train.scene-sea {
+    background: url("img/puzzle/_enp_scene_sea.png?v=1") center/cover no-repeat;
+}
+.enp-area.enp-train.scene-city {
+    background: url("img/puzzle/_enp_scene_city.png?v=1") center/cover no-repeat;
+}
+.enp-area.enp-train.scene-night {
+    background: url("img/puzzle/_enp_scene_night.png?v=1") center/cover no-repeat;
+}
+/* 星空＝深底，空狀態提示改亮色才看得到 */
+.enp-area.enp-train.scene-night .enp-answer-slots.empty::before {
+    color: #d9dcff;
+}
+
+/* 答案格＝鐵軌；空狀態提示改可愛火車話術＋深色（淺底才看得到） */
+.enp-area.enp-train .enp-answer-slots {
+    background: rgba(255, 255, 255, 0.5);
+    border: 2px dashed rgba(120, 80, 40, 0.45);
+    box-shadow: inset 0 -10px 0 -6px rgba(120, 80, 40, 0.35);  /* 鐵軌線 */
+}
+.enp-area.enp-train .enp-answer-slots.empty::before {
+    content: "🚂 把單字車廂掛上來，組成聽到的句子～";
+    color: #6b4a23;
+}
+.enp-area.enp-train .enp-chip-pool {
+    background: rgba(255, 255, 255, 0.32);
+}
+
+/* 字塊＝火車車廂：圓潤車身 + 車窗光澤 + 兩顆輪子（偽元素，不佔 flow） */
+/* 字塊＝繪本風小火車車廂：粗深描邊圓潤車身、車頂欄杆、黃色輻條輪，
+ * 紅/綠交錯呼應插畫；偽元素裝飾不進 flow，不破長句版面/點擊命中。 */
+.enp-area.enp-train .enp-chip,
+#enp-train-fx .enp-depart-car {
+    position: relative;
+    color: #fff;
+    border: 2.5px solid #3f2a1c;
+    border-radius: 13px 13px 6px 6px;
+    margin-bottom: 7px;            /* 留輪子空間，不疊到下排 */
+    background:
+        linear-gradient(180deg, rgba(255,255,255,0.32) 0 36%, rgba(255,255,255,0) 37%),
+        linear-gradient(135deg, #e8623f 0%, #d6492e 100%);   /* 紅車（預設） */
+    box-shadow: 0 3px 7px rgba(80, 45, 25, 0.32);
+}
+.enp-area.enp-train .enp-chip:nth-of-type(even),
+#enp-train-fx .enp-depart-car:nth-of-type(even) {            /* 綠車交錯 */
+    background:
+        linear-gradient(180deg, rgba(255,255,255,0.32) 0 36%, rgba(255,255,255,0) 37%),
+        linear-gradient(135deg, #8bbf63 0%, #6fa54a 100%);
+}
+.enp-area.enp-train .enp-chip::before,
+#enp-train-fx .enp-depart-car::before {  /* 車頂欄杆（敞篷車廂感） */
+    content: "";
+    position: absolute;
+    left: 8px; right: 8px; top: 3px; height: 5px;
+    border-radius: 2px;
+    background: repeating-linear-gradient(90deg,
+        rgba(63,42,28,0.55) 0 2px, transparent 2px 6px);
+    pointer-events: none;
+}
+.enp-area.enp-train .enp-chip::after,
+#enp-train-fx .enp-depart-car::after {  /* 兩顆黃色輻條輪 */
+    content: "";
+    position: absolute;
+    left: 10px; right: 10px; bottom: -8px; height: 13px;
+    background:
+        radial-gradient(circle at 11px 6px, #3f2a1c 0 1.5px,
+            #f4b41a 2px 5px, #3f2a1c 5px 6px, transparent 6.5px),
+        radial-gradient(circle at calc(100% - 11px) 6px, #3f2a1c 0 1.5px,
+            #f4b41a 2px 5px, #3f2a1c 5px 6px, transparent 6.5px);
+    pointer-events: none;
+}
+.enp-area.enp-train .enp-chip.used {
+    background: rgba(255, 255, 255, 0.28);
+    border-color: rgba(63, 42, 28, 0.3);
+}
+.enp-area.enp-train .enp-chip.used::after,
+.enp-area.enp-train .enp-chip.used::before { opacity: 0.3; }
+
+/* 整句答對：玩家剛拼好的「那排車廂」從原位往右駛離（JS 把答案格字塊複製
+ * 進此 overlay 並 inline 定位對齊原位；fixed 不被任何容器裁切、
+ * pointer-events:none；非另外蹦一張火車圖）。 */
+#enp-train-fx {
+    position: fixed; inset: 0;
+    pointer-events: none; overflow: hidden;
+    display: none; z-index: 60;
+}
+#enp-train-fx.show { display: block; }
+#enp-train-fx .enp-train-run {
+    /* left/top 由 JS inline 設＝原答案格位置（火車從你拼字的地方開走）。
+     * 單行不換行：駛離演出就是「一列火車（車廂+車頭）」橫向開走，長句
+     * ＝較長的火車滑出去（可愛、且 overflow:hidden 乾淨裁邊）。單行＝
+     * 火車頭永遠緊接最後一節車廂、一定看得到（修「看不到火車頭」）。 */
+    position: absolute;
+    padding: 12px;                 /* 同 .enp-answer-slots → clone 與原字塊
+                                      位置一致，不會起步瞬間左上跳 12px（Codex P3）*/
+    display: flex; flex-wrap: nowrap; gap: 8px;
+    align-items: center; white-space: nowrap;
+    will-change: transform;
+}
+/* 火車頭：in-flow flex 最後一節＝列車前端（往右開）；略高＝引擎感。 */
+#enp-train-fx .enp-loco {
+    flex: none;
+    align-self: center;
+    height: 54px;
+    width: auto;
+    margin-left: 6px;
+    filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.25));
+}
+#enp-train-fx.show .enp-train-run {
+    /* 預設 0.8s（比舊 1.05s 更俐落＝送出後不拖）；JS 依連對數再縮短
+     * (inline animation-duration 覆蓋此處)＝連對越多開越快。 */
+    animation: enp-depart 0.8s cubic-bezier(.45,.02,.78,.32) forwards;
+}
+@keyframes enp-depart {
+    0%   { transform: translate(0, 0); }
+    9%   { transform: translate(-7px, 0) rotate(-0.5deg); }  /* 起步小頓 */
+    18%  { transform: translate(0, -2px); }
+    100% { transform: translate(116vw, 0); }                 /* 加速駛離右側 */
+}
+/* Phase C：連對加掛的「獎勵小車廂」（無字、短，沿用車廂外觀／輪子） */
+#enp-train-fx .enp-depart-bonus {
+    min-width: 0;
+    padding-left: 9px; padding-right: 9px;
+}
+/* Phase C：每 5 連對「到站慶祝」彩帶 + 橫幅（獨立 fixed 層，pointer
+ * -events:none，1.5s 自動收；只 listen 連對里程碑觸發）。 */
+#enp-cele {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 70;
+    display: none; overflow: hidden;
+}
+#enp-cele.show { display: block; }
+#enp-cele .enp-cele-banner {
+    position: absolute; left: 50%; top: 36%;
+    transform: translate(-50%, -50%);
+    font-size: 22px; font-weight: 900; color: #fff;
+    background: linear-gradient(135deg, #f59e0b 0%, #ef6aa8 100%);
+    padding: 10px 22px; border-radius: 999px; white-space: nowrap;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.32);
+    animation: enp-cele-pop 1.4s ease-out forwards;
+}
+#enp-cele .enp-cf {
+    position: absolute; top: -24px;
+    width: 9px; height: 14px; border-radius: 2px;
+    animation: enp-cf-fall 1.15s linear forwards;
+}
+@keyframes enp-cele-pop {
+    0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    18%  { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+    30%  { transform: translate(-50%, -50%) scale(1); }
+    78%  { opacity: 1; }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes enp-cf-fall {
+    0%   { opacity: 0; transform: translateY(0) rotate(0); }
+    12%  { opacity: 1; }
+    100% { opacity: 0.9; transform: translateY(88vh) rotate(560deg); }
+}
+
+/* 🛤️ 鐵軌旅程進度（派派：旅程感偏低、只是換背景，要有鐵軌感）。
+ * JS 注入 #enp-rail（只 listen mode 顯示）：一條鐵軌(枕木+雙軌)＋每題
+ * 一個站點，小火車頭沿軌前進＝「一站一站開過去」的旅程感，配每題換場景。*/
+#enp-rail {
+    position: relative;
+    height: 36px;
+    flex-shrink: 0;
+}
+#enp-rail .enp-rail-line {
+    position: absolute; left: 8px; right: 8px; bottom: 6px; height: 13px;
+    background:
+        linear-gradient(180deg, transparent 0 2px, #5e3f24 2px 4px,
+            transparent 4px 9px, #5e3f24 9px 11px, transparent 11px),
+        repeating-linear-gradient(90deg,
+            rgba(94,63,36,0.85) 0 3px, rgba(255,255,255,0) 3px 15px);
+    background-color: rgba(255, 255, 255, 0.28);
+    border-radius: 3px;
+}
+#enp-rail .enp-rail-stations {
+    position: absolute; left: 8px; right: 8px; bottom: 8px; height: 9px;
+}
+#enp-rail .enp-rail-stop {
+    position: absolute; bottom: 0; transform: translateX(-50%);
+    width: 7px; height: 7px; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.65);
+    border: 2px solid #5e3f24;
+    box-sizing: border-box;
+}
+#enp-rail .enp-rail-stop.done {
+    background: #ffd24a; border-color: #b9802a;
+}
+#enp-rail .enp-rail-loco {
+    position: absolute; bottom: 5px; transform: translateX(-50%);
+    height: 27px; width: auto;
+    transition: left 0.55s cubic-bezier(.45,.05,.3,1);   /* 開往下一站 */
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+    pointer-events: none;
+}
+
+/* 結算頁 */
+.enp-result-area {
+    padding: 32px 24px;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 16px;
+}
+.enp-result-banner { font-size: 64px; }
+.enp-result-score {
+    font-size: 36px; font-weight: 800;
+    color: #fbbf24;
+}
+.enp-result-detail {
+    font-size: 14px; color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+}
+.enp-result-coins {
+    font-size: 20px; font-weight: 700; color: #fde68a;
+    background: rgba(251, 191, 36, 0.15);
+    border-radius: 999px; padding: 8px 20px;
+    margin-top: 8px;
+}
+.enp-result-actions {
+    margin-top: 16px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.enp-result-actions .enp-btn { min-width: 160px; }

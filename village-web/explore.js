@@ -253,6 +253,16 @@ class ExploreScene extends Phaser.Scene {
         if (b.interaction && b.interaction.type === "fountain_splash") {
           this._addFountainParticles(anchor.x, anchor.y);
         }
+        // 插牌動態名（遊樂場統一街機）：sign_text 寫在建築頂端的空白木牌上
+        if (b.sign_text) {
+          const sh = spr.displayHeight;
+          const tx = this.add.text(anchor.x, anchor.y - sh * (typeof b.sign_text_y === "number" ? b.sign_text_y : 0.93), b.sign_text, {
+            fontFamily: '"PingFang TC","Microsoft JhengHei",sans-serif',
+            fontSize: Math.max(13, Math.round(sh * 0.072)) + "px",
+            fontStyle: "bold", color: "#5a3c14", align: "center",
+          }).setOrigin(0.5, 0.5);
+          tx.setDepth((typeof b.render_depth === "number" ? b.render_depth : anchor.y) + 0.1);
+        }
       }
       // Collision bbox（草/花卉跳過，可踩過去）
       if (b.bounding_box && !(b.sprite && WALKABLE_DECOR.has(b.sprite.image))) {

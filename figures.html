@@ -81,6 +81,20 @@
 </div>
 
 <script src="static/js/figures.js?v=6"></script>
+<script>
+// 從遊樂場機台進來(?from=playground)：← 改為回遊樂場（capture 蓋掉原本的 about 彈窗）
+(function () {
+    if (new URLSearchParams(location.search).get("from") !== "playground") return;
+    var b = document.getElementById("fg-back");
+    if (b) {
+        b.title = "回遊樂場";
+        b.addEventListener("click", function (e) {
+            e.stopImmediatePropagation();
+            location.href = "village-web/index.html?map=playground";
+        }, true);
+    }
+})();
+</script>
 
 </body>
 </html>

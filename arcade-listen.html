@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🚂 聽力重組小火車</title>
+<link rel="stylesheet" href="arcade/base.css?v=1">
+<link rel="stylesheet" href="arcade/english_puzzle.css?v=1">
+</head>
+<body>
+
+<!-- 句子/聽力重組 Screen（搬自正式版 app.html，路徑改 arcade/img/） -->
+<div id="screen-en-puzzle" class="screen active">
+    <header class="screen-header">
+        <button class="btn-back" id="enp-back">←</button>
+        <span class="screen-title">🚂 聽力重組小火車</span>
+    </header>
+    <div class="game-stats">
+        <span class="streak-display" id="enp-streak"><img class="emo" src="arcade/img/icons/fire.png?s=6" alt=""> 0</span>
+        <span class="coins-display" id="enp-coins"><img class="emo" src="arcade/img/icons/coin.png?s=6" alt=""> 0</span>
+        <span class="progress-display" id="enp-progress">1/10</span>
+    </div>
+    <div class="enp-area">
+        <div class="enp-prompt" id="enp-prompt">中文意思</div>
+        <button class="enp-listen-btn" id="enp-listen-btn" style="display:none;">
+            🔊 播放英文錄音
+        </button>
+        <audio id="enp-audio" preload="auto"></audio>
+        <div class="enp-answer-slots" id="enp-answer-slots"></div>
+        <div class="enp-chip-pool" id="enp-chip-pool"></div>
+        <div class="enp-feedback" id="enp-feedback"></div>
+        <div class="enp-actions">
+            <button class="enp-btn enp-btn-secondary" id="enp-clear">清空</button>
+            <button class="enp-btn enp-btn-primary" id="enp-submit">送出 ✓</button>
+        </div>
+    </div>
+    <!-- 🚂 聽力整句答對：小火車開過螢幕 -->
+    <div id="enp-train-fx" aria-hidden="true">
+        <div class="enp-train-run"></div>
+    </div>
+</div>
+
+<!-- 字配圖 Screen（本頁不入口，但 JS 的 image IIFE 綁同一結算畫面，元素留著防 null） -->
+<div id="screen-en-img-puzzle" class="screen">
+    <header class="screen-header">
+        <button class="btn-back" id="enip-back">←</button>
+        <span class="screen-title">🖼️ 字配圖</span>
+    </header>
+    <div class="game-stats">
+        <span class="streak-display" id="enip-streak"></span>
+        <span class="coins-display" id="enip-coins"></span>
+        <span class="progress-display" id="enip-progress">1/10</span>
+    </div>
+    <div class="enip-area">
+        <div class="enip-word" id="enip-word">word</div>
+        <div class="enip-sub">點下面正確的圖片 👇</div>
+        <div class="enip-grid" id="enip-grid"></div>
+        <div class="enp-feedback" id="enip-feedback"></div>
+    </div>
+</div>
+
+<!-- 結算 Screen -->
+<div id="screen-en-puzzle-result" class="screen">
+    <header class="screen-header">
+        <button class="btn-back" id="enp-result-back">←</button>
+        <span class="screen-title">🚂 結算</span>
+    </header>
+    <div class="enp-result-area">
+        <div class="enp-result-banner" id="enp-result-banner"></div>
+        <div class="enp-result-score" id="enp-result-score">0 分</div>
+        <div class="enp-result-detail" id="enp-result-detail">—</div>
+        <div class="enp-result-coins" id="enp-result-coins">+0 金</div>
+        <div class="enp-result-actions">
+            <button class="enp-btn enp-btn-primary" id="enp-result-replay">再來一輪</button>
+        </div>
+    </div>
+</div>
+
+<!-- 給 init 綁的入口鈕（本頁自動觸發聽力模式，不顯示） -->
+<button id="en-listen-puzzle-entry" style="display:none"></button>
+
+<script src="arcade/shim.js?v=1"></script>
+<script src="arcade/english_puzzle.js?v=1"></script>
+<script>
+(function boot() {
+    var b = document.getElementById("en-listen-puzzle-entry");
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", function () { b.click(); });
+    } else {
+        b.click();
+    }
+})();
+</script>
+</body>
+</html>

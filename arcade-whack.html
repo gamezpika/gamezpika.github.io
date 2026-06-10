@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🔨 打地鼠：九九挑戰</title>
+<link rel="stylesheet" href="arcade/base.css?v=1">
+<link rel="stylesheet" href="arcade/whack.css?v=1">
+</head>
+<body>
+
+<!-- Whack Game Screen（搬自正式版 app.html，路徑改 arcade/img/） -->
+<div id="screen-whack-game" class="screen active">
+    <header class="screen-header">
+        <button class="btn-back" id="whack-game-back">←</button>
+        <span class="screen-title"><img class="emo" src="arcade/img/whack/hammer.png" alt=""> 打地鼠：九九挑戰</span>
+    </header>
+    <div class="whack-stats">
+        <span class="whack-time" id="whack-time">⏱ 60</span>
+        <span class="whack-score" id="whack-score"><img class="emo" src="arcade/img/icons/hundred.png?s=6" alt=""> 0</span>
+        <span class="whack-combo" id="whack-combo"><img class="emo" src="arcade/img/icons/fire.png?s=6" alt=""> 0</span>
+    </div>
+    <div class="whack-question" id="whack-question">準備...</div>
+    <div class="whack-stage">
+        <div class="whack-grid" id="whack-grid"></div>
+        <div class="whack-countdown" id="whack-countdown" style="display:none">
+            <div class="whack-loading" id="whack-loading"><img class="emo" src="arcade/img/icons/box.png?s=6" alt=""> 準備中…</div>
+        </div>
+    </div>
+</div>
+
+<!-- Whack Result Screen -->
+<div id="screen-whack-result" class="screen">
+    <header class="screen-header">
+        <span class="screen-title"><img class="emo" src="arcade/img/whack/hammer.png" alt=""> 結算</span>
+    </header>
+    <div class="result-content">
+        <div class="whack-result-banner" id="whack-result-banner"><img class="emo" src="arcade/img/icons/celebrate.png?s=6" alt=""></div>
+        <div class="whack-result-stars" id="whack-result-stars"></div>
+        <div class="result-score" id="whack-result-score"></div>
+        <div class="result-detail" id="whack-result-detail"></div>
+        <div class="result-coins" id="whack-result-coins"></div>
+        <div class="result-actions">
+            <button class="btn-action btn-replay" id="whack-btn-replay"><img class="emo" src="arcade/img/icons/refresh.png?s=6" alt=""> 再玩一次</button>
+            <button class="btn-action btn-back-hub" id="whack-btn-back">🎡 回遊樂場</button>
+        </div>
+    </div>
+</div>
+
+<!-- 給 game_whack.js init 綁的入口鈕（本頁自動觸發，不顯示） -->
+<button id="whack-entry-btn" style="display:none"></button>
+
+<script src="arcade/shim.js?v=1"></script>
+<script src="arcade/game_whack.js?v=1"></script>
+<script>
+// 自動開局：等 init 綁好 entry-btn 後直接觸發
+(function boot() {
+    var b = document.getElementById("whack-entry-btn");
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", function () { b.click(); });
+    } else {
+        b.click();
+    }
+})();
+</script>
+</body>
+</html>

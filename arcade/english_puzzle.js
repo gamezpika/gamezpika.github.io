@@ -496,19 +496,25 @@
             }
             const s = d.summary || { correct: state.correct, total: state.questions.length, coins: state.coins };
 
-            // 結算頁
+            // 結算：共用勝利頁
             const pct = s.percentage ?? (s.total ? Math.round(s.correct / s.total * 100) : 0);
-            let banner, detail;
-            if (pct >= 80) { banner = "🏆"; detail = "太強了！"; }
-            else if (pct >= 60) { banner = "🎉"; detail = "不錯喔！"; }
-            else if (pct >= 40) { banner = "👍"; detail = "再加油～"; }
-            else { banner = "💪"; detail = "下次更好！"; }
-            $("enp-result-banner").textContent = banner;
-            $("enp-result-score").textContent = `${pct} 分`;
-            $("enp-result-detail").textContent = `${detail}　答對 ${s.correct}/${s.total}`;
-            $("enp-result-coins").innerHTML = `<img class="emo" src="arcade/img/icons/coin.png?s=6" alt=""> +${s.coins} 金`;
-
-            window.eduApp.showScreen("en-puzzle-result");
+            let detail;
+            if (pct >= 80) detail = "太強了！";
+            else if (pct >= 60) detail = "不錯喔！";
+            else if (pct >= 40) detail = "再加油～";
+            else detail = "下次更好！";
+            const replayMode = state.mode;
+            window.arcadeUI.victory({
+                win: pct >= 60,
+                sub: `${detail}　答對 ${s.correct}/${s.total}`,
+                rewards: [
+                    { key: "coins", icon: "arcade/img/icons/coin.png?s=6", label: `+${s.coins} 金` },
+                    { key: "score", icon: "arcade/img/icons/hundred.png?s=6", label: `${pct} 分` },
+                    { key: "correct", icon: "✅", label: `${s.correct}/${s.total}` },
+                ],
+                onReplay: () => startRound(replayMode),
+                onExit: () => window.eduApp.showScreen("english-hub"),
+            });
 
             // 結算後同步玩家狀態
             if (window.eduApp?.refreshUserStatus) await window.eduApp.refreshUserStatus();
@@ -524,14 +530,11 @@
     });
 
     // ── 綁定 UI ──
-    // 開放 startRound 給統一 replay listener 用（在 image IIFE 內呼叫）
-    window._enpStartSentence = () => startRound("sentence");
-    window._enpStartListen = () => startRound("listen");
+    // 結算頁的再玩一次由 arcadeUI.victory 的 onReplay 處理（依當局 mode）
     function init() {
         const entry = $("en-puzzle-entry");
         if (entry) entry.addEventListener("click", () => {
             window.eduPuzzleSfx?.unlock();  // user gesture 解鎖音效（iOS Safari）
-            $("enp-result-replay").dataset.mode = "sentence";
             startRound("sentence");
         });
 
@@ -539,7 +542,6 @@
         const listenEntry = $("en-listen-puzzle-entry");
         if (listenEntry) listenEntry.addEventListener("click", () => {
             window.eduPuzzleSfx?.unlock();
-            $("enp-result-replay").dataset.mode = "listen";
             startRound("listen");
         });
 
@@ -562,11 +564,6 @@
 
         const submitBtn = $("enp-submit");
         if (submitBtn) submitBtn.addEventListener("click", submitAnswer);
-
-        // replay listener 統一移到 image IIFE 處理（避免兩個 IIFE 雙綁同 click）
-
-        const resBack = $("enp-result-back");
-        if (resBack) resBack.addEventListener("click", () => window.eduApp.showScreen("english-hub"));
     }
 
     if (document.readyState === "loading") {
@@ -724,18 +721,22 @@
             const d = await r.json();
             const s = d.summary || { correct: st.correct, total: st.questions.length, coins: st.coins };
             const pct = s.percentage ?? (s.total ? Math.round(s.correct / s.total * 100) : 0);
-            let banner, detail;
-            if (pct >= 80) { banner = "🏆"; detail = "太強了！"; }
-            else if (pct >= 60) { banner = "🎉"; detail = "不錯喔！"; }
-            else if (pct >= 40) { banner = "👍"; detail = "再加油～"; }
-            else { banner = "💪"; detail = "下次更好！"; }
-            $("enp-result-banner").textContent = banner;
-            $("enp-result-score").textContent = `${pct} 分`;
-            $("enp-result-detail").textContent = `${detail}　答對 ${s.correct}/${s.total}`;
-            $("enp-result-coins").innerHTML = `<img class="emo" src="arcade/img/icons/coin.png?s=6" alt=""> +${s.coins} 金`;
-            // 紀錄當前模式給 replay 用
-            $("enp-result-replay").dataset.mode = "img";
-            window.eduApp.showScreen("en-puzzle-result");
+            let detail;
+            if (pct >= 80) detail = "太強了！";
+            else if (pct >= 60) detail = "不錯喔！";
+            else if (pct >= 40) detail = "再加油～";
+            else detail = "下次更好！";
+            window.arcadeUI.victory({
+                win: pct >= 60,
+                sub: `${detail}　答對 ${s.correct}/${s.total}`,
+                rewards: [
+                    { key: "coins", icon: "arcade/img/icons/coin.png?s=6", label: `+${s.coins} 金` },
+                    { key: "score", icon: "arcade/img/icons/hundred.png?s=6", label: `${pct} 分` },
+                    { key: "correct", icon: "✅", label: `${s.correct}/${s.total}` },
+                ],
+                onReplay: start,
+                onExit: () => window.eduApp.showScreen("english-hub"),
+            });
             if (window.eduApp?.refreshUserStatus) await window.eduApp.refreshUserStatus();
         } catch (e) {
             console.error("[enip] end error:", e);
@@ -750,7 +751,6 @@
         const entry = $("en-img-puzzle-entry");
         if (entry) entry.addEventListener("click", () => {
             window.eduPuzzleSfx?.unlock();  // user gesture 解鎖音效
-            $("enp-result-replay").dataset.mode = "img";
             start();
         });
 
@@ -764,16 +764,7 @@
             await end();
         });
 
-        // 統一 replay listener（單一綁定，依 dataset.mode 路由）
-        const replay = $("enp-result-replay");
-        if (replay) {
-            replay.addEventListener("click", () => {
-                const mode = replay.dataset.mode || "sentence";
-                if (mode === "img") start();
-                else if (mode === "listen") window._enpStartListen?.();
-                else window._enpStartSentence?.();
-            });
-        }
+        // 結算頁的再玩一次由 arcadeUI.victory 的 onReplay 處理
     }
 
     if (document.readyState === "loading") {

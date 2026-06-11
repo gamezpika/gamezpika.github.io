@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>🚂 聽力重組小火車</title>
-<link rel="stylesheet" href="arcade/base.css?v=1">
-<link rel="stylesheet" href="arcade/english_puzzle.css?v=1">
+<link rel="stylesheet" href="arcade/base.css?v=2">
+<link rel="stylesheet" href="arcade/english_puzzle.css?v=2">
+<link rel="stylesheet" href="arcade/game-ui.css?v=1">
 </head>
 <body>
 
@@ -59,35 +60,34 @@
     </div>
 </div>
 
-<!-- 結算 Screen -->
-<div id="screen-en-puzzle-result" class="screen">
-    <header class="screen-header">
-        <button class="btn-back" id="enp-result-back">←</button>
-        <span class="screen-title">🚂 結算</span>
-    </header>
-    <div class="enp-result-area">
-        <div class="enp-result-banner" id="enp-result-banner"></div>
-        <div class="enp-result-score" id="enp-result-score">0 分</div>
-        <div class="enp-result-detail" id="enp-result-detail">—</div>
-        <div class="enp-result-coins" id="enp-result-coins">+0 金</div>
-        <div class="enp-result-actions">
-            <button class="enp-btn enp-btn-primary" id="enp-result-replay">再來一輪</button>
-        </div>
-    </div>
-</div>
+<!-- 結算改用共用勝利頁（arcadeUI.victory），舊結算 screen 已移除 -->
 
-<!-- 給 init 綁的入口鈕（本頁自動觸發聽力模式，不顯示） -->
+<!-- 給 init 綁的入口鈕（封面「開始遊戲」觸發聽力模式，不顯示） -->
 <button id="en-listen-puzzle-entry" style="display:none"></button>
 
 <script src="arcade/shim.js?v=1"></script>
-<script src="arcade/english_puzzle.js?v=1"></script>
+<script src="arcade/game-ui.js?v=1"></script>
+<script src="arcade/english_puzzle.js?v=2"></script>
 <script>
+// 封面＋教學：按「開始遊戲」才開局（教學自動彈出、可略過）
 (function boot() {
-    var b = document.getElementById("en-listen-puzzle-entry");
+    function showIntro() {
+        window.arcadeUI.intro({
+            icon: "arcade/img/puzzle/_enp_loco.png",
+            title: "聽力重組小火車",
+            sub: "聽英文 · 拼句子 · 火車出發！",
+            steps: [
+                { ico: "🔊", text: "按「播放英文錄音」仔細聽（可以重聽好幾次）" },
+                { ico: "🧩", text: "點下方的單字車廂，照聽到的順序掛上鐵軌拼成句子" },
+                { ico: "✅", text: "拼好按「送出」！共 10 題，答對小火車就載著句子出發、還有金幣" },
+            ],
+            onStart: function () { document.getElementById("en-listen-puzzle-entry").click(); },
+        });
+    }
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", function () { b.click(); });
+        document.addEventListener("DOMContentLoaded", showIntro);
     } else {
-        b.click();
+        showIntro();
     }
 })();
 </script>

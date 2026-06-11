@@ -294,26 +294,28 @@
 
     function ratingForScore(s, h) {
         // 結算評等：依分數 + 命中數
-        if (s >= 200 && h >= 12) return { stars: 3, banner: '<img class="emo lg" src="arcade/img/icons/trophy.png?s=6" alt="">', title: "完美！" };
-        if (s >= 100 && h >= 6) return { stars: 2, banner: '<img class="emo" src="arcade/img/icons/celebrate.png?s=6" alt="">', title: "不錯！" };
-        if (s >= 30 || h >= 2) return { stars: 1, banner: '<img class="emo lg" src="arcade/img/icons/check_circle.png?s=6" alt="">', title: "再接再厲" };
-        return { stars: 0, banner: '<img class="emo" src="arcade/img/icons/strong.png?s=6" alt="">', title: "繼續練習！" };
+        if (s >= 200 && h >= 12) return { stars: 3, title: "完美！" };
+        if (s >= 100 && h >= 6) return { stars: 2, title: "不錯！" };
+        if (s >= 30 || h >= 2) return { stars: 1, title: "再接再厲" };
+        return { stars: 0, title: "繼續練習！" };
     }
 
     async function endGame() {
         stopGame();
 
-        // 視覺先 render（離線也有畫面）
+        // 視覺先 render（共用勝利頁；金幣等後端回覆再補進格子）
         const rating = ratingForScore(score, hits);
-        $("whack-result-banner").innerHTML = rating.banner;
-        $("whack-result-stars").innerHTML =
-            `<img class="emo" src="arcade/img/icons/star_filled.png?s=6" alt="">`.repeat(rating.stars) + `<img class="emo" src="arcade/img/icons/star_empty.png?s=6" alt="">`.repeat(3 - rating.stars);
-        $("whack-result-score").innerHTML = `<img class="emo" src="arcade/img/icons/hundred.png?s=6" alt=""> ${score} 分`;
-        $("whack-result-detail").textContent =
-            `${rating.title}\n打中 ${hits} 隻 · 漏打 ${misses} 隻 · 最高 ${maxCombo} 連擊`;
-        $("whack-result-coins").innerHTML = `<img class="emo" src="arcade/img/icons/coin.png?s=6" alt=""> 計算中…`;
-
-        if (window.eduApp?.showScreen) window.eduApp.showScreen("whack-result");
+        const vid = window.arcadeUI.victory({
+            win: rating.stars >= 1,
+            sub: `${rating.title}　打中 ${hits} 隻 · 漏打 ${misses} 隻 · 最高 ${maxCombo} 連擊`,
+            rewards: [
+                { key: "coins", icon: "arcade/img/icons/coin.png?s=6", label: "計算中…" },
+                { key: "score", icon: "arcade/img/icons/hundred.png?s=6", label: `${score} 分` },
+                { key: "stars", icon: "arcade/img/icons/star_filled.png?s=6", label: `${rating.stars} 星` },
+            ],
+            onReplay: startGame,
+            onExit: () => { if (window.eduApp?.showScreen) window.eduApp.showScreen("math-hub"); },
+        });
 
         try {
             const r = await window.eduApi("/api/whack/end", {
@@ -326,13 +328,13 @@
             });
             const d = await r.json();
             if (!r.ok) throw new Error(d.detail || JSON.stringify(d));
-            $("whack-result-coins").innerHTML = `<img class="emo" src="arcade/img/icons/coin.png?s=6" alt=""> +${d.coins_awarded}`;
+            window.arcadeUI.updateReward(vid, "coins", `+${d.coins_awarded}`);
             if (window.eduApp?.syncUserStats) {
                 window.eduApp.syncUserStats({ coins: d.user_coins });
             }
         } catch (e) {
             console.error("[whack] end_game error:", e);
-            $("whack-result-coins").innerHTML = `<img class="emo" src="arcade/img/icons/coin.png?s=6" alt=""> 同步失敗`;
+            window.arcadeUI.updateReward(vid, "coins", "同步失敗");
         }
     }
 
@@ -344,11 +346,7 @@
             stopGame();
             if (window.eduApp?.showScreen) window.eduApp.showScreen("math-hub");
         });
-
-        $("whack-btn-replay")?.addEventListener("click", startGame);
-        $("whack-btn-back")?.addEventListener("click", () => {
-            if (window.eduApp?.showScreen) window.eduApp.showScreen("math-hub");
-        });
+        // 結算頁按鈕（再玩一次/回遊樂場）由 arcadeUI.victory 自帶
     }
 
     if (document.readyState === "loading") {

@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>🔨 打地鼠：九九挑戰</title>
-<link rel="stylesheet" href="arcade/base.css?v=1">
-<link rel="stylesheet" href="arcade/whack.css?v=1">
+<link rel="stylesheet" href="arcade/base.css?v=2">
+<link rel="stylesheet" href="arcade/whack.css?v=2">
+<link rel="stylesheet" href="arcade/game-ui.css?v=1">
 </head>
 <body>
 
@@ -29,37 +30,34 @@
     </div>
 </div>
 
-<!-- Whack Result Screen -->
-<div id="screen-whack-result" class="screen">
-    <header class="screen-header">
-        <span class="screen-title"><img class="emo" src="arcade/img/whack/hammer.png" alt=""> 結算</span>
-    </header>
-    <div class="result-content">
-        <div class="whack-result-banner" id="whack-result-banner"><img class="emo" src="arcade/img/icons/celebrate.png?s=6" alt=""></div>
-        <div class="whack-result-stars" id="whack-result-stars"></div>
-        <div class="result-score" id="whack-result-score"></div>
-        <div class="result-detail" id="whack-result-detail"></div>
-        <div class="result-coins" id="whack-result-coins"></div>
-        <div class="result-actions">
-            <button class="btn-action btn-replay" id="whack-btn-replay"><img class="emo" src="arcade/img/icons/refresh.png?s=6" alt=""> 再玩一次</button>
-            <button class="btn-action btn-back-hub" id="whack-btn-back">🎡 回遊樂場</button>
-        </div>
-    </div>
-</div>
+<!-- 結算改用共用勝利頁（arcadeUI.victory），舊結算 screen 已移除 -->
 
-<!-- 給 game_whack.js init 綁的入口鈕（本頁自動觸發，不顯示） -->
+<!-- 給 game_whack.js init 綁的入口鈕（封面「開始遊戲」觸發，不顯示） -->
 <button id="whack-entry-btn" style="display:none"></button>
 
 <script src="arcade/shim.js?v=1"></script>
-<script src="arcade/game_whack.js?v=1"></script>
+<script src="arcade/game-ui.js?v=1"></script>
+<script src="arcade/game_whack.js?v=2"></script>
 <script>
-// 自動開局：等 init 綁好 entry-btn 後直接觸發
+// 封面＋教學：按「開始遊戲」才開局（教學自動彈出、可略過）
 (function boot() {
-    var b = document.getElementById("whack-entry-btn");
+    function showIntro() {
+        window.arcadeUI.intro({
+            icon: "arcade/img/whack/mole_idle.png?v=4",
+            title: "打地鼠：九九挑戰",
+            sub: "60 秒乘法大亂鬥",
+            steps: [
+                { ico: "🔢", text: "看上方的乘法題目（例：7 × 6 = ?），地鼠會頂著數字冒出來" },
+                { ico: "🔨", text: "點「答案正確」的地鼠！答對 +10 分還有連擊加分，打錯 −5 分" },
+                { ico: "⏱", text: "限時 60 秒盡量得分；漏掉的地鼠不扣分，放心瞄準" },
+            ],
+            onStart: function () { document.getElementById("whack-entry-btn").click(); },
+        });
+    }
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", function () { b.click(); });
+        document.addEventListener("DOMContentLoaded", showIntro);
     } else {
-        b.click();
+        showIntro();
     }
 })();
 </script>

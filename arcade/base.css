@@ -30,15 +30,4 @@ body {
   display: flex; justify-content: center; gap: 18px;
   padding: 10px 12px; font-weight: 800; font-size: 16px; color: #6a4e26;
 }
-/* whack 結算用的共用 result class */
-.result-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 24px 16px; text-align: center; }
-.result-score { font-size: 30px; font-weight: 900; }
-.result-detail { font-size: 15px; color: #6a4e26; }
-.result-coins { font-size: 19px; font-weight: 800; color: #b07b1f; }
-.result-actions { display: flex; gap: 12px; margin-top: 14px; flex-wrap: nowrap; }
-.btn-action {
-  border: none; border-radius: 14px; padding: 12px 20px;
-  font-size: 16px; font-weight: 800; cursor: pointer;
-  background: #e8d7b8; color: #5a4630; white-space: nowrap;
-}
-.btn-action.btn-replay { background: linear-gradient(135deg, #67b26f, #4ca2cd); color: #fff; }
+/* 結算改用共用勝利頁（game-ui.css .agv-*），舊 result class 已移除 */

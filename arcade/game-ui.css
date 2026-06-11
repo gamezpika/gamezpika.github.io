@@ -1,0 +1,256 @@
+/* ════ 遊樂場三遊戲共用 UI ════
+ * 1) .agv-* 勝利結算頁（黑底金光放射 + 拱形標題 + 徽章 + 獎勵列）
+ * 2) .agi-* 封面/教學（進頁先教學可略過，按「開始遊戲」才開局）
+ * 由 game-ui.js 動態建 DOM；三頁（打地鼠/聽力小火車/名人九宮格）共用。 */
+
+/* ── 勝利結算 overlay ───────────────────────── */
+.agv {
+    position: fixed; inset: 0; z-index: 1000;
+    display: none; flex-direction: column; align-items: center;
+    background: radial-gradient(ellipse at 50% 30%, #2a1d08 0%, #150e04 55%, #0a0703 100%);
+    overflow: hidden;
+    font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+.agv.open { display: flex; }
+
+.agv-stage {
+    position: relative; width: 100%; flex: 0 0 auto;
+    display: flex; flex-direction: column; align-items: center;
+    padding-top: max(36px, 6vh);
+}
+/* 金色放射光芒（緩慢旋轉），中心對準徽章 */
+.agv-rays {
+    position: absolute; left: 50%; top: 60%;
+    width: 170vmax; aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    background: repeating-conic-gradient(from 0deg,
+        rgba(255, 196, 60, 0.17) 0deg 8deg,
+        rgba(255, 196, 60, 0) 8deg 16deg);
+    -webkit-mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,0.5) 20%, transparent 44%);
+    mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,0.5) 20%, transparent 44%);
+    animation: agvSpin 90s linear infinite;
+    pointer-events: none;
+}
+@keyframes agvSpin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+.agv-glow {
+    position: absolute; left: 50%; top: 60%;
+    width: 380px; height: 380px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(255, 214, 92, 0.34) 0%, transparent 62%);
+    pointer-events: none;
+}
+
+/* 拱形標題：JS 逐字 span + rotate，圓心在下方遠處 */
+.agv-title {
+    position: relative; z-index: 1;
+    display: flex; justify-content: center;
+    animation: agvDrop 0.5s cubic-bezier(.2, 1.4, .4, 1) both;
+}
+.agv-title span {
+    display: inline-block;
+    font-size: clamp(38px, 12vw, 58px);
+    font-weight: 900; line-height: 1.25;
+    color: #ffc83d;
+    -webkit-text-stroke: 2px #7a4506;
+    text-shadow: 0 3px 0 #7a4506, 0 7px 16px rgba(0, 0, 0, 0.5);
+    padding: 0 1px;
+}
+@keyframes agvDrop {
+    from { opacity: 0; transform: translateY(-34px) scale(1.25); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.agv-badge {
+    position: relative; z-index: 1;
+    width: min(56vw, 264px);
+    margin-top: 4px;
+    animation: agvPop 0.55s cubic-bezier(.2, 1.6, .4, 1) both 0.08s;
+}
+.agv-badge img {
+    width: 100%; display: block;
+    filter: drop-shadow(0 10px 26px rgba(0, 0, 0, 0.55));
+}
+@keyframes agvPop {
+    from { opacity: 0; transform: scale(0.3); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+.agv-sub {
+    position: relative; z-index: 1;
+    margin-top: 14px; padding: 0 24px;
+    color: #f3e3bd; font-size: 15px; font-weight: 700;
+    text-align: center; line-height: 1.6;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* 「獲得獎勵」分隔：左右漸淡圓點 */
+.agv-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin-top: max(20px, 3.4vh);
+}
+.agv-divider-tx {
+    color: #fff; font-size: 17px; font-weight: 900; letter-spacing: 2px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+.agv-dot { border-radius: 50%; background: #fff; }
+.agv-dot.d1 { width: 9px;  height: 9px;  opacity: 0.95; }
+.agv-dot.d2 { width: 7px;  height: 7px;  opacity: 0.55; }
+.agv-dot.d3 { width: 5px;  height: 5px;  opacity: 0.28; }
+
+/* 獎勵方塊列 */
+.agv-rewards {
+    display: flex; justify-content: center; align-items: flex-start;
+    gap: 16px; margin-top: 18px; padding: 0 16px;
+}
+.agv-tile {
+    display: flex; flex-direction: column; align-items: center;
+    animation: agvTile 0.45s cubic-bezier(.2, 1.4, .4, 1) both;
+}
+@keyframes agvTile {
+    from { opacity: 0; transform: translateY(22px) scale(0.7); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.agv-tile-box {
+    width: 76px; height: 76px; border-radius: 18px;
+    background: linear-gradient(180deg, #fff8e8 0%, #ffe9bc 100%);
+    border: 3px solid #f7b733;
+    box-shadow: 0 4px 0 #b97f12, 0 8px 18px rgba(0, 0, 0, 0.45);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 38px; line-height: 1;
+}
+.agv-tile-box img.agv-tile-img { width: 46px; height: 46px; object-fit: contain; }
+.agv-tile-label {
+    margin-top: 9px; max-width: 96px;
+    color: #fff; font-size: 15px; font-weight: 900; text-align: center;
+    text-shadow: 0 2px 3px rgba(0, 0, 0, 0.7);
+}
+
+/* 底部按鈕 */
+.agv-actions {
+    margin-top: auto;
+    display: flex; gap: 12px; flex-wrap: nowrap;
+    padding: 22px 16px calc(24px + env(safe-area-inset-bottom));
+}
+.agv-btn {
+    border: none; border-radius: 16px;
+    padding: 14px 26px; font-size: 16px; font-weight: 900;
+    cursor: pointer; white-space: nowrap;
+    font-family: inherit;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.12s;
+}
+.agv-btn:active { transform: scale(0.95); }
+.agv-btn-replay {
+    background: linear-gradient(135deg, #ff9a40 0%, #ff5e3a 100%);
+    color: #fff;
+    box-shadow: 0 4px 0 #b23a1c, 0 8px 18px rgba(0, 0, 0, 0.4);
+}
+.agv-btn-exit {
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+}
+
+/* 低分：同版面換銀灰調 */
+.agv.fail .agv-rays { filter: grayscale(1); opacity: 0.45; }
+.agv.fail .agv-glow { background: radial-gradient(circle, rgba(210, 215, 225, 0.22) 0%, transparent 62%); }
+.agv.fail .agv-badge img { filter: grayscale(0.88) brightness(0.95) drop-shadow(0 10px 26px rgba(0, 0, 0, 0.55)); }
+.agv.fail .agv-title span {
+    color: #d6dae2; -webkit-text-stroke-color: #4a5058;
+    text-shadow: 0 3px 0 #4a5058, 0 7px 16px rgba(0, 0, 0, 0.5);
+}
+
+/* ── 封面 + 教學 overlay ────────────────────── */
+.agi {
+    position: fixed; inset: 0; z-index: 900;
+    display: none; align-items: center; justify-content: center;
+    padding: 20px;
+    background: radial-gradient(ellipse at 50% 20%, rgba(90, 58, 31, 0.95) 0%, rgba(31, 20, 8, 0.98) 75%);
+    font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+.agi.open { display: flex; }
+.agi-card {
+    width: 100%; max-width: 350px;
+    background: #fff8ec;
+    border: 3px solid #c8a268; border-radius: 22px;
+    padding: 26px 22px 22px;
+    text-align: center;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+}
+.agi-icon { font-size: 60px; line-height: 1; }
+.agi-icon img.agi-icon-img { width: 92px; height: 92px; object-fit: contain; }
+.agi-title { font-size: 24px; font-weight: 900; color: #4a3018; margin-top: 10px; }
+.agi-sub { font-size: 13px; color: #8a6d45; margin-top: 5px; }
+.agi-btn {
+    display: block; width: 100%;
+    margin-top: 18px; padding: 14px;
+    border: none; border-radius: 16px;
+    background: linear-gradient(135deg, #ff9a40 0%, #ff5e3a 100%);
+    color: #fff; font-size: 18px; font-weight: 900;
+    cursor: pointer; font-family: inherit;
+    box-shadow: 0 4px 0 #b23a1c;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.12s;
+}
+.agi-btn:active { transform: scale(0.97); }
+.agi-btn2 {
+    display: block; width: 100%;
+    margin-top: 10px; padding: 11px;
+    border: none; border-radius: 14px;
+    background: #f0e3c8; color: #6a4e26;
+    font-size: 14px; font-weight: 800;
+    cursor: pointer; font-family: inherit;
+    -webkit-tap-highlight-color: transparent;
+}
+/* 教學卡（疊在封面上，進頁自動打開、可略過） */
+.agi-tutwrap {
+    position: fixed; inset: 0;
+    display: none; align-items: center; justify-content: center;
+    padding: 20px;
+    background: rgba(20, 12, 4, 0.6);
+}
+.agi-tutwrap.open { display: flex; }
+.agi-tutcard {
+    position: relative;
+    width: 100%; max-width: 350px;
+    background: #fff8ec;
+    border: 3px solid #c8a268; border-radius: 22px;
+    padding: 22px 18px 18px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+}
+.agi-skip {
+    position: absolute; top: 12px; right: 12px;
+    border: none; border-radius: 999px;
+    background: #f0e3c8; color: #6a4e26;
+    padding: 6px 14px; font-size: 13px; font-weight: 800;
+    cursor: pointer; font-family: inherit;
+    -webkit-tap-highlight-color: transparent;
+}
+.agi-tuthead {
+    text-align: center;
+    font-size: 20px; font-weight: 900; color: #4a3018;
+    margin-bottom: 14px;
+}
+.agi-steps {
+    list-style: none; margin: 0; padding: 0;
+    display: flex; flex-direction: column; gap: 11px;
+}
+.agi-step {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: #fdf1da;
+    border: 2px solid #ecd9b0; border-radius: 14px;
+    padding: 11px 12px;
+}
+.agi-step-n {
+    flex: none; width: 22px; height: 22px;
+    border-radius: 50%; background: #ff9a40; color: #fff;
+    font-size: 13px; font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 2px;
+}
+.agi-step-ico { flex: none; font-size: 22px; line-height: 1.3; }
+.agi-step-tx { font-size: 14px; color: #5a4630; line-height: 1.6; font-weight: 600; }

@@ -84,6 +84,14 @@
     let positions = [];          // [{row, col}] x 9，記每張卡的位置
     let cardEls = [];            // 9 個卡片 DOM
     let answered = [];           // [boolean] x TOTAL_ROUNDS，紀錄哪些題已答對
+    let pendingVictory = false;  // 最後一題知識卡關閉後 → 進共用勝利結算頁
+
+    // 從遊樂場機台進來：勝利頁「回遊樂場」要帶回機台前位置
+    const FROM_PLAYGROUND = new URLSearchParams(location.search).get("from") === "playground";
+    function playgroundUrl() {
+        const bs = new URLSearchParams(location.search).get("back_spawn") || "";
+        return "village-web/index.html?map=playground" + (/^0\.\d+,0\.\d+$/.test(bs) ? "&spawn=" + bs : "");
+    }
 
     // ─── DOM ─────────────────────────────────────
     function $(id) { return document.getElementById(id); }
@@ -130,20 +138,47 @@
         });
 
         layoutCards();
-        startRound();
 
-        $("fg-start").addEventListener("click", startRound);
         $("fg-next").addEventListener("click", nextTarget);
-        $("fg-replay").addEventListener("click", () => {
-            currentTargetIdx = 0;
-            questionOrder = shuffleArr([...Array(FIGURES.length).keys()]).slice(0, TOTAL_ROUNDS);
-            answered = new Array(TOTAL_ROUNDS).fill(false);
-            startRound();
-        });
         $("fg-back").addEventListener("click", showAbout);
         $("fg-modal-close").addEventListener("click", closeModal);
         $("fg-modal").addEventListener("click", e => { if (e.target.id === "fg-modal") closeModal(); });
         window.addEventListener("resize", layoutCards);
+
+        // 封面＋教學：按「開始遊戲」才開局（教學自動彈出、可略過）
+        window.arcadeUI.intro({
+            icon: "🏛",
+            title: "名人九宮格",
+            sub: "翻牌記憶 · 認識 9 位中外偉人",
+            steps: [
+                { ico: "🔍", text: "先看 7 秒，記住 9 位偉人各在哪個位置" },
+                { ico: "🌀", text: "卡片蓋起來開始洗牌——眼睛跟好，別跟丟！" },
+                { ico: "👆", text: "找出題目指定的偉人，答對看知識卡；共 5 題，洗牌會越來越快" },
+            ],
+            onStart: startRound,
+        });
+    }
+
+    // ─── 再玩一輪（共用勝利頁的「再玩一次」） ─────
+    function replayAll() {
+        currentTargetIdx = 0;
+        questionOrder = shuffleArr([...Array(FIGURES.length).keys()]).slice(0, TOTAL_ROUNDS);
+        answered = new Array(TOTAL_ROUNDS).fill(false);
+        startRound();
+    }
+
+    // ─── 共用勝利結算頁 ─────────────────────────
+    function showVictory() {
+        window.arcadeUI.victory({
+            win: true,
+            sub: "五關全部破關！你是名人達人！",
+            rewards: [
+                { key: "cards", icon: "📜", label: "知識卡 ×5" },
+                { key: "correct", icon: "✅", label: "答對 5/5" },
+            ],
+            onReplay: replayAll,
+            onExit: FROM_PLAYGROUND ? () => { location.href = playgroundUrl(); } : null,
+        });
     }
 
     // ─── 排版：依 positions 設定每張卡 absolute 位置 ──
@@ -273,20 +308,25 @@
         $("fg-modal-intro").textContent = fig.intro;
         $("fg-modal-quote").textContent = fig.quote;
         $("fg-modal").classList.add("show");
-        // 顯示下一題 / 重玩按鈕
-        $("fg-controls").style.display = "flex";
         const isLast = currentTargetIdx >= TOTAL_ROUNDS - 1;
-        $("fg-next").style.display = isLast ? "none" : "";
-        $("fg-replay").style.display = isLast ? "" : "none";
         if (isLast) {
-            // 通關慶祝文案
+            // 最後一題：關掉知識卡後進共用勝利結算頁
+            pendingVictory = true;
+            $("fg-controls").style.display = "none";
             $("fg-status").textContent = "🎉 五關全部破關！你是名人達人！";
             $("fg-status").className = "fg-status guess";
+        } else {
+            $("fg-controls").style.display = "flex";
+            $("fg-next").style.display = "";
         }
     }
 
     function closeModal() {
         $("fg-modal").classList.remove("show");
+        if (pendingVictory) {
+            pendingVictory = false;
+            showVictory();
+        }
     }
 
     function nextTarget() {

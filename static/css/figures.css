@@ -1,14 +1,15 @@
-/* 名人九宮格 — 古卷風 + 3D 翻牌 + 洗牌動畫 */
+/* 名人九宮格 — 古卷風 + 3D 翻牌 + 洗牌動畫
+ * 頂欄/外殼由 arcade/base.css 統一（棕木 screen-header），
+ * 古卷深色舞台＝遊戲特色保留（serif 只套遊戲內容區，不套頂欄）。 */
 
 #screen-figures {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
     background:
         radial-gradient(ellipse at top, #5a3a1f 0%, #3a2410 60%, #1f1408 100%);
     color: #f1e3c8;
     overflow: hidden;
     position: relative;
+}
+.fg-question, .fg-grid-wrap, .fg-modal-card {
     font-family: "Noto Serif TC", "Songti TC", "PingFang TC", serif;
 }
 
@@ -28,41 +29,16 @@
     pointer-events: none;
 }
 
-/* ── Header ────────────────────────────────── */
-.fg-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 14px 16px 10px;
-    z-index: 10;
-    flex-shrink: 0;
-}
-.fg-back {
-    background: none;
-    border: none;
-    color: #f1e3c8;
-    font-size: 22px;
-    cursor: pointer;
-    padding: 4px;
-}
-.fg-title {
-    flex: 1;
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: 4px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    background: linear-gradient(135deg, #fde68a, #f59e0b);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
+/* ── Header：用 base.css 統一棕木 screen-header，這裡只補進度膠囊 ── */
 .fg-progress {
+    margin-left: auto;
     font-size: 12px;
-    color: #d4af6e;
-    background: rgba(0, 0, 0, 0.3);
+    font-weight: 700;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.18);
     padding: 4px 10px;
     border-radius: 999px;
-    border: 1px solid rgba(212, 175, 110, 0.4);
+    white-space: nowrap;
 }
 
 /* ── 題目區 ─────────────────────────────────── */

@@ -1,9 +1,10 @@
 /* 英文 Puzzle 句子重組（P1 派派 5/12）
- * 對齊 EduArena 暗紫科技風（boss-phaser/pvp-v2 同調）*/
+ * 遊樂場版：外殼改暖色童書風（對齊打地鼠/遊樂場），
+ * 繪本場景背景 + 小火車車廂主題不動。 */
 
-#screen-en-puzzle, #screen-en-puzzle-result {
-    background: #1a0a2e;
-    color: #fff;
+#screen-en-puzzle {
+    background: #f7efe2;
+    color: #3a2c1a;
 }
 
 /* Hub 入口按鈕 */
@@ -47,42 +48,42 @@
     box-shadow: 0 6px 18px rgba(245, 158, 11, 0.4) !important;
 }
 .enp-listen-btn {
-    background: linear-gradient(135deg, #f59e0b 0%, #ec4899 100%);
+    background: linear-gradient(135deg, #ff9a40 0%, #ff5e3a 100%);
     color: #fff; border: none; border-radius: 14px;
     padding: 18px 16px; font-size: 18px; font-weight: 700;
     cursor: pointer; font-family: inherit;
-    box-shadow: 0 6px 18px rgba(245, 158, 11, 0.4);
+    box-shadow: 0 6px 18px rgba(255, 130, 60, 0.4);
     -webkit-tap-highlight-color: transparent;
     transition: transform 0.1s;
 }
 .enp-listen-btn:active { transform: scale(0.97); }
 .enp-prompt {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: #fff;
+    border: 1px solid #e3d2b4;
     border-radius: 14px; padding: 18px 16px;
     font-size: 17px; font-weight: 500; line-height: 1.5;
-    text-align: center; color: #fff;
+    text-align: center; color: #4a3520;
     min-height: 60px;
 }
 
 /* 答案格（玩家拖字塊填這） */
 .enp-answer-slots {
     min-height: 60px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 2px dashed rgba(255, 255, 255, 0.2);
+    background: rgba(120, 80, 40, 0.06);
+    border: 2px dashed rgba(120, 80, 40, 0.35);
     border-radius: 12px; padding: 12px;
     display: flex; flex-wrap: wrap; gap: 8px;
     align-items: center; align-content: flex-start;
 }
 .enp-answer-slots.empty::before {
     content: "點下方字塊組成英文句子";
-    color: rgba(255, 255, 255, 0.4); font-size: 13px; width: 100%;
+    color: #9a7d52; font-size: 13px; width: 100%;
     text-align: center;
 }
 
 /* 字塊池 */
 .enp-chip-pool {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(120, 80, 40, 0.08);
     border-radius: 12px; padding: 12px;
     display: flex; flex-wrap: wrap; gap: 8px;
     min-height: 90px;
@@ -91,12 +92,12 @@
 /* 字塊本身 */
 .enp-chip {
     display: inline-block;
-    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    background: linear-gradient(135deg, #f0a04b 0%, #d97e2a 100%);
     color: #fff; padding: 8px 14px;
     border-radius: 10px; font-size: 15px; font-weight: 600;
     cursor: pointer; user-select: none;
     border: none; font-family: inherit;
-    box-shadow: 0 3px 8px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 3px 8px rgba(160, 100, 40, 0.3);
     transition: transform 0.1s, box-shadow 0.1s, opacity 0.15s;
     -webkit-tap-highlight-color: transparent;
 }
@@ -104,8 +105,9 @@
     transform: scale(0.94);
 }
 .enp-chip.used {
-    opacity: 0.3; pointer-events: none;
-    background: rgba(255, 255, 255, 0.1);
+    opacity: 0.35; pointer-events: none;
+    background: rgba(120, 80, 40, 0.18);
+    color: #6a4e26;
     box-shadow: none;
 }
 .enp-chip.correct {
@@ -134,16 +136,17 @@
 }
 .enp-feedback.show { opacity: 1; }
 .enp-feedback.correct {
-    background: rgba(22, 163, 74, 0.2); color: #86efac;
+    background: rgba(76, 175, 80, 0.16); color: #2e7d32;
 }
 .enp-feedback.wrong {
-    background: rgba(220, 38, 38, 0.2); color: #fca5a5;
+    background: rgba(229, 57, 53, 0.13); color: #c62828;
 }
 
 /* 「答案詳解」結構化統一版型（派派：很模糊+格式統一）。深底→任何場景
- * 背景圖上都清楚；只 scope #enp-feedback，字配圖 #enip-feedback 不受影響。*/
+ * 背景圖上都清楚（改暖棕深底，對齊童書風）；只 scope #enp-feedback，
+ * 字配圖 #enip-feedback 不受影響。*/
 #enp-feedback.show {
-    background: rgba(18, 14, 38, 0.84);
+    background: rgba(46, 30, 14, 0.88);
     border: 1px solid rgba(255, 255, 255, 0.14);
     color: #fff;
     text-align: left;
@@ -180,20 +183,20 @@
 }
 .enp-btn:active { transform: scale(0.97); }
 .enp-btn-primary {
-    background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+    background: linear-gradient(135deg, #ff9a40 0%, #ff5e3a 100%);
     color: #fff;
-    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+    box-shadow: 0 4px 12px rgba(255, 130, 60, 0.4);
 }
 .enp-btn-primary:disabled {
     opacity: 0.4; cursor: not-allowed;
 }
 .enp-btn-secondary {
-    background: rgba(255, 255, 255, 0.1); color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: #e8d7b8; color: #5a4630;
+    border: 1px solid #d9c49a;
 }
 
 /* 字配圖 (P3) */
-#screen-en-img-puzzle { background: #1a0a2e; color: #fff; }
+#screen-en-img-puzzle { background: #f7efe2; color: #3a2c1a; }
 .en-puzzle-entry-img {
     background: linear-gradient(135deg, #06b6d4 0%, #7c3aed 100%) !important;
     box-shadow: 0 6px 18px rgba(6, 182, 212, 0.4) !important;
@@ -218,7 +221,7 @@
 }
 .enip-sub {
     text-align: center; font-size: 13px;
-    color: rgba(255, 255, 255, 0.7); margin-bottom: 2px;
+    color: #8a6d45; margin-bottom: 2px;
 }
 .enip-grid {
     display: grid;
@@ -228,8 +231,8 @@
     box-sizing: border-box;
 }
 .enip-choice {
-    background: rgba(255, 255, 255, 0.08);
-    border: 2px solid rgba(255, 255, 255, 0.15);
+    background: #fff;
+    border: 2px solid #e3d2b4;
     border-radius: 16px;
     padding: 8px;
     display: flex; align-items: center; justify-content: center;
@@ -481,31 +484,4 @@
     pointer-events: none;
 }
 
-/* 結算頁 */
-.enp-result-area {
-    padding: 32px 24px;
-    display: flex; flex-direction: column; align-items: center;
-    gap: 16px;
-}
-.enp-result-banner { font-size: 64px; }
-.enp-result-score {
-    font-size: 36px; font-weight: 800;
-    color: #fbbf24;
-}
-.enp-result-detail {
-    font-size: 14px; color: rgba(255, 255, 255, 0.7);
-    text-align: center;
-}
-.enp-result-coins {
-    font-size: 20px; font-weight: 700; color: #fde68a;
-    background: rgba(251, 191, 36, 0.15);
-    border-radius: 999px; padding: 8px 20px;
-    margin-top: 8px;
-}
-.enp-result-actions {
-    margin-top: 16px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-.enp-result-actions .enp-btn { min-width: 160px; }
+/* 結算改用共用勝利頁（arcade/game-ui.css .agv-*），舊結算樣式已移除 */

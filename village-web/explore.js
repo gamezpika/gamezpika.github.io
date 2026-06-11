@@ -91,10 +91,6 @@ class ExploreScene extends Phaser.Scene {
     if (!this.textures.exists(this.bgKey)) {
       this.load.image(this.bgKey, "../" + config.background + "?v=4");
     }
-    // 傳送點箭頭（有 portal 才載）
-    if ((config.portals || []).length && !this.textures.exists("portal_arrow")) {
-      this.load.image("portal_arrow", this.assetBase + "deco_portal_arrow_warm.webp?v=1");
-    }
     // 河流（config.river 驅動，海島沒有就不載）
     if (config.river && !this.textures.exists("river")) {
       this.load.spritesheet("river", this.assetBase + config.river.image + "?v=3",
@@ -474,43 +470,35 @@ class ExploreScene extends Phaser.Scene {
       config.portals.forEach(pt => {
         if (!pt.anchor) return;
         const cx = this._nx(pt.anchor.x), cy = this._ny(pt.anchor.y);
-        // 傳送點箭頭方向：一般門指向地圖外（離中心），但「進入室內」的學院入口改指向其建築
-        // （門通常在建築正下方，朝外會背對建築 → 改指最近的建築門口）+ 脈動
-        let dir = Math.atan2(pt.anchor.y - 0.5, pt.anchor.x - 0.5);
-        if (/_interior$/.test(pt.target_map || "")) {
-          let best = null, bestD = Infinity;
-          (config.buildings || []).forEach(b => {
-            const bx = b.anchor && b.anchor.x, by = b.anchor && b.anchor.y;
-            if (bx == null || by == null) return;
-            const d = Math.hypot(bx - pt.anchor.x, by - pt.anchor.y);
-            if (d < bestD) { bestD = d; best = b; }
-          });
-          if (best && bestD < 0.2) dir = Math.atan2(best.anchor.y - pt.anchor.y, best.anchor.x - pt.anchor.x);
-        }
-        const arrow = this.add.image(cx, cy, "portal_arrow")
-          .setRotation(dir).setScale(0.18).setAlpha(0.9).setDepth(cy - 6);
+        // 圓圈傳送點：壓扁的圓環貼在路徑上（精準站在 anchor），顏色可隨地圖/單點配
+        // pt.color（單點）> config.portal_color（整張圖）> 預設暖金
+        const colHex = pt.color || config.portal_color || "#ffc46e";
+        // 顏色防呆：只收 6 位 hex，亂值(red/#abc)一律回預設暖金
+        const m6 = /^#?([0-9a-fA-F]{6})$/.exec(String(colHex).trim());
+        const col = m6 ? parseInt(m6[1], 16) : 0xffc46e;
+        const rw = (pt.radius || 130) * 1.15, rh = rw * 0.42;   // 視覺橢圓 ≈ 觸發半徑（壓扁成地面透視）
+        const ring = this.add.graphics({ x: cx, y: cy });
+        ring.fillStyle(col, 0.22); ring.fillEllipse(0, 0, rw, rh);            // 內底淡色
+        ring.lineStyle(8, col, 0.35); ring.strokeEllipse(0, 0, rw * 1.06, rh * 1.06); // 外暈(柔)
+        ring.lineStyle(6, col, 1); ring.strokeEllipse(0, 0, rw, rh);          // 外環(實)
+        ring.lineStyle(2, 0xffffff, 0.7); ring.strokeEllipse(0, 0, rw * 0.72, rh * 0.72); // 內圈細白環
+        ring.setDepth(cy - 6);   // 貼地：在玩家腳下
         this.tweens.add({
-          targets: arrow, scale: { from: 0.15, to: 0.21 },
-          alpha: { from: 0.6, to: 1 }, duration: 850, yoyo: true, repeat: -1,
+          targets: ring, scaleX: { from: 0.94, to: 1.06 }, scaleY: { from: 0.94, to: 1.06 },
+          alpha: { from: 0.65, to: 1 }, duration: 1000, yoyo: true, repeat: -1,
         });
-        // 傳送點標籤：小木牌（對齊機台插牌/底部木質按鈕的世界內視覺語言）
-        // hide_label=true：場景已自帶入口語言（橫幅/拱門/路標）就不疊浮空標籤，箭頭與底部按鈕照常
+        // 目的地文字：清楚大字浮在圓圈上方（深棕字+奶油描邊，任何地面都讀得清）
         if (!pt.hide_label) {
-        const lbl = this.add.text(0, 0, (pt.label || "前往") + "  ›", {
-          fontFamily: '"Yuanti TC","YouYuan","PingFang TC","Microsoft JhengHei",sans-serif', fontSize: "19px",
-          color: "#fff7e6", fontStyle: "bold",
-        }).setOrigin(0.5);
-        lbl.setShadow(0, 1, "rgba(70,40,10,0.6)", 3, false, true);
-        const pw = Math.ceil(lbl.width) + 30, ph = Math.ceil(lbl.height) + 16, pr = 10;
-        const pg = this.add.graphics();
-        pg.fillStyle(0x3a2410, 0.32); pg.fillRoundedRect(-pw / 2, -ph / 2 + 4, pw, ph, pr);           // 落影
-        pg.fillStyle(0xa8631f, 1); pg.fillRoundedRect(-pw / 2, -ph / 2, pw, ph, pr);                  // 木牌主體（下深）
-        pg.fillStyle(0xc8843a, 1); pg.fillRoundedRect(-pw / 2, -ph / 2, pw, ph * 0.52,                // 上亮木紋（假漸層）
-          { tl: pr, tr: pr, bl: 0, br: 0 });
-        pg.fillStyle(0xffffff, 0.14); pg.fillRoundedRect(-pw / 2 + 3, -ph / 2 + 3, pw - 6, ph * 0.34, // 頂高光
-          { tl: pr - 3, tr: pr - 3, bl: 0, br: 0 });
-        pg.lineStyle(2, 0xfff2dd, 0.9); pg.strokeRoundedRect(-pw / 2, -ph / 2, pw, ph, pr);           // 奶油邊框
-        this.add.container(cx, cy - 66, [pg, lbl]).setDepth(cy + 2);
+          // 貼近地圖頂邊的傳送點（島/碼頭 y≈0.03）：字放圈上會被裁掉 → 改放圈下方
+          let ly = cy - rh / 2 - 26, oy = 1;
+          if (ly - 34 < this.WORLD_OFFSET_Y) { ly = cy + rh / 2 + 10; oy = 0; }
+          const lbl = this.add.text(cx, ly, pt.label || "前往", {
+            fontFamily: '"Yuanti TC","YouYuan","PingFang TC","Microsoft JhengHei",sans-serif',
+            fontSize: "22px", fontStyle: "bold", color: "#5a3c14", align: "center",
+            stroke: "#fff3da", strokeThickness: 5,
+          }).setOrigin(0.5, oy);
+          lbl.setShadow(0, 2, "rgba(70,40,10,0.35)", 4, false, true);
+          lbl.setDepth(cy + 2);
         }
         this.portals.push({
           id: pt.id, cx, cy, radius: pt.radius || 130,

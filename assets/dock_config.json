@@ -2663,6 +2663,7 @@
       }
     ],
     "npcs": [],
-    "objects": []
+    "objects": [],
+    "portal_color": "#7fd8f0"
   }
 }

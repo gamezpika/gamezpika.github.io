@@ -117,6 +117,7 @@
     ],
     "obstacle_areas": [],
     "npcs": [],
-    "objects": []
+    "objects": [],
+    "portal_color": "#c9a0ff"
   }
 }

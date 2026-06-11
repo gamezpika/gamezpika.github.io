@@ -96,7 +96,7 @@
         "name": "看台觀眾",
         "category": "decoration",
         "sprite": {
-          "image": "arena_crowd_seated.webp",
+          "image": "arena_crowd_seated2.webp",
           "scale": 1.0,
           "anchor_x": 0.5,
           "anchor_y": 0.5,

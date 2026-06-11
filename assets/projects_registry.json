@@ -1079,9 +1079,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -1096,9 +1094,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -1113,9 +1109,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -1130,9 +1124,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -2215,9 +2207,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -2232,9 +2222,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -2249,9 +2237,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -2266,9 +2252,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -3351,9 +3335,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -3368,9 +3350,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -3385,9 +3365,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -3402,9 +3380,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -4487,9 +4463,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -4504,9 +4478,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -4521,9 +4493,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -4538,9 +4508,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -5617,9 +5585,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -5634,9 +5600,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -5651,9 +5615,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -5668,9 +5630,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -6753,9 +6713,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -6770,9 +6728,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -6787,9 +6743,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -6804,9 +6758,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -7934,9 +7886,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -7951,9 +7901,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -7968,9 +7916,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -7985,9 +7931,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -9106,9 +9050,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -9123,9 +9065,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -9140,9 +9080,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -9157,9 +9095,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -10242,9 +10178,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -10259,9 +10193,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -10276,9 +10208,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -10293,9 +10223,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -11378,9 +11306,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -11395,9 +11321,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -11412,9 +11336,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -11429,9 +11351,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -12514,9 +12434,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -12531,9 +12449,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -12548,9 +12464,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -12565,9 +12479,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -13650,9 +13562,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -13667,9 +13577,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -13684,9 +13592,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -13701,9 +13607,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -14786,9 +14690,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -14803,9 +14705,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -14820,9 +14720,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -14837,9 +14735,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -15922,9 +15818,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -15939,9 +15833,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -15956,9 +15848,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -15973,9 +15863,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -17058,9 +16946,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -17075,9 +16961,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -17092,9 +16976,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -17109,9 +16991,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -18194,9 +18074,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -18211,9 +18089,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -18228,9 +18104,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -18245,9 +18119,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -19330,9 +19202,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -19347,9 +19217,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -19364,9 +19232,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -19381,9 +19247,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -20466,9 +20330,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -20483,9 +20345,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -20500,9 +20360,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -20517,9 +20375,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -21602,9 +21458,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -21619,9 +21473,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -21636,9 +21488,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -21653,9 +21503,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -22738,9 +22586,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -22755,9 +22601,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -22772,9 +22616,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -22789,9 +22631,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -23874,9 +23714,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -23891,9 +23729,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -23908,9 +23744,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -23925,9 +23759,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -25010,9 +24842,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -25027,9 +24857,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -25044,9 +24872,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -25061,9 +24887,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     },
@@ -26146,9 +25970,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -26163,9 +25985,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -26180,9 +26000,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -26197,9 +26015,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2,
-          "play_on_proximity": true,
-          "prox_radius": 80
+          "frame_rate": 2
         }
       ]
     }

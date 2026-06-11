@@ -1691,6 +1691,7 @@ function renderDetail() {
         ${isObstacle ? '' : `<div class="field"><label>類別</label><input value="${b.category || ''}" data-field="category"></div>
         <div class="field"><label>互動</label><input value="${b.interaction_type || ''}" data-field="interaction_type"></div>
         <div class="field"><label>render_order</label><input type="number" value="${b.render_order || 0}" data-field="render_order"></div>`}
+        ${!isObstacle && b.sprite && (/signpost_arrow|arcade_cabinet/.test(b.sprite.image || '') || b.sign_text) ? `<div class="field"><label>牌字</label><input value="${(b.sign_text || '').replace(/"/g, '&quot;')}" data-field="sign_text" placeholder="寫在木牌上的字"></div>` : ''}
         ${isObstacle || !b.sprite ? '' : `<h3 style="margin-top:14px;">外觀（大小・旋轉）</h3>
         <div class="field"><label>大小</label><input type="number" step="0.02" min="0.05" value="${(b.sprite.scale || 1).toFixed(2)}" data-sprite="scale"></div>
         <div class="field"><label>旋轉°</label><input type="number" step="5" value="${Math.round((b.sprite.rotation || 0) * 180 / Math.PI)}" data-sprite="rotdeg"></div>`}
@@ -2047,6 +2048,11 @@ function placeSpriteAt(libIdx, normX, normY) {
             mask_color: '#FF3B30', render_order: 500,
             interaction_type: item.default_interaction || 'open_modal',
         });
+        // 路標（動態字木牌）：放下去就問牌上寫什麼，之後也能在右側欄「牌字」改
+        if (/signpost_arrow/.test(item.image || '')) {
+            const t = prompt('路標牌上要寫什麼字？（之後可在右側欄「牌字」修改）', '');
+            if (t && t.trim()) mapConfig.buildings[mapConfig.buildings.length - 1].sign_text = t.trim();
+        }
     }
     // 清掉 pending（單次放單個）
     pendingSpriteIdx = null;

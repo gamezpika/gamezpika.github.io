@@ -260,18 +260,26 @@ class ExploreScene extends Phaser.Scene {
         if (b.interaction && b.interaction.type === "fountain_splash") {
           this._addFountainParticles(anchor.x, anchor.y);
         }
-        // 插牌動態名（遊樂場統一街機）：sign_text 置中寫在建築頂端的空白木牌裡
+        // 插牌動態名（街機/路標等任何帶空白木牌的建築）：sign_text 置中寫進牌面
         if (b.sign_text) {
-          const sh = spr.displayHeight;
-          // 木牌中心=素材頂部約 9% 高處（量自 arcade_cabinet 四色素材，可用 sign_text_y 覆寫）
-          const tx = this.add.text(anchor.x, anchor.y - sh * (typeof b.sign_text_y === "number" ? b.sign_text_y : 0.91), b.sign_text, {
+          // 各牌型的牌面幾何（量自素材）：y=牌面中心離底部的高度比、w=可寫寬比、x=中心水平偏移比
+          // 路標箭頭牌可寫區偏離中軸（箭頭尖端不寫字）；其他素材 fallback 街機插牌值
+          const SIGN_GEO = {
+            "deco_signpost_arrow_right.webp": { y: 0.66, w: 0.55, x: -0.08 },
+            "deco_signpost_arrow_left.webp":  { y: 0.66, w: 0.55, x: 0.08 },
+          };
+          const geo = SIGN_GEO[sImg] || { y: 0.91, w: 0.8, x: 0 };
+          const sh = spr.displayHeight, sw2 = spr.displayWidth;
+          const tx = this.add.text(
+            anchor.x + sw2 * (typeof b.sign_text_x === "number" ? b.sign_text_x : geo.x),
+            anchor.y - sh * (typeof b.sign_text_y === "number" ? b.sign_text_y : geo.y), b.sign_text, {
             fontFamily: '"Yuanti TC","YouYuan","PingFang TC","Microsoft JhengHei",sans-serif',
             fontSize: Math.max(15, Math.round(sh * 0.085)) + "px",
             fontStyle: "bold", color: "#6b4316", align: "center",
             stroke: "#fff3da", strokeThickness: Math.max(3, Math.round(sh * 0.014)),
           }).setOrigin(0.5, 0.5);
           // 字寬不准超出牌面：超過就整段等比縮小
-          const maxW = spr.displayWidth * 0.8;
+          const maxW = sw2 * (typeof b.sign_text_w === "number" ? b.sign_text_w : geo.w);
           if (tx.width > maxW) tx.setScale(maxW / tx.width);
           tx.setDepth((typeof b.render_depth === "number" ? b.render_depth : anchor.y) + 0.1);
         }

@@ -1018,6 +1018,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -2039,6 +2057,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -3060,6 +3096,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -4081,6 +4135,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -5096,6 +5168,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -6117,6 +6207,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -7183,6 +7291,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -8240,6 +8366,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -9261,6 +9405,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -10282,6 +10444,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -11303,6 +11483,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -12324,6 +12522,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -13345,6 +13561,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -14366,6 +14600,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -15387,6 +15639,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -16408,6 +16678,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -17429,6 +17717,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -18450,6 +18756,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -19471,6 +19795,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -20492,6 +20834,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -21513,6 +21873,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -22534,6 +22912,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     },
@@ -23555,6 +23951,24 @@
           "default_interaction": null,
           "bbox_w_norm": 0.05,
           "bbox_h_norm": 0.02
+        },
+        {
+          "image": "deco_signpost_arrow_right.webp",
+          "name": "🪧 路標·右箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_signpost_arrow_left.webp",
+          "name": "🪧 路標·左箭頭(動態字)",
+          "type": "decoration",
+          "scale": 0.13,
+          "default_interaction": null,
+          "bbox_w_norm": 0.014,
+          "bbox_h_norm": 0.011
         }
       ]
     }

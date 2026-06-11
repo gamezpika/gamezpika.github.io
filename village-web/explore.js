@@ -590,14 +590,18 @@ class ExploreScene extends Phaser.Scene {
     let nearest = null, best = Infinity, anyInside = false;
     for (const pt of this.portals) {
       const d = Math.hypot(px - pt.cx, py - pt.cy);
-      if (d < pt.radius) { anyInside = true; if (d < best) { best = d; nearest = pt; } }
+      if (d < pt.radius) { anyInside = true; }
+      // 自動傳送觸發區=圈心 65%：踩上圓圈就走、擦邊路過不誤觸（派派 6/11：不用按鈕直接切換）
+      if (d < pt.radius * 0.65 && d < best) { best = d; nearest = pt; }
     }
     if (!anyInside) this._portalArmed = true;  // 離開所有傳送門圈後才武裝（防一落地就被彈回）
     if (this._portalArmed && nearest && !this.modalOpen && !this._transitioning) {
-      this._nearPortal = nearest; this._showPortalBtn(nearest.label);
+      this._nearPortal = nearest;
+      this._enterPortal(nearest);   // 走進圈直接切換地圖
     } else {
-      this._nearPortal = null; this._hidePortalBtn();
+      this._nearPortal = null;
     }
+    this._hidePortalBtn();   // 底部傳送按鈕不再使用
   }
 
   _setupTapToMove() {

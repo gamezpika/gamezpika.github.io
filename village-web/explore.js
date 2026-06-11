@@ -19,6 +19,13 @@ class ExploreScene extends Phaser.Scene {
   init(data) {
     this.mapId = (data && data.mapId) || _qParam("map") || "village";
     this.spawnOverride = (data && data.spawn) || null;
+    // 從遊戲機返回帶 ?spawn=x,y（回到原本機台前面）：只在第一次進場吃，
+    // 之後走傳送門換圖是 scene.restart 帶 spawn，不會再讀網址。
+    if (!this.spawnOverride && !window.__urlSpawnUsed) {
+      window.__urlSpawnUsed = true;
+      const m = /^(0\.\d+),(0\.\d+)$/.exec(_qParam("spawn") || "");
+      if (m) this.spawnOverride = { x: +m[1], y: +m[2] };
+    }
     this.facingOverride = (data && data.facing) || null;
     this._transitioning = false;
     // 清掉上一張地圖的物件參考：restart 後它們已被 Phaser 銷毀，

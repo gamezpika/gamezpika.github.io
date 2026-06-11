@@ -90,7 +90,9 @@
         b.title = "回遊樂場";
         b.addEventListener("click", function (e) {
             e.stopImmediatePropagation();
-            location.href = "village-web/index.html?map=playground";
+            // 帶回機台前位置（back_spawn 來自 shop.js 跳轉時的玩家座標）
+            var bs = new URLSearchParams(location.search).get("back_spawn") || "";
+            location.href = "village-web/index.html?map=playground" + (/^0\.\d+,0\.\d+$/.test(bs) ? "&spawn=" + bs : "");
         }, true);
     }
 })();

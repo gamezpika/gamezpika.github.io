@@ -4,7 +4,12 @@
     const API = "https://eduarena-tutoring-production.up.railway.app";
     window.ARCADE_API = API;
 
-    const PLAYGROUND_URL = "village-web/index.html?map=playground";
+    // 返回網址：機台跳轉時帶來 ?back_spawn=x,y → 回去落在原本機台前面（不是傳送點）
+    function playgroundUrl() {
+        let bs = "";
+        try { bs = new URLSearchParams(location.search).get("back_spawn") || ""; } catch (e) {}
+        return "village-web/index.html?map=playground" + (/^0\.\d+,0\.\d+$/.test(bs) ? "&spawn=" + bs : "");
+    }
 
     function getToken() {
         try { return localStorage.getItem("eduarena_demo_token") || ""; } catch (e) { return ""; }
@@ -48,7 +53,7 @@
     // showScreen：本頁內切換 .screen.active；任何「回島/回首頁」一律回遊樂場
     const EXIT_SCREENS = ["math-hub", "english-hub", "home", "chinese-hub", "science-hub", "social-hub"];
     function showScreen(id) {
-        if (EXIT_SCREENS.includes(id)) { location.href = PLAYGROUND_URL; return; }
+        if (EXIT_SCREENS.includes(id)) { location.href = playgroundUrl(); return; }
         document.querySelectorAll(".screen").forEach((s) => s.classList.toggle("active", s.id === "screen-" + id));
         window.scrollTo(0, 0);
     }

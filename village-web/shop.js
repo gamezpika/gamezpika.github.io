@@ -170,7 +170,16 @@
     if (shopId.indexOf("arcade:") === 0) {
       const ARCADE_PAGES = { whack: "arcade-whack.html", listen: "arcade-listen.html", figures: "figures.html?from=playground" };
       const page = ARCADE_PAGES[shopId.slice(7)];
-      if (page) { location.href = "../" + page; return; }
+      if (page) {
+        // 帶上玩家當下位置 → 返回時落回原本機台前面（不是傳送點）
+        let bs = "";
+        try {
+          const sc = window.game.scene.scenes.find((s) => s.player && s.WORLD_W);
+          if (sc) bs = (page.indexOf("?") >= 0 ? "&" : "?") + "back_spawn=" + (sc.player.x / sc.WORLD_W).toFixed(4) + "," + (sc.player.y / sc.WORLD_H).toFixed(4);
+        } catch (e) {}
+        location.href = "../" + page + bs;
+        return;
+      }
       if (onClose) onClose();
       return;
     }

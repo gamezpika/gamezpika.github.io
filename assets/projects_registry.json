@@ -1036,6 +1036,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -2075,6 +2104,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -3114,6 +3172,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -4153,6 +4240,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -5186,6 +5302,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -6225,6 +6370,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -7309,6 +7483,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -8384,6 +8587,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -9423,6 +9655,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -10462,6 +10723,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -11501,6 +11791,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -12540,6 +12859,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -13579,6 +13927,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -14618,6 +14995,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -15657,6 +16063,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -16696,6 +17131,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -17735,6 +18199,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -18774,6 +19267,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -19813,6 +20335,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -20852,6 +21403,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -21891,6 +22471,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -22930,6 +23539,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     },
@@ -23969,6 +24607,35 @@
           "default_interaction": null,
           "bbox_w_norm": 0.014,
           "bbox_h_norm": 0.011
+        },
+        {
+          "image": "deco_banner_cloth.webp",
+          "name": "🎏 橫幅布條(動態字)",
+          "type": "decoration",
+          "scale": 0.18,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "deco_arch_wood.webp",
+          "name": "⛩️ 木拱門(動態字)",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012
+        },
+        {
+          "image": "fx_warm_glow.webp",
+          "name": "✨ 暖光暈(疊光)",
+          "type": "decoration",
+          "scale": 0.33,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "blend": "add",
+          "anchor_y": 0.5
         }
       ]
     }

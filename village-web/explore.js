@@ -253,6 +253,11 @@ class ExploreScene extends Phaser.Scene {
         spr.setOrigin(b.sprite.anchor_x || 0.5, b.sprite.anchor_y || 1.0);
         spr.setScale(b.sprite.scale || 1.0);
         if (b.sprite.rotation) spr.setRotation(b.sprite.rotation);
+        // 加法混合（光暈類疊光素材；背景鎖死鐵律：光效疊圖層、不重繪底圖）＋柔和呼吸
+        if (b.sprite.blend === "add") {
+          spr.setBlendMode(Phaser.BlendModes.ADD);
+          this.tweens.add({ targets: spr, alpha: { from: 0.5, to: 0.9 }, duration: 1600, yoyo: true, repeat: -1 });
+        }
         spr.setDepth(anchor.y);
         // render_depth：覆寫排序深度。平鋪地面(翻土田)用低值永遠在玩家下；柵欄後排用低值永遠在玩家後
         if (typeof b.render_depth === "number") spr.setDepth(b.render_depth);
@@ -267,6 +272,8 @@ class ExploreScene extends Phaser.Scene {
           const SIGN_GEO = {
             "deco_signpost_arrow_right.webp": { y: 0.66, w: 0.55, x: -0.08 },
             "deco_signpost_arrow_left.webp":  { y: 0.66, w: 0.55, x: 0.08 },
+            "deco_banner_cloth.webp":         { y: 0.43, w: 0.65, x: 0 },
+            "deco_arch_wood.webp":            { y: 0.845, w: 0.5, x: 0 },
           };
           const geo = SIGN_GEO[sImg] || { y: 0.91, w: 0.8, x: 0 };
           const sh = spr.displayHeight, sw2 = spr.displayWidth;
@@ -487,6 +494,8 @@ class ExploreScene extends Phaser.Scene {
           alpha: { from: 0.6, to: 1 }, duration: 850, yoyo: true, repeat: -1,
         });
         // 傳送點標籤：小木牌（對齊機台插牌/底部木質按鈕的世界內視覺語言）
+        // hide_label=true：場景已自帶入口語言（橫幅/拱門/路標）就不疊浮空標籤，箭頭與底部按鈕照常
+        if (!pt.hide_label) {
         const lbl = this.add.text(0, 0, (pt.label || "前往") + "  ›", {
           fontFamily: '"Yuanti TC","YouYuan","PingFang TC","Microsoft JhengHei",sans-serif', fontSize: "19px",
           color: "#fff7e6", fontStyle: "bold",
@@ -502,6 +511,7 @@ class ExploreScene extends Phaser.Scene {
           { tl: pr - 3, tr: pr - 3, bl: 0, br: 0 });
         pg.lineStyle(2, 0xfff2dd, 0.9); pg.strokeRoundedRect(-pw / 2, -ph / 2, pw, ph, pr);           // 奶油邊框
         this.add.container(cx, cy - 66, [pg, lbl]).setDepth(cy + 2);
+        }
         this.portals.push({
           id: pt.id, cx, cy, radius: pt.radius || 130,
           target_map: pt.target_map, target_spawn: pt.target_spawn, facing: pt.facing,

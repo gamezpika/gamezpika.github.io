@@ -59,7 +59,8 @@
           "x": 0.12,
           "y": 0.34
         },
-        "label": "回村莊"
+        "label": "回村莊",
+        "hide_label": true
       },
       {
         "id": "to_competitive",
@@ -73,7 +74,8 @@
           "x": 0.15,
           "y": 0.5
         },
-        "label": "前往競技場"
+        "label": "前往競技場",
+        "hide_label": true
       }
     ],
     "buildings": [
@@ -1523,52 +1525,58 @@
         "render_order": 100
       },
       {
-        "id": "signpost_to_competitive",
-        "name": "路標·競技場",
+        "id": "gate_banner",
+        "name": "競技場橫幅",
         "category": "decoration",
         "sprite": {
-          "image": "deco_signpost_arrow_left.webp",
-          "scale": 0.13,
+          "image": "deco_banner_cloth.webp",
+          "scale": 0.18,
           "anchor_x": 0.5,
           "anchor_y": 1
         },
         "anchor": {
-          "x": 0.47,
-          "y": 0.3
+          "x": 0.4,
+          "y": 0.135
         },
         "sign_text": "競技場",
-        "bounding_box": {
-          "x_min": 0.455,
-          "y_min": 0.285,
-          "x_max": 0.485,
-          "y_max": 0.3
-        },
         "interaction": null,
-        "render_order": 120
+        "render_order": 60
       },
       {
-        "id": "signpost_to_village",
-        "name": "路標·村莊",
+        "id": "gate_glow",
+        "name": "門洞暖光",
         "category": "decoration",
         "sprite": {
-          "image": "deco_signpost_arrow_right.webp",
-          "scale": 0.13,
+          "image": "fx_warm_glow.webp",
+          "scale": 0.33,
+          "anchor_x": 0.5,
+          "anchor_y": 0.5,
+          "blend": "add"
+        },
+        "anchor": {
+          "x": 0.4,
+          "y": 0.175
+        },
+        "interaction": null,
+        "render_order": 61
+      },
+      {
+        "id": "walkway_arch",
+        "name": "村莊拱門",
+        "category": "decoration",
+        "sprite": {
+          "image": "deco_arch_wood.webp",
+          "scale": 0.22,
           "anchor_x": 0.5,
           "anchor_y": 1
         },
         "anchor": {
-          "x": 0.92,
-          "y": 0.49
+          "x": 0.915,
+          "y": 0.635
         },
         "sign_text": "村莊",
-        "bounding_box": {
-          "x_min": 0.905,
-          "y_min": 0.475,
-          "x_max": 0.935,
-          "y_max": 0.49
-        },
         "interaction": null,
-        "render_order": 120
+        "render_order": 130
       }
     ],
     "obstacle_areas": [

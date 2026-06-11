@@ -478,7 +478,8 @@ class ExploreScene extends Phaser.Scene {
         // 顏色防呆：只收 6 位 hex，亂值(red/#abc)一律回預設暖金
         const m6 = /^#?([0-9a-fA-F]{6})$/.exec(String(colHex).trim());
         const col = m6 ? parseInt(m6[1], 16) : 0xffc46e;
-        const rw = (pt.radius || 130) * 1.15, rh = rw * 0.42;   // 視覺橢圓 ≈ 觸發半徑（壓扁成地面透視）
+        // 圓墊大小跟觸發半徑脫鉤：固定小圓墊（剛好站一個人），pt.ring_w 可覆寫
+        const rw = pt.ring_w || 110, rh = rw * 0.42;
         const ring = this.add.graphics({ x: cx, y: cy });
         ring.fillStyle(col, 0.22); ring.fillEllipse(0, 0, rw, rh);            // 內底淡色
         ring.lineStyle(8, col, 0.35); ring.strokeEllipse(0, 0, rw * 1.06, rh * 1.06); // 外暈(柔)
@@ -504,6 +505,7 @@ class ExploreScene extends Phaser.Scene {
         }
         this.portals.push({
           id: pt.id, cx, cy, radius: pt.radius || 130,
+          ax: rw / 2, by: rh / 2,   // 圓墊橢圓半軸（觸發判定用：腳真的踩進圈才算）
           target_map: pt.target_map, target_spawn: pt.target_spawn, facing: pt.facing,
           label: pt.label || "前往",
         });
@@ -591,10 +593,11 @@ class ExploreScene extends Phaser.Scene {
     const px = this.player.x, py = this.player.y;
     let nearest = null, best = Infinity, anyInside = false;
     for (const pt of this.portals) {
-      const d = Math.hypot(px - pt.cx, py - pt.cy);
-      if (d < pt.radius) { anyInside = true; }
-      // 自動傳送觸發區=圈心 65%：踩上圓圈就走、擦邊路過不誤觸（派派 6/11：不用按鈕直接切換）
-      if (d < pt.radius * 0.65 && d < best) { best = d; nearest = pt; }
+      // 橢圓距離：<=1 表示腳真的踩進畫出來的圓墊（視覺圈=觸發圈，沒碰到絕不切換）
+      const ex = (px - pt.cx) / pt.ax, ey = (py - pt.cy) / pt.by;
+      const e2 = ex * ex + ey * ey;
+      if (e2 < 1.6 * 1.6) { anyInside = true; }   // 武裝判定範圍=圈的1.6倍（落地後要走離圈一段才武裝）
+      if (e2 <= 1 && e2 < best) { best = e2; nearest = pt; }
     }
     if (!anyInside) this._portalArmed = true;  // 離開所有傳送門圈後才武裝（防一落地就被彈回）
     if (this._portalArmed && nearest && !this.modalOpen && !this._transitioning) {

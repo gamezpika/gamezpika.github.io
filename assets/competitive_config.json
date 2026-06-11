@@ -90,7 +90,30 @@
         "label": "前往商店街"
       }
     ],
-    "buildings": [],
+    "buildings": [
+      {
+        "id": "arena_crowd_top",
+        "name": "觀眾",
+        "category": "decoration",
+        "sprite": {
+          "image": "arena_crowd.webp",
+          "scale": 1.0,
+          "anchor_x": 0.5,
+          "anchor_y": 0.5,
+          "frame_width": 1520,
+          "frame_height": 398,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 6
+        },
+        "anchor": {
+          "x": 0.5,
+          "y": 0.21
+        },
+        "render_depth": 1
+      }
+    ],
     "obstacle_areas": [],
     "npcs": [],
     "objects": []

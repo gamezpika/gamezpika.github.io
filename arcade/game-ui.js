@@ -1,7 +1,7 @@
 /* 遊樂場三遊戲共用 UI（打地鼠/聽力小火車/名人九宮格）
  * window.arcadeUI:
  *   intro({ icon, title, sub, steps:[{ico,text}], onStart })
- *     封面（標題＋▶開始遊戲＋📖怎麼玩）；進頁教學卡自動打開、可「略過」，
+ *     封面（標題＋開始遊戲＋怎麼玩）；進頁教學卡自動打開、可「略過」，
  *     按「開始遊戲」才呼叫 onStart 開局。
  *   victory({ win, title, sub, rewards:[{key,icon,label}], onReplay, onExit }) → vid
  *     統一勝利結算：金光放射＋拱形標題＋徽章＋獲得獎勵列。
@@ -46,7 +46,7 @@
         const steps = (o.steps || []).map((s, i) =>
             `<li class="agi-step">
                 <span class="agi-step-n">${i + 1}</span>
-                <span class="agi-step-ico">${iconHTML(s.ico)}</span>
+                ${s.ico ? `<span class="agi-step-ico">${iconHTML(s.ico)}</span>` : ""}
                 <span class="agi-step-tx">${esc(s.text)}</span>
             </li>`).join("");
         root.innerHTML = `
@@ -54,15 +54,15 @@
                 <div class="agi-icon">${iconHTML(o.icon, "agi-icon-img")}</div>
                 <div class="agi-title">${esc(o.title || "")}</div>
                 <div class="agi-sub">${esc(o.sub || "")}</div>
-                <button class="agi-btn" id="agi-start">▶ 開始遊戲</button>
-                <button class="agi-btn2" id="agi-how">📖 怎麼玩</button>
+                <button class="agi-btn" id="agi-start"><img class="bico" src="arcade/img/icons/ui_play.png?v=1" alt=""> 開始遊戲</button>
+                <button class="agi-btn2" id="agi-how"><img class="bico" src="arcade/img/icons/ui_book.png?v=1" alt=""> 怎麼玩</button>
             </div>
             <div class="agi-tutwrap open" id="agi-tutwrap">
                 <div class="agi-tutcard">
-                    <button class="agi-skip" id="agi-skip">略過 ✕</button>
-                    <div class="agi-tuthead">📖 怎麼玩</div>
+                    <button class="agi-skip" id="agi-skip">略過</button>
+                    <div class="agi-tuthead"><img class="bico" src="arcade/img/icons/ui_book.png?v=1" alt=""> 怎麼玩</div>
                     <ol class="agi-steps">${steps}</ol>
-                    <button class="agi-btn" id="agi-start2">▶ 開始遊戲</button>
+                    <button class="agi-btn" id="agi-start2"><img class="bico" src="arcade/img/icons/ui_play.png?v=1" alt=""> 開始遊戲</button>
                 </div>
             </div>`;
         root.classList.add("open");
@@ -123,8 +123,8 @@
             </div>
             <div class="agv-rewards">${tiles}</div>
             <div class="agv-actions">
-                <button class="agv-btn agv-btn-replay" id="agv-replay">🔄 再玩一次</button>
-                <button class="agv-btn agv-btn-exit" id="agv-exit">🎡 回遊樂場</button>
+                <button class="agv-btn agv-btn-replay" id="agv-replay"><img class="bico" src="arcade/img/icons/refresh.png?s=6" alt=""> 再玩一次</button>
+                <button class="agv-btn agv-btn-exit" id="agv-exit"><img class="bico" src="arcade/img/icons/ui_ferris.png?v=1" alt=""> 回遊樂場</button>
             </div>`;
         root.classList.add("open");
 

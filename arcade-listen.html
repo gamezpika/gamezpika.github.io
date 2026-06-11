@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>🚂 聽力重組小火車</title>
+<title>聽力重組小火車</title>
 <link rel="stylesheet" href="arcade/base.css?v=2">
-<link rel="stylesheet" href="arcade/english_puzzle.css?v=2">
-<link rel="stylesheet" href="arcade/game-ui.css?v=1">
+<link rel="stylesheet" href="arcade/english_puzzle.css?v=3">
+<link rel="stylesheet" href="arcade/game-ui.css?v=2">
 </head>
 <body>
 
@@ -14,7 +14,7 @@
 <div id="screen-en-puzzle" class="screen active">
     <header class="screen-header">
         <button class="btn-back" id="enp-back">←</button>
-        <span class="screen-title">🚂 聽力重組小火車</span>
+        <span class="screen-title"><img class="emo" src="arcade/img/icons/ui_train.png?v=1" alt=""> 聽力重組小火車</span>
     </header>
     <div class="game-stats">
         <span class="streak-display" id="enp-streak"><img class="emo" src="arcade/img/icons/fire.png?s=6" alt=""> 0</span>
@@ -24,7 +24,7 @@
     <div class="enp-area">
         <div class="enp-prompt" id="enp-prompt">中文意思</div>
         <button class="enp-listen-btn" id="enp-listen-btn" style="display:none;">
-            🔊 播放英文錄音
+            <img class="emo" src="arcade/img/icons/ui_speaker.png?v=1" alt=""> 播放英文錄音
         </button>
         <audio id="enp-audio" preload="auto"></audio>
         <div class="enp-answer-slots" id="enp-answer-slots"></div>
@@ -32,7 +32,7 @@
         <div class="enp-feedback" id="enp-feedback"></div>
         <div class="enp-actions">
             <button class="enp-btn enp-btn-secondary" id="enp-clear">清空</button>
-            <button class="enp-btn enp-btn-primary" id="enp-submit">送出 ✓</button>
+            <button class="enp-btn enp-btn-primary" id="enp-submit">送出</button>
         </div>
     </div>
     <!-- 🚂 聽力整句答對：小火車開過螢幕 -->
@@ -45,7 +45,7 @@
 <div id="screen-en-img-puzzle" class="screen">
     <header class="screen-header">
         <button class="btn-back" id="enip-back">←</button>
-        <span class="screen-title">🖼️ 字配圖</span>
+        <span class="screen-title">字配圖</span>
     </header>
     <div class="game-stats">
         <span class="streak-display" id="enip-streak"></span>
@@ -54,7 +54,7 @@
     </div>
     <div class="enip-area">
         <div class="enip-word" id="enip-word">word</div>
-        <div class="enip-sub">點下面正確的圖片 👇</div>
+        <div class="enip-sub">點下面正確的圖片</div>
         <div class="enip-grid" id="enip-grid"></div>
         <div class="enp-feedback" id="enip-feedback"></div>
     </div>
@@ -66,8 +66,8 @@
 <button id="en-listen-puzzle-entry" style="display:none"></button>
 
 <script src="arcade/shim.js?v=1"></script>
-<script src="arcade/game-ui.js?v=1"></script>
-<script src="arcade/english_puzzle.js?v=2"></script>
+<script src="arcade/game-ui.js?v=3"></script>
+<script src="arcade/english_puzzle.js?v=4"></script>
 <script>
 // 封面＋教學：按「開始遊戲」才開局（教學自動彈出、可略過）
 (function boot() {
@@ -77,9 +77,9 @@
             title: "聽力重組小火車",
             sub: "聽英文 · 拼句子 · 火車出發！",
             steps: [
-                { ico: "🔊", text: "按「播放英文錄音」仔細聽（可以重聽好幾次）" },
-                { ico: "🧩", text: "點下方的單字車廂，照聽到的順序掛上鐵軌拼成句子" },
-                { ico: "✅", text: "拼好按「送出」！共 10 題，答對小火車就載著句子出發、還有金幣" },
+                { ico: "arcade/img/icons/ui_speaker.png?v=1", text: "按「播放英文錄音」仔細聽（可以重聽好幾次）" },
+                { ico: "arcade/img/icons/ui_puzzle.png?v=1", text: "點下方的單字車廂，照聽到的順序掛上鐵軌拼成句子" },
+                { ico: "arcade/img/icons/check_circle.png?s=6", text: "拼好按「送出」！共 10 題，答對小火車就載著句子出發、還有金幣" },
             ],
             onStart: function () { document.getElementById("en-listen-puzzle-entry").click(); },
         });

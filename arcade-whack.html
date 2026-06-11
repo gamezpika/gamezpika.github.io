@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>🔨 打地鼠：九九挑戰</title>
+<title>打地鼠：九九挑戰</title>
 <link rel="stylesheet" href="arcade/base.css?v=2">
 <link rel="stylesheet" href="arcade/whack.css?v=2">
-<link rel="stylesheet" href="arcade/game-ui.css?v=1">
+<link rel="stylesheet" href="arcade/game-ui.css?v=2">
 </head>
 <body>
 
@@ -17,7 +17,7 @@
         <span class="screen-title"><img class="emo" src="arcade/img/whack/hammer.png" alt=""> 打地鼠：九九挑戰</span>
     </header>
     <div class="whack-stats">
-        <span class="whack-time" id="whack-time">⏱ 60</span>
+        <span class="whack-time" id="whack-time"><img class="emo" src="arcade/img/icons/ui_timer.png?v=1" alt=""> 60</span>
         <span class="whack-score" id="whack-score"><img class="emo" src="arcade/img/icons/hundred.png?s=6" alt=""> 0</span>
         <span class="whack-combo" id="whack-combo"><img class="emo" src="arcade/img/icons/fire.png?s=6" alt=""> 0</span>
     </div>
@@ -36,8 +36,8 @@
 <button id="whack-entry-btn" style="display:none"></button>
 
 <script src="arcade/shim.js?v=1"></script>
-<script src="arcade/game-ui.js?v=1"></script>
-<script src="arcade/game_whack.js?v=2"></script>
+<script src="arcade/game-ui.js?v=3"></script>
+<script src="arcade/game_whack.js?v=4"></script>
 <script>
 // 封面＋教學：按「開始遊戲」才開局（教學自動彈出、可略過）
 (function boot() {
@@ -47,9 +47,9 @@
             title: "打地鼠：九九挑戰",
             sub: "60 秒乘法大亂鬥",
             steps: [
-                { ico: "🔢", text: "看上方的乘法題目（例：7 × 6 = ?），地鼠會頂著數字冒出來" },
-                { ico: "🔨", text: "點「答案正確」的地鼠！答對 +10 分還有連擊加分，打錯 −5 分" },
-                { ico: "⏱", text: "限時 60 秒盡量得分；漏掉的地鼠不扣分，放心瞄準" },
+                { ico: "arcade/img/icons/ui_numbers.png?v=1", text: "看上方的乘法題目（例：7 × 6 = ?），地鼠會頂著數字冒出來" },
+                { ico: "arcade/img/whack/hammer.png", text: "點「答案正確」的地鼠！答對 +10 分還有連擊加分，打錯 −5 分" },
+                { ico: "arcade/img/icons/ui_timer.png?v=1", text: "限時 60 秒盡量得分；漏掉的地鼠不扣分，放心瞄準" },
             ],
             onStart: function () { document.getElementById("whack-entry-btn").click(); },
         });

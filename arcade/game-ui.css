@@ -163,6 +163,12 @@
     text-shadow: 0 3px 0 #4a5058, 0 7px 16px rgba(0, 0, 0, 0.5);
 }
 
+/* 按鈕/標題內的小圖示（Codex 統一圖示套，取代 emoji） */
+.agi-btn .bico, .agi-btn2 .bico, .agi-tuthead .bico, .agv-btn .bico {
+    width: 20px; height: 20px; vertical-align: -4px;
+}
+.agi-step-ico img { width: 24px; height: 24px; display: block; }
+
 /* ── 封面 + 教學 overlay ────────────────────── */
 .agi {
     position: fixed; inset: 0; z-index: 900;

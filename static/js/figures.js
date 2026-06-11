@@ -147,13 +147,13 @@
 
         // 封面＋教學：按「開始遊戲」才開局（教學自動彈出、可略過）
         window.arcadeUI.intro({
-            icon: "🏛",
+            icon: "arcade/img/icons/ui_temple.png?v=1",
             title: "名人九宮格",
             sub: "翻牌記憶 · 認識 9 位中外偉人",
             steps: [
-                { ico: "🔍", text: "先看 7 秒，記住 9 位偉人各在哪個位置" },
-                { ico: "🌀", text: "卡片蓋起來開始洗牌——眼睛跟好，別跟丟！" },
-                { ico: "👆", text: "找出題目指定的偉人，答對看知識卡；共 5 題，洗牌會越來越快" },
+                { ico: "arcade/img/icons/ui_magnifier.png?v=1", text: "先看 7 秒，記住 9 位偉人各在哪個位置" },
+                { ico: "arcade/img/icons/ui_swirl.png?v=1", text: "卡片蓋起來開始洗牌——眼睛跟好，別跟丟！" },
+                { ico: "arcade/img/icons/ui_tap.png?v=1", text: "找出題目指定的偉人，答對看知識卡；共 5 題，洗牌會越來越快" },
             ],
             onStart: startRound,
         });
@@ -173,8 +173,8 @@
             win: true,
             sub: "五關全部破關！你是名人達人！",
             rewards: [
-                { key: "cards", icon: "📜", label: "知識卡 ×5" },
-                { key: "correct", icon: "✅", label: "答對 5/5" },
+                { key: "cards", icon: "arcade/img/icons/scroll.png?v=1", label: "知識卡 ×5" },
+                { key: "correct", icon: "arcade/img/icons/check_circle.png?s=6", label: "答對 5/5" },
             ],
             onReplay: replayAll,
             onExit: FROM_PLAYGROUND ? () => { location.href = playgroundUrl(); } : null,
@@ -213,7 +213,7 @@
         $("fg-target-name").textContent = target.name;
         $("fg-hints").innerHTML = target.hints.map(h => `<span class="fg-hint">${h}</span>`).join("");
         const speedHint = currentTargetIdx === 0 ? "" : (currentTargetIdx < 3 ? "（速度漸快）" : "（速度加快！）");
-        $("fg-status").textContent = "記住每位偉人的位置 🔍" + speedHint;
+        $("fg-status").innerHTML = '記住每位偉人的位置 <img src="arcade/img/icons/ui_magnifier.png?v=1" alt="">' + speedHint;
         $("fg-status").className = "fg-status preview";
         $("fg-progress").textContent = `第 ${currentTargetIdx + 1} / ${TOTAL_ROUNDS} 題`;
         $("fg-controls").style.display = "none";
@@ -234,7 +234,7 @@
     // ─── 階段 4：洗牌（9 張全部同時滑動到新位置，2 次大洗） ──
     function shuffleCards() {
         state = STATE.SHUFFLE;
-        $("fg-status").textContent = "洗牌中… 別跟丟！🌀";
+        $("fg-status").innerHTML = '洗牌中… 別跟丟！<img src="arcade/img/icons/ui_swirl.png?v=1" alt="">';
         $("fg-status").className = "fg-status shuffle";
 
         let round = 0;
@@ -263,7 +263,7 @@
     // ─── 階段 5：玩家可猜 ───────────────────────
     function guessPhase() {
         state = STATE.GUESS;
-        $("fg-status").textContent = "你的回合！點一張卡 👆";
+        $("fg-status").innerHTML = '你的回合！點一張卡 <img src="arcade/img/icons/ui_tap.png?v=1" alt="">';
         $("fg-status").className = "fg-status guess";
     }
 
@@ -292,7 +292,7 @@
             setTimeout(() => {
                 card.classList.add("flipped");
                 card.classList.remove("wrong");
-                $("fg-status").textContent = "你的回合！點一張卡 👆";
+                $("fg-status").innerHTML = '你的回合！點一張卡 <img src="arcade/img/icons/ui_tap.png?v=1" alt="">';
                 $("fg-status").className = "fg-status guess";
             }, 3000);
         }
@@ -313,7 +313,7 @@
             // 最後一題：關掉知識卡後進共用勝利結算頁
             pendingVictory = true;
             $("fg-controls").style.display = "none";
-            $("fg-status").textContent = "🎉 五關全部破關！你是名人達人！";
+            $("fg-status").innerHTML = '<img src="arcade/img/icons/celebrate.png?s=6" alt=""> 五關全部破關！你是名人達人！';
             $("fg-status").className = "fg-status guess";
         } else {
             $("fg-controls").style.display = "flex";
@@ -338,7 +338,7 @@
     }
 
     function showAbout() {
-        $("fg-modal-icon").innerHTML = "🏛";
+        $("fg-modal-icon").innerHTML = '<img src="arcade/img/icons/ui_temple.png?v=1" alt="" style="object-fit:contain;padding:10px;box-sizing:border-box">';
         $("fg-modal-name").textContent = "名人九宮格";
         $("fg-modal-title").textContent = "EduArena 社會科技術 Demo";
         $("fg-modal-era").textContent = "翻牌記憶遊戲";

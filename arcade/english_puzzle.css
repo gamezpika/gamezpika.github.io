@@ -307,7 +307,7 @@
     box-shadow: inset 0 -10px 0 -6px rgba(120, 80, 40, 0.35);  /* 鐵軌線 */
 }
 .enp-area.enp-train .enp-answer-slots.empty::before {
-    content: "🚂 把單字車廂掛上來，組成聽到的句子～";
+    content: "把單字車廂掛上來，組成聽到的句子～";
     color: #6b4a23;
 }
 .enp-area.enp-train .enp-chip-pool {

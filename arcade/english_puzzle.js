@@ -72,7 +72,7 @@
         // 立刻切到遊戲畫面 + 顯示「準備中」，使用者才知道有在跑、不會以為壞掉狂點
         try { window.eduApp.showScreen("en-puzzle"); } catch (e) {}
         const p = $("enp-prompt"), lb = $("enp-listen-btn");
-        if (p) { p.style.display = ""; p.textContent = "🔊 題目準備中…（第一次比較久，請稍候，不用一直點）"; }
+        if (p) { p.style.display = ""; p.textContent = "題目準備中…（第一次比較久，請稍候，不用一直點）"; }
         if (lb) lb.style.display = "none";
         ["enp-answer-slots", "enp-chip-pool", "enp-feedback"].forEach(id => {
             const el = $(id); if (el) el.innerHTML = "";
@@ -133,7 +133,7 @@
         if (!audio) return;
         // codex P2: 音檔 url 缺 → 玩家看不出來「為何沒聲音」。明確 toast。
         if (!state.currentQ?.audio_url) {
-            if (window.eduApp?.toast) window.eduApp.toast("⚠ 這題音檔尚未備好，請點下一題或回到首頁重進");
+            if (window.eduApp?.toast) window.eduApp.toast("這題音檔尚未備好，請點下一題或回到首頁重進");
             return;
         }
         try {
@@ -148,13 +148,13 @@
                     const msg = e?.name || "";
                     console.warn("[enp-audio]", msg, e?.message || e);
                     if (msg !== "NotAllowedError" && window.eduApp?.toast) {
-                        window.eduApp.toast("⚠ 音檔載入失敗，請點 🔊 重試");
+                        window.eduApp.toast("音檔載入失敗，請再按一次播放鈕重試");
                     }
                 });
             }
         } catch (e) {
             console.warn("[enp-audio]", e);
-            if (window.eduApp?.toast) window.eduApp.toast("⚠ 音檔播放異常");
+            if (window.eduApp?.toast) window.eduApp.toast("音檔播放異常");
         }
     }
 
@@ -241,7 +241,7 @@
             bits += `<i class="enp-cf" style="left:${l}%;background:${c};`
                 + `animation-delay:${dl}s;animation-duration:${sp}s"></i>`;
         }
-        el.innerHTML = `<div class="enp-cele-banner">🎉 連對 ${streak}！到站慶祝</div>${bits}`;
+        el.innerHTML = `<div class="enp-cele-banner"><img class="emo" src="arcade/img/icons/celebrate.png?s=6" alt=""> 連對 ${streak}！到站慶祝</div>${bits}`;
         el.classList.remove("show");
         void el.offsetWidth;
         el.classList.add("show");
@@ -449,9 +449,12 @@
                 window.eduPuzzleSfx?.play("wrong");
             }
             const _head = d.correct
-                ? "✓ 答對！ +" + (d.coins_earned || 0) + " 金"
-                : "✗ 答錯了";
-            let _html = '<div class="enp-fb-head">' + esc(_head) + '</div>'
+                ? "答對！+" + (d.coins_earned || 0) + " 金"
+                : "答錯了";
+            const _headIcon = d.correct
+                ? '<img class="emo" src="arcade/img/icons/check_circle.png?s=6" alt="">'
+                : '<img class="emo" src="arcade/img/icons/ui_cross.png?v=1" alt="">';
+            let _html = '<div class="enp-fb-head">' + _headIcon + ' ' + esc(_head) + '</div>'
                 + '<div class="enp-fb-row"><span class="enp-fb-k">正確句子</span>'
                 + '<span class="enp-fb-v">' + esc(_ans) + '</span></div>';
             if (_zh) {
@@ -510,7 +513,7 @@
                 rewards: [
                     { key: "coins", icon: "arcade/img/icons/coin.png?s=6", label: `+${s.coins} 金` },
                     { key: "score", icon: "arcade/img/icons/hundred.png?s=6", label: `${pct} 分` },
-                    { key: "correct", icon: "✅", label: `${s.correct}/${s.total}` },
+                    { key: "correct", icon: "arcade/img/icons/check_circle.png?s=6", label: `${s.correct}/${s.total}` },
                 ],
                 onReplay: () => startRound(replayMode),
                 onExit: () => window.eduApp.showScreen("english-hub"),
@@ -683,7 +686,7 @@
                 st.streak = d.streak || 0;
                 btn.classList.add("correct");
                 fb.className = "enp-feedback correct show";
-                fb.textContent = "✓ 答對！+" + (d.coins_earned || 0) + " 金";
+                fb.textContent = "答對！+" + (d.coins_earned || 0) + " 金";
                 window.eduPuzzleSfx?.play("correct");
             } else {
                 st.wrong++;
@@ -693,7 +696,7 @@
                 const correctBtn = document.querySelector(`#enip-grid .enip-choice[data-idx="${d.correct_idx}"]`);
                 if (correctBtn) correctBtn.classList.add("correct");
                 fb.className = "enp-feedback wrong show";
-                fb.textContent = "✗ 正解：" + (d.correct_word || "");
+                fb.textContent = "正解：" + (d.correct_word || "");
                 window.eduPuzzleSfx?.play("wrong");
             }
             $("enip-streak").innerHTML = `<img class="emo" src="arcade/img/icons/fire.png?s=6" alt=""> ${st.streak}`;
@@ -732,7 +735,7 @@
                 rewards: [
                     { key: "coins", icon: "arcade/img/icons/coin.png?s=6", label: `+${s.coins} 金` },
                     { key: "score", icon: "arcade/img/icons/hundred.png?s=6", label: `${pct} 分` },
-                    { key: "correct", icon: "✅", label: `${s.correct}/${s.total}` },
+                    { key: "correct", icon: "arcade/img/icons/check_circle.png?s=6", label: `${s.correct}/${s.total}` },
                 ],
                 onReplay: start,
                 onExit: () => window.eduApp.showScreen("english-hub"),

@@ -190,7 +190,7 @@
     function updateStats() {
         $("whack-score").innerHTML = `<img class="emo" src="arcade/img/icons/hundred.png?s=6" alt=""> ${score}`;
         $("whack-combo").innerHTML = `<img class="emo" src="arcade/img/icons/fire.png?s=6" alt=""> ${combo}`;
-        $("whack-time").textContent = `⏱ ${timeLeft}`;
+        $("whack-time").innerHTML = `<img class="emo" src="arcade/img/icons/ui_timer.png?v=1" alt=""> ${timeLeft}`;
     }
 
     // ── 流程 ─────────────────────────────────────

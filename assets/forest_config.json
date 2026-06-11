@@ -207,7 +207,12 @@
           "x_max": 0.9964958390519231,
           "y_max": 0.9945709622491873
         },
-        "interaction": null,
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "fpract:english",
+          "label": "英語禁忌森林",
+          "radius": 140
+        },
         "path": [],
         "center": {
           "x": 0.8862109755851877,

@@ -308,6 +308,28 @@ class ExploreScene extends Phaser.Scene {
           body: b.interaction.body || "",
           shop_id: bShop,
         });
+        // 建築門口圓墊（派派 6/12：建築物門口也要傳送點）：
+        // 會開面板的建築（open_shop）在門口畫小一號的圈，視覺上跟換地圖大圈同語言。
+        // b.door_ring=false 可單棟關閉；b.door_ring_w / b.door_ring_dx / b.door_ring_dy 可微調。
+        const _ringable = b.interaction.type === "open_shop" ||
+          (b.interaction.type === "open_modal" && (b.interaction.body || b.interaction.title));  // 走近會跳內容的也算（Codex P2）
+        if (_ringable && b.door_ring !== false) {
+          const dcx = this._nx(a.x) + (b.door_ring_dx || 0);
+          const dcy = this._ny(a.y) + (b.door_ring_dy || 0);
+          const dHex = b.door_ring_color || config.portal_color || "#ffc46e";
+          const dm6 = /^#?([0-9a-fA-F]{6})$/.exec(String(dHex).trim());
+          const dcol = dm6 ? parseInt(dm6[1], 16) : 0xffc46e;
+          const drw = b.door_ring_w || 84, drh = drw * 0.42;
+          const dring = this.add.graphics({ x: dcx, y: dcy });
+          dring.fillStyle(dcol, 0.18); dring.fillEllipse(0, 0, drw, drh);
+          dring.lineStyle(5, dcol, 0.9); dring.strokeEllipse(0, 0, drw, drh);
+          dring.lineStyle(2, 0xffffff, 0.6); dring.strokeEllipse(0, 0, drw * 0.7, drh * 0.7);
+          dring.setDepth(dcy - 6);
+          this.tweens.add({
+            targets: dring, scaleX: { from: 0.95, to: 1.05 }, scaleY: { from: 0.95, to: 1.05 },
+            alpha: { from: 0.55, to: 0.9 }, duration: 1200, yoyo: true, repeat: -1,
+          });
+        }
       }
     });
 

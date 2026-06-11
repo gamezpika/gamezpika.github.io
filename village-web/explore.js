@@ -508,6 +508,8 @@ class ExploreScene extends Phaser.Scene {
           ax: rw / 2, by: rh / 2,   // 圓墊橢圓半軸（觸發判定用：腳真的踩進圈才算）
           target_map: pt.target_map, target_spawn: pt.target_spawn, facing: pt.facing,
           label: pt.label || "前往",
+          locked: !!pt.locked,      // 鎖定傳送點（暫不開放）：踩進去只顯示提示，不傳送
+          locked_msg: pt.locked_msg || "",
         });
       });
     }
@@ -572,6 +574,17 @@ class ExploreScene extends Phaser.Scene {
   _hidePortalBtn() { if (this.portalEl) this.portalEl.classList.remove("show"); }
 
   // 走 portal 換地圖：黑幕淡入 → scene.restart（Phaser 自動拆掉舊場景所有 NPC/collider/粒子）→ 新場景淡出黑幕
+  // 鎖定傳送點提示：玩家頭上冒一句話，2 秒淡出（不開面板、不擋操作）
+  _showLockedToast(msg) {
+    const t = this.add.text(this.player.x, this.player.y - 90, msg, {
+      fontFamily: "-apple-system, 'PingFang TC', sans-serif",
+      fontSize: "20px", fontStyle: "bold", color: "#fff",
+      backgroundColor: "rgba(40,30,16,0.85)", padding: { x: 14, y: 8 },
+    }).setOrigin(0.5).setDepth(99999);
+    this.tweens.add({ targets: t, y: t.y - 26, alpha: 0, delay: 1400, duration: 700,
+                      onComplete: () => t.destroy() });
+  }
+
   _enterPortal(portal) {
     if (this._transitioning || this.modalOpen || !portal) return;
     this._transitioning = true;
@@ -599,10 +612,22 @@ class ExploreScene extends Phaser.Scene {
       if (e2 < 1.6 * 1.6) { anyInside = true; }   // 武裝判定範圍=圈的1.6倍（落地後要走離圈一段才武裝）
       if (e2 <= 1 && e2 < best) { best = e2; nearest = pt; }
     }
-    if (!anyInside) this._portalArmed = true;  // 離開所有傳送門圈後才武裝（防一落地就被彈回）
+    if (!anyInside) {
+      this._portalArmed = true;  // 離開所有傳送門圈後才武裝（防一落地就被彈回）
+      for (const pt of this.portals) pt._toasted = false;   // 離圈後，鎖定提示可再跳
+    }
     if (this._portalArmed && nearest && !this.modalOpen && !this._transitioning) {
-      this._nearPortal = nearest;
-      this._enterPortal(nearest);   // 走進圈直接切換地圖
+      if (nearest.locked) {
+        // 暫不開放：踩進圈只跳一次提示，離圈再進才會再跳
+        if (!nearest._toasted) {
+          nearest._toasted = true;
+          this._showLockedToast(nearest.locked_msg || "這條航線尚未開放，敬請期待！");
+        }
+        this._nearPortal = null;
+      } else {
+        this._nearPortal = nearest;
+        this._enterPortal(nearest);   // 走進圈直接切換地圖
+      }
     } else {
       this._nearPortal = null;
     }

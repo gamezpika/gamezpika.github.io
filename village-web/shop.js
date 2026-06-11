@@ -834,7 +834,9 @@
   function caActLabel(ct) {
     return ct === "boss_clear" ? "⚔️ 去挑戰禁忌森林"
       : ct === "pvp_win" ? "🏟️ 去競技場挑戰"
-        : ct === "exam_pass" ? "📝 去考檢定" : "";
+        : ct === "exam_pass" ? "📝 去考檢定"
+          : ct === "teacher_cert" ? "🎓 去考四院檢定"
+            : ct === "cert_pass" ? "📜 去考英語檢定" : "";
   }
   // demo 一鍵達成：後台灌剛好足夠的紀錄，讓這關可領獎（顆星型不走這裡，用去基礎練習）
   async function caFulfillQuest(quest_key) {
@@ -1295,6 +1297,7 @@
       </div>
       <div style="display:flex;flex-direction:column;gap:10px;">
         <button class="jc-act en-board" style="width:100%;">📋 英語基礎練習（布告欄）</button>
+        <button class="jc-act en-main" style="width:100%;">📜 主線任務（空蕩蕩的學院）</button>
         <button class="jc-act en-enter" style="width:100%;background:linear-gradient(135deg,#7b4dd8,#a06bf0);color:#fff;">🔮 進入魔法陣</button>
       </div>`;
     ov.classList.add("open");
@@ -1302,7 +1305,71 @@
       ov.classList.remove("open");          // 收起入口、保留 modal 鎖，去開練習面板
       enOpenBoard(enOnClose);
     });
+    ov.querySelector(".en-main").addEventListener("click", () => enOpenMainQuests());
     ov.querySelector(".en-enter").addEventListener("click", () => enOpenGate());
+  }
+
+  // 主線任務(一) 空蕩蕩的學院：english_main 鏈（pptx 第8版 P74），讀真後台接取/進度/領獎
+  async function enOpenMainQuests() {
+    const ov = enBuildOverlay();
+    enFace(ov, "shakespeare_front.webp", "拜託你了，幫我解開學院空蕩蕩的謎團……", "👑 英文學院 · 院長 莎士比亞");
+    ov.querySelector(".shop-title").textContent = "英語主線 · 空蕩蕩的學院";
+    const box = ov.querySelector(".en-content");
+    box.innerHTML = `<div class="jc-empty">任務載入中…</div>`;
+    ov.classList.add("open");
+    if (!demoToken()) await ensureDemoPlayer();
+    caSubject = "english";
+    const render = async () => {
+      const by = await caLoadMainAPI();
+      const seqs = Object.keys(by).map(Number).sort((a, b) => a - b);
+      if (!seqs.length) { box.innerHTML = `<div class="jc-empty">任務載入失敗，請再試一次</div>`; return; }
+      let rows = "";
+      seqs.forEach((s) => {
+        const aq = by[s];
+        const stt = aq.status;
+        let right;
+        if (stt === "completed") right = `<span class="ca-navq-st" style="color:#3a8f3a;font-weight:800">✓ 已完成</span>`;
+        else if (stt === "available") right = `<button class="jc-act ca-accept" data-key="${aoEsc(aq.key)}">接取</button>`;
+        else if (stt === "active" && aq.can_claim) right = `<button class="jc-act ca-claim" data-key="${aoEsc(aq.key)}">領取</button>`;
+        else if (stt === "active") {
+          const lbl = caActLabel(aq.cond_type);
+          right = `<span class="ca-navq-st" style="color:#c98a2b;font-weight:700">進行中 ${aq.current}/${aq.target}</span>`
+            + (lbl ? ` <button class="jc-act ca-fulfill" data-key="${aoEsc(aq.key)}">${lbl}</button>` : "");
+        } else right = `<span class="ca-navq-st" style="opacity:.45">🔒</span>`;
+        const gift = aq.reward_label
+          ? `道具「${aoEsc(aq.reward_label)}」${aq.reward_coins ? "＋" + aq.reward_coins + " 金幣" : ""}`
+          : (aq.reward_coins ? aq.reward_coins + " 金幣" : "—");
+        rows += `<div class="ca-navq"><span class="ca-navq-ic">${stt === "locked" ? "🔒" : "📜"}</span><span class="ca-navq-t">${aoEsc(aq.title)}</span><span class="ca-navq-r">🎁 ${gift}</span>${right}</div>`;
+      });
+      box.innerHTML = `<div class="ca-navgroup">${rows}</div>`;
+      // 對白泡泡＝目前進行中（沒有就下一個可接取）那關的任務內文
+      const all = seqs.map((s) => by[s]);
+      const cur = all.find((q) => q.status === "active") || all.find((q) => q.status === "available");
+      if (cur && cur.intro) enFace(ov, "shakespeare_front.webp", cur.intro, "👑 院長 莎士比亞");
+      box.querySelectorAll(".ca-accept").forEach((b) => b.addEventListener("click", async function () {
+        this.disabled = true; await caMainAction("accept", this.dataset.key); await render();
+      }));
+      box.querySelectorAll(".ca-fulfill").forEach((b) => b.addEventListener("click", async function () {
+        this.disabled = true; this.textContent = "完成中…"; await caFulfillQuest(this.dataset.key); await render();
+      }));
+      box.querySelectorAll(".ca-claim").forEach((b) => b.addEventListener("click", async function () {
+        this.disabled = true;
+        const r = await caMainAction("claim", this.dataset.key);
+        if (r && r.ok) {
+          if (r.reward_label === "魔法陣傳送石" && !bagCurrent().some((it) => it.id === "stone_teleport")) {
+            addToBag({ id: "stone_teleport", img: "../assets/images/jobtools/stone_teleport.png",
+                       name: "魔法陣傳送石", desc: "英語學院主線任務道具：安全傳送進出魔法陣的奇石。" });
+          }
+          enFace(ov, "shakespeare_front.webp",
+            "獎勵入帳！" + (r.reward_label ? "獲得「" + r.reward_label + "」＋" + (r.reward_coins || 0) + " 金幣" : "+" + (r.reward_coins || 0) + " 金幣"),
+            "👑 院長 莎士比亞");
+        } else if (r && r.error === "condition_not_met") {
+          enFace(ov, "shakespeare_front.webp", "還沒達成條件唷～", "👑 院長 莎士比亞");
+        }
+        await render();
+      }));
+    };
+    await render();
   }
 
   // 解鎖門檻面板（軟門檻）：讀真實進度顯示，demo 一律可試玩直接進

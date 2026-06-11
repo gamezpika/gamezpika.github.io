@@ -597,3 +597,15 @@
 .sq-desc { font-size: 12px; color: #8a6a45; margin-top: 2px; }
 .sq-reward { font-size: 12px; font-weight: 700; color: #c8851a; margin-top: 3px; }
 .sq-claim { flex: 0 0 auto; }
+
+/* 「📥 回報任務」一鍵交付鈕（pptx v8 人物介面調整）：所有大頭人物面板左上角 */
+.ao-principal .ao-report {
+  position: absolute; top: 8px; left: 10px; z-index: 6;
+  font-size: 14px; padding: 8px 14px; white-space: nowrap;
+  background: linear-gradient(135deg, #c8843a, #a8631f); color: #fff2dd;
+  border: 2px solid #fff2dd; border-radius: 12px; font-weight: 800;
+  box-shadow: 0 3px 0 #7a4715, 0 4px 10px rgba(0,0,0,.25);
+}
+.ao-principal .ao-report:disabled { opacity: .6; }
+/* 回報鈕亮起時，泡泡文字向右讓位避免被蓋（Codex P3） */
+.ao-principal.has-report .ao-bubble { padding-left: 128px; }

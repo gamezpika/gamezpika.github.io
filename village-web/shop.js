@@ -516,6 +516,7 @@
     ov.addEventListener("click", (e) => { if (e.target === ov) aoClose(); });
     ov.querySelectorAll(".jc-tab").forEach((b) =>
       b.addEventListener("click", () => { aoTab = b.dataset.tab; aoRender(ov); }));
+    attachReportBtn(ov);
     return ov;
   }
   function aoBubble(ov, txt) { ov.querySelector(".ao-bubble").textContent = txt || ""; }
@@ -650,6 +651,7 @@
     document.body.appendChild(ov);
     ov.querySelector(".shop-close").addEventListener("click", caClose);
     ov.addEventListener("click", (e) => { if (e.target === ov) caClose(); });
+    attachReportBtn(ov);
     return ov;
   }
   function caBubble(ov, txt) { ov.querySelector(".ao-bubble").textContent = txt || ""; }
@@ -699,6 +701,7 @@
     const figs = Array.isArray(c.figures) ? c.figures : [];
     ov.querySelector(".shop-title").textContent = a.title || "國語學院";
     caSetPrincipal(ov, a.dean_img, "👤 " + (a.dean_title || "") + (a.dean_name ? " " + a.dean_name : ""));
+    updateReportBtn(ov, { chain: caSubject, giver: CA_DEAN_GIVER[caSubject] });
     if (caTab !== "overview" && caTab !== "fig" && caTab !== "books") caTab = "overview";
     const tabs = ov.querySelector(".ao-tabs4");
     const TABS = [{ k: "overview", t: "任務一覽" }, { k: "books", t: "典籍收藏" }, { k: "fig", t: "人物圖鑑" }];
@@ -819,6 +822,69 @@
       return by;
     } catch (e) { return {}; }
   }
+  // 「📥 回報任務」（pptx v8 人物介面調整）：只在「這位 NPC 真的有可交付的任務」時出現。
+  // 劇情規則＝跟誰接的任務就跟誰回報（quest.giver_key 對上面板的 NPC），平常隱藏。
+  const QUEST_BAG_ITEMS = {
+    "魔法陣傳送石": { id: "stone_teleport", img: "../assets/images/jobtools/stone_teleport.png", desc: "英語學院主線任務道具：安全傳送進出魔法陣的奇石。" },
+    "封印鑰匙": { id: "key_seal", img: "../assets/images/jobtools/key_seal.png", desc: "鎮魔塔封印的一部分。從魔王汀其手中奪回的關鍵道具。" },
+  };
+  // 院長＝該院主線的發放人（pptx：孔丘/阿基米德/愛因斯坦/韋伯/莎士比亞）
+  const CA_DEAN_GIVER = { chinese: "kongqiu", math: "archimedes", science: "einstein", social: "weber", english: "shakespeare" };
+  let _reportSeq = 0;   // 防 await 競態：晚到的舊查詢不准蓋新狀態
+  async function updateReportBtn(ov, ctx) {
+    const b = ov.querySelector(".ao-report"); if (!b) return;
+    const seq = ++_reportSeq;
+    b.style.display = "none"; b._ready = null; b._ctx = null;
+    const prin0 = b.closest(".ao-principal"); if (prin0) prin0.classList.remove("has-report");
+    if (!ctx || !ctx.chain || !ctx.giver || !demoToken()) return;
+    let d; try {
+      d = await fetch(DEMO_API + "/api/main-quests?chain=" + ctx.chain + "_main",
+        { headers: { "Authorization": "Bearer " + demoToken() } }).then((r) => r.json());
+    } catch (e) { return; }
+    if (seq !== _reportSeq) return;   // 面板已切到別的 NPC，這份結果作廢
+    const ready = ((d && d.quests) || []).filter((q) => q.can_claim && q.giver_key === ctx.giver);
+    if (!ready.length) return;
+    b.textContent = "📥 回報任務（" + ready.length + "）";
+    b._ready = ready.map((q) => q.key); b._ctx = ctx;
+    b.style.display = "";
+    if (prin0) prin0.classList.add("has-report");   // 泡泡文字讓位給按鈕（Codex P3）
+  }
+  function attachReportBtn(ov) {
+    const prin = ov.querySelector(".ao-principal");
+    if (!prin || prin.querySelector(".ao-report")) return;
+    const b = el("button");
+    b.className = "jc-act ao-report";
+    b.textContent = "📥 回報任務";
+    b.style.display = "none";   // 預設隱藏，updateReportBtn 查到可交付才現身
+    b.addEventListener("click", async () => {
+      const keys = b._ready || [], ctx = b._ctx;
+      if (!keys.length) { b.style.display = "none"; return; }
+      b.disabled = true;
+      const seqAtClick = _reportSeq;   // claims 期間若面板換人(_reportSeq 變)，結束後不准動 UI（Codex P2）
+      const say = (m) => { if (_reportSeq === seqAtClick) { const bb = ov.querySelector(".ao-bubble"); if (bb) bb.textContent = m; } };
+      say("回報中…");
+      let claimed = 0, coins = 0; const got = [];
+      for (const k of keys) {
+        const r = await caMainAction("claim", k);
+        if (!(r && r.ok)) continue;
+        claimed++; coins += r.reward_coins || 0;
+        [r.reward_label, r.reward2_label].forEach((lb) => {
+          if (!lb) return;
+          got.push(lb);
+          const bi = QUEST_BAG_ITEMS[lb];
+          if (bi && !bagCurrent().some((it) => it.id === bi.id)) addToBag({ id: bi.id, img: bi.img, name: lb, desc: bi.desc });
+        });
+      }
+      caMainAPI = null;   // 鏈進度變了，院長面板下次重抓
+      say(claimed
+        ? "回報完成！共交付 " + claimed + " 關 ✅" + (coins ? "＋" + coins + " 金幣" : "") + (got.length ? "，獲得「" + got.join("」「") + "」" : "")
+        : "這些任務剛剛已經交付過了！");
+      b.disabled = false;
+      if (_reportSeq === seqAtClick) updateReportBtn(ov, ctx);   // 面板沒換人才重查；換了就交給新面板的 update（Codex P2）
+    });
+    prin.appendChild(b);
+  }
+
   async function caMainAction(path, quest_key) {
     const t = demoToken(); if (!t) return { ok: false };
     try {
@@ -897,6 +963,7 @@
     const t = demoToken(); if (!t) { caBubble(ov, "請先建立角色～"); return; }
     const hdr = { "Content-Type": "application/json", "Authorization": "Bearer " + t };
     const box = ov.querySelector(".ao-content");
+    updateReportBtn(ov, null);
     ov.querySelector(".shop-title").textContent = caSubjConf().label + " · 選擇章節";
     box.innerHTML = `<div class="jc-empty">章節載入中…</div>`;
     let topics; try { topics = await fetch(DEMO_API + "/api/" + caSubject + "/topics", { headers: hdr }).then((r) => r.json()); } catch (e) { box.innerHTML = `<div class="jc-empty">載入失敗，請再試一次</div>`; return; }
@@ -1039,6 +1106,7 @@
   function caRenderNpc(ov) {
     const c = CA_CONTENT || {};
     const n = (c.npcs || {})[caNpcId];
+    updateReportBtn(ov, { chain: caSubject, giver: caNpcId });
     if (!n) {                                  // 未知 npcId：清空避免殘留上一位師長的任務卡
       caBubble(ov, "找不到這位師長。");
       ov.querySelector(".ao-tabs4").innerHTML = "";
@@ -1152,6 +1220,7 @@
 
   /* ── 人物簡介卡（朱熹等尚無任務的師長，走近顯示簡介+任務籌備中）── */
   function caRenderIntro(ov, figName) {
+    updateReportBtn(ov, null);
     const c = CA_CONTENT || {};
     const figs = Array.isArray(c.figures) ? c.figures : [];
     const f = figs.find((x) => x.name === figName);
@@ -1279,6 +1348,7 @@
     document.body.appendChild(ov);
     ov.querySelector(".shop-close").addEventListener("click", enClose);
     ov.addEventListener("click", (e) => { if (e.target === ov) enClose(); });
+    attachReportBtn(ov);
     return ov;
   }
   function enClose() {
@@ -1297,6 +1367,7 @@
     onCloseCb = onClose || null; enOnClose = onClose || null;
     const ov = enBuildOverlay();
     enFace(ov, "shakespeare_front.webp", "歡迎來到英文學院！我是院長莎士比亞。魔法陣中的師長們被黑暗力量入魔了，需要你逐層淨化他們。", "👑 英文學院 · 院長 莎士比亞");
+    updateReportBtn(ov, { chain: "english", giver: "shakespeare" });
     ov.querySelector(".shop-title").textContent = "英文學院";
     ov.querySelector(".en-content").innerHTML = `
       <div style="font-size:13px;color:#8a6d3b;line-height:1.7;margin-bottom:12px;">
@@ -1322,6 +1393,7 @@
   async function enOpenMainQuests() {
     const ov = enBuildOverlay();
     enFace(ov, "shakespeare_front.webp", "拜託你了，幫我解開學院空蕩蕩的謎團……", "👑 英文學院 · 院長 莎士比亞");
+    updateReportBtn(ov, { chain: "english", giver: "shakespeare" });
     ov.querySelector(".shop-title").textContent = "英語主線 · 空蕩蕩的學院";
     const box = ov.querySelector(".en-content");
     box.innerHTML = `<div class="jc-empty">任務載入中…</div>`;
@@ -1393,6 +1465,7 @@
   async function enOpenGate() {
     const ov = enBuildOverlay();
     enFace(ov, "shakespeare_front.webp", "進入魔法陣前，先看看你的修行進度吧。", "🔮 魔法陣 · 解鎖條件");
+    updateReportBtn(ov, null);
     ov.querySelector(".shop-title").textContent = "魔法陣 · 解鎖條件";
     const box = ov.querySelector(".en-content");
     box.innerHTML = `<div class="jc-empty">讀取進度中…</div>`;
@@ -1462,6 +1535,7 @@
     const d = EN_NPC[npcId] || { wake: "清醒的師長", wakeLine: "謝謝你淨化了我！" };
     const ov = enBuildOverlay();
     enFace(ov, npcId + "_front.webp", d.wakeLine, "✨ " + d.wake);
+    updateReportBtn(ov, { chain: "english", giver: npcId + "_wake" });
     ov.querySelector(".shop-title").textContent = "魔法陣 · 第 " + (d.layer || 1) + " 層";
     const hint = d.last
       ? "🎉 你已淨化全部師長，通關英文學院魔法陣！"
@@ -1489,6 +1563,7 @@
     if (enIsPurified(npcId)) { enOpenCleared(npcId, onClose); return; }
     const ov = enBuildOverlay();
     enFace(ov, npcId + "_dark.webp", d.darkLine, (d.boss ? "😈 魔王 " : "👹 入魔的 ") + d.name);
+    updateReportBtn(ov, null);
     ov.querySelector(".shop-title").textContent = "魔法陣 · 第 " + d.layer + " 層" + (d.boss ? "（魔王）" : "");
     ov.classList.add("open");
     const box = ov.querySelector(".en-content");
@@ -1645,6 +1720,7 @@
     const d = EN_NPC[reqId] || { name: "本層師長" };
     const ov = enBuildOverlay();
     enFace(ov, "shakespeare_front.webp", "封印之門緊閉著……必須先淨化本層的入魔師長，門才會開啟。", "🔒 封印之門");
+    updateReportBtn(ov, null);
     ov.querySelector(".shop-title").textContent = "封印之門";
     ov.querySelector(".en-content").innerHTML = `
       <div style="text-align:center;padding:20px 8px;">
@@ -1672,6 +1748,7 @@
     const d = EX_NPC[type] || EX_NPC.mock;
     const ov = caBuildOverlay();
     const tabs = ov.querySelector(".ao-tabs4"); if (tabs) tabs.innerHTML = "";   // 清掉學院殘留的任務/圖鑑分頁，避免污染考試
+    updateReportBtn(ov, null);
     caSetPrincipal(ov, d.img, "📜 " + d.title + " " + d.name);
     caBubble(ov, d.intro);
     ov.querySelector(".shop-title").textContent = (type === "mock" ? "模擬考 · 歐陽修" : "檢定考 · 笛卡兒");

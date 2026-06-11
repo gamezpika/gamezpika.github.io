@@ -161,25 +161,25 @@
   50%      { box-shadow: 0 5px 0 #7a4715, 0 0 22px 5px rgba(255,210,120,.95); }
 }
 
-/* 「前往新地圖」傳送門按鈕 — 比照進入鈕，藍色旅行主題 */
+/* 「前往新地圖」傳送門按鈕 — 跟進入鈕同一套木質風（世界內視覺語言） */
 #enter-portal {
   position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%);
   z-index: 4000; display: none;
   font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
-  font-size: 20px; font-weight: 800; color: #eaf6ff; white-space: nowrap;
-  background: linear-gradient(180deg, #3a9bd8, #1f6fa8);
-  border: 3px solid #dff1ff; border-radius: 999px; padding: 13px 28px;
+  font-size: 20px; font-weight: 800; color: #fff7e6; white-space: nowrap;
+  background: linear-gradient(180deg, #c8843a, #a8631f);
+  border: 3px solid #fff2dd; border-radius: 999px; padding: 13px 28px;
   cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none;
-  box-shadow: 0 5px 0 #134f78, 0 8px 18px rgba(0,0,0,.35);
+  box-shadow: 0 5px 0 #7a4715, 0 8px 18px rgba(0,0,0,.35);
   animation: portal-glow 1.2s ease-in-out infinite;
 }
 #enter-portal.show { display: block; }
-#enter-portal:active { transform: translateX(-50%) translateY(3px); box-shadow: 0 2px 0 #134f78; }
+#enter-portal:active { transform: translateX(-50%) translateY(3px); box-shadow: 0 2px 0 #7a4715; }
 @keyframes portal-glow {
   0%, 100% { transform: translateX(-50%) scale(1) translateY(0);
-             box-shadow: 0 5px 0 #134f78, 0 8px 18px rgba(0,0,0,.35); }
+             box-shadow: 0 5px 0 #7a4715, 0 8px 18px rgba(0,0,0,.35); }
   50%      { transform: translateX(-50%) scale(1.07) translateY(-4px);
-             box-shadow: 0 9px 0 #134f78, 0 0 28px 8px rgba(150,220,255,.98); }
+             box-shadow: 0 9px 0 #7a4715, 0 0 28px 8px rgba(255,205,120,.95); }
 }
 
 /* ───────────── 職業介紹所 ───────────── */

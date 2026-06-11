@@ -93,7 +93,7 @@ class ExploreScene extends Phaser.Scene {
     }
     // 傳送點箭頭（有 portal 才載）
     if ((config.portals || []).length && !this.textures.exists("portal_arrow")) {
-      this.load.image("portal_arrow", this.assetBase + "deco_portal_arrow.webp?v=1");
+      this.load.image("portal_arrow", this.assetBase + "deco_portal_arrow_warm.webp?v=1");
     }
     // 河流（config.river 驅動，海島沒有就不載）
     if (config.river && !this.textures.exists("river")) {
@@ -478,21 +478,21 @@ class ExploreScene extends Phaser.Scene {
           targets: arrow, scale: { from: 0.15, to: 0.21 },
           alpha: { from: 0.6, to: 1 }, duration: 850, yoyo: true, repeat: -1,
         });
-        // 傳送點標籤：圓角膠囊（呼應底部按鈕的藍漸層白邊風格，取代舊的直角純色塊）
+        // 傳送點標籤：小木牌（對齊機台插牌/底部木質按鈕的世界內視覺語言）
         const lbl = this.add.text(0, 0, (pt.label || "前往") + "  ›", {
-          fontFamily: '"PingFang TC","Microsoft JhengHei",sans-serif', fontSize: "19px",
-          color: "#eaf6ff", fontStyle: "bold",
+          fontFamily: '"Yuanti TC","YouYuan","PingFang TC","Microsoft JhengHei",sans-serif', fontSize: "19px",
+          color: "#fff7e6", fontStyle: "bold",
         }).setOrigin(0.5);
-        lbl.setShadow(0, 1, "rgba(8,30,50,0.55)", 3, false, true);
-        const pw = Math.ceil(lbl.width) + 30, ph = Math.ceil(lbl.height) + 16, pr = ph / 2;
+        lbl.setShadow(0, 1, "rgba(70,40,10,0.6)", 3, false, true);
+        const pw = Math.ceil(lbl.width) + 30, ph = Math.ceil(lbl.height) + 16, pr = 10;
         const pg = this.add.graphics();
-        pg.fillStyle(0x08233a, 0.32); pg.fillRoundedRect(-pw / 2, -ph / 2 + 4, pw, ph, pr);          // 落影
-        pg.fillStyle(0x1f6fa8, 1); pg.fillRoundedRect(-pw / 2, -ph / 2, pw, ph, pr);                  // 主體（下深）
-        pg.fillStyle(0x3a9bd8, 1); pg.fillRoundedRect(-pw / 2, -ph / 2, pw, ph * 0.52,                // 上亮（假漸層）
+        pg.fillStyle(0x3a2410, 0.32); pg.fillRoundedRect(-pw / 2, -ph / 2 + 4, pw, ph, pr);           // 落影
+        pg.fillStyle(0xa8631f, 1); pg.fillRoundedRect(-pw / 2, -ph / 2, pw, ph, pr);                  // 木牌主體（下深）
+        pg.fillStyle(0xc8843a, 1); pg.fillRoundedRect(-pw / 2, -ph / 2, pw, ph * 0.52,                // 上亮木紋（假漸層）
           { tl: pr, tr: pr, bl: 0, br: 0 });
-        pg.fillStyle(0xffffff, 0.16); pg.fillRoundedRect(-pw / 2 + 3, -ph / 2 + 3, pw - 6, ph * 0.34, // 頂高光
+        pg.fillStyle(0xffffff, 0.14); pg.fillRoundedRect(-pw / 2 + 3, -ph / 2 + 3, pw - 6, ph * 0.34, // 頂高光
           { tl: pr - 3, tr: pr - 3, bl: 0, br: 0 });
-        pg.lineStyle(2, 0xdff1ff, 0.9); pg.strokeRoundedRect(-pw / 2, -ph / 2, pw, ph, pr);           // 亮邊框
+        pg.lineStyle(2, 0xfff2dd, 0.9); pg.strokeRoundedRect(-pw / 2, -ph / 2, pw, ph, pr);           // 奶油邊框
         this.add.container(cx, cy - 66, [pg, lbl]).setDepth(cy + 2);
         this.portals.push({
           id: pt.id, cx, cy, radius: pt.radius || 130,

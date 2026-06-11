@@ -1,379 +1,477 @@
 {
- "academy": {
-  "title": "自然學院",
-  "dean_name": "愛因斯坦",
-  "dean_title": "自然學院 · 院長",
-  "dean_img": "einstein_front.webp",
-  "intro": "歡迎來到自然學院！吾乃愛因斯坦。想像力比知識更重要，本院師長分居各處，去尋訪他們吧。",
-  "books": {
-   "guaranteed": [
-    {
-     "icon": "📘",
-     "name": "自然觀察筆記"
-    },
-    {
-     "icon": "📘",
-     "name": "渾天儀圖說"
-    },
-    {
-     "icon": "📘",
-     "name": "本草綱目"
-    },
-    {
-     "icon": "📘",
-     "name": "物種起源"
-    },
-    {
-     "icon": "📘",
-     "name": "相對論淺說"
+  "academy": {
+    "title": "自然學院",
+    "dean_name": "愛因斯坦",
+    "dean_title": "自然學院 · 院長",
+    "dean_img": "einstein_front.webp",
+    "intro": "歡迎來到自然學院！吾乃愛因斯坦。想像力比知識更重要，本院師長分居各處，去尋訪他們吧。",
+    "books": {
+      "guaranteed": [
+        {
+          "icon": "📘",
+          "name": "自然觀察筆記"
+        },
+        {
+          "icon": "📘",
+          "name": "渾天儀圖說"
+        },
+        {
+          "icon": "📘",
+          "name": "本草綱目"
+        },
+        {
+          "icon": "📘",
+          "name": "物種起源"
+        },
+        {
+          "icon": "📘",
+          "name": "相對論淺說"
+        }
+      ],
+      "rare": [
+        {
+          "icon": "📕",
+          "name": "時間簡史"
+        },
+        {
+          "icon": "📕",
+          "name": "星際信使"
+        },
+        {
+          "icon": "📕",
+          "name": "電的奧秘"
+        },
+        {
+          "icon": "📕",
+          "name": "青囊書"
+        },
+        {
+          "icon": "📕",
+          "name": "麻沸散方"
+        }
+      ]
     }
-   ],
-   "rare": [
+  },
+  "npcs": {
+    "einstein": {
+      "name": "愛因斯坦",
+      "title": "自然學院 · 院長",
+      "img": "einstein_front.webp",
+      "lines": [
+        {
+          "id": "skill",
+          "tab": "自然技能",
+          "chain": "main",
+          "seq_start": 1,
+          "intro": "勤學乃立身之本，先把自然基礎練紮實吧！",
+          "quests": [
+            {
+              "icon": "🔬",
+              "title": "自然學院報到",
+              "desc": "在自然基礎練習取得 9 顆星",
+              "reward": "1000 金幣",
+              "progress": "0 / 9 ⭐",
+              "dialog": "新生報到都要做最基礎的練習，有成果後回來跟我報告吧！"
+            },
+            {
+              "icon": "🔬",
+              "title": "自然技能熟練",
+              "desc": "在自然基礎練習取得 18 顆星",
+              "reward": "1500 金幣",
+              "progress": "0 / 18 ⭐",
+              "dialog": "看來你有一定的程度了，繼續加油，再把自然學得更好！"
+            },
+            {
+              "icon": "🔬",
+              "title": "自然技能精通",
+              "desc": "在自然基礎練習取得 24 顆星",
+              "reward": "2000 金幣",
+              "progress": "0 / 24 ⭐",
+              "dialog": "不錯！越來越進步了！有沒有考慮念理工科系啊～"
+            },
+            {
+              "icon": "🔬",
+              "title": "自然技能全精通",
+              "desc": "在自然基礎練習取得 30 顆星",
+              "reward": "圖鑑「自然精通證書」",
+              "progress": "0 / 30 ⭐",
+              "dialog": "所謂的瘋子，就是重複做同一件事卻期待不同結果。很棒！我看好你的未來！"
+            }
+          ]
+        }
+      ]
+    },
+    "galileo": {
+      "name": "伽利略",
+      "title": "自然學院 · 教授",
+      "img": "galileo_front.webp",
+      "lines": [
+        {
+          "id": "forest",
+          "tab": "禁忌森林",
+          "chain": "main",
+          "seq_start": 5,
+          "intro": "大自然這本書是用數學語言寫的！去禁忌森林實戰吧！",
+          "quests": [
+            {
+              "icon": "🌲",
+              "title": "挑戰禁忌森林1",
+              "desc": "通關自然禁忌森林 3 次",
+              "reward": "1000 金幣",
+              "progress": "0 / 3",
+              "dialog": "大自然這本書是用數學語言寫的！挑戰禁忌森林吧！"
+            },
+            {
+              "icon": "🌲",
+              "title": "挑戰禁忌森林2",
+              "desc": "通關自然禁忌森林 6 次",
+              "reward": "1500 金幣",
+              "progress": "0 / 6",
+              "dialog": "真理越是被攻擊，就愈加被證明。不過禁忌森林可不只這種難度！"
+            },
+            {
+              "icon": "🌲",
+              "title": "挑戰禁忌森林3",
+              "desc": "通關自然禁忌森林 9 次",
+              "reward": "2000 金幣",
+              "progress": "0 / 9",
+              "dialog": "你不可能教一個人知識，只能幫他自己去找。"
+            },
+            {
+              "icon": "🌲",
+              "title": "挑戰禁忌森林4",
+              "desc": "通關自然禁忌森林 12 次",
+              "reward": "稱號「自然高手」",
+              "progress": "0 / 12",
+              "dialog": "科學的真理應在實驗與理論中去找，而非古聖蒙灰的書上。"
+            }
+          ]
+        }
+      ]
+    },
+    "darwin": {
+      "name": "達爾文",
+      "title": "自然學院 · 教授",
+      "img": "darwin_front.webp",
+      "lines": [
+        {
+          "id": "boss",
+          "tab": "元素魔物",
+          "chain": "main",
+          "seq_start": 9,
+          "intro": "元素魔物作亂，用你的自然知識討伐牠！",
+          "quests": [
+            {
+              "icon": "👹",
+              "title": "討伐元素魔物1",
+              "desc": "討伐魔王成功 3 次",
+              "reward": "1000 金幣",
+              "progress": "0 / 3",
+              "dialog": "魔王入侵了！你的自然好像還不錯，趕快去討伐牠！"
+            },
+            {
+              "icon": "👹",
+              "title": "討伐元素魔物2",
+              "desc": "討伐魔王成功 6 次",
+              "reward": "1500 金幣",
+              "progress": "0 / 6",
+              "dialog": "物競天擇，適者生存。能存活的是最能適應變化的。"
+            },
+            {
+              "icon": "👹",
+              "title": "討伐元素魔物3",
+              "desc": "討伐魔王成功 9 次",
+              "reward": "2000 金幣",
+              "progress": "0 / 9",
+              "dialog": "敢於浪費一小時的人，還不懂得珍惜生命的價值。"
+            },
+            {
+              "icon": "👹",
+              "title": "討伐元素魔物4",
+              "desc": "討伐魔王成功 12 次",
+              "reward": "稱號「自然專家」",
+              "progress": "0 / 12",
+              "dialog": "無知者比有知者更自信。"
+            }
+          ]
+        }
+      ]
+    },
+    "curie": {
+      "name": "居禮夫人",
+      "title": "自然學院 · 教授",
+      "img": "curie_front.webp",
+      "lines": [
+        {
+          "id": "arena",
+          "tab": "競技場",
+          "chain": "main",
+          "seq_start": 13,
+          "intro": "去競技場證明你的實力吧！",
+          "quests": [
+            {
+              "icon": "🏆",
+              "title": "競技場常勝軍1",
+              "desc": "通關自然競技場 3 次",
+              "reward": "1000 金幣",
+              "progress": "0 / 3",
+              "dialog": "聽聞你討伐魔王的事蹟，去參加自然比賽看看吧！"
+            },
+            {
+              "icon": "🏆",
+              "title": "競技場常勝軍2",
+              "desc": "通關自然競技場 6 次",
+              "reward": "1500 金幣",
+              "progress": "0 / 6",
+              "dialog": "我的最高原則是：對任何困難都決不屈服！"
+            },
+            {
+              "icon": "🏆",
+              "title": "競技場常勝軍3",
+              "desc": "通關自然競技場 9 次",
+              "reward": "2000 金幣",
+              "progress": "0 / 9",
+              "dialog": "好奇心是學習者的第一美德。"
+            },
+            {
+              "icon": "🏆",
+              "title": "競技場常勝軍4",
+              "desc": "通關自然競技場 12 次",
+              "reward": "稱號「自然比賽高手」",
+              "progress": "0 / 12",
+              "dialog": "我們應該有恆心，尤其要有自信心！"
+            }
+          ]
+        }
+      ]
+    },
+    "nobel": {
+      "name": "諾貝爾",
+      "title": "自然學院 · 副教授",
+      "img": "nobel_front.webp",
+      "lines": [
+        {
+          "id": "cert",
+          "tab": "自然證照",
+          "chain": "main",
+          "seq_start": 17,
+          "intro": "去考試院通過模擬考，取得證照吧！",
+          "quests": [
+            {
+              "icon": "🎓",
+              "title": "獲得自然證照1",
+              "desc": "通過自然模擬考 1 次",
+              "reward": "1000 金幣",
+              "progress": "0 / 1",
+              "dialog": "你的進度超越很多人了！但想更進一步就必須有證照！"
+            },
+            {
+              "icon": "🎓",
+              "title": "獲得自然證照2",
+              "desc": "通過自然模擬考 2 次",
+              "reward": "1500 金幣",
+              "progress": "0 / 2",
+              "dialog": "一千個想法只要一個好用，我也覺得值得。"
+            },
+            {
+              "icon": "🎓",
+              "title": "獲得自然證照3",
+              "desc": "通過自然模擬考 3 次",
+              "reward": "2000 金幣",
+              "progress": "0 / 3",
+              "dialog": "不是我特別聰明，而是我對問題思考得更久。"
+            },
+            {
+              "icon": "🎓",
+              "title": "獲得自然證照4",
+              "desc": "通過自然模擬考 4 次",
+              "reward": "轉職道具「理工證照」",
+              "progress": "0 / 4",
+              "dialog": "快樂不在占有，而在追求的過程。恭喜你通過培訓，頒發證照給你。"
+            }
+          ]
+        }
+      ]
+    },
+    "huatuo": {
+      "name": "華佗",
+      "title": "自然學院 · 教授",
+      "img": "huatuo_side.webp",
+      "side": true,
+      "lines": [
+        {
+          "id": "medicine",
+          "tab": "支線任務",
+          "chain": "side",
+          "seq_start": 1,
+          "intro": "懸壺濟世，能否請你幫個小忙？",
+          "quests": [
+            {
+              "icon": "🐟",
+              "title": "生魚片",
+              "desc": "給予道具「生魚片」1 個",
+              "reward": "500 金幣",
+              "progress": "未完成",
+              "dialog": "傳說中有人吃生魚片之後病發死亡，可以拜託你去幫我買一份生魚片回來讓我做研究嗎？"
+            },
+            {
+              "icon": "⚔️",
+              "title": "刮骨療傷",
+              "desc": "討伐禁忌森林 10 次",
+              "reward": "500 金幣",
+              "progress": "未完成",
+              "dialog": "有大量學員去禁忌森林探險受傷，可以請你代為前往討伐嗎？不然這些外傷我治不完。"
+            },
+            {
+              "icon": "💊",
+              "title": "頭痛欲裂",
+              "desc": "給予道具「普拿疼」",
+              "reward": "500 金幣＋書籍「青囊書」",
+              "progress": "未完成",
+              "dialog": "我的徒弟頭痛發作，但我的針灸包不在身邊。聽聞有西方神藥「普拿疼」能治頭痛，可以幫我帶來嗎？"
+            },
+            {
+              "icon": "📚",
+              "title": "濟世救人",
+              "desc": "給予出版社書籍「青囊書」",
+              "reward": "圖鑑「青囊書」",
+              "progress": "未完成",
+              "dialog": "我一輩子都在救治傷患，但我一個人忙不過來。可以拜託你幫我把我的畢生心血拿到出版社出版嗎？"
+            }
+          ]
+        }
+      ]
+    },
+    "tesla": {
+      "name": "特斯拉",
+      "title": "自然學院 · 教授",
+      "img": "tesla_side.webp",
+      "side": true,
+      "lines": [
+        {
+          "id": "electric",
+          "tab": "支線任務",
+          "chain": "side",
+          "seq_start": 5,
+          "intro": "想見識改變人類未來的研究嗎？",
+          "quests": [
+            {
+              "icon": "⚡",
+              "title": "直流電與交流電",
+              "desc": "考試院通過自然模擬考 3 次",
+              "reward": "圖鑑「交流電」",
+              "progress": "未完成",
+              "dialog": "我認為交流電比直流電更值得研究，你覺得呢？還是你先去考試，看看你的想法為何。"
+            },
+            {
+              "icon": "🔌",
+              "title": "電流戰爭",
+              "desc": "考試院通過自然模擬考 3 次",
+              "reward": "圖鑑「直流電」",
+              "progress": "未完成",
+              "dialog": "看來大家都認為我的交流電比愛迪生的直流電更適合研究，你要不要也去研究看看！？"
+            },
+            {
+              "icon": "💰",
+              "title": "瘋狂的夢想家",
+              "desc": "賺得 5000 金幣",
+              "reward": "人物圖鑑「特斯拉」",
+              "progress": "未完成",
+              "dialog": "我的研究資金不夠了，你可以幫我籌措資金嗎？我要改變人類的未來！"
+            },
+            {
+              "icon": "📜",
+              "title": "回報院長",
+              "desc": "考試院通過自然檢定考 1 次",
+              "reward": "轉職道具「研究人員資格證」",
+              "progress": "未完成",
+              "dialog": "你富含研究的精神，有著改變人類未來的熱誠，這張證件不給你不行了！"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "figures": [
     {
-     "icon": "📕",
-     "name": "時間簡史"
+      "name": "愛因斯坦",
+      "badge": "院長",
+      "img": "einstein_front.webp",
+      "era": "20世紀",
+      "works": "相對論",
+      "desc": "相對論之父，20 世紀最偉大的物理學家。自然學院院長。"
     },
     {
-     "icon": "📕",
-     "name": "星際信使"
+      "name": "伽利略",
+      "badge": "教授",
+      "img": "galileo_front.webp",
+      "era": "16-17世紀",
+      "works": "《星際信使》",
+      "desc": "近代科學之父，自製望遠鏡觀星、支持地動說。"
     },
     {
-     "icon": "📕",
-     "name": "電的奧秘"
+      "name": "達爾文",
+      "badge": "教授",
+      "img": "darwin_front.webp",
+      "era": "19世紀",
+      "works": "《物種起源》",
+      "desc": "演化論之父，提出自然選擇學說。"
     },
     {
-     "icon": "📕",
-     "name": "青囊書"
+      "name": "居禮夫人",
+      "badge": "教授",
+      "img": "curie_front.webp",
+      "era": "19-20世紀",
+      "works": "放射性研究",
+      "desc": "發現鐳元素，史上唯一兩度獲諾貝爾獎的女性。"
     },
     {
-     "icon": "📕",
-     "name": "麻沸散方"
-    }
-   ]
-  }
- },
- "npcs": {
-  "einstein": {
-   "name": "愛因斯坦",
-   "title": "自然學院 · 院長",
-   "img": "einstein_front.webp",
-   "lines": [
+      "name": "諾貝爾",
+      "badge": "副教授",
+      "img": "nobel_front.webp",
+      "era": "19世紀",
+      "works": "炸藥/諾貝爾獎",
+      "desc": "發明炸藥的化學家，設立諾貝爾獎。"
+    },
     {
-     "id": "skill",
-     "tab": "自然技能",
-     "chain": "main",
-     "seq_start": 1,
-     "intro": "勤學乃立身之本，先把自然基礎練紮實吧！",
-     "quests": [
-      {
-       "icon": "🔬",
-       "title": "自然學院報到",
-       "desc": "在自然基礎練習取得 9 顆星",
-       "reward": "1000 金幣",
-       "progress": "0 / 9 ⭐",
-       "dialog": "新生報到都要做最基礎的練習，有成果後回來跟我報告吧！"
-      },
-      {
-       "icon": "🔬",
-       "title": "自然技能熟練",
-       "desc": "在自然基礎練習取得 18 顆星",
-       "reward": "1500 金幣",
-       "progress": "0 / 18 ⭐",
-       "dialog": "看來你有一定的程度了，繼續加油，再把自然學得更好！"
-      },
-      {
-       "icon": "🔬",
-       "title": "自然技能精通",
-       "desc": "在自然基礎練習取得 24 顆星",
-       "reward": "2000 金幣",
-       "progress": "0 / 24 ⭐",
-       "dialog": "不錯！越來越進步了！有沒有考慮念理工科系啊～"
-      },
-      {
-       "icon": "🔬",
-       "title": "自然技能全精通",
-       "desc": "在自然基礎練習取得 30 顆星",
-       "reward": "圖鑑「自然精通證書」",
-       "progress": "0 / 30 ⭐",
-       "dialog": "所謂的瘋子，就是重複做同一件事卻期待不同結果。很棒！我看好你的未來！"
-      }
-     ]
-    }
-   ]
-  },
-  "galileo": {
-   "name": "伽利略",
-   "title": "自然學院 · 教授",
-   "img": "galileo_front.webp",
-   "lines": [
+      "name": "特斯拉",
+      "badge": "副教授",
+      "img": "tesla_front.webp",
+      "era": "19-20世紀",
+      "works": "交流電",
+      "desc": "交流電系統之父，現代電力應用的奠基者。"
+    },
     {
-     "id": "forest",
-     "tab": "禁忌森林",
-     "chain": "main",
-     "seq_start": 5,
-     "intro": "大自然這本書是用數學語言寫的！去禁忌森林實戰吧！",
-     "quests": [
-      {
-       "icon": "🌲",
-       "title": "挑戰禁忌森林1",
-       "desc": "通關自然禁忌森林 3 次",
-       "reward": "1000 金幣",
-       "progress": "0 / 3",
-       "dialog": "大自然這本書是用數學語言寫的！挑戰禁忌森林吧！"
-      },
-      {
-       "icon": "🌲",
-       "title": "挑戰禁忌森林2",
-       "desc": "通關自然禁忌森林 6 次",
-       "reward": "1500 金幣",
-       "progress": "0 / 6",
-       "dialog": "真理越是被攻擊，就愈加被證明。不過禁忌森林可不只這種難度！"
-      },
-      {
-       "icon": "🌲",
-       "title": "挑戰禁忌森林3",
-       "desc": "通關自然禁忌森林 9 次",
-       "reward": "2000 金幣",
-       "progress": "0 / 9",
-       "dialog": "你不可能教一個人知識，只能幫他自己去找。"
-      },
-      {
-       "icon": "🌲",
-       "title": "挑戰禁忌森林4",
-       "desc": "通關自然禁忌森林 12 次",
-       "reward": "稱號「自然高手」",
-       "progress": "0 / 12",
-       "dialog": "科學的真理應在實驗與理論中去找，而非古聖蒙灰的書上。"
-      }
-     ]
-    }
-   ]
-  },
-  "darwin": {
-   "name": "達爾文",
-   "title": "自然學院 · 教授",
-   "img": "darwin_front.webp",
-   "lines": [
+      "name": "霍金",
+      "badge": "副教授",
+      "img": "hawking_front.webp",
+      "era": "20-21世紀",
+      "works": "《時間簡史》",
+      "desc": "研究黑洞與宇宙論的理論物理學家。"
+    },
     {
-     "id": "boss",
-     "tab": "元素魔物",
-     "chain": "main",
-     "seq_start": 9,
-     "intro": "元素魔物作亂，用你的自然知識討伐牠！",
-     "quests": [
-      {
-       "icon": "👹",
-       "title": "討伐元素魔物1",
-       "desc": "討伐魔王成功 3 次",
-       "reward": "1000 金幣",
-       "progress": "0 / 3",
-       "dialog": "魔王入侵了！你的自然好像還不錯，趕快去討伐牠！"
-      },
-      {
-       "icon": "👹",
-       "title": "討伐元素魔物2",
-       "desc": "討伐魔王成功 6 次",
-       "reward": "1500 金幣",
-       "progress": "0 / 6",
-       "dialog": "物競天擇，適者生存。能存活的是最能適應變化的。"
-      },
-      {
-       "icon": "👹",
-       "title": "討伐元素魔物3",
-       "desc": "討伐魔王成功 9 次",
-       "reward": "2000 金幣",
-       "progress": "0 / 9",
-       "dialog": "敢於浪費一小時的人，還不懂得珍惜生命的價值。"
-      },
-      {
-       "icon": "👹",
-       "title": "討伐元素魔物4",
-       "desc": "討伐魔王成功 12 次",
-       "reward": "稱號「自然專家」",
-       "progress": "0 / 12",
-       "dialog": "無知者比有知者更自信。"
-      }
-     ]
-    }
-   ]
-  },
-  "curie": {
-   "name": "居禮夫人",
-   "title": "自然學院 · 教授",
-   "img": "curie_front.webp",
-   "lines": [
+      "name": "張衡",
+      "badge": "副教授",
+      "img": "zhangheng_front.webp",
+      "era": "東漢",
+      "works": "地動儀",
+      "desc": "東漢天文學家，發明候風地動儀與渾天儀。"
+    },
     {
-     "id": "arena",
-     "tab": "競技場",
-     "chain": "main",
-     "seq_start": 13,
-     "intro": "去競技場證明你的實力吧！",
-     "quests": [
-      {
-       "icon": "🏆",
-       "title": "競技場常勝軍1",
-       "desc": "通關自然競技場 3 次",
-       "reward": "1000 金幣",
-       "progress": "0 / 3",
-       "dialog": "聽聞你討伐魔王的事蹟，去參加自然比賽看看吧！"
-      },
-      {
-       "icon": "🏆",
-       "title": "競技場常勝軍2",
-       "desc": "通關自然競技場 6 次",
-       "reward": "1500 金幣",
-       "progress": "0 / 6",
-       "dialog": "我的最高原則是：對任何困難都決不屈服！"
-      },
-      {
-       "icon": "🏆",
-       "title": "競技場常勝軍3",
-       "desc": "通關自然競技場 9 次",
-       "reward": "2000 金幣",
-       "progress": "0 / 9",
-       "dialog": "好奇心是學習者的第一美德。"
-      },
-      {
-       "icon": "🏆",
-       "title": "競技場常勝軍4",
-       "desc": "通關自然競技場 12 次",
-       "reward": "稱號「自然比賽高手」",
-       "progress": "0 / 12",
-       "dialog": "我們應該有恆心，尤其要有自信心！"
-      }
-     ]
-    }
-   ]
-  },
-  "nobel": {
-   "name": "諾貝爾",
-   "title": "自然學院 · 副教授",
-   "img": "nobel_front.webp",
-   "lines": [
+      "name": "華佗",
+      "badge": "副教授",
+      "img": "huatuo_front.webp",
+      "era": "東漢",
+      "works": "麻沸散",
+      "desc": "神醫，發明麻沸散與五禽戲，外科鼻祖。"
+    },
     {
-     "id": "cert",
-     "tab": "自然證照",
-     "chain": "main",
-     "seq_start": 17,
-     "intro": "去考試院通過模擬考，取得證照吧！",
-     "quests": [
-      {
-       "icon": "🎓",
-       "title": "獲得自然證照1",
-       "desc": "通過自然模擬考 1 次",
-       "reward": "1000 金幣",
-       "progress": "0 / 1",
-       "dialog": "你的進度超越很多人了！但想更進一步就必須有證照！"
-      },
-      {
-       "icon": "🎓",
-       "title": "獲得自然證照2",
-       "desc": "通過自然模擬考 2 次",
-       "reward": "1500 金幣",
-       "progress": "0 / 2",
-       "dialog": "一千個想法只要一個好用，我也覺得值得。"
-      },
-      {
-       "icon": "🎓",
-       "title": "獲得自然證照3",
-       "desc": "通過自然模擬考 3 次",
-       "reward": "2000 金幣",
-       "progress": "0 / 3",
-       "dialog": "不是我特別聰明，而是我對問題思考得更久。"
-      },
-      {
-       "icon": "🎓",
-       "title": "獲得自然證照4",
-       "desc": "通過自然模擬考 4 次",
-       "reward": "轉職道具「理工證照」",
-       "progress": "0 / 4",
-       "dialog": "快樂不在占有，而在追求的過程。恭喜你通過培訓，頒發證照給你。"
-      }
-     ]
+      "name": "李時珍",
+      "badge": "副教授",
+      "img": "lishizhen_front.webp",
+      "era": "明朝",
+      "works": "《本草綱目》",
+      "desc": "明代醫藥學家，著《本草綱目》集本草之大成。"
     }
-   ]
-  }
- },
- "figures": [
-  {
-   "name": "愛因斯坦",
-   "badge": "院長",
-   "img": "einstein_front.webp",
-   "era": "20世紀",
-   "works": "相對論",
-   "desc": "相對論之父，20 世紀最偉大的物理學家。自然學院院長。"
-  },
-  {
-   "name": "伽利略",
-   "badge": "教授",
-   "img": "galileo_front.webp",
-   "era": "16-17世紀",
-   "works": "《星際信使》",
-   "desc": "近代科學之父，自製望遠鏡觀星、支持地動說。"
-  },
-  {
-   "name": "達爾文",
-   "badge": "教授",
-   "img": "darwin_front.webp",
-   "era": "19世紀",
-   "works": "《物種起源》",
-   "desc": "演化論之父，提出自然選擇學說。"
-  },
-  {
-   "name": "居禮夫人",
-   "badge": "教授",
-   "img": "curie_front.webp",
-   "era": "19-20世紀",
-   "works": "放射性研究",
-   "desc": "發現鐳元素，史上唯一兩度獲諾貝爾獎的女性。"
-  },
-  {
-   "name": "諾貝爾",
-   "badge": "副教授",
-   "img": "nobel_front.webp",
-   "era": "19世紀",
-   "works": "炸藥/諾貝爾獎",
-   "desc": "發明炸藥的化學家，設立諾貝爾獎。"
-  },
-  {
-   "name": "特斯拉",
-   "badge": "副教授",
-   "img": "tesla_front.webp",
-   "era": "19-20世紀",
-   "works": "交流電",
-   "desc": "交流電系統之父，現代電力應用的奠基者。"
-  },
-  {
-   "name": "霍金",
-   "badge": "副教授",
-   "img": "hawking_front.webp",
-   "era": "20-21世紀",
-   "works": "《時間簡史》",
-   "desc": "研究黑洞與宇宙論的理論物理學家。"
-  },
-  {
-   "name": "張衡",
-   "badge": "副教授",
-   "img": "zhangheng_front.webp",
-   "era": "東漢",
-   "works": "地動儀",
-   "desc": "東漢天文學家，發明候風地動儀與渾天儀。"
-  },
-  {
-   "name": "華佗",
-   "badge": "副教授",
-   "img": "huatuo_front.webp",
-   "era": "東漢",
-   "works": "麻沸散",
-   "desc": "神醫，發明麻沸散與五禽戲，外科鼻祖。"
-  },
-  {
-   "name": "李時珍",
-   "badge": "副教授",
-   "img": "lishizhen_front.webp",
-   "era": "明朝",
-   "works": "《本草綱目》",
-   "desc": "明代醫藥學家，著《本草綱目》集本草之大成。"
-  }
- ]
+  ]
 }

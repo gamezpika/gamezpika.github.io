@@ -868,7 +868,7 @@
         "face": "right",
         "interaction": {
           "type": "open_shop",
-          "shop_id": "afig:social:王安石",
+          "shop_id": "anpc:social:wanganshi",
           "label": "王安石",
           "radius": 150,
           "body": "天變不足畏，祖宗不足法，人言不足恤。"
@@ -984,7 +984,7 @@
         "face": "left",
         "interaction": {
           "type": "open_shop",
-          "shop_id": "afig:social:張居正",
+          "shop_id": "anpc:social:zhangjuzheng",
           "label": "張居正",
           "radius": 150,
           "body": "願以深心奉塵剎，不於自身求利益。"

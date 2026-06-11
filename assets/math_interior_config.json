@@ -1041,7 +1041,7 @@
         "face": "left",
         "interaction": {
           "type": "open_shop",
-          "shop_id": "mnpcintro:歐幾里得",
+          "shop_id": "anpc:math:euclid",
           "label": "歐幾里得",
           "radius": 150,
           "body": "《幾何原本》乃萬學之基，從一點一線學起吧。"
@@ -1074,6 +1074,35 @@
           "label": "華羅庚",
           "radius": 150,
           "body": "聰明在於勤奮，天才在於積累。一同鑽研數學吧！"
+        }
+      },
+      {
+        "id": "pythagoras",
+        "name": "畢達哥拉斯",
+        "sprite": {
+          "scale": 0.31,
+          "sprites": {
+            "side": {
+              "image": "pythagoras_front.webp",
+              "frame_width": 196,
+              "frame_height": 369,
+              "frames": 1,
+              "frame_rate": 6,
+              "facing": "left"
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.34,
+          "y": 0.815
+        },
+        "face": "right",
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "anpc:math:pythagoras",
+          "label": "畢達哥拉斯",
+          "radius": 150,
+          "body": "萬物皆數！瑣事繁多，能否請你幫個小忙？"
         }
       }
     ],

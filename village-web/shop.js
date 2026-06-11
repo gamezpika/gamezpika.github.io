@@ -264,7 +264,7 @@
       desc: "追逐真相、報導世界的人。", skill: "答對國語題自動解鎖新聞卡", item: "記者證",
       quest: { title: "完成 3 篇採訪報導", reward: "金幣 ×500 + 採訪麥克風" } },
     cn_teacher: { name: "國文老師", subj: "chinese", tier: 4, sprite: "teacher_chinese.png",
-      desc: "傳道授業、桃李滿天下。", skill: "教學相長：國語經驗 ×1.5", item: "教師證",
+      desc: "傳道授業、桃李滿天下。", skill: "教學相長：國語經驗 ×1.5", item: "國語教師證",
       quest: { title: "備課並教 3 堂國文課", reward: "金幣 ×500 + 教鞭" } },
     writer: { name: "作家", subj: "chinese", tier: 4, sprite: "writer.png",
       desc: "用文字創造世界的人。", skill: "答對國語題金幣 +50%", item: "靈感鋼筆",
@@ -281,7 +281,7 @@
       desc: "在金融市場運籌帷幄的人。", skill: "牧場販售金幣 +30%", item: "財金人員資格證",
       quest: { title: "完成 3 筆模擬交易", reward: "金幣 ×500 + 行情平板" } },
     math_teacher: { name: "數學老師", subj: "math", tier: 4, sprite: "teacher_math.png",
-      desc: "把抽象變簡單的引路人。", skill: "教學相長：數學經驗 ×1.5", item: "教師證",
+      desc: "把抽象變簡單的引路人。", skill: "教學相長：數學經驗 ×1.5", item: "數學教師證",
       quest: { title: "備課並教 3 堂數學課", reward: "金幣 ×500 + 教鞭" } },
     accountant: { name: "會計師", subj: "math", tier: 4, sprite: "accountant.png",
       desc: "與數字為伍的理財專家。", skill: "每日金幣利息 +5%", item: "會計師資格證",
@@ -298,7 +298,7 @@
       desc: "跨越語言隔閡的橋樑。", skill: "答對英語題自動解鎖單字卡", item: "超級電子字典",
       quest: { title: "翻譯 3 段文章", reward: "金幣 ×500 + 電子字典" } },
     en_teacher: { name: "英文老師", subj: "english", tier: 4, sprite: "teacher_english.png",
-      desc: "帶你開口說世界語言。", skill: "教學相長：英語經驗 ×1.5", item: "教師證",
+      desc: "帶你開口說世界語言。", skill: "教學相長：英語經驗 ×1.5", item: "英語教師證",
       quest: { title: "備課並教 3 堂英文課", reward: "金幣 ×500 + 教鞭" } },
     foreign_corp: { name: "外商企業職員", subj: "english", tier: 4, sprite: "foreign_corp.png",
       desc: "在國際舞台工作的人。", skill: "完成英語任務金幣 +30%", item: "外商員工證",
@@ -315,7 +315,7 @@
       desc: "用科學打造未來的人。", skill: "牧場 exp ×1.5", item: "科技業員工證",
       quest: { title: "打造 3 座裝置", reward: "金幣 ×500 + 工程計算機" } },
     sci_teacher: { name: "自然老師", subj: "science", tier: 4, sprite: "teacher_science.png",
-      desc: "帶你認識大自然的奧妙。", skill: "教學相長：自然經驗 ×1.5", item: "教師證",
+      desc: "帶你認識大自然的奧妙。", skill: "教學相長：自然經驗 ×1.5", item: "自然教師證",
       quest: { title: "備課並教 3 堂自然課", reward: "金幣 ×500 + 教鞭" } },
     researcher: { name: "研究人員", subj: "science", tier: 4, sprite: "biologist.png",
       desc: "在實驗室追尋真理的人。", skill: "答對自然題自動解鎖科學卡", item: "研究人員資格證",
@@ -332,7 +332,7 @@
       desc: "用愛心幫助他人的人。", skill: "完成社會任務金幣 +30%", item: "社工證",
       quest: { title: "完成 3 次社區服務", reward: "金幣 ×500 + 服務徽章" } },
     social_teacher: { name: "社會學老師", subj: "social", tier: 4, sprite: "teacher_social.png",
-      desc: "帶你讀懂社會脈動。", skill: "教學相長：社會經驗 ×1.5", item: "教師證",
+      desc: "帶你讀懂社會脈動。", skill: "教學相長：社會經驗 ×1.5", item: "社會教師證",
       quest: { title: "備課並教 3 堂社會課", reward: "金幣 ×500 + 教鞭" } },
     congress_aide: { name: "國會助理", subj: "social", tier: 4, sprite: "congress_aide.png",
       desc: "在議事殿堂幕後奔走的人。", skill: "完成社會任務經驗 +30%", item: "助理證",
@@ -1302,7 +1302,7 @@
       <div style="font-size:13px;color:#8a6d3b;line-height:1.7;margin-bottom:12px;">
         🔮 <b>魔法陣共五層</b>，每層有一位入魔的師長。<br>
         答題對決勝利三場，就能淨化他、開啟下一層。<br>
-        <span style="opacity:.7;">（需先集滿四院教師證 + 英語禁忌森林/模擬考/檢定考次數）</span>
+        <span style="opacity:.7;">（需先完成國、數、自、社四大學院的主線任務）</span>
       </div>
       <div style="display:flex;flex-direction:column;gap:10px;">
         <button class="jc-act en-board" style="width:100%;">📋 英語基礎練習（布告欄）</button>
@@ -1397,36 +1397,27 @@
     const box = ov.querySelector(".en-content");
     box.innerHTML = `<div class="jc-empty">讀取進度中…</div>`;
     ov.classList.add("open");
-    // 讀真實進度：教師證(四院檢定通過) / 英語模擬考 / 英語檢定考 / 英語禁忌森林通關
-    let teacher = 0, mock = 0, cert = 0, forest = 0;
-    const t = demoToken();
-    if (t) {
-      const hdr = { "Authorization": "Bearer " + t };
-      try {
-        const ex = await fetch(DEMO_API + "/api/exam/history?limit=100", { headers: hdr }).then((r) => r.json());
-        const recs = (ex && ex.records) || [];
-        const certSubj = new Set();
-        recs.forEach((r) => {
-          if (r.exam_type === "certification" && r.passed && ["chinese", "math", "science", "social"].includes(r.subject_key)) certSubj.add(r.subject_key);
-          if (r.subject_key === "english" && r.exam_type === "mock") mock++;
-          if (r.subject_key === "english" && r.exam_type === "certification" && r.passed) cert++;
-        });
-        teacher = certSubj.size;
-      } catch (e) {}
-      try {
-        const ac = await fetch(DEMO_API + "/api/activity/recent?limit=50", { headers: hdr }).then((r) => r.json());
-        (ac && ac.activities || []).forEach((a) => {
-          const s = JSON.stringify(a || {});
-          if (/boss/.test(s) && /english/.test(s)) forest++;
-        });
-      } catch (e) {}
-    }
-    const reqs = [
-      { ic: "🎓", label: "四院教師證", cur: teacher, target: 4 },
-      { ic: "🌲", label: "英語禁忌森林通關", cur: forest, target: 5 },
-      { ic: "📝", label: "英語模擬考", cur: mock, target: 5 },
-      { ic: "📜", label: "英語檢定考", cur: cert, target: 3 },
+    // 門檻＝四大學院主線任務全部完成（pptx v8 P73）；讀四條鏈的真實完成數，demo 照舊可直接試玩
+    const GATE_SUBJ = [
+      { key: "chinese", ic: "📖", label: "國語學院主線任務" },
+      { key: "math", ic: "🔢", label: "數學學院主線任務" },
+      { key: "science", ic: "🔬", label: "自然學院主線任務" },
+      { key: "social", ic: "🏛️", label: "社會學院主線任務" },
     ];
+    const t = demoToken();
+    const reqs = await Promise.all(GATE_SUBJ.map(async (s) => {
+      let done = 0, total = 20;
+      if (t) {
+        try {
+          const d = await fetch(DEMO_API + "/api/main-quests?chain=" + s.key + "_main",
+            { headers: { "Authorization": "Bearer " + t } }).then((r) => r.json());
+          const qs = (d && d.quests) || [];
+          if (qs.length) total = qs.length;
+          done = qs.filter((q) => q.status === "completed").length;
+        } catch (e) {}
+      }
+      return { ic: s.ic, label: s.label, cur: done, target: total };
+    }));
     const allMet = reqs.every((r) => r.cur >= r.target);
     const rows = reqs.map((r) => {
       const ok = r.cur >= r.target;
@@ -1896,7 +1887,11 @@
     { id: "cert_english", img: "cert_english.png", name: "英語證照", desc: "通過英語認證的專業證書，英語執業人員的憑證。" },
     { id: "cert_science", img: "cert_science.png", name: "自然證照", desc: "通過自然認證的專業證書，自然執業人員的憑證。" },
     { id: "cert_social", img: "cert_social.png", name: "社會證照", desc: "通過社會認證的專業證書，社會執業人員的憑證。" },
-    { id: "cert_teacher", img: "cert_teacher.png", name: "教師證", desc: "取得教師資格的證書，五大學院老師的共同憑證。" },
+    { id: "cert_teacher_cn", img: "cert_teacher_cn.png", name: "國語教師證", desc: "國語學院教師資格證書（依學院分證，不再共用）。" },
+    { id: "cert_teacher_math", img: "cert_teacher_math.png", name: "數學教師證", desc: "數學學院教師資格證書。" },
+    { id: "cert_teacher_en", img: "cert_teacher_en.png", name: "英語教師證", desc: "英語學院教師資格證書。" },
+    { id: "cert_teacher_sci", img: "cert_teacher_sci.png", name: "自然教師證", desc: "自然學院教師資格證書。" },
+    { id: "cert_teacher_social", img: "cert_teacher_social.png", name: "社會教師證", desc: "社會學院教師資格證書。" },
     { id: "tool_reporter", img: "tool_reporter.png", name: "記者證", desc: "記者的身分證明，憑它追逐真相、報導世界。" },
     { id: "tool_writer", img: "tool_writer.png", name: "靈感鋼筆", desc: "作家的靈感泉源，握筆時文思泉湧、創造故事。" },
     { id: "tool_trader", img: "tool_trader.png", name: "財金人員資格證", desc: "金融市場的入場券，交易員運籌帷幄的證明。" },
@@ -1912,6 +1907,14 @@
   function bagCurrent() {
     let b; try { b = JSON.parse(localStorage.getItem(BAG_KEY) || "null"); } catch (e) {}
     if (!Array.isArray(b) || (b.length && !b[0].img)) { b = BAG_DEMO.slice(); bagWrite(b); }   // 未設或舊格式→重 seed
+    // 教師證拆五科（pptx v8 P63）：老背包裡的舊共用教師證原位換成五張
+    const ti = b.findIndex((it) => it && it.id === "cert_teacher");
+    if (ti >= 0) {
+      const five = BAG_DEMO.filter((it) => it.id.indexOf("cert_teacher_") === 0)
+        .filter((it) => !b.some((x) => x && x.id === it.id));
+      b.splice(ti, 1, ...five.slice(0, Math.max(0, BAG_MAX - (b.length - 1))));
+      bagWrite(b);
+    }
     return b;
   }
   function getBag() { return bagCurrent().slice(0, BAG_MAX); }

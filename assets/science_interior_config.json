@@ -839,7 +839,7 @@
         "face": "right",
         "interaction": {
           "type": "open_shop",
-          "shop_id": "afig:science:特斯拉",
+          "shop_id": "anpc:science:tesla",
           "label": "特斯拉",
           "radius": 150,
           "body": "現在不是我的時代，未來才是我的時代。"
@@ -1013,7 +1013,7 @@
         "face": "left",
         "interaction": {
           "type": "open_shop",
-          "shop_id": "afig:science:華佗",
+          "shop_id": "anpc:science:huatuo",
           "label": "華佗",
           "radius": 150,
           "body": "這套五禽戲，能強身健體。"

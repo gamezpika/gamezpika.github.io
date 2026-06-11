@@ -78,8 +78,8 @@
       {
         "id": "to_campus",
         "anchor": {
-          "x": 0.9,
-          "y": 0.5
+          "x": 0.93,
+          "y": 0.462
         },
         "radius": 110,
         "target_map": "campus",
@@ -92,8 +92,8 @@
       {
         "id": "to_tower",
         "anchor": {
-          "x": 0.06,
-          "y": 0.42
+          "x": 0.1,
+          "y": 0.437
         },
         "radius": 110,
         "target_map": "tower",

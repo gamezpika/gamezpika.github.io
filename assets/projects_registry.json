@@ -1065,6 +1065,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -2133,6 +2150,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -3201,6 +3235,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -4269,6 +4320,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -5331,6 +5399,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -6399,6 +6484,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -7512,6 +7614,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -8616,6 +8735,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -9684,6 +9820,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -10752,6 +10905,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -11820,6 +11990,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -12888,6 +13075,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -13956,6 +14160,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -15024,6 +15245,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -16092,6 +16330,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -17160,6 +17415,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -18228,6 +18500,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -19296,6 +19585,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -20364,6 +20670,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -21432,6 +21755,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -22500,6 +22840,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -23568,6 +23925,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     },
@@ -24636,6 +25010,23 @@
           "bbox_h_norm": 0.012,
           "blend": "add",
           "anchor_y": 0.5
+        },
+        {
+          "image": "deco_cheer_trio.webp",
+          "name": "🙌 歡呼小隊",
+          "type": "decoration",
+          "scale": 0.22,
+          "default_interaction": null,
+          "bbox_w_norm": 0.02,
+          "bbox_h_norm": 0.012,
+          "frame_width": 480,
+          "frame_height": 271,
+          "grid_cols": 2,
+          "grid_rows": 1,
+          "frames": 2,
+          "frame_rate": 2,
+          "play_on_proximity": true,
+          "prox_radius": 80
         }
       ]
     }

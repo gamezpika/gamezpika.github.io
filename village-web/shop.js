@@ -836,7 +836,8 @@
       : ct === "pvp_win" ? "🏟️ 去競技場挑戰"
         : ct === "exam_pass" ? "📝 去考檢定"
           : ct === "teacher_cert" ? "🎓 去考四院檢定"
-            : ct === "cert_pass" ? "📜 去考英語檢定" : "";
+            : ct === "cert_pass" ? "📜 去考英語檢定"
+              : ct === "duel_win" ? "🔮 去魔法陣對決" : "";
   }
   // demo 一鍵達成：後台灌剛好足夠的紀錄，讓這關可領獎（顆星型不走這裡，用去基礎練習）
   async function caFulfillQuest(quest_key) {
@@ -1252,6 +1253,14 @@
   function enKey(id) { return "village_en_purify_" + id; }
   function enIsPurified(id) { try { return !!localStorage.getItem(enKey(id)); } catch (e) { return false; } }
   function enSetPurified(id) { try { localStorage.setItem(enKey(id), "1"); } catch (e) {} }
+  // 3 勝才淨化（pptx v8 P76-84：取得勝利三次）；本機計數做畫面，後端 en_duel_win 紀錄做主線任務計數
+  const EN_WINS_NEED = 3;
+  function enWinCount(id) { try { return Number(localStorage.getItem("village_en_wins_" + id)) || 0; } catch (e) { return 0; } }
+  function enAddWin(id) { const n = enWinCount(id) + 1; try { localStorage.setItem("village_en_wins_" + id, String(n)); } catch (e) {} return n; }
+  function enReportWin(id) {   // 回報後端一場真實勝利（fire-and-forget，沒 token 就略過）
+    const t = demoToken(); if (!t) return;
+    try { fetch(DEMO_API + "/api/demo/duel-win?npc=" + encodeURIComponent(id), { method: "POST", headers: { "Authorization": "Bearer " + t } }); } catch (e) {}
+  }
   function enBuildOverlay() {
     let ov = document.getElementById("en-overlay");
     if (ov) return ov;
@@ -1292,7 +1301,7 @@
     ov.querySelector(".en-content").innerHTML = `
       <div style="font-size:13px;color:#8a6d3b;line-height:1.7;margin-bottom:12px;">
         🔮 <b>魔法陣共五層</b>，每層有一位入魔的師長。<br>
-        用答題對決勝過他，就能淨化他、開啟下一層。<br>
+        答題對決勝利三場，就能淨化他、開啟下一層。<br>
         <span style="opacity:.7;">（需先集滿四院教師證 + 英語禁忌森林/模擬考/檢定考次數）</span>
       </div>
       <div style="display:flex;flex-direction:column;gap:10px;">
@@ -1336,9 +1345,11 @@
           right = `<span class="ca-navq-st" style="color:#c98a2b;font-weight:700">進行中 ${aq.current}/${aq.target}</span>`
             + (lbl ? ` <button class="jc-act ca-fulfill" data-key="${aoEsc(aq.key)}">${lbl}</button>` : "");
         } else right = `<span class="ca-navq-st" style="opacity:.45">🔒</span>`;
-        const gift = aq.reward_label
-          ? `道具「${aoEsc(aq.reward_label)}」${aq.reward_coins ? "＋" + aq.reward_coins + " 金幣" : ""}`
+        const kindWord = (k) => k === "title" ? "稱號" : k === "card" ? "圖鑑" : "道具";
+        let gift = aq.reward_label
+          ? `${kindWord(aq.reward_kind)}「${aoEsc(aq.reward_label)}」${aq.reward_coins ? "＋" + aq.reward_coins + " 金幣" : ""}`
           : (aq.reward_coins ? aq.reward_coins + " 金幣" : "—");
+        if (aq.reward2_label) gift += `＋${kindWord(aq.reward2_kind)}「${aoEsc(aq.reward2_label)}」`;
         rows += `<div class="ca-navq"><span class="ca-navq-ic">${stt === "locked" ? "🔒" : "📜"}</span><span class="ca-navq-t">${aoEsc(aq.title)}</span><span class="ca-navq-r">🎁 ${gift}</span>${right}</div>`;
       });
       box.innerHTML = `<div class="ca-navgroup">${rows}</div>`;
@@ -1360,8 +1371,14 @@
             addToBag({ id: "stone_teleport", img: "../assets/images/jobtools/stone_teleport.png",
                        name: "魔法陣傳送石", desc: "英語學院主線任務道具：安全傳送進出魔法陣的奇石。" });
           }
+          if (r.reward_label === "封印鑰匙" && !bagCurrent().some((it) => it.id === "key_seal")) {
+            addToBag({ id: "key_seal", img: "../assets/images/jobtools/key_seal.png",
+                       name: "封印鑰匙", desc: "鎮魔塔封印的一部分。從魔王汀其手中奪回的關鍵道具。" });
+          }
+          let gotLine = r.reward_label ? "獲得「" + r.reward_label + "」" : "";
+          if (r.reward2_label) gotLine += "＋「" + r.reward2_label + "」";
           enFace(ov, "shakespeare_front.webp",
-            "獎勵入帳！" + (r.reward_label ? "獲得「" + r.reward_label + "」＋" + (r.reward_coins || 0) + " 金幣" : "+" + (r.reward_coins || 0) + " 金幣"),
+            "獎勵入帳！" + (gotLine ? gotLine + "＋" + (r.reward_coins || 0) + " 金幣" : "+" + (r.reward_coins || 0) + " 金幣"),
             "👑 院長 莎士比亞");
         } else if (r && r.error === "condition_not_met") {
           enFace(ov, "shakespeare_front.webp", "還沒達成條件唷～", "👑 院長 莎士比亞");
@@ -1463,9 +1480,14 @@
         <div style="font-size:42px;">${d.last ? "🏆" : "✨"}</div>
         <div style="font-size:16px;font-weight:800;color:#3a2c1a;margin:8px 0;">${aoEsc(d.wake)}</div>
         <div style="font-size:13px;color:#8a6d3b;">${aoEsc(hint)}</div>
-        <div style="margin-top:16px;"><button class="jc-act en-x" style="width:auto;">離開</button></div>
+        <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;">
+          <button class="jc-act en-spar" style="width:auto;">⚔️ 再切磋一場</button>
+          <button class="jc-act en-x" style="width:auto;">離開</button></div>
       </div>`;
     ov.classList.add("open");
+    // 再切磋：淨化後仍可重打（勝場照樣回報後端）。主線(二)~(六)接取後靠這個補勝場，
+    // 不會因為「先淨化才接任務」或舊玩家 1 勝淨化而卡死（Codex P1）
+    ov.querySelector(".en-spar").addEventListener("click", () => enRunDuel(ov, npcId, d));
     ov.querySelector(".en-x").addEventListener("click", enClose);
   }
 
@@ -1481,7 +1503,7 @@
     const box = ov.querySelector(".en-content");
     box.innerHTML = `
       <div style="text-align:center;padding:14px 8px;">
-        <div style="font-size:14px;color:#5a4630;line-height:1.7;margin-bottom:14px;">⚔️ 用英語答題對決他。<br>答對六成以上即可${d.boss ? "擊退魔王、通關魔法陣" : "淨化他、開啟下一層"}！</div>
+        <div style="font-size:14px;color:#5a4630;line-height:1.7;margin-bottom:14px;">⚔️ 用英語答題對決他（答對六成以上算贏一場）。<br>累計勝利 ${EN_WINS_NEED} 場即可${d.boss ? "擊退魔王、通關魔法陣" : "淨化他、開啟下一層"}！${enWinCount(npcId) ? `<br>目前 ${Math.min(enWinCount(npcId), EN_WINS_NEED)}/${EN_WINS_NEED} 勝` : ""}</div>
         <button class="jc-act en-start" style="width:auto;background:linear-gradient(135deg,#7b4dd8,#a06bf0);color:#fff;">⚔️ ${d.boss ? "開始魔王決戰" : "開始淨化對決"}</button>
       </div>`;
     box.querySelector(".en-start").addEventListener("click", () => enRunDuel(ov, npcId, d));
@@ -1573,6 +1595,24 @@
       box.innerHTML = `<div class="jc-empty">結算中…</div>`;
       try { await fetch(DEMO_API + "/api/english/session/end", { method: "POST", headers: hdr, body: JSON.stringify({ session_id: sess.session_id }) }); } catch (e) {}
       if (win) {
+        const wins = enAddWin(npcId);
+        enReportWin(npcId);
+        if (wins < EN_WINS_NEED && !enIsPurified(npcId)) {
+          // 還沒滿 3 勝：記分、給經驗，但不淨化（pptx v8：勝利三次才解救）
+          const gm0 = gainMastery("english", 50);
+          const exp0 = gm0 ? `英語精通值 +${gm0.gained}（LV.${gm0.lv}${gm0.leveled ? " ⬆️升級！" : ""}）` : "";
+          box.innerHTML = `<div style="text-align:center;padding:18px 8px;">
+            <div style="font-size:44px;">⚔️</div>
+            <div style="font-size:18px;font-weight:900;color:#7b4dd8;margin:8px 0;">勝利！（${wins}/${EN_WINS_NEED}）</div>
+            <div style="font-size:14px;color:#5a4630;">黑暗力量被削弱了……再勝 ${EN_WINS_NEED - wins} 場就能${d.boss ? "擊退魔王" : "淨化 " + aoEsc(d.name)}！</div>
+            <div style="font-size:13px;color:#3a8f3a;font-weight:700;margin-top:6px;">${aoEsc(exp0)}</div>
+            <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;">
+              <button class="jc-act en-again" style="width:auto;background:linear-gradient(135deg,#7b4dd8,#a06bf0);color:#fff;">⚔️ 再戰一場</button>
+              <button class="jc-act en-x2" style="width:auto;">離開</button></div></div>`;
+          box.querySelector(".en-again").addEventListener("click", () => enRunDuel(ov, npcId, d));
+          box.querySelector(".en-x2").addEventListener("click", enClose);
+          return;
+        }
         enSetPurified(npcId);
         const gm = gainMastery("english", 50);   // 魔法陣通關給英語精通經驗 LV×50
         const expLine = gm ? `英語精通值 +${gm.gained}（LV.${gm.lv}${gm.leveled ? " ⬆️升級！" : ""}）` : "";

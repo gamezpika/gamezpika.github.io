@@ -641,8 +641,7 @@ class ExploreScene extends Phaser.Scene {
       // 害玩家卡死完全不能動（_transitioning 卡死之前的保險救不到，這裡補上）。
       const _fade = document.getElementById("map-fade");
       const _fadeShow = _fade && _fade.classList.contains("show");
-      if ((this.modalOpen || this._transitioning) && !this.modalContainer && !_fadeShow &&
-          !document.querySelector("#ca-overlay.open,#ao-overlay.open,#jc-overlay.open,#shop-overlay.open,#eq-overlay.open,#dh-overlay.open,#en-overlay.open")) {
+      if ((this.modalOpen || this._transitioning) && !this.modalContainer && !_fadeShow && !this._anyPanelOpen()) {
         this.modalOpen = false;
         this._transitioning = false;
       }
@@ -739,6 +738,13 @@ class ExploreScene extends Phaser.Scene {
     // 最小縮放 = cover：不論螢幕比例、不論雙指縮小，都不會 letterbox 露綠。
     if (z < cover) z = cover;
     this.cameras.main.setZoom(z);
+  }
+
+  // 有任何會擋操作的 DOM 面板開著嗎？（含牧場面板：它用 style.display 不是 .open class）
+  _anyPanelOpen() {
+    if (document.querySelector("#ca-overlay.open,#ao-overlay.open,#jc-overlay.open,#shop-overlay.open,#eq-overlay.open,#dh-overlay.open,#en-overlay.open")) return true;
+    const r = document.getElementById("ranch-overlay");
+    return !!(r && r.style.display && r.style.display !== "none");
   }
 
   _onResize() {
@@ -1028,6 +1034,23 @@ class ExploreScene extends Phaser.Scene {
         "\ninputEnabled:" + this.input.enabled;
     }
     if (!this.player) return;  // scene loading
+    // 自癒看門狗：pointerdown 版自癒要「點擊有進到引擎」才會跑——
+    // 若點擊被隱形 DOM 層吃掉，玩家會永久卡死。這裡不依賴輸入，每秒檢查一次；
+    // 「連續 3 次」都是卡死樣態才解鎖（慢網路面板載入中 modalOpen=true 但 overlay 還沒開，
+    // 幾秒內就會開出來，不能急著誤判——Codex P2）。真卡死是永遠卡，多等 2 秒沒差。
+    this._healT = (this._healT || 0) + delta;
+    if (this._healT > 1000) {
+      this._healT = 0;
+      const _hf = document.getElementById("map-fade");
+      const stuckLook = (this.modalOpen || this._transitioning) && !this.modalContainer &&
+          !(_hf && _hf.classList.contains("show")) && !this._anyPanelOpen();
+      this._healStreak = stuckLook ? (this._healStreak || 0) + 1 : 0;
+      if (this._healStreak >= 3) {
+        this._healStreak = 0;
+        this.modalOpen = false;
+        this._transitioning = false;
+      }
+    }
     // 轉場中：凍結玩家、不處理輸入（等黑幕淡入後 scene.restart）
     if (this._transitioning) { if (this.player.body) this.player.body.setVelocity(0, 0); return; }
     let dx = 0, dy = 0;

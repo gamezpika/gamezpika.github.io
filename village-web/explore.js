@@ -39,6 +39,8 @@ class ExploreScene extends Phaser.Scene {
     this._proxAnims = null;   // 靠近才搖的樹清單，換地圖要清掉舊 sprite 參考
     this._nearPortal = null;
     this._nearShop = null;
+    this._suppress = null;        // 逐棟抑制：剛開過的那棟（防關面板原地重開）
+    this._interactInit = false;   // 落地第一幀若已站在觸發區內→記抑制不開（防機台返回秒重開）
   }
 
   // backbuffer 是 css × dpr，UI/zoom 計算要用 CSS 尺寸（除以 dpr）
@@ -973,16 +975,41 @@ class ExploreScene extends Phaser.Scene {
       }
     }
 
-    if (nearest && (nearest.type === "open_shop" || nearest.type === "open_modal") && !this.modalOpen) {
-      this._nearShop = nearest;
-      const verb = nearest.type === "open_modal" ? "探查 "
-        : (nearest.shop_id && nearest.shop_id.indexOf("fpract:") === 0) ? "📖 進入 "
-        : (nearest.npc ? "📜 找 " : "🛒 進入 ");
-      this._showEnter(verb + nearest.label);
-    } else {
-      this._nearShop = null; this._hideEnter();
-    }
+    this._nearShop = (nearest && (nearest.type === "open_shop" || nearest.type === "open_modal") && !this.modalOpen) ? nearest : null;
     this.currentInteractable = nearest;
+    this._hideEnter();   // 進入按鈕退役（派派 6/11：走近建築直接開）
+    // 走近直接開：觸發=互動半徑 60%（要走到門口才開，路過不誤開）。
+    // 逐棟抑制：只抑制「剛開過的那棟」（關面板原地不重開），跨棟照常觸發；
+    // 離開該棟半徑 70%（遲滯）才解除抑制 → 回頭要先走開一步。
+    const trig = !!(this._nearShop && bestDist < nearest.radius * 0.6);
+    // NPC 商店會走動 → 抑制用 shop_id 追蹤、釋放距離跟著 NPC 即時位置算；靜態建築用座標比對
+    const mkSuppress = (n) => ({ cx: n.cx, cy: n.cy, r: n.radius, npcShopId: n.npc ? (n.shop_id || "") : null });
+    if (this._suppress) {
+      let sx = this._suppress.cx, sy = this._suppress.cy;
+      if (this._suppress.npcShopId) {
+        const live = this.npcs.find((n) => n.cfg.interaction && n.cfg.interaction.shop_id === this._suppress.npcShopId);
+        if (live && live.body) { sx = live.body.x; sy = live.body.y; }
+      }
+      if (Math.hypot(px - sx, py - sy) > this._suppress.r * 0.7) this._suppress = null;
+    }
+    if (!this._interactInit) {
+      // 落地第一幀：若出生點已在某棟觸發區內（例如從遊戲機返回站在機台前）→ 先記抑制不開，防落地秒重開
+      this._interactInit = true;
+      if (trig) this._suppress = mkSuppress(nearest);
+      return;
+    }
+    const suppressed = this._suppress && nearest && (
+      this._suppress.npcShopId != null
+        ? (nearest.npc && (nearest.shop_id || "") === this._suppress.npcShopId)
+        : (!nearest.npc && Math.hypot(nearest.cx - this._suppress.cx, nearest.cy - this._suppress.cy) < 4));
+    if (trig && !suppressed && !this.modalOpen && !this._transitioning) {
+      this._suppress = mkSuppress(nearest);
+      if (nearest.type === "open_modal") this._showModal(nearest);
+      else if (window.openShop) {
+        this.modalOpen = true;
+        window.openShop(nearest.shop_id, () => { this.modalOpen = false; });
+      }
+    }
   }
 
   update(time, delta) {

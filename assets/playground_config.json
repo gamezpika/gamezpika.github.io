@@ -1460,7 +1460,7 @@
           "type": "open_shop",
           "shop_id": "arcade:whack",
           "label": "打地鼠：九九挑戰",
-          "radius": 150
+          "radius": 110
         },
         "render_order": 100
       },
@@ -1489,7 +1489,7 @@
           "type": "open_shop",
           "shop_id": "arcade:listen",
           "label": "聽力重組小火車",
-          "radius": 150
+          "radius": 110
         },
         "render_order": 100
       },
@@ -1518,7 +1518,7 @@
           "type": "open_shop",
           "shop_id": "arcade:figures",
           "label": "名人九宮格",
-          "radius": 150
+          "radius": 110
         },
         "render_order": 100
       }

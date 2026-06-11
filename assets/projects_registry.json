@@ -1079,7 +1079,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -1094,7 +1094,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -1109,7 +1109,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -1124,7 +1124,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -2207,7 +2207,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -2222,7 +2222,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -2237,7 +2237,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -2252,7 +2252,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -3335,7 +3335,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -3350,7 +3350,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -3365,7 +3365,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -3380,7 +3380,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -4463,7 +4463,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -4478,7 +4478,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -4493,7 +4493,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -4508,7 +4508,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -5585,7 +5585,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -5600,7 +5600,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -5615,7 +5615,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -5630,7 +5630,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -6713,7 +6713,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -6728,7 +6728,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -6743,7 +6743,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -6758,7 +6758,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -7886,7 +7886,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -7901,7 +7901,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -7916,7 +7916,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -7931,7 +7931,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -9050,7 +9050,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -9065,7 +9065,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -9080,7 +9080,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -9095,7 +9095,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -10178,7 +10178,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -10193,7 +10193,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -10208,7 +10208,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -10223,7 +10223,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -11306,7 +11306,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -11321,7 +11321,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -11336,7 +11336,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -11351,7 +11351,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -12434,7 +12434,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -12449,7 +12449,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -12464,7 +12464,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -12479,7 +12479,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -13562,7 +13562,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -13577,7 +13577,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -13592,7 +13592,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -13607,7 +13607,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -14690,7 +14690,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -14705,7 +14705,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -14720,7 +14720,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -14735,7 +14735,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -15818,7 +15818,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -15833,7 +15833,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -15848,7 +15848,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -15863,7 +15863,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -16946,7 +16946,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -16961,7 +16961,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -16976,7 +16976,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -16991,7 +16991,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -18074,7 +18074,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -18089,7 +18089,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -18104,7 +18104,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -18119,7 +18119,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -19202,7 +19202,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -19217,7 +19217,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -19232,7 +19232,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -19247,7 +19247,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -20330,7 +20330,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -20345,7 +20345,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -20360,7 +20360,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -20375,7 +20375,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -21458,7 +21458,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -21473,7 +21473,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -21488,7 +21488,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -21503,7 +21503,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -22586,7 +22586,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -22601,7 +22601,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -22616,7 +22616,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -22631,7 +22631,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -23714,7 +23714,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -23729,7 +23729,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -23744,7 +23744,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -23759,7 +23759,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -24842,7 +24842,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -24857,7 +24857,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -24872,7 +24872,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -24887,7 +24887,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     },
@@ -25970,7 +25970,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_back.webp",
@@ -25985,7 +25985,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_right.webp",
@@ -26000,7 +26000,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         },
         {
           "image": "deco_cheer_trio_left.webp",
@@ -26015,7 +26015,7 @@
           "grid_cols": 2,
           "grid_rows": 1,
           "frames": 2,
-          "frame_rate": 2
+          "frame_rate": 5
         }
       ]
     }

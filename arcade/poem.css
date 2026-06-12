@@ -40,7 +40,7 @@ html, body { height: 100%; overflow: hidden; }
 .poem-wall { position: absolute; overflow: hidden; backface-visibility: hidden; }
 .poem-wall-tex {
   position: absolute; top: 0; bottom: 0; left: -460px; right: -460px;
-  background: url("img/poem/wall_tile.webp?v=2") repeat-x;
+  background: url("img/poem/wall_tile.webp?v=4") repeat-x;
   background-size: auto 100%; will-change: transform;
 }
 
@@ -55,8 +55,8 @@ html, body { height: 100%; overflow: hidden; }
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
   perspective: 540px; perspective-origin: 50% 0%; overflow: hidden;
   /* 頂端只留 4% 微淡出防鋸齒：路面從涼亭台階「完全不透明」開始，不再跟原畫的路雙重曝光 */
-  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 4%, #000 100%);
-  mask-image: linear-gradient(180deg, transparent 0, #000 4%, #000 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 100%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 8%, #000 100%);
 }
 .poem-floor-plane {
   position: absolute; bottom: 0; left: 50%; width: 160%; height: 480%;
@@ -65,7 +65,7 @@ html, body { height: 100%; overflow: hidden; }
 }
 .poem-floor-tex {
   position: absolute; left: 0; right: 0; top: -340px; height: calc(100% + 340px);
-  background: url("img/poem/floor_tile.webp?v=4") repeat;
+  background: url("img/poem/floor_tile.webp?v=6") repeat;
   background-size: 100% 110px; will-change: transform;
 }
 /* 霧帶已拆（派派 6/12：任何帶子/柔焦都造成分界感），留空殼相容 JS */
@@ -105,7 +105,7 @@ html, body { height: 100%; overflow: hidden; }
 }
 /* 題目卷軸：浮在上下銜接處（地平線），UI 縫合兩層；門從卷軸後冒出（top 由 JS 設） */
 .poem-scroll {
-  position: absolute; left: 50%; transform: translate(-50%, -10%);   /* 上緣貼台階口：蓋接縫、不擋涼亭 */
+  position: absolute; left: 50%; transform: translateX(-50%);   /* top 由 JS 設在草坡空區 */
   z-index: 30; pointer-events: none; white-space: nowrap; text-align: center;
   background: linear-gradient(180deg, #fbf3dd 0%, #f3e6c4 70%, #e9d8ae 100%);
   border: 2px solid #b98a4e; border-radius: 10px;

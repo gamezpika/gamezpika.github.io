@@ -95,8 +95,9 @@
         // UP_SHIFT：上半部整體往上移（派派 6/12），遠景圖與地平線同步上移＝路面變長
         const dispH = Math.max(W, H);
         const UP_SHIFT = H * 0.07;
-        geom.upShift = UP_SHIFT;
-        geom.horizonY = Math.max(H * 0.10, Math.min(H * 0.55, H - dispH * 0.59 - UP_SHIFT));
+        // 橫式(W>H)地平線下限提高到 0.32H：不然遠景被擠成細條、卷軸頂出畫面（Codex R11 P2）
+        const hzFloor = W > H ? H * 0.32 : H * 0.10;
+        geom.horizonY = Math.max(hzFloor, Math.min(H * 0.55, H - dispH * 0.59 - UP_SHIFT));
         // 滅點在涼亭基座上方（派派藍線）：路到台階口仍有寬度（梯形），不收成一點
         geom.vanishY = geom.horizonY - dispH * 0.054;
         // 路面捲動平面：全寬（含柵欄/草邊一起流）＋貼圖高度按平面寬等比
@@ -106,9 +107,9 @@
             fl.style.perspectiveOrigin = "50% " + Math.round(geom.vanishY - geom.horizonY) + "px";
         }
         const pl = document.querySelector(".poem-floor-plane");
-        const planeW = Math.round(dispH * 1.49);   // 路底寬=62%*planeW≈145%螢幕寬（派派藍線）；石板 4 排各約36%螢幕寬
+        const planeW = Math.round(dispH * 1.43);   // 新訂製路面磚路佔64.8% → 底寬≈145%螢幕寬（派派藍線）
         if (pl) pl.style.width = planeW + "px";
-        geom.tileH = Math.max(70, Math.round(planeW * 70 / 1024 * 1.35));
+        geom.tileH = Math.max(120, Math.round(planeW * 280 / 1024));   // 新磚 1024x280 等比
         const tex = $("poem-floor-tex");
         if (tex) tex.style.backgroundSize = "100% " + geom.tileH + "px";
         const fg = $("poem-fog"); if (fg) fg.style.top = (geom.horizonY - H * 0.045) + "px";
@@ -117,10 +118,10 @@
         if (far) {
             far.style.height = Math.round(geom.horizonY + H * 0.02) + "px";   // 只蓋到地平線下一點點（多了會露原畫中景）
             far.querySelectorAll(".poem-far-l").forEach((l) => {
-                l.style.backgroundSize = dispH + "px " + dispH + "px";
-                l.style.backgroundPosition = Math.round((W - dispH) / 2) + "px " + Math.round(H - dispH - geom.upShift) + "px";
-                // inline style 的相對路徑是對 HTML 解析（不是對 CSS 檔），必須帶 arcade/ 前綴（Codex P2）
-                l.style.backgroundImage = "url('arcade/img/poem/bg.webp?v=1')";
+                l.style.backgroundSize = "cover";
+                l.style.backgroundPosition = "center bottom";   // 訂製遠景：底緣=地面線，天生接在路的起點（圖裡沒有路）
+                // inline style 相對路徑對 HTML 解析，必須帶 arcade/ 前綴
+                l.style.backgroundImage = "url('arcade/img/poem/far_scene.webp?v=4')";
             });
         }
         // 兩側竹牆：rotateY 立面，近端在畫面外側、遠端收向消失點
@@ -140,14 +141,14 @@
             wr.style.transformOrigin = "0% 50%";
             wr.style.transform = "rotateY(76deg)";
         }
-        geom.wallTileW = Math.max(120, Math.round(220 * wallH / 470));   // 貼圖 auto 100% 等比後的單塊寬（新牆貼圖 220x470）
+        geom.wallTileW = Math.max(200, Math.round(1024 * wallH / 460));   // 新牆磚 1024x460 等比
         // 貼圖層外擴必須 ≥ 一塊貼圖寬，否則 translateX 捲到大位移時牆緣露空白（Codex P3）
         [$("poem-wall-tex-l"), $("poem-wall-tex-r")].forEach((t) => {
             if (t) { t.style.left = -geom.wallTileW + "px"; t.style.right = -geom.wallTileW + "px"; }
         });
-        // 題目卷軸釘在地平線（上下銜接處）
+        // 題目卷軸放在草坡空區（涼亭下方、路起點上方——蓋住的只是草地）
         const scr = $("poem-scroll");
-        if (scr) scr.style.top = Math.round(geom.horizonY) + "px";
+        if (scr) scr.style.top = Math.round(Math.max(44, geom.horizonY - H * 0.165)) + "px";   // 下限 44px：別頂出畫面或撞到計分藥丸（Codex R11 P2）
         // 地平線以下縫隙補色層（取代原畫殘留）
         let und = document.querySelector(".poem-under");
         if (!und) {
@@ -430,11 +431,11 @@
         questions = buildQuestions(); qIdx = 0;
         // 版本號必須跟 CSS/spawn 實際引用一致，否則「準備中」白等（Codex R9 P3）
         await preloadImages([
-            "arcade/img/poem/bg.webp?v=1",
+            "arcade/img/poem/far_scene.webp?v=4",
             "arcade/img/poem/runner.webp?v=1",
             "arcade/img/poem/gate.webp?v=1",
-            "arcade/img/poem/floor_tile.webp?v=4",
-            "arcade/img/poem/wall_tile.webp?v=2",
+            "arcade/img/poem/floor_tile.webp?v=6",
+            "arcade/img/poem/wall_tile.webp?v=4",
             "arcade/img/poem/prop_grass.webp?v=2",
             "arcade/img/poem/prop_stone.webp?v=2",
         ]);

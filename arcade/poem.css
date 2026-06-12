@@ -6,11 +6,59 @@
   height: 100vh; height: 100dvh; min-height: 0; overflow: hidden;
 }
 
-/* 舞台（佔滿 header 以下全部高度） */
+/* 舞台（佔滿 header 以下全部高度）；底圖也鋪一份，世界容器晃動時邊緣不露黑 */
 .poem-stage {
   position: relative; flex: 1; min-height: 0; overflow: hidden;
   touch-action: none; user-select: none; -webkit-user-select: none;
   background: url("img/poem/bg.webp?v=1") center bottom / cover no-repeat;
+}
+
+/* 世界容器：背景+地板+門+道具+跑者都在裡面，鏡頭律動（bob/衝刺脈動）由 JS 控 transform */
+.poem-world {
+  position: absolute; inset: 0; will-change: transform;
+  background: url("img/poem/bg.webp?v=1") center bottom / cover no-repeat;
+}
+
+/* 偽 3D 路面：透視平面 + 無縫石板貼圖向鏡頭捲動（top 由 JS 設為路消失點） */
+.poem-floor {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
+  perspective: 430px; perspective-origin: 50% 0%; overflow: hidden;
+}
+.poem-floor-plane {
+  position: absolute; bottom: 0; left: 50%; width: 106%; height: 340%;
+  transform: translateX(-50%) rotateX(68deg); transform-origin: 50% 100%;
+  overflow: hidden;
+}
+.poem-floor-tex {
+  position: absolute; left: 0; right: 0; top: -340px; height: calc(100% + 340px);
+  background: url("img/poem/floor_tile.webp?v=1") repeat;
+  background-size: 100% 170px; will-change: transform;
+}
+/* 地平線霧帶：遮住捲動路面與靜止遠景的接縫（top 由 JS 設） */
+.poem-fog {
+  position: absolute; left: -4%; right: -4%; height: 11%; z-index: 2; pointer-events: none;
+  background: linear-gradient(180deg, rgba(250, 240, 214, 0) 0%, rgba(250, 240, 214, 0.85) 42%, rgba(250, 240, 214, 0) 100%);
+  filter: blur(2px);
+}
+
+/* 路邊道具流（草叢/小石，跟門同一套透視流過去） */
+.poem-prop {
+  position: absolute; left: 0; top: 0; z-index: 4;
+  will-change: transform, opacity; pointer-events: none; transform-origin: 50% 90%;
+}
+.poem-prop img { width: 100%; display: block; -webkit-user-drag: none; }
+
+/* 門出生金光（告訴眼睛「門從路盡頭來」） */
+.poem-spawnflash {
+  position: absolute; width: 90px; height: 46px; margin: -23px 0 0 -45px;
+  border-radius: 50%; z-index: 6; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(255, 236, 160, 0.95), rgba(255, 217, 138, 0.45) 55%, rgba(255, 217, 138, 0) 78%);
+  animation: poem-spawnflash 0.5s ease-out forwards;
+}
+@keyframes poem-spawnflash {
+  from { transform: scale(0.3); opacity: 0; }
+  30% { opacity: 1; }
+  to { transform: scale(1.7); opacity: 0; }
 }
 
 /* 場景內頂部浮層：計分藥丸＋題目匾額（壓在場景上，不另佔版面） */

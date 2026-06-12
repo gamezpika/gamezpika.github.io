@@ -32,6 +32,15 @@
     let geom = { W: 0, H: 0, laneX: [0, 0], minX: 0, maxX: 0, gateW: 150 };
     let dragging = false;
 
+    // 奔跑感：路面捲動 + 路邊道具流 + 鏡頭律動
+    const FLOOR_TILE_H = 170;            // 貼圖在平面上的顯示高(px)，捲動以此循環
+    let floorOff = 0;                    // 路面捲動累積量
+    let pulseAt = -1e9;                  // 答對衝刺脈動時間戳
+    let props = [], lastPropAt = 0, propSide = 0;
+    const PROP_IMGS = ["prop_grass.webp", "prop_stone.webp"];
+    function curDur() { return row ? row.dur : Math.max(APPROACH_MIN, APPROACH_BASE - score * APPROACH_STEP); }
+    function clearProps() { props.forEach((p) => p.el.remove()); props = []; }
+
     // ── 題庫 ─────────────────────────────────────
     async function loadPoems() {
         if (poems.length) return;
@@ -82,6 +91,9 @@
         // （門必須從「路的盡頭」長出來，不是從天上掉下來）
         const dispH = Math.max(W, H);
         geom.horizonY = Math.max(H * 0.20, Math.min(H * 0.60, H - dispH * 0.52));
+        // 路面捲動平面與霧帶對齊消失點
+        const fl = $("poem-floor"); if (fl) fl.style.top = geom.horizonY + "px";
+        const fg = $("poem-fog"); if (fg) fg.style.top = (geom.horizonY - H * 0.045) + "px";
         runner.x = Math.max(geom.minX, Math.min(geom.maxX, runner.x || W * 0.5));
         runner.targetX = runner.x;
     }
@@ -95,8 +107,14 @@
         const labels = correctLane === 0 ? [q.correct, wrong] : [wrong, q.correct];
         $("poem-question").textContent = "「" + q.prompt + "」";
 
-        const st = $("poem-stage");
+        const st = $("poem-world");   // 門掛在世界容器裡，跟著鏡頭律動
         const gates = [];
+        // 出生金光：告訴眼睛「門從路的盡頭來」
+        const fx = document.createElement("div");
+        fx.className = "poem-spawnflash";
+        fx.style.left = geom.W / 2 + "px"; fx.style.top = geom.horizonY + "px";
+        st.appendChild(fx);
+        setTimeout(() => fx.remove(), 520);
         // 匾額文字字級跟門寬連動：匾額實際內寬約 0.52×門寬，塞 5 個字留邊（不爆框）
         const labelFs = Math.max(13, Math.floor(geom.gateW * 0.52 / 5.15));
         labels.forEach((ans, lane) => {
@@ -120,14 +138,14 @@
         placeGates(0);
         phase = "approach";
     }
-    // t: 0(路的盡頭)→1(到跑者面前)；二次方緩入＝透視逼近感
+    // t: 0(路的盡頭)→1(到跑者面前)；1.8 次方緩入＝透視逼近感（前段稍快，別讓門小到看不見）
     function placeGates(t) {
         if (!row) return;
-        const e = t * t;
+        const e = Math.pow(t, 1.8);
         const { W, H, laneX, horizonY } = geom;
         const y = horizonY + (H * 0.86 - horizonY) * e;     // 從消失點沿路面下來（不從天上掉）
-        const sc = 0.06 + 0.94 * e;                          // 從一個小點長出來
-        const op = Math.min(1, t / 0.16);                    // 前 16% 淡入＝「從路盡頭冒出」
+        const sc = 0.10 + 0.90 * e;                          // 出生就看得見的小門
+        const op = Math.min(1, t / 0.08);                    // 淡入縮短：迅速「從路盡頭冒出」
         row.gates.forEach((g) => {
             const farX = W * (g.lane === 0 ? 0.46 : 0.54);   // 遠處貼著路中央、近處沿路展開
             const x = farX + (laneX[g.lane] - farX) * e;
@@ -153,6 +171,7 @@
         phase = "feedback";
         if (hit) {
             score += 1;
+            pulseAt = performance.now();   // 鏡頭衝刺脈動
             bigMark("✓", "ok");
             floatText(row.q.from, "from");
             burst(runner.x, geom.H * 0.66, 14);
@@ -234,6 +253,40 @@
                 placeGates(t);
                 if (t >= 1) resolveRow();
             }
+            // 路面捲動：速度跟逼近時長綁定（答越多路流越快）
+            const dur = curDur();
+            floorOff += dt * 150 * (APPROACH_BASE / dur);
+            const tex = $("poem-floor-tex");
+            if (tex) tex.style.transform = "translateY(" + (floorOff % FLOOR_TILE_H) + "px)";
+            // 鏡頭律動：跑步上下小晃 + 答對瞬間輕微拉近彈回
+            const pulse = 1 + 0.032 * Math.max(0, 1 - (ts - pulseAt) / 360);
+            const world = $("poem-world");
+            if (world) world.style.transform = "translateY(" + (Math.sin(ts / 92) * 2.2) + "px) scale(" + pulse + ")";
+            // 路邊道具流：持續從消失點冒出流過去（左右交替），世界一直在動
+            if (ts - lastPropAt > 760 * (dur / APPROACH_BASE)) {
+                lastPropAt = ts;
+                propSide = 1 - propSide;
+                const p = document.createElement("div");
+                p.className = "poem-prop";
+                const im = document.createElement("img");
+                im.src = "arcade/img/poem/" + PROP_IMGS[Math.floor(Math.random() * PROP_IMGS.length)] + "?v=1";
+                im.alt = ""; im.draggable = false;
+                p.appendChild(im);
+                p.style.width = Math.round(geom.gateW * (0.34 + Math.random() * 0.16)) + "px";
+                if (world) world.appendChild(p);
+                props.push({ el: p, side: propSide, t0: ts, dur: dur * 0.92 });
+            }
+            for (let i = props.length - 1; i >= 0; i--) {
+                const p = props[i];
+                const pt = (ts - p.t0) / p.dur;
+                if (pt >= 1.12) { p.el.remove(); props.splice(i, 1); continue; }
+                const pe = Math.pow(Math.min(1, pt), 1.8);
+                const px = geom.W * ((p.side === 0 ? 0.435 : 0.565) + ((p.side === 0 ? 0.05 : 0.95) - (p.side === 0 ? 0.435 : 0.565)) * pe);
+                const py = geom.horizonY + (geom.H * 0.98 - geom.horizonY) * pe;
+                const psc = 0.10 + 1.05 * pe;
+                p.el.style.opacity = Math.min(1, pt / 0.10) * (pt > 1 ? Math.max(0, 1 - (pt - 1) / 0.12) : 1);
+                p.el.style.transform = "translate(" + px + "px," + py + "px) translate(-50%,-90%) scale(" + psc + ")";
+            }
         } catch (e) {
             console.error("[poem] frame error:", e);
         }
@@ -264,6 +317,8 @@
         if (rafId) cancelAnimationFrame(rafId);
         clearTimeout(nextTimer);
         clearRow();
+        clearProps();
+        floorOff = 0; lastPropAt = 0; pulseAt = -1e9;
 
         const myToken = ++startupToken;
         const stillCurrent = () => myToken === startupToken;
@@ -279,6 +334,9 @@
             "arcade/img/poem/bg.webp?v=1",
             "arcade/img/poem/runner.webp?v=1",
             "arcade/img/poem/gate.webp?v=1",
+            "arcade/img/poem/floor_tile.webp?v=1",
+            "arcade/img/poem/prop_grass.webp?v=1",
+            "arcade/img/poem/prop_stone.webp?v=1",
         ]);
         if (!stillCurrent()) return;
 
@@ -305,6 +363,7 @@
         if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
         clearTimeout(nextTimer);
         clearRow();
+        clearProps();
         const o = $("poem-countdown");
         if (o) o.style.display = "none";
     }

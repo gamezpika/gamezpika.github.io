@@ -12,6 +12,89 @@ body { background: #1A1A2E; color: #fff; font-family: "Noto Sans TC", "PingFang 
 .emo.xl { width: 56px; height: 56px; vertical-align: -12px; }
 /* 排行榜入口先藏（排行榜呈現方式待定，避免死按鈕） */
 #pvp-leaderboard-from-picker, #pvp-leaderboard-btn { display: none !important; }
+
+/* ── 模式選擇改造（派派 6/12：太單調＋emoji 不符風格）──
+   只動視覺：卡片 class / data-mode 都保留，pvp-v3.js 綁定不受影響 */
+.pvp-mode-content {
+    /* 競技場底圖（暗化模糊版）當背景 — 派派 6/12 選的方向：站在場館裡選模式 */
+    background:
+        radial-gradient(ellipse 120% 60% at 50% -10%, rgba(255,160,80,0.16), transparent 60%),
+        linear-gradient(180deg, rgba(18,10,38,0.55) 0%, rgba(18,10,38,0.25) 45%, rgba(18,10,38,0.75) 100%),
+        url("arcade/img/pvp/arena_bg_dim.webp?v=1") center / cover no-repeat,
+        #1d1338;
+}
+.pvp-mode-hero { text-align: center; margin: 4px 0 10px; }
+.pvp-mode-hero img {
+    width: 112px; height: 112px; object-fit: contain;
+    filter: drop-shadow(0 0 26px rgba(255,170,60,0.5));
+    animation: pvpHeroFloat 3s ease-in-out infinite;
+}
+@keyframes pvpHeroFloat { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-6px) scale(1.03); } }
+.pvp-mode-intro {
+    font-size: 19px; font-weight: 900; color: #fff;
+    text-shadow: 0 0 18px rgba(255,128,171,0.55);
+    margin-bottom: 22px; letter-spacing: 2px;
+}
+.pvp-mode-intro::before, .pvp-mode-intro::after {
+    content: ""; display: inline-block; vertical-align: middle;
+    width: 36px; height: 2px; margin: 0 10px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6));
+}
+.pvp-mode-intro::after { transform: scaleX(-1); }
+.pvp-mode-card {
+    position: relative; overflow: hidden;
+    display: grid; align-items: center;
+    grid-template-columns: 72px 1fr 24px; column-gap: 16px;
+    grid-template-areas: "icon name go" "icon desc go";
+    padding: 18px 16px; border-radius: 20px;
+    border: 2px solid transparent;
+    background:
+        linear-gradient(135deg, #2b1b4e 0%, #1d1338 100%) padding-box,
+        var(--card-edge, linear-gradient(135deg, #ffd24a, #ff8a3d)) border-box;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.35);
+    animation: pvpCardIn 0.45s ease backwards;
+    transition: transform 0.12s ease;
+}
+.pvp-mode-card:active { transform: scale(0.96); }
+.pvp-mode-cards .pvp-mode-card:nth-child(2) { animation-delay: 0.08s; }
+.pvp-mode-cards .pvp-mode-card:nth-child(3) { animation-delay: 0.16s; }
+@keyframes pvpCardIn { from { opacity: 0; transform: translateY(18px); } }
+/* 卡面斜光掃過 */
+.pvp-mode-card::after {
+    content: ""; position: absolute; top: -40%; bottom: -40%; left: -80%; width: 50%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,0.10), transparent);
+    transform: skewX(-18deg);
+    animation: pvpSheen 3.6s ease-in-out infinite;
+}
+@keyframes pvpSheen { 0%, 55% { left: -80%; } 85%, 100% { left: 130%; } }
+.pvp-mode-card[data-mode="ranked"], #pvp-room-go-create {
+    --card-edge: linear-gradient(135deg, #ffd24a, #ff8a3d);
+    --icon-glow: rgba(255,210,74,0.45);
+}
+.pvp-mode-card[data-mode="freeforall"] {
+    --card-edge: linear-gradient(135deg, #c084fc, #ff5fa8);
+    --icon-glow: rgba(192,132,252,0.45);
+}
+.pvp-mode-card[data-mode="room"], #pvp-room-go-join {
+    --card-edge: linear-gradient(135deg, #37e0b8, #2f9df0);
+    --icon-glow: rgba(55,224,184,0.4);
+}
+/* emoji 容器 → 發光圖示圓座 + Codex 統一風格圖 */
+.pvp-mode-emoji {
+    grid-area: icon; width: 72px; height: 72px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.16), rgba(255,255,255,0.04));
+    box-shadow: 0 0 22px var(--icon-glow, rgba(255,255,255,0.25)), inset 0 0 0 2px rgba(255,255,255,0.12);
+}
+.pvp-mode-emoji img { width: 58px; height: 58px; object-fit: contain; animation: pvpIconBob 2.6s ease-in-out infinite; }
+@keyframes pvpIconBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+.pvp-mode-name { grid-area: name; align-self: end; font-size: 20px; margin-bottom: 3px; }
+.pvp-mode-desc { grid-area: desc; align-self: start; }
+/* 卡片右側箭頭 */
+.pvp-mode-card .pvp-mode-go {
+    grid-area: go; text-align: center;
+    font-size: 22px; font-weight: 900; color: rgba(255,255,255,0.55);
+}
 </style>
 </head>
 <body>
@@ -22,22 +105,26 @@ body { background: #1A1A2E; color: #fff; font-family: "Noto Sans TC", "PingFang 
                 <button id="pvp-leaderboard-from-picker" style="margin-left:auto;background:none;border:none;cursor:pointer;padding:8px;" title="排行榜"><img class="emo lg" src="/assets/images/icons/trophy.png?s=6" alt=""></button>
             </header>
             <div class="pvp-mode-content">
+                <div class="pvp-mode-hero"><img src="arcade/img/pvp/mode_vs.png" alt="VS"></div>
                 <div class="pvp-mode-intro">選擇 PK 模式</div>
                 <div class="pvp-mode-cards">
                     <button class="pvp-mode-card pvp-mode-ranked" data-mode="ranked">
-                        <div class="pvp-mode-emoji">🥇</div>
+                        <div class="pvp-mode-emoji"><img src="arcade/img/pvp/mode_ranked.png" alt=""></div>
                         <div class="pvp-mode-name">同年級 PK</div>
                         <div class="pvp-mode-desc">跟同年級玩家對戰，10 秒沒人配 AI 陪練。算進「PK 王榜」。</div>
+                        <div class="pvp-mode-go">›</div>
                     </button>
                     <button class="pvp-mode-card pvp-mode-freeforall" data-mode="freeforall">
-                        <div class="pvp-mode-emoji">🌀</div>
+                        <div class="pvp-mode-emoji"><img src="arcade/img/pvp/mode_freeforall.png" alt=""></div>
                         <div class="pvp-mode-name">大亂鬥</div>
                         <div class="pvp-mode-desc">自選挑戰等級 G1-G5，跟自己年級脫鉤。算進「大亂鬥王榜」。</div>
+                        <div class="pvp-mode-go">›</div>
                     </button>
                     <button class="pvp-mode-card pvp-mode-room" data-mode="room">
-                        <div class="pvp-mode-emoji">🏠</div>
+                        <div class="pvp-mode-emoji"><img src="arcade/img/pvp/mode_room.png" alt=""></div>
                         <div class="pvp-mode-name">朋友房間</div>
                         <div class="pvp-mode-desc">開房或輸入 6 位 code 跟朋友對戰。不上排行榜。</div>
+                        <div class="pvp-mode-go">›</div>
                     </button>
                 </div>
             </div>
@@ -81,14 +168,16 @@ body { background: #1A1A2E; color: #fff; font-family: "Noto Sans TC", "PingFang 
                 <div class="pvp-mode-intro">跟朋友 PK 不上排行榜</div>
                 <div class="pvp-mode-cards">
                     <button class="pvp-mode-card pvp-mode-room" id="pvp-room-go-create">
-                        <div class="pvp-mode-emoji">🆕</div>
+                        <div class="pvp-mode-emoji"><img src="arcade/img/pvp/mode_create.png" alt=""></div>
                         <div class="pvp-mode-name">建立房間</div>
                         <div class="pvp-mode-desc">選題目年級+科目，拿 6 位 code 分享給朋友。5 分鐘有效。</div>
+                        <div class="pvp-mode-go">›</div>
                     </button>
                     <button class="pvp-mode-card pvp-mode-room" id="pvp-room-go-join">
-                        <div class="pvp-mode-emoji">🔑</div>
+                        <div class="pvp-mode-emoji"><img src="arcade/img/pvp/mode_join.png" alt=""></div>
                         <div class="pvp-mode-name">加入房間</div>
                         <div class="pvp-mode-desc">輸入朋友給你的 6 位 code 加入。</div>
+                        <div class="pvp-mode-go">›</div>
                     </button>
                 </div>
             </div>

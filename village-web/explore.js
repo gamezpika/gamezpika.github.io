@@ -11,6 +11,22 @@ function _qParam(name) {
   try { return new URLSearchParams(window.location.search).get(name); } catch (e) { return null; }
 }
 
+// 走路造型（服裝店真換裝）：買了這 4 套，走路圖整套換人；不在表內＝預設小男孩
+// 圖檔尺寸/幀數跟 player1/2/3 完全相同 → 沿用 config 的 frame_width/height
+const WALK_OUTFITS = {
+  m_beach:    { side: "walk_m_beach_side.webp",    down: "walk_m_beach_down.webp",    up: "walk_m_beach_up.webp" },
+  m_biker:    { side: "walk_m_biker_side.webp",    down: "walk_m_biker_down.webp",    up: "walk_m_biker_up.webp" },
+  f_beach:    { side: "walk_f_beach_side.webp",    down: "walk_f_beach_down.webp",    up: "walk_f_beach_up.webp" },
+  f_blackcat: { side: "walk_f_blackcat_side.webp", down: "walk_f_blackcat_down.webp", up: "walk_f_blackcat_up.webp" },
+};
+function walkOutfitCurrent() {
+  try {
+    const body = (JSON.parse(localStorage.getItem("village_equip") || "{}") || {}).body;
+    if (WALK_OUTFITS[body]) return { id: body, sheets: WALK_OUTFITS[body] };
+  } catch (e) {}
+  return { id: "default", sheets: null };
+}
+
 class ExploreScene extends Phaser.Scene {
   constructor() { super("explore"); }
 
@@ -28,6 +44,11 @@ class ExploreScene extends Phaser.Scene {
     }
     this.facingOverride = (data && data.facing) || null;
     this._transitioning = false;
+    // 換裝狀態：restart 不會重建 scene instance，旗標要在這裡復位；
+    // 世代+1 讓「換裝載到一半就走 portal」的舊 loader 回呼直接作廢
+    this._outfitSwapping = false;
+    this._outfitReapply = false;
+    this._outfitGen = (this._outfitGen || 0) + 1;
     // 清掉上一張地圖的物件參考：restart 後它們已被 Phaser 銷毀，
     // 趁新地圖 asset 還在載時 update()/外部讀取要被 `if(!this.player) return` 擋住，
     // 不能讀到「殘留但已銷毀」的 player.body / obstacles
@@ -116,10 +137,15 @@ class ExploreScene extends Phaser.Scene {
       }
     });
     // Player sprites（3 方向，所有地圖共用同一個玩家 → 用固定 key、已載就跳過）
+    // 有買走路造型就載造型 sheet（尺寸同原版，frame 設定照用）
     const ps = config.player.sprites;
-    if (!this.textures.exists("hero"))      this.load.spritesheet("hero",      this.assetBase + ps.side.image + "?v=3", { frameWidth: ps.side.frame_width, frameHeight: ps.side.frame_height });
-    if (!this.textures.exists("hero_down")) this.load.spritesheet("hero_down", this.assetBase + ps.down.image + "?v=3", { frameWidth: ps.down.frame_width, frameHeight: ps.down.frame_height });
-    if (!this.textures.exists("hero_up"))   this.load.spritesheet("hero_up",   this.assetBase + ps.up.image   + "?v=3", { frameWidth: ps.up.frame_width,   frameHeight: ps.up.frame_height });
+    const oc = walkOutfitCurrent();
+    const ow = oc.sheets;
+    // 紀錄這批 texture 實際載的是哪套造型（換裝對帳用，texture 是 game 全域所以放 window）
+    if (!this.textures.exists("hero")) window.__walkOutfitApplied = oc.id;
+    if (!this.textures.exists("hero"))      this.load.spritesheet("hero",      this.assetBase + (ow ? ow.side : ps.side.image) + "?v=3", { frameWidth: ps.side.frame_width, frameHeight: ps.side.frame_height });
+    if (!this.textures.exists("hero_down")) this.load.spritesheet("hero_down", this.assetBase + (ow ? ow.down : ps.down.image) + "?v=3", { frameWidth: ps.down.frame_width, frameHeight: ps.down.frame_height });
+    if (!this.textures.exists("hero_up"))   this.load.spritesheet("hero_up",   this.assetBase + (ow ? ow.up   : ps.up.image)   + "?v=3", { frameWidth: ps.up.frame_width,   frameHeight: ps.up.frame_height });
 
     // NPC sprites（每隻 NPC 可帶自己的 side/down/up；沒給就 fallback 用 hero）
     if (Array.isArray(config.npcs)) {
@@ -369,6 +395,10 @@ class ExploreScene extends Phaser.Scene {
     if (!this.anims.exists("hero_walk_up"))   this.anims.create({ key: "hero_walk_up",   frames: this.anims.generateFrameNumbers("hero_up",   { start: 0, end: (p.sprites.up.frames   || 16) - 1 }), frameRate: p.sprites.up.frame_rate || 14, repeat: -1 });
     if (!this.anims.exists("hero_idle"))      this.anims.create({ key: "hero_idle",      frames: [{ key: "hero_down", frame: 0 }],                                                                  frameRate: 1                                });
     this.playerSprite.play("hero_idle");
+    // 換裝一致性自癒：texture 是全域、restart 後 exists 會跳過重載 →
+    // 若中途換過裝（或換裝被 portal 打斷），實際載的造型可能 ≠ 目前裝備，這裡對帳補套
+    // （create 期間 scene 還不算 active，getScenes(true) 找不到 → 要把 this 傳進去）
+    if (window.__walkOutfitApplied !== walkOutfitCurrent().id && window.applyWalkOutfit) window.applyWalkOutfit(this);
 
     this.physics.add.collider(this.player, this.obstacles);
 
@@ -1174,8 +1204,9 @@ class ExploreScene extends Phaser.Scene {
       else if (dy > 0)    wantAnim = "hero_walk_down";
       else                wantAnim = "hero_walk_up";
     }
+    // 換裝重載 texture 期間動畫暫時不存在 → 跳過切換，載完由 applyWalkOutfit 接手
     const cur = this.playerSprite.anims.currentAnim;
-    if (!cur || cur.key !== wantAnim) this.playerSprite.play(wantAnim);
+    if (!this._outfitSwapping && (!cur || cur.key !== wantAnim)) this.playerSprite.play(wantAnim);
     // 玩家 side spritesheet 朝向讀 config.player.sprites.side.facing (預設 'right')
     if (wantAnim === "hero_walk") {
       const sideCfg = (this.config.player.sprites && this.config.player.sprites.side) || {};
@@ -1232,3 +1263,60 @@ game.events.once("ready", () => {
     window.visualViewport.addEventListener("resize", _applyDpr);
   }
 });
+
+// 服裝店買衣服「買了馬上變」：當場把 hero 三方向 texture+動畫換成新造型
+// （shop.js 購買/更衣室切換時呼叫；新圖尺寸幀數同原版，config 設定照用）
+window.applyWalkOutfit = function (sceneArg) {
+  const sc = (sceneArg && sceneArg.playerSprite && sceneArg) ||
+    game.scene.getScenes(true).find((s) => s.playerSprite && s.config);
+  if (!sc) return;
+  // 換裝進行中又被呼叫（連點兩件衣服）→ 排隊，這輪載完後用最新 localStorage 重套
+  if (sc._outfitSwapping) { sc._outfitReapply = true; return; }
+  const oc = walkOutfitCurrent();
+  if (window.__walkOutfitApplied === oc.id) return;   // 已經是目標造型
+  const ps = sc.config.player.sprites;
+  const ow = oc.sheets;
+  const files = {
+    hero:      ow ? ow.side : ps.side.image,
+    hero_down: ow ? ow.down : ps.down.image,
+    hero_up:   ow ? ow.up   : ps.up.image,
+  };
+  sc._outfitSwapping = true;
+  const gen = sc._outfitGen;   // 載入中走 portal（init 會 +1）→ 這輪回呼直接作廢
+  // 第一階段：先載到暫存 key，玩家照常顯示舊造型（不能先刪 hero——畫面上還在用，會 glTexture 噴錯）
+  const SWAP = ["hero_swap_side", "hero_swap_down", "hero_swap_up"];
+  SWAP.forEach((k) => { if (sc.textures.exists(k)) sc.textures.remove(k); });
+  sc.load.spritesheet("hero_swap_side", sc.assetBase + files.hero      + "?v=3", { frameWidth: ps.side.frame_width, frameHeight: ps.side.frame_height });
+  sc.load.spritesheet("hero_swap_down", sc.assetBase + files.hero_down + "?v=3", { frameWidth: ps.down.frame_width, frameHeight: ps.down.frame_height });
+  sc.load.spritesheet("hero_swap_up",   sc.assetBase + files.hero_up   + "?v=3", { frameWidth: ps.up.frame_width,   frameHeight: ps.up.frame_height });
+  sc.load.once("complete", () => {
+    if (gen !== sc._outfitGen) return;   // restart 已重置狀態，殘留回呼不准碰新場景（create 端會自癒補套）
+    const done = (okId) => {
+      sc._outfitSwapping = false;
+      if (okId) window.__walkOutfitApplied = okId;
+      if (sc._outfitReapply) { sc._outfitReapply = false; window.applyWalkOutfit(); }
+    };
+    // 缺圖載失敗或 sprite 已被銷毀 → 清暫存、維持舊造型、不卡死
+    if (!SWAP.every((k) => sc.textures.exists(k)) || !sc.playerSprite || !sc.playerSprite.scene) {
+      SWAP.forEach((k) => { if (sc.textures.exists(k)) sc.textures.remove(k); });
+      return done(null);
+    }
+    // 第二階段：sprite 先暫掛到暫存圖 → 安全移除舊 hero → 用新圖重建 hero 三 key + 動畫
+    sc.playerSprite.anims.stop();
+    sc.playerSprite.setTexture("hero_swap_down", 0);
+    ["hero_walk", "hero_walk_down", "hero_walk_up", "hero_idle"].forEach((k) => { if (sc.anims.exists(k)) sc.anims.remove(k); });
+    ["hero", "hero_down", "hero_up"].forEach((k) => { if (sc.textures.exists(k)) sc.textures.remove(k); });
+    sc.textures.addSpriteSheet("hero",      sc.textures.get("hero_swap_side").getSourceImage(), { frameWidth: ps.side.frame_width, frameHeight: ps.side.frame_height });
+    sc.textures.addSpriteSheet("hero_down", sc.textures.get("hero_swap_down").getSourceImage(), { frameWidth: ps.down.frame_width, frameHeight: ps.down.frame_height });
+    sc.textures.addSpriteSheet("hero_up",   sc.textures.get("hero_swap_up").getSourceImage(),   { frameWidth: ps.up.frame_width,   frameHeight: ps.up.frame_height });
+    sc.anims.create({ key: "hero_walk",      frames: sc.anims.generateFrameNumbers("hero",      { start: 0, end: (ps.side.frames || 9) - 1 }), frameRate: ps.side.frame_rate || 12, repeat: -1 });
+    sc.anims.create({ key: "hero_walk_down", frames: sc.anims.generateFrameNumbers("hero_down", { start: 0, end: (ps.down.frames || 9) - 1 }), frameRate: ps.down.frame_rate || 14, repeat: -1 });
+    sc.anims.create({ key: "hero_walk_up",   frames: sc.anims.generateFrameNumbers("hero_up",   { start: 0, end: (ps.up.frames   || 9) - 1 }), frameRate: ps.up.frame_rate   || 14, repeat: -1 });
+    sc.anims.create({ key: "hero_idle",      frames: [{ key: "hero_down", frame: 0 }], frameRate: 1 });
+    sc.playerSprite.setTexture("hero_down", 0);
+    SWAP.forEach((k) => sc.textures.remove(k));   // sprite 已改掛 hero_down，移除暫存安全
+    done(oc.id);
+    sc.playerSprite.play("hero_idle");
+  });
+  sc.load.start();
+};

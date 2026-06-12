@@ -69,15 +69,30 @@
 
   function bubble(ov, txt) { ov.querySelector(".shop-bubble").textContent = txt; }
 
+  // 服裝店「真商品」4 套：買了記擁有＋走路造型馬上換（其餘商品照舊純展示）
+  const OUTFIT_OWN_KEY = "village_outfits_owned";
+  function ownedOutfits() {
+    try { const a = JSON.parse(localStorage.getItem(OUTFIT_OWN_KEY) || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; }
+  }
+  function addOwnedOutfit(id) {
+    const a = ownedOutfits();
+    if (a.indexOf(id) < 0) { a.push(id); try { localStorage.setItem(OUTFIT_OWN_KEY, JSON.stringify(a)); } catch (e) {} }
+  }
+  function realOutfitId(it) {
+    const m = /outfits\/(m_beach|m_biker|f_beach|f_blackcat)\.webp$/.exec(it.img || "");
+    return m ? m[1] : null;
+  }
+
   function renderGrid(ov, shop, cat) {
     const grid = ov.querySelector(".shop-grid");
     grid.innerHTML = "";
     const items = shop.items.filter((it) => !cat || cat === "全部" || it.cat === cat);
     items.forEach((it, i) => {
       const card = el("div", "shop-card");
+      const realId = realOutfitId(it);   // 真商品不套賣光/VIP 裝飾，永遠買得到
       // 少量裝飾狀態：每 7 個一個賣光、VIP（純展示，圖二那種感覺）
-      if (i % 7 === 5) card.classList.add("sold");
-      else if (i % 11 === 9) card.classList.add("vip");
+      if (!realId && i % 7 === 5) card.classList.add("sold");
+      else if (!realId && i % 11 === 9) card.classList.add("vip");
       card.innerHTML = `
         <span class="tag">${card.classList.contains("sold") ? "賣光啦" : "VIP"}</span>
         ${it.img ? `<img src="${it.img}" alt="${it.name}" loading="lazy">` : `<div class="shop-emoji">${it.emoji || "🎁"}</div>`}
@@ -89,6 +104,21 @@
           return;
         }
         if (card.classList.contains("bought")) return;
+        if (realId) {
+          // 性別擋：男生不能買女裝、女生不能買男裝（依 onboarding 建角的 village_gender）
+          const fem = isFemale();
+          if (realId.charAt(0) === "f" && !fem) { bubble(ov, "這套是女生的衣服唷，幫你推薦男裝店～"); return; }
+          if (realId.charAt(0) === "m" && fem) { bubble(ov, "這套是男生的衣服唷，幫你推薦女裝店～"); return; }
+          if (getEquip().body === realId) { bubble(ov, "你已經穿著這套囉！"); return; }
+          const had = ownedOutfits().indexOf(realId) >= 0;
+          addOwnedOutfit(realId);
+          setEquip("body", realId);
+          if (window.applyWalkOutfit) window.applyWalkOutfit();
+          card.classList.add("bought");
+          bubble(ov, (had ? "再次換上「" : "購買成功！馬上換上「") + it.name + "」✨ 走出去看看新造型吧！");
+          setTimeout(() => card.classList.remove("bought"), 900);
+          return;
+        }
         card.classList.add("bought");
         bubble(ov, BUY_REACT[Math.floor(Math.random() * BUY_REACT.length)]);
         setTimeout(() => card.classList.remove("bought"), 900);
@@ -508,7 +538,7 @@
 
   async function aoLoad() {
     if (AO_CONTENT) return AO_CONTENT;
-    const r = await fetch("academy_content.json?v=1");
+    const r = await fetch("academy_content.json?v=2");
     if (!r.ok) throw new Error("academy content HTTP " + r.status);
     AO_CONTENT = await r.json();
     return AO_CONTENT;
@@ -1956,6 +1986,8 @@
   // 裝備加成（角色系統 C）：武器+攻擊、衣服(造型)+防禦、帽子/寵物+血量
   const EQUIP = {
     // body=目前造型(衣服店買的)，顯示在左大立繪，不放右格；def=防禦加成
+    // shop:true = 服裝店真商品（要買過才出現在更衣室；買了走路圖整套換，見 explore.js WALK_OUTFITS）
+    // ⚠️ 第一項是 getEquip() 的預設值，shop 商品不能排第一
     body: { label: "造型", items: [
       { id: "f_academic", img: "outfits/f_academic.webp", name: "學院風", def: 5 },
       { id: "f_dress", img: "outfits/f_dress.webp", name: "洋裝", def: 4 },
@@ -1965,6 +1997,10 @@
       { id: "m_sports", img: "outfits/m_sports.webp", name: "運動服", def: 6 },
       { id: "m_superhero", img: "outfits/m_superhero.webp", name: "英雄裝", def: 8 },
       { id: "m_wizard_kid", img: "outfits/m_wizard_kid.webp", name: "小巫師", def: 7 },
+      { id: "m_beach", img: "outfits/m_beach.webp", name: "男 海灘風", def: 6, shop: true },
+      { id: "m_biker", img: "outfits/m_biker.webp", name: "男 機車服", def: 8, shop: true },
+      { id: "f_beach", img: "outfits/f_beach.webp", name: "女 海灘風", def: 6, shop: true },
+      { id: "f_blackcat", img: "outfits/f_blackcat.webp", name: "女 黑貓裝", def: 8, shop: true },
     ] },
     hat: { label: "帽子", items: [
       { id: "hat_student", img: "equip/hat_student.webp", name: "學生帽", hp: 20 },
@@ -2312,10 +2348,15 @@
 
     if (dhTab === "outfit") {
       dhBubble(ov, "換上喜歡的造型吧！");
+      // 服裝店真商品(shop:true)買過才出現；換裝同步換走路造型
+      const owned = ownedOutfits();
       box.innerHTML = `<div class="dh-grid">` +
-        EQUIP.body.items.map((it) => dhCard({ id: it.id, img: it.img, name: it.name, sel: it.id === s.body })).join("") + `</div>`;
+        EQUIP.body.items.filter((it) => !it.shop || owned.indexOf(it.id) >= 0)
+          .map((it) => dhCard({ id: it.id, img: it.img, name: it.name, sel: it.id === s.body })).join("") + `</div>`;
       box.querySelectorAll(".dh-card").forEach((c) => c.addEventListener("click", () => {
-        setEquip("body", c.dataset.id); dhBubble(ov, "換上「" + eqItem("body", c.dataset.id).name + "」！"); dhRender(ov);
+        setEquip("body", c.dataset.id);
+        if (window.applyWalkOutfit) window.applyWalkOutfit();
+        dhBubble(ov, "換上「" + eqItem("body", c.dataset.id).name + "」！"); dhRender(ov);
       }));
     } else if (dhTab === "gear") {
       dhBubble(ov, "選頂帽子、看看你的裝備～");

@@ -15,7 +15,7 @@ html, body { height: 100%; overflow: hidden; }
   gap: 8px; padding: 10px 12px 6px;
 }
 .id-title {
-  font-size: 17px; font-weight: 900; color: #7a3c10; letter-spacing: 1px;
+  font-size: 17px; font-weight: 900; color: #7a3c10; letter-spacing: 1px; white-space: nowrap;
   background: linear-gradient(180deg, #fff7e6, #ffe9c0);
   border: 2px solid #d8a85a; border-radius: 999px; padding: 6px 16px;
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.08);
@@ -70,7 +70,7 @@ html, body { height: 100%; overflow: hidden; }
   display: flex; justify-content: center; gap: 8px; margin: 8px 12px 2px;
 }
 .id-slot {
-  width: 46px; height: 46px; border-radius: 10px;
+  width: 42px; height: 42px; border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
   font-size: 26px; font-weight: 900; color: #c0392b;
   background: #fffdf6; border: 2px dashed #d8a85a;
@@ -86,7 +86,7 @@ html, body { height: 100%; overflow: hidden; }
 
 /* 已找到列表 */
 .id-found-wrap {
-  flex: 1; min-height: 0; overflow-y: auto;
+  flex: 1; min-height: 44px; overflow-y: auto;
   margin: 8px 12px; padding: 10px 12px;
   background: rgba(255, 250, 240, 0.75);
   border: 2px solid #e3c089; border-radius: 14px;
@@ -101,7 +101,7 @@ html, body { height: 100%; overflow: hidden; }
 
 /* 底部按鈕列 */
 .id-actions {
-  display: flex; justify-content: center; gap: 10px; padding: 4px 12px 14px;
+  display: flex; justify-content: center; gap: 10px; padding: 4px 12px 10px;
 }
 .id-btn {
   font-size: 16px; font-weight: 800; color: #fff7e6;

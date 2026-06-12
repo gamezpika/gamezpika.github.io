@@ -22,6 +22,26 @@
     let found = [], sel = [];        // found: 已找到詞索引；sel: [{r,c,ch,el}]
     let hintsLeft = 3, busy = false;
 
+    // iPhone Safari 網址列吃高度：頁高用 visualViewport 釘死＋鎖回頂（同詩詞接龍的教訓）
+    function fitViewport() {
+        const h = (window.visualViewport && window.visualViewport.height)
+            ? Math.round(window.visualViewport.height) : window.innerHeight;
+        const sc = $("screen-idiom-game");
+        if (sc) sc.style.height = h + "px";
+        window.scrollTo(0, 0);
+    }
+    // 字磚大小同時受「寬」與「可用高」限制（10 排的大關卡才不會爆出畫面）
+    function setCellSize() {
+        if (!level) return;
+        const vw = Math.min(window.innerWidth, 520);
+        const vh = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+        const fixedUI = 360;   // header+頂列+答案槽+進度列+按鈕列+找到區最小高+邊距（實測 9 排關卡校準）
+        const byW = Math.floor((vw - 40 - (level.cols - 1) * 5) / level.cols);
+        const byH = Math.floor((vh - fixedUI - (level.rows - 1) * 5) / level.rows);
+        const cell = Math.max(26, Math.min(46, byW, byH));
+        $("id-board").style.setProperty("--cell", cell + "px");
+    }
+
     async function loadData() {
         if (DATA) return;
         const r = await fetch("arcade/idiom_levels.json?v=2");
@@ -46,8 +66,7 @@
         const map = {};   // "r,c" → {ch, el}
         level.words.forEach((w) => w.cells.forEach(([r, c], i) => { map[r + "," + c] = { ch: w.w[i] }; }));
         (level.deco || []).forEach(([r, c, ch]) => { const k = r + "," + c; if (!map[k]) map[k] = { ch }; });   // 干擾字（凌亂感，派派 6/12）
-        const cellW = Math.min(46, Math.floor((Math.min(window.innerWidth, 520) - 36) / level.cols));
-        board.style.setProperty("--cell", cellW + "px");
+        fitViewport();
         for (let r = 0; r < level.rows; r++) {
             for (let c = 0; c < level.cols; c++) {
                 const k = r + "," + c;
@@ -65,6 +84,7 @@
             }
         }
         level._map = map;
+        setCellSize();
         renderSlots(); renderFound();
     }
     function renderSlots() {
@@ -190,6 +210,10 @@
     }
 
     function init() {
+        fitViewport();
+        const onVp = () => { fitViewport(); setCellSize(); };
+        window.addEventListener("resize", onVp);
+        if (window.visualViewport) window.visualViewport.addEventListener("resize", onVp);
         $("idiom-game-back").addEventListener("click", () => {
             if (window.eduApp) window.eduApp.showScreen("chinese-hub");
         });

@@ -6768,6 +6768,60 @@
           "grid_rows": 1,
           "frames": 2,
           "frame_rate": 5
+        },
+        {
+          "image": "arena_referee.webp",
+          "name": "裁判",
+          "type": "npc",
+          "scale": 0.091,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.045,
+          "bbox_h_norm": 0.022
+        },
+        {
+          "image": "arena_spartan.webp",
+          "name": "斯巴達勇士",
+          "type": "npc",
+          "scale": 0.085,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.045,
+          "bbox_h_norm": 0.022
+        },
+        {
+          "image": "arena_swordsman.webp",
+          "name": "斷手劍客",
+          "type": "npc",
+          "scale": 0.087,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.045,
+          "bbox_h_norm": 0.022
+        },
+        {
+          "image": "arena_snake_elder.webp",
+          "name": "蛇杖老怪",
+          "type": "npc",
+          "scale": 0.087,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.045,
+          "bbox_h_norm": 0.022
+        },
+        {
+          "image": "arena_chest.webp",
+          "name": "神祕寶箱",
+          "type": "npc",
+          "scale": 0.108,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.025
+        },
+        {
+          "image": "arena_rankboard.webp",
+          "name": "PK 排行榜",
+          "type": "npc",
+          "scale": 0.116,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.055,
+          "bbox_h_norm": 0.02
         }
       ]
     },

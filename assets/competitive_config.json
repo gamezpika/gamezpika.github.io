@@ -1512,6 +1512,168 @@
         "mask_color": "#FF3B30",
         "render_order": 500,
         "interaction_type": "open_modal"
+      },
+      {
+        "id": "arena_referee",
+        "name": "裁判",
+        "category": "npc",
+        "sprite": {
+          "image": "arena_referee.webp",
+          "scale": 0.091,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.38,
+          "y": 0.74
+        },
+        "bounding_box": {
+          "x_min": 0.3575,
+          "y_min": 0.718,
+          "x_max": 0.4025,
+          "y_max": 0.74
+        },
+        "interaction": {
+          "type": "open_modal",
+          "label": "裁判",
+          "body": "我是競技場裁判！想跟朋友開房間一對一 PK 嗎？競技場房間賽正在籌備中，敬請期待！",
+          "radius": 150
+        }
+      },
+      {
+        "id": "arena_spartan",
+        "name": "斯巴達勇士",
+        "category": "npc",
+        "sprite": {
+          "image": "arena_spartan.webp",
+          "scale": 0.085,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.5,
+          "y": 0.43
+        },
+        "bounding_box": {
+          "x_min": 0.4775,
+          "y_min": 0.408,
+          "x_max": 0.5225,
+          "y_max": 0.43
+        },
+        "interaction": {
+          "type": "open_modal",
+          "label": "斯巴達勇士",
+          "body": "吾乃斯巴達勇士！戰士的榮耀來自每一場光明正大的對決。聽說之後會有專屬任務找上你——好好鍛鍊吧！",
+          "radius": 150
+        }
+      },
+      {
+        "id": "arena_swordsman",
+        "name": "斷手劍客",
+        "category": "npc",
+        "sprite": {
+          "image": "arena_swordsman.webp",
+          "scale": 0.087,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.27,
+          "y": 0.5
+        },
+        "bounding_box": {
+          "x_min": 0.2475,
+          "y_min": 0.478,
+          "x_max": 0.2925,
+          "y_max": 0.5
+        },
+        "interaction": {
+          "type": "open_modal",
+          "label": "斷手劍客",
+          "body": "劍不在手，而在心。吾雖獨臂，劍意未減。他日有任務相託，還望你助我「一臂之力」。",
+          "radius": 150
+        }
+      },
+      {
+        "id": "arena_snake_elder",
+        "name": "蛇杖老怪",
+        "category": "npc",
+        "sprite": {
+          "image": "arena_snake_elder.webp",
+          "scale": 0.087,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.72,
+          "y": 0.5
+        },
+        "bounding_box": {
+          "x_min": 0.6975,
+          "y_min": 0.478,
+          "x_max": 0.7425,
+          "y_max": 0.5
+        },
+        "interaction": {
+          "type": "open_modal",
+          "label": "蛇杖老怪",
+          "body": "嘿嘿……小娃娃，怕老夫的蛇杖嗎？老夫在此等一位有緣人，將來有件差事非你不可……",
+          "radius": 150
+        }
+      },
+      {
+        "id": "arena_chest",
+        "name": "神祕寶箱",
+        "category": "npc",
+        "sprite": {
+          "image": "arena_chest.webp",
+          "scale": 0.108,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.4,
+          "y": 0.38
+        },
+        "bounding_box": {
+          "x_min": 0.37,
+          "y_min": 0.355,
+          "x_max": 0.43,
+          "y_max": 0.38
+        },
+        "interaction": {
+          "type": "open_modal",
+          "label": "神祕寶箱",
+          "body": "上了金鎖的神祕寶箱，似乎要完成特定任務才能打開……裡面會是什麼呢？",
+          "radius": 150
+        }
+      },
+      {
+        "id": "arena_rankboard",
+        "name": "PK 排行榜",
+        "category": "npc",
+        "sprite": {
+          "image": "arena_rankboard.webp",
+          "scale": 0.116,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.68,
+          "y": 0.7
+        },
+        "bounding_box": {
+          "x_min": 0.6525,
+          "y_min": 0.68,
+          "x_max": 0.7075,
+          "y_max": 0.7
+        },
+        "interaction": {
+          "type": "open_modal",
+          "label": "PK 排行榜",
+          "body": "PK 排行榜：正在統計各路好手的戰績，近期開放查詢，敬請期待！",
+          "radius": 150
+        }
       }
     ],
     "obstacle_areas": [

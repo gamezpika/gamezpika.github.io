@@ -823,16 +823,20 @@ class ExploreScene extends Phaser.Scene {
     const sw = this.scale.width, sh = this.scale.height;
     this.modalContainer = this.add.container(sw/2, sh/2).setScrollFactor(0).setDepth(20000);
     const backdrop = this.add.rectangle(0, 0, sw*3, sh*3, 0x000000, 0.55).setInteractive();
-    const box = this.add.rectangle(0, 0, 360 * DPR, 200 * DPR, 0xfff8e0).setStrokeStyle(5 * DPR, 0x4a3520);
-    const title = this.add.text(0, -55 * DPR, item.label, {
-      fontFamily: "-apple-system, 'PingFang TC', sans-serif",
-      fontSize: 30 * DPR, color: "#4a3520", fontStyle: "bold",
-    }).setOrigin(0.5);
     const body = this.add.text(0, 0, item.body, {
       fontFamily: "-apple-system, 'PingFang TC', sans-serif",
       fontSize: 18 * DPR, color: "#4a3520",
+      wordWrap: { width: 320 * DPR },   // 長台詞自動換行（競技場 NPC 台詞較長，原本會爆框）
+      align: "center", lineSpacing: 6 * DPR,
     }).setOrigin(0.5);
-    const closeBtn = this.add.text(0, 60 * DPR, "[ 關閉 ]", {
+    // 框高隨內文長度自適應；短台詞維持原本 200 高不變
+    const boxH = Math.max(200 * DPR, body.height + 150 * DPR);
+    const box = this.add.rectangle(0, 0, 360 * DPR, boxH, 0xfff8e0).setStrokeStyle(5 * DPR, 0x4a3520);
+    const title = this.add.text(0, -boxH / 2 + 45 * DPR, item.label, {
+      fontFamily: "-apple-system, 'PingFang TC', sans-serif",
+      fontSize: 30 * DPR, color: "#4a3520", fontStyle: "bold",
+    }).setOrigin(0.5);
+    const closeBtn = this.add.text(0, boxH / 2 - 40 * DPR, "[ 關閉 ]", {
       fontFamily: "-apple-system, 'PingFang TC', sans-serif",
       fontSize: 20 * DPR, color: "#a04020", fontStyle: "bold",
     }).setOrigin(0.5).setInteractive();
@@ -1038,10 +1042,14 @@ class ExploreScene extends Phaser.Scene {
     // 跟遊戲機台「碰到不自動開」——走近只顯示按鈕，按下才開始對話/開戰。
     // 判定：走動人物=npc:true、建物型人物=category "npc"、機台=arcade: 前綴；
     // 其餘建築（商店/面板類）維持 6/11 的走近直接開。
-    const isManual = !!(this._nearShop && this._nearShop.type === "open_shop" && (
-      this._nearShop.npc === true
-      || this._nearShop.category === "npc"
-      || (this._nearShop.shop_id && String(this._nearShop.shop_id).indexOf("arcade:") === 0)));
+    const isManual = !!(this._nearShop && (
+      (this._nearShop.type === "open_shop" && (
+        this._nearShop.npc === true
+        || this._nearShop.category === "npc"
+        || (this._nearShop.shop_id && String(this._nearShop.shop_id).indexOf("arcade:") === 0)))
+      // 對話型人物（open_modal + category npc，例：競技場裁判/勇士）也要按鈕才開（派派 6/12）；
+      // 走動村民/動物（npc:true 無 category）維持走近直接開，不在此列
+      || (this._nearShop.type === "open_modal" && this._nearShop.category === "npc")));
     if (isManual && !this.modalOpen && !this._transitioning) {
       this._showEnter((this._nearShop.label || "對話") + " →");
     } else {

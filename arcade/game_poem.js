@@ -14,8 +14,8 @@
 
     const HEARTS_MAX = 3;
     const APPROACH_BASE = 3800;     // 第一題門逼近時長(ms)，讀題時間
-    const APPROACH_STEP = 110;      // 每答對一題加快（派派 6/12：加速要更有感）
-    const APPROACH_MIN = 1900;      // 最快不低於這個（要留得住讀題時間）
+    const APPROACH_STEP = 180;      // 每答對一題加快（派派 6/12 二修：要明顯有感）
+    const APPROACH_MIN = 1700;      // 最快不低於這個（要留得住讀題時間）
     const FEEDBACK_MS = 1050;       // 判定後演出時長
     const LANE_K = 230, LANE_D = 24, LEAN_MAX = 14;
     const BEST_KEY = "arcade_poem_best";
@@ -172,7 +172,7 @@
             lb.textContent = ans;                 // textContent：順手把 innerHTML 換掉（防禦縱深）
             el.appendChild(img); el.appendChild(lb);
             st.appendChild(el);
-            gates.push({ el, lane, ans });
+            gates.push({ el, lane, ans, lb });
         });
         const dur = Math.max(APPROACH_MIN, APPROACH_BASE - score * APPROACH_STEP);
         row = { gates, correctLane, q, t0: performance.now(), dur };
@@ -187,6 +187,8 @@
         const y = horizonY + (H * 0.86 - horizonY) * e;     // 從消失點沿路面下來（不從天上掉）
         const sc = 0.10 + 0.90 * e;                          // 出生就看得見的小門
         const op = Math.min(1, t / 0.08);                    // 淡入縮短：迅速「從路盡頭冒出」
+        // 字級反向補償：門還小時字先放大到可讀（照參考影片），讀題時間≈整段逼近時長（Codex R6 P2）
+        const lbScale = Math.min(2.6, Math.max(1, 0.52 / Math.max(sc, 0.06)));
         row.gates.forEach((g) => {
             const farX = W * (g.lane === 0 ? 0.46 : 0.54);   // 遠處貼著路中央、近處沿路展開
             const x = farX + (laneX[g.lane] - farX) * e;
@@ -194,6 +196,7 @@
             g.el.style.transform =
                 "translate(" + x + "px," + y + "px) translate(-50%,-92%) scale(" + sc + ")";
             g.el.style.zIndex = 5 + Math.round(e * 10);
+            if (g.lb) g.lb.style.transform = "scale(" + lbScale + ")";
         });
     }
     function clearRow() {
@@ -297,11 +300,11 @@
             // 路面捲動：速度跟逼近時長綁定，1.4 次方放大加速差（答越多路流越快、要有感）
             const dur = curDur();
             const spd = Math.pow(APPROACH_BASE / dur, 1.4);
-            floorOff += dt * 150 * spd;
+            floorOff += dt * 185 * spd;
             const tex = $("poem-floor-tex");
             if (tex) tex.style.transform = "translateY(" + (floorOff % (geom.tileH || 110)) + "px)";
             // 兩側竹牆同步捲動（方向：貼圖流向近端＝向鏡頭）
-            const wOff = (floorOff * 1.15) % (geom.wallTileW || 300);
+            const wOff = (floorOff * 3.2) % (geom.wallTileW || 300);   // 牆要明顯快過地板才有掠過感（派派二修）
             const wtl = $("poem-wall-tex-l"), wtr = $("poem-wall-tex-r");
             if (wtl) wtl.style.transform = "translateX(" + wOff + "px)";
             if (wtr) wtr.style.transform = "translateX(" + (-wOff) + "px)";
@@ -326,7 +329,7 @@
                 const p = document.createElement("div");
                 p.className = "poem-prop";
                 const im = document.createElement("img");
-                im.src = "arcade/img/poem/" + PROP_IMGS[Math.floor(Math.random() * PROP_IMGS.length)] + "?v=1";
+                im.src = "arcade/img/poem/" + PROP_IMGS[Math.floor(Math.random() * PROP_IMGS.length)] + "?v=2";
                 im.alt = ""; im.draggable = false;
                 p.appendChild(im);
                 p.style.width = Math.round(geom.gateW * (0.34 + Math.random() * 0.16)) + "px";

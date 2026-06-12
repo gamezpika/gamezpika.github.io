@@ -199,6 +199,16 @@
       location.href = "../arcade-boss.html" + q;
       return;
     }
+    // 競技場裁判（pptx v8 P66）：玩家開設遊戲房間 PK → 跳獨立 PK 頁（正式版三模式整包）
+    if (shopId === "pvparena") {
+      let q = "?back_map=competitive";
+      try {
+        const sc = window.game.scene.scenes.find((s) => s.player && s.WORLD_W);
+        if (sc) q += "&back_spawn=" + (sc.player.x / sc.WORLD_W).toFixed(4) + "," + (sc.player.y / sc.WORLD_H).toFixed(4);
+      } catch (e) {}
+      location.href = "../arcade-pvp.html" + q;
+      return;
+    }
     if (shopId === "job_center") { openJobCenter(onClose); return; }
     if (shopId === "academy_office") { openAcademyOffice(onClose); return; }
     if (shopId === "dorm") { openDormHub(onClose); return; }

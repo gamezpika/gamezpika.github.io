@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>競技場 PK</title>
+<link rel="stylesheet" href="arcade/base.css?v=2">
+<link rel="stylesheet" href="arcade/pvp/pvp-v2.css?v=1">
+<style>
+/* 獨立頁殼：app.html 由 app.css 提供的零件，這裡自帶等價樣式（PK 各畫面白字，要正式版同款深色底） */
+body { background: #1A1A2E; color: #fff; font-family: "Noto Sans TC", "PingFang TC", sans-serif; }
+.emo.xl { width: 56px; height: 56px; vertical-align: -12px; }
+/* 排行榜入口先藏（排行榜呈現方式待定，避免死按鈕） */
+#pvp-leaderboard-from-picker, #pvp-leaderboard-btn { display: none !important; }
+</style>
+</head>
+<body>
+        <div id="screen-pvp-mode-picker" class="screen">
+            <header class="screen-header">
+                <button class="btn-back" id="pvp-mode-picker-back">←</button>
+                <span class="screen-title"><img class="emo" src="/assets/images/icons/sword.png?s=6" alt=""> PK 對戰</span>
+                <button id="pvp-leaderboard-from-picker" style="margin-left:auto;background:none;border:none;cursor:pointer;padding:8px;" title="排行榜"><img class="emo lg" src="/assets/images/icons/trophy.png?s=6" alt=""></button>
+            </header>
+            <div class="pvp-mode-content">
+                <div class="pvp-mode-intro">選擇 PK 模式</div>
+                <div class="pvp-mode-cards">
+                    <button class="pvp-mode-card pvp-mode-ranked" data-mode="ranked">
+                        <div class="pvp-mode-emoji">🥇</div>
+                        <div class="pvp-mode-name">同年級 PK</div>
+                        <div class="pvp-mode-desc">跟同年級玩家對戰，10 秒沒人配 AI 陪練。算進「PK 王榜」。</div>
+                    </button>
+                    <button class="pvp-mode-card pvp-mode-freeforall" data-mode="freeforall">
+                        <div class="pvp-mode-emoji">🌀</div>
+                        <div class="pvp-mode-name">大亂鬥</div>
+                        <div class="pvp-mode-desc">自選挑戰等級 G1-G5，跟自己年級脫鉤。算進「大亂鬥王榜」。</div>
+                    </button>
+                    <button class="pvp-mode-card pvp-mode-room" data-mode="room">
+                        <div class="pvp-mode-emoji">🏠</div>
+                        <div class="pvp-mode-name">朋友房間</div>
+                        <div class="pvp-mode-desc">開房或輸入 6 位 code 跟朋友對戰。不上排行榜。</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5/11 PK 大亂鬥子畫面：選挑戰等級 + 科目 -->
+        <div id="screen-pvp-freeforall" class="screen">
+            <header class="screen-header">
+                <button class="btn-back" id="pvp-freeforall-back">←</button>
+                <span class="screen-title"><img class="emo" src="/assets/images/icons/sword.png?s=6" alt=""> 大亂鬥</span>
+            </header>
+            <div class="pvp-subject-content">
+                <div class="pvp-subject-intro">選擇挑戰等級（跟你自己的年級無關）</div>
+                <div class="pvp-grade-tabs" id="pvp-ff-level-tabs">
+                    <button class="pvp-grade-tab" data-level="1">G1</button>
+                    <button class="pvp-grade-tab" data-level="2">G2</button>
+                    <button class="pvp-grade-tab" data-level="3">G3</button>
+                    <button class="pvp-grade-tab" data-level="4">G4</button>
+                    <button class="pvp-grade-tab" data-level="5">G5</button>
+                    <button class="pvp-grade-tab" data-level="6">G6</button>
+                </div>
+                <div class="pvp-subject-intro">選擇要 PK 的科目</div>
+                <div class="pvp-subject-grid">
+                    <button class="pvp-subject-btn pvp-ff-subject" data-subject="chinese"><img class="emo lg" src="/assets/images/subjects/chinese.png?s=6" alt=""><br>國語</button>
+                    <button class="pvp-subject-btn pvp-ff-subject" data-subject="english"><img class="emo lg" src="/assets/images/subjects/english.png?s=6" alt=""><br>英文</button>
+                    <button class="pvp-subject-btn pvp-ff-subject" data-subject="math"><img class="emo lg" src="/assets/images/subjects/math.png?s=6" alt=""><br>數學</button>
+                    <button class="pvp-subject-btn pvp-ff-subject" data-subject="science"><img class="emo lg" src="/assets/images/subjects/science.png?s=6" alt=""><br>自然</button>
+                    <button class="pvp-subject-btn pvp-ff-subject" data-subject="social"><img class="emo lg" src="/assets/images/subjects/social.png?s=6" alt=""><br>社會</button>
+                </div>
+                <div class="pvp-subject-hint">挑戰你想練的等級！10 秒沒人配 AI 陪練</div>
+            </div>
+        </div>
+
+        <!-- 5/11 朋友房間：主頁（建立 / 加入）-->
+        <div id="screen-pvp-room-home" class="screen">
+            <header class="screen-header">
+                <button class="btn-back" id="pvp-room-home-back">←</button>
+                <span class="screen-title"><img class="emo" src="/assets/images/icons/sword.png?s=6" alt=""> 朋友房間</span>
+            </header>
+            <div class="pvp-mode-content">
+                <div class="pvp-mode-intro">跟朋友 PK 不上排行榜</div>
+                <div class="pvp-mode-cards">
+                    <button class="pvp-mode-card pvp-mode-room" id="pvp-room-go-create">
+                        <div class="pvp-mode-emoji">🆕</div>
+                        <div class="pvp-mode-name">建立房間</div>
+                        <div class="pvp-mode-desc">選題目年級+科目，拿 6 位 code 分享給朋友。5 分鐘有效。</div>
+                    </button>
+                    <button class="pvp-mode-card pvp-mode-room" id="pvp-room-go-join">
+                        <div class="pvp-mode-emoji">🔑</div>
+                        <div class="pvp-mode-name">加入房間</div>
+                        <div class="pvp-mode-desc">輸入朋友給你的 6 位 code 加入。</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5/11 朋友房間：建立房間（選 grade+subject，等對方加入）-->
+        <div id="screen-pvp-room-create" class="screen">
+            <header class="screen-header">
+                <button class="btn-back" id="pvp-room-create-back">←</button>
+                <span class="screen-title">建立房間</span>
+            </header>
+            <div class="pvp-subject-content">
+                <div id="pvp-room-create-stage1">
+                    <div class="pvp-subject-intro">選擇年級</div>
+                    <div class="pvp-grade-tabs" id="pvp-room-grade-tabs">
+                        <button class="pvp-grade-tab" data-grade="1">G1</button>
+                        <button class="pvp-grade-tab" data-grade="2">G2</button>
+                        <button class="pvp-grade-tab" data-grade="3">G3</button>
+                        <button class="pvp-grade-tab" data-grade="4">G4</button>
+                        <button class="pvp-grade-tab" data-grade="5">G5</button>
+                        <button class="pvp-grade-tab" data-grade="6">G6</button>
+                    </div>
+                    <div class="pvp-subject-intro">選擇科目（按下後建房）</div>
+                    <div class="pvp-subject-grid">
+                        <button class="pvp-subject-btn pvp-room-subject" data-subject="chinese"><img class="emo lg" src="/assets/images/subjects/chinese.png?s=6" alt=""><br>國語</button>
+                        <button class="pvp-subject-btn pvp-room-subject" data-subject="english"><img class="emo lg" src="/assets/images/subjects/english.png?s=6" alt=""><br>英文</button>
+                        <button class="pvp-subject-btn pvp-room-subject" data-subject="math"><img class="emo lg" src="/assets/images/subjects/math.png?s=6" alt=""><br>數學</button>
+                        <button class="pvp-subject-btn pvp-room-subject" data-subject="science"><img class="emo lg" src="/assets/images/subjects/science.png?s=6" alt=""><br>自然</button>
+                        <button class="pvp-subject-btn pvp-room-subject" data-subject="social"><img class="emo lg" src="/assets/images/subjects/social.png?s=6" alt=""><br>社會</button>
+                    </div>
+                </div>
+                <div id="pvp-room-create-stage2" style="display:none;text-align:center;color:#fff;padding:20px;">
+                    <!-- 態 A：設定密碼 input（5/22 派派自訂密碼）-->
+                    <div id="pvp-room-stage2-input">
+                        <div style="font-size:14px;color:rgba(255,255,255,0.85);margin-bottom:8px;">設定一個密碼給朋友</div>
+                        <div style="font-size:12px;color:rgba(255,255,255,0.55);margin-bottom:10px;">1~12 個英文或數字</div>
+                        <input class="pvp-room-code-input" id="pvp-room-host-code-input" maxlength="12" placeholder="例：ABC123" autocapitalize="characters" autocomplete="off">
+                        <div id="pvp-room-host-code-error" style="min-height:18px;font-size:13px;color:#ff8a8a;margin:6px 0;"></div>
+                        <button class="pvp-room-btn-primary" id="pvp-room-create-confirm">確認建房</button>
+                    </div>
+                    <!-- 態 B：等待朋友加入 -->
+                    <div id="pvp-room-stage2-waiting" style="display:none;">
+                        <div style="font-size:14px;color:rgba(255,255,255,0.7);margin-bottom:10px;">把這個密碼給朋友</div>
+                        <div class="pvp-room-code" id="pvp-room-code-display">XXXXXX</div>
+                        <div style="font-size:12px;color:rgba(255,255,255,0.6);margin:10px 0;" id="pvp-room-expire-text">5 分鐘有效</div>
+                        <div class="pvp-room-actions">
+                            <button class="pvp-room-btn-primary" id="pvp-room-share-link">分享連結</button>
+                            <button class="pvp-room-btn-secondary" id="pvp-room-copy-link">複製連結</button>
+                            <button class="pvp-room-btn-secondary" id="pvp-room-copy-code">複製密碼</button>
+                        </div>
+                        <div style="margin-top:20px;font-size:13px;color:rgba(255,255,255,0.7);" id="pvp-room-status-line">等待朋友加入…</div>
+                        <button class="pvp-cancel-btn" id="pvp-room-cancel-btn" style="margin-top:18px;">取消房間</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5/11 朋友房間：加入房間（輸入 code）-->
+        <div id="screen-pvp-room-join" class="screen">
+            <header class="screen-header">
+                <button class="btn-back" id="pvp-room-join-back">←</button>
+                <span class="screen-title">加入房間</span>
+            </header>
+            <div class="pvp-subject-content">
+                <div class="pvp-subject-intro">輸入朋友給你的密碼</div>
+                <input class="pvp-room-code-input" id="pvp-room-code-input" maxlength="12" placeholder="例：ABC123" autocapitalize="characters" autocomplete="off">
+                <button class="pvp-room-btn-primary" id="pvp-room-join-confirm" style="margin-top:14px;">加入</button>
+                <div style="margin-top:14px;font-size:12px;color:rgba(255,255,255,0.5);text-align:center;" id="pvp-room-join-error"></div>
+            </div>
+        </div>
+
+        <div id="screen-pvp-subject" class="screen">
+            <header class="screen-header">
+                <button class="btn-back" id="pvp-subject-back">←</button>
+                <span class="screen-title"><img class="emo" src="/assets/images/icons/sword.png?s=6" alt=""> PK 對戰</span>
+                <button id="pvp-leaderboard-btn" style="margin-left:auto;background:none;border:none;cursor:pointer;padding:8px;" title="排行榜"><img class="emo lg" src="/assets/images/icons/trophy.png?s=6" alt=""></button>
+            </header>
+            <div class="pvp-subject-content">
+                <div class="pvp-grade-tabs" id="pvp-grade-tabs">
+                    <button class="pvp-grade-tab" data-grade="1">G1</button>
+                    <button class="pvp-grade-tab" data-grade="2">G2</button>
+                    <button class="pvp-grade-tab" data-grade="3">G3</button>
+                    <button class="pvp-grade-tab" data-grade="4">G4</button>
+                    <button class="pvp-grade-tab" data-grade="5">G5</button>
+                    <button class="pvp-grade-tab" data-grade="6">G6</button>
+                </div>
+                <div class="pvp-subject-intro">選擇要 PK 的科目</div>
+                <div class="pvp-subject-grid">
+                    <button class="pvp-subject-btn" data-subject="chinese"><img class="emo lg" src="/assets/images/subjects/chinese.png?s=6" alt=""><br>國語</button>
+                    <button class="pvp-subject-btn" data-subject="english"><img class="emo lg" src="/assets/images/subjects/english.png?s=6" alt=""><br>英文</button>
+                    <button class="pvp-subject-btn" data-subject="math"><img class="emo lg" src="/assets/images/subjects/math.png?s=6" alt=""><br>數學</button>
+                    <button class="pvp-subject-btn" data-subject="science"><img class="emo lg" src="/assets/images/subjects/science.png?s=6" alt=""><br>自然</button>
+                    <button class="pvp-subject-btn" data-subject="social"><img class="emo lg" src="/assets/images/subjects/social.png?s=6" alt=""><br>社會</button>
+                </div>
+                <div class="pvp-subject-hint">
+                    沒人配對時，10 秒後會配電腦陪練
+                </div>
+            </div>
+        </div>
+
+        <!-- PK 排行榜（5/11 三模式：PK 王榜 / 大亂鬥王榜 分流）-->
+        <div id="screen-pvp-waiting" class="screen">
+            <header class="screen-header">
+                <span class="screen-title"><img class="emo" src="/assets/images/icons/sword.png?s=6" alt=""> 配對中</span>
+            </header>
+            <div class="pvp-waiting-content">
+                <div class="pvp-spinner"></div>
+                <div class="pvp-waiting-text">正在配對...</div>
+                <div class="pvp-waiting-elapsed" id="pvp-waiting-elapsed">已等 0 秒</div>
+                <div class="pvp-waiting-ai-in" id="pvp-waiting-ai-in">10 秒後配電腦陪練</div>
+                <button class="pvp-cancel-btn" id="pvp-waiting-cancel">取消配對</button>
+            </div>
+        </div>
+
+        <!-- PK 對戰 — 配對成功 3 秒倒數（Step 8）-->
+        <div id="screen-pvp-countdown" class="screen">
+            <div class="pvp-countdown-content">
+                <div class="pvp-countdown-matched">配對成功!</div>
+                <div class="pvp-countdown-vs">
+                    <div class="pvp-countdown-side pvp-countdown-side-me">
+                        <div class="pvp-countdown-avatar"><img class="emo" src="/assets/images/icons/user.png?s=6" alt=""></div>
+                        <div class="pvp-countdown-name">你</div>
+                    </div>
+                    <div class="pvp-countdown-vs-text">VS</div>
+                    <div class="pvp-countdown-side pvp-countdown-side-opp">
+                        <div class="pvp-countdown-avatar" id="pvp-countdown-opp-avatar"><img class="emo xl" src="/assets/images/icons/robot.png?s=6" alt=""></div>
+                        <div class="pvp-countdown-name" id="pvp-countdown-opp-name">對手</div>
+                    </div>
+                </div>
+                <div class="pvp-countdown-num" id="pvp-countdown-num">3</div>
+                <div class="pvp-countdown-hint">準備好了嗎?</div>
+            </div>
+        </div>
+
+        <!-- PK 對戰 — 結算畫面（Step 10）-->
+        <div id="screen-pvp-result" class="screen">
+            <header class="screen-header">
+                <span class="screen-title"><img class="emo" src="/assets/images/icons/sword.png?s=6" alt=""> 對戰結果</span>
+            </header>
+            <div class="pvp-result-content">
+                <div class="pvp-result-outcome" id="pvp-result-outcome"><img class="emo lg" src="/assets/images/icons/handshake.png?s=6" alt=""> 平手</div>
+                <div class="pvp-result-scores">
+                    <div class="pvp-result-side">
+                        <div class="pvp-result-label">我</div>
+                        <div class="pvp-result-score" id="pvp-result-me-score">0</div>
+                        <div class="pvp-result-detail" id="pvp-result-me-detail">答對 0 題</div>
+                    </div>
+                    <div class="pvp-result-vs">VS</div>
+                    <div class="pvp-result-side">
+                        <div class="pvp-result-label" id="pvp-result-opp-label">對手</div>
+                        <div class="pvp-result-score" id="pvp-result-opp-score">0</div>
+                        <div class="pvp-result-detail" id="pvp-result-opp-detail">答對 0 題</div>
+                    </div>
+                </div>
+                <div class="pvp-result-reward" id="pvp-result-reward">+0 金幣</div>
+                <div class="pvp-result-actions">
+                    <button class="pvp-btn-secondary" id="pvp-result-home">回家</button>
+                    <button class="pvp-btn-primary" id="pvp-result-replay">再戰一場</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PK 對戰 — 對戰畫面（Step 9）-->
+        <div id="screen-pvp-game" class="screen">
+            <header class="screen-header">
+                <span class="screen-title" id="pvp-game-progress">第 1/10 題</span>
+                <span class="pvp-game-timer" id="pvp-game-timer">⏱ 0s</span>
+            </header>
+            <div class="pvp-game-content">
+                <div class="pvp-game-bars">
+                    <div class="pvp-game-bar">
+                        <div class="pvp-bar-label">我 <span id="pvp-bar-me-score">0</span> 分</div>
+                        <div class="pvp-bar-track"><div class="pvp-bar-fill pvp-bar-fill-me" id="pvp-bar-me-fill"></div></div>
+                    </div>
+                    <div class="pvp-game-bar">
+                        <div class="pvp-bar-label" id="pvp-bar-opp-label">對手 0 分</div>
+                        <div class="pvp-bar-track"><div class="pvp-bar-fill pvp-bar-fill-opp" id="pvp-bar-opp-fill"></div></div>
+                    </div>
+                </div>
+                <div class="pvp-game-question">
+                    <div class="pvp-q-display" id="pvp-q-display">題目載入中...</div>
+                    <div class="pvp-q-prompt" id="pvp-q-prompt"></div>
+                </div>
+                <div class="pvp-game-choices" id="pvp-game-choices"></div>
+            </div>
+        </div>
+<script src="arcade/shim.js?v=3"></script>
+<script src="arcade/boss/bopomofo.js?v=1"></script>
+<script>
+// markup/JS 內的絕對路徑素材（/assets、/static icon）掛到後端域名（同魔王戰 ABS 思路，
+// 但 pvp-v3.js 會在 runtime innerHTML 塞 icon → 用 MutationObserver 全域接管，JS 原封不動）
+(function () {
+    const API = window.ARCADE_API || "";
+    function fix(el) {
+        if (!el || !el.getAttribute) return;
+        const s = el.getAttribute("src") || "";
+        if (s.startsWith("/assets/") || s.startsWith("/static/")) el.src = API + s;
+    }
+    function sweep(root) {
+        if (root.querySelectorAll) root.querySelectorAll('img[src^="/assets/"], img[src^="/static/"]').forEach(fix);
+        fix(root);
+    }
+    new MutationObserver((muts) => {
+        for (const m of muts) {
+            if (m.type === "attributes") fix(m.target);
+            m.addedNodes && m.addedNodes.forEach((n) => sweep(n));
+        }
+    }).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ["src"] });
+    document.addEventListener("DOMContentLoaded", () => sweep(document));
+})();
+// demo 訪客年級（shim 建的訪客固定 G2；房間/大亂鬥內可自選年級不受影響）
+window.currentUser = { grade: 2 };
+</script>
+<script src="arcade/pvp/pvp-v3.js?v=1"></script>
+<script>
+// 入口：建好身分直接進模式選擇
+window.arcadeEnsureToken().then(() => {
+    // ?invite=CODE → 直接帶到加入房頁。自己解析網址，不等 pvp-v3 的 sessionStorage（它在 DOMContentLoaded
+    // 才存；回訪用戶 token 現成、這裡比它先跑會漏接 — Codex P2）。正式版消化點掛在 home 畫面，本頁沒有 home。
+    let inv = "";
+    try {
+        inv = (new URLSearchParams(location.search).get("invite") || "").trim().toUpperCase().slice(0, 12);
+        if (!/^[A-Z0-9]{1,12}$/.test(inv)) inv = "";
+    } catch (e) {}
+    // pvp-v3 init 也會把 invite 存 sessionStorage（給不存在的 home watcher）→ 清掉，避免下次進頁誤吃舊碼
+    const clearStored = () => { try { sessionStorage.removeItem("pvp_invite_code"); } catch (e) {} };
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", clearStored);
+    else clearStored();
+    if (inv) {
+        const input = document.getElementById("pvp-room-code-input");
+        if (input) input.value = inv;
+        window.eduApp.showScreen("pvp-room-join");
+    } else {
+        window.eduApp.showScreen("pvp-mode-picker");
+    }
+});
+</script>
+</body>
+</html>

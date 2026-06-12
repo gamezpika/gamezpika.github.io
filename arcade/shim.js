@@ -7,10 +7,16 @@
     window.ARCADE_API = API;
 
     // 返回網址：機台跳轉時帶來 ?back_spawn=x,y → 回去落在原本機台前面（不是傳送點）
+    // ?back_map=competitive → 回指定地圖（競技場 PK 用）；沒帶維持遊樂場
     function playgroundUrl() {
-        let bs = "";
-        try { bs = new URLSearchParams(location.search).get("back_spawn") || ""; } catch (e) {}
-        return "village-web/index.html?map=playground" + (/^0\.\d+,0\.\d+$/.test(bs) ? "&spawn=" + bs : "");
+        let bs = "", bm = "";
+        try {
+            const q = new URLSearchParams(location.search);
+            bs = q.get("back_spawn") || "";
+            bm = q.get("back_map") || "";
+        } catch (e) {}
+        const map = /^[a-z_]{1,30}$/.test(bm) ? bm : "playground";
+        return "village-web/index.html?map=" + map + (/^0\.\d+,0\.\d+$/.test(bs) ? "&spawn=" + bs : "");
     }
 
     function getToken() {

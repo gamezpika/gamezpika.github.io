@@ -1534,9 +1534,9 @@
           "y_max": 0.74
         },
         "interaction": {
-          "type": "open_modal",
+          "type": "open_shop",
+          "shop_id": "pvparena",
           "label": "裁判",
-          "body": "我是競技場裁判！想跟朋友開房間一對一 PK 嗎？競技場房間賽正在籌備中，敬請期待！",
           "radius": 150
         }
       },

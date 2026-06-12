@@ -627,3 +627,23 @@
 .ao-principal .ao-report:disabled { opacity: .6; }
 /* 回報鈕亮起時，泡泡文字向右讓位避免被蓋（Codex P3） */
 .ao-principal.has-report .ao-bubble { padding-left: 128px; }
+
+/* ── 答題模板 v2（基礎練習/禁忌森林/魔法陣/考試共用）：題卡+ABCD徽章+進度條（派派 6/12 核准 mockup）── */
+.qt-top { display: flex; align-items: center; gap: 10px; margin: 2px 0 10px; }
+.qt-bar { flex: 1; height: 10px; background: #e2d8c4; border-radius: 99px; overflow: hidden; }
+.qt-bar i { display: block; height: 100%; background: linear-gradient(90deg, #f5a623, #f7c948); border-radius: 99px; transition: width .25s; }
+.qt-num { font-size: 13px; font-weight: 800; color: #8a6d3b; white-space: nowrap; }
+.qt-card { background: #fff; border: 2px solid #e6dcc8; border-radius: 16px; padding: 14px; box-shadow: 0 2px 8px rgba(120, 90, 40, .08); text-align: center; }
+.qt-opts { display: flex; flex-direction: column; gap: 12px; max-width: 340px; margin: 14px auto 0; }
+.qt-opt { display: flex; align-items: center; gap: 12px; width: 100%; background: #fff; border: 2px solid #e0d5bd; border-radius: 14px; padding: 12px 13px; font-size: 18px; color: #33291a; text-align: left; line-height: 1.5; cursor: pointer; font-family: inherit; }
+.qt-opt .qt-abc { flex: 0 0 30px; height: 30px; border-radius: 50%; background: #f3ead6; color: #a07820; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; }
+.qt-opt .qt-optxt { flex: 1 1 auto; min-width: 0; }
+.qt-opt .qt-tag { margin-left: auto; font-size: 13px; font-weight: 800; color: #3a8f3a; white-space: nowrap; flex: 0 0 auto; }
+.qt-opt[disabled] { cursor: default; }
+.qt-opt.qt-ok { border-color: #57b96b; background: #eef9ef; }
+.qt-opt.qt-ok .qt-abc { background: #57b96b; color: #fff; }
+.qt-opt.qt-bad { border-color: #e2654f; background: #fdeeea; }
+.qt-opt.qt-bad .qt-abc { background: #e2654f; color: #fff; }
+.qt-stamp { text-align: center; font-size: 19px; font-weight: 900; margin: 12px 0 0; min-height: 26px; }
+.qt-next { display: block; width: 100%; max-width: 340px; margin: 12px auto 0; border: none; border-radius: 14px; padding: 13px; font-size: 18px; font-weight: 900; color: #fff; background: linear-gradient(135deg, #f5a623, #f08438); box-shadow: 0 3px 0 #b06a14; cursor: pointer; font-family: inherit; }
+.qt-next:active { transform: translateY(2px); box-shadow: 0 1px 0 #b06a14; }

@@ -1063,24 +1063,44 @@
   }
   // 題目圖片放在正式版 static(web-production)，demo 後台沒有那些檔→用正式版當圖床(img 顯示不需 CORS)
   const Q_IMG_BASE = "https://web-production-48b09.up.railway.app";
-  // 題幹區（圖片 + display 大字 + prompt）；字級統一，display 上限 30px(原本 52px 太大不一致)
+  // 題幹區＝白色題卡（圖片 + display 大字 + prompt）；模板 v2（派派 6/12）
   function qBodyHTML(q) {
     const zh = qZhuyin(q);
     let h = "";
     const rawImg = typeof q.image_url === "string" ? q.image_url.trim() : "";
-    if (rawImg) { const isrc = /^https?:/i.test(rawImg) ? rawImg : (Q_IMG_BASE + rawImg); h += `<img src="${aoEsc(isrc)}" alt="題目圖" onerror="this.style.display='none'" style="max-width:100%;max-height:38vh;object-fit:contain;display:block;margin:6px auto;border-radius:8px;">`; }
+    if (rawImg) { const isrc = /^https?:/i.test(rawImg) ? rawImg : (Q_IMG_BASE + rawImg); h += `<img src="${aoEsc(isrc)}" alt="題目圖" onerror="this.style.display='none'" style="max-width:100%;max-height:36vh;object-fit:contain;display:block;margin:4px auto;border-radius:8px;">`; }
     const disp = String(q.display || "").trim(), prom = String(q.prompt || "").trim();
     if (disp) {
-      h += `<div style="font-size:30px;font-weight:900;line-height:1.6;margin:6px 0;color:#3a2c1a;">${qRuby(disp, zh)}</div>`;
-      if (prom) h += `<div style="font-size:15px;line-height:1.9;margin:4px 0;color:#5a4630;">${qRuby(prom, zh)}</div>`;
+      h += `<div style="font-size:28px;font-weight:900;line-height:1.55;margin:4px 0;color:#2f2415;">${qRuby(disp, zh)}</div>`;
+      if (prom) h += `<div style="font-size:17px;line-height:1.8;margin:4px 0;color:#5a4630;">${qRuby(prom, zh)}</div>`;
     } else if (prom) {
-      h += `<div style="font-size:19px;line-height:1.9;margin:6px 0;color:#5a4630;">${qRuby(prom, zh)}</div>`;
+      h += `<div style="font-size:19px;line-height:1.8;margin:4px 0;color:#5a4630;">${qRuby(prom, zh)}</div>`;
     }
-    return h;
+    return `<div class="qt-card">${h}</div>`;
   }
-  // 單一選項按鈕（含注音）；cls=各畫面的選項 class（ca-choice/en-choice/ex-choice）
-  function qChoiceHTML(c, q, cls) {
-    return `<button class="${cls} jc-act" data-c="${aoEsc(c)}" style="width:100%;text-align:center;font-size:18px;padding:11px;">${qRuby(c, qZhuyin(q))}</button>`;
+  // 單一選項按鈕（A/B/C/D 圓徽章＋靠左，含注音）；cls=各畫面的選項 class（ca-choice/en-choice/ex-choice）
+  function qChoiceHTML(c, q, cls, i) {
+    const abc = "ABCDEFGH"[i] || "·";
+    return `<button class="${cls} qt-opt" data-c="${aoEsc(c)}"><span class="qt-abc">${abc}</span><span class="qt-optxt">${qRuby(c, qZhuyin(q))}</span></button>`;
+  }
+  // 進度條列（取代小字題號）
+  function qProgressHTML(idx, total, right) {
+    const pct = Math.round((idx + 1) / Math.max(1, total) * 100);   // Codex P3：條跟題號一致（第1題就有進度）
+    const tail = right ? `　${right}` : "";
+    return `<div class="qt-top"><div class="qt-bar"><i style="width:${pct}%"></i></div><div class="qt-num">${idx + 1} / ${total}${tail}</div></div>`;
+  }
+  // 答題回饋（共用）：對=綠+蓋章；錯=紅+標正解。回傳是否答對。
+  function qMarkAnswer(box, cls, btn, r) {
+    box.querySelectorAll("." + cls).forEach((b) => { b.disabled = true; });
+    if (r.correct) { btn.classList.add("qt-ok"); return true; }
+    btn.classList.add("qt-bad");
+    box.querySelectorAll("." + cls).forEach((b) => {
+      if (b.dataset.c === String(r.correct_answer)) {
+        b.classList.add("qt-ok");
+        if (!b.querySelector(".qt-tag")) b.insertAdjacentHTML("beforeend", `<span class="qt-tag">正確答案</span>`);
+      }
+    });
+    return false;
   }
 
   // 進入某一章節答題（章節由玩家在 caOpenPractice 挑）
@@ -1102,20 +1122,30 @@
     const qs = sess.questions; let idx = 0, correct = 0;
     const renderQ = () => {
       const q = qs[idx];
-      const choices = (q.choices || []).map((c) => qChoiceHTML(c, q, "ca-choice")).join("");
-      box.innerHTML = `<div style="text-align:center;padding:6px 4px;">
-        <div style="font-size:13px;color:#8a6d3b;">第 ${idx + 1} / ${qs.length} 題　答對 ${correct}</div>
+      const choices = (q.choices || []).map((c, ci) => qChoiceHTML(c, q, "ca-choice", ci)).join("");
+      box.innerHTML = `<div style="padding:6px 4px;">
+        ${qProgressHTML(idx, qs.length, `答對 ${correct}`)}
         ${qBodyHTML(q)}
-        <div class="ca-choices" style="display:flex;flex-direction:column;gap:8px;max-width:320px;margin:10px auto 0;">${choices}</div>
-        <div class="ca-fb" style="height:24px;margin-top:10px;font-weight:800;"></div></div>`;
+        <div class="ca-choices qt-opts">${choices}</div>
+        <div class="ca-fb qt-stamp"></div>
+        <div class="ca-nextwrap"></div></div>`;
+      const goNext = () => { idx++; (idx < qs.length) ? renderQ() : finish(); };
       box.querySelectorAll(".ca-choice").forEach((btn) => btn.addEventListener("click", async function () {
         box.querySelectorAll(".ca-choice").forEach((b) => { b.disabled = true; });
         const ans = this.dataset.c; let r;
         try { r = await fetch(DEMO_API + "/api/" + caSubject + "/session/answer", { method: "POST", headers: hdr, body: JSON.stringify({ session_id: sess.session_id, question_id: q.id, answer: ans, time_ms: 0 }) }).then((x) => x.json()); } catch (e) { r = {}; }
         const fb = box.querySelector(".ca-fb");
-        if (r.correct) { correct++; this.style.background = "#bfe6bf"; fb.textContent = "✓ 答對了！"; fb.style.color = "#3a8f3a"; }
-        else { this.style.background = "#f0b9b9"; fb.textContent = "✗ 正解：" + aoEsc(r.correct_answer || ""); fb.style.color = "#c0392b"; box.querySelectorAll(".ca-choice").forEach((b) => { if (b.dataset.c === String(r.correct_answer)) b.style.background = "#bfe6bf"; }); }
-        setTimeout(() => { idx++; (idx < qs.length) ? renderQ() : finish(); }, 1100);
+        if (qMarkAnswer(box, "ca-choice", this, r)) {
+          // 答對：快節奏自動下一題
+          correct++; fb.textContent = "✓ 答對了！"; fb.style.color = "#3a8f3a";
+          setTimeout(goNext, 900);
+        } else {
+          // 答錯：停下來看正解，按了「下一題」才走（派派 6/12 模板：錯題要看懂再走）
+          fb.textContent = "✗ 答錯了，看一下正確答案"; fb.style.color = "#c0392b";
+          const last = idx + 1 >= qs.length;
+          box.querySelector(".ca-nextwrap").innerHTML = `<button class="qt-next ca-next">${last ? "看結果 →" : "下一題 →"}</button>`;
+          box.querySelector(".ca-next").addEventListener("click", goNext);
+        }
       }));
     };
     const finish = async () => {
@@ -1685,24 +1715,30 @@
     };
     const renderQ = () => {
       const q = qs[idx];
-      const choices = (q.choices || []).map((c) => qChoiceHTML(c, q, "en-choice")).join("");
+      const choices = (q.choices || []).map((c, ci) => qChoiceHTML(c, q, "en-choice", ci)).join("");
       box.innerHTML = `<div style="padding:4px 4px;">
         <div style="display:flex;gap:10px;margin-bottom:8px;">
           <div style="flex:1;"><div style="font-size:12px;color:#3a8f3a;font-weight:700;">你 ❤️ ${Math.max(0, pHP)}/${pMaxHP}</div>${bar(pHP, pMaxHP, "#48b048")}</div>
           <div style="flex:1;"><div style="font-size:12px;color:#c0392b;font-weight:700;text-align:right;">${d.boss ? "魔王" : "入魔"}的${aoEsc(d.name)} 💀 ${Math.max(0, eHP)}/${eMaxHP}</div>${bar(eHP, eMaxHP, "#d8503a")}</div>
         </div>
-        <div style="text-align:center;font-size:12px;color:#7b4dd8;">答對攻擊 −${dmgToEnemy}／答錯被扣 −${dmgToPlayer}</div>
-        <div style="text-align:center;">${qBodyHTML(q)}</div>
-        <div style="display:flex;flex-direction:column;gap:8px;max-width:320px;margin:10px auto 0;">${choices}</div>
-        <div class="en-fb" style="height:22px;margin-top:8px;font-weight:800;text-align:center;"></div></div>`;
+        <div style="text-align:center;font-size:12px;color:#7b4dd8;margin-bottom:6px;">答對攻擊 −${dmgToEnemy}／答錯被扣 −${dmgToPlayer}</div>
+        ${qBodyHTML(q)}
+        <div class="qt-opts">${choices}</div>
+        <div class="en-fb qt-stamp"></div></div>`;
       box.querySelectorAll(".en-choice").forEach((btn) => btn.addEventListener("click", async function () {
+        // 點擊當下立刻鎖全部選項（Codex P1：等 API 回來才鎖會被連點重複送答/重複扣血）
         box.querySelectorAll(".en-choice").forEach((b) => { b.disabled = true; });
         asked++;
         let r; try { r = await fetch(DEMO_API + "/api/english/session/answer", { method: "POST", headers: hdr, body: JSON.stringify({ session_id: sess.session_id, question_id: q.id, answer: this.dataset.c, time_ms: 0 }) }).then((x) => x.json()); } catch (e) { r = {}; }
         const fb = box.querySelector(".en-fb");
-        if (r.correct) { correct++; eHP -= dmgToEnemy; this.style.background = "#bfe6bf"; fb.textContent = "✓ 答對！對敵人造成 " + dmgToEnemy + " 傷害"; fb.style.color = "#3a8f3a"; }
-        else { pHP -= dmgToPlayer; this.style.background = "#f0b9b9"; fb.textContent = "✗ 正解：" + aoEsc(r.correct_answer || "") + "（你被扣 " + dmgToPlayer + " 血）"; fb.style.color = "#c0392b"; box.querySelectorAll(".en-choice").forEach((b) => { if (b.dataset.c === String(r.correct_answer)) b.style.background = "#bfe6bf"; }); }
-        setTimeout(advance, 1000);
+        if (qMarkAnswer(box, "en-choice", this, r)) {
+          correct++; eHP -= dmgToEnemy; fb.textContent = "✓ 答對！對敵人造成 " + dmgToEnemy + " 傷害"; fb.style.color = "#3a8f3a";
+          setTimeout(advance, 1000);
+        } else {
+          // 對戰保持自動節奏，但答錯多停 0.6 秒讓正解看得到（綠框＋標籤）
+          pHP -= dmgToPlayer; fb.textContent = "✗ 你被扣 " + dmgToPlayer + " 血"; fb.style.color = "#c0392b";
+          setTimeout(advance, 1600);
+        }
       }));
     };
     const finish = async (win) => {
@@ -1867,11 +1903,11 @@
     let idx = 0;
     const renderQ = () => {
       const q = qs[idx];
-      const choices = (q.choices || []).map((c) => qChoiceHTML(c, q, "ex-choice")).join("");
-      box.innerHTML = `<div style="text-align:center;padding:6px 4px;">
-        <div style="font-size:13px;color:#8a6d3b;font-weight:700;">${exType === "mock" ? "📝 模擬考" : "📜 檢定考"}　第 ${idx + 1}/${total} 題</div>
+      const choices = (q.choices || []).map((c, ci) => qChoiceHTML(c, q, "ex-choice", ci)).join("");
+      box.innerHTML = `<div style="padding:6px 4px;">
+        ${qProgressHTML(idx, total, exType === "mock" ? "模擬考" : "檢定考")}
         ${qBodyHTML(q)}
-        <div style="display:flex;flex-direction:column;gap:8px;max-width:340px;margin:10px auto 0;">${choices}</div></div>`;
+        <div class="qt-opts">${choices}</div></div>`;
       box.querySelectorAll(".ex-choice").forEach((btn) => btn.addEventListener("click", function () {
         answers[String(q.question_id)] = this.dataset.c;
         idx++;

@@ -13,13 +13,18 @@ html, body { height: 100%; overflow: hidden; }
 .poem-stage {
   position: relative; flex: 1; min-height: 0; overflow: hidden;
   touch-action: none; user-select: none; -webkit-user-select: none;
-  background: url("img/poem/bg.webp?v=1") center bottom / cover no-repeat;
+  background: #486c1e;   /* 竹林暗綠：世界容器晃動的縫隙底色 */
 }
 
 /* 世界容器：背景+地板+門+道具+跑者都在裡面，鏡頭律動（bob/衝刺脈動）由 JS 控 transform */
 .poem-world {
   position: absolute; inset: 0; will-change: transform;
-  background: url("img/poem/bg.webp?v=1") center bottom / cover no-repeat;
+  background: #486c1e;   /* 地平線以下不鋪原畫（靜止路面殘留=路緣不直元兇）；上半由 .poem-far 鋪 */
+}
+/* 地平線以下的縫隙補色層：牆/路面蓋不到的小角落用竹綠漸層，不露原畫 */
+.poem-under {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 0; pointer-events: none;
+  background: linear-gradient(180deg, #5d8a28 0%, #486c1e 55%, #3a5718 100%);
 }
 
 /* 遠景（涼亭/遠山）無限拉近：兩層同圖交叉淡化循環，永遠在「快到了」（尺寸/定位 JS 設） */
@@ -35,7 +40,7 @@ html, body { height: 100%; overflow: hidden; }
 .poem-wall { position: absolute; overflow: hidden; backface-visibility: hidden; }
 .poem-wall-tex {
   position: absolute; top: 0; bottom: 0; left: -460px; right: -460px;
-  background: url("img/poem/wall_tile.webp?v=1") repeat-x;
+  background: url("img/poem/wall_tile.webp?v=2") repeat-x;
   background-size: auto 100%; will-change: transform;
 }
 
@@ -48,10 +53,10 @@ html, body { height: 100%; overflow: hidden; }
 /* 偽 3D 路面：透視平面 + 無縫石板貼圖向鏡頭捲動（top 由 JS 設為路消失點） */
 .poem-floor {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
-  perspective: 430px; perspective-origin: 50% 0%; overflow: hidden;
-  /* 頂端漸層淡出：流動路面從遠方霧氣中浮現，跟上半部無縫融合（取代粗白霧帶） */
-  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 13%, #000 100%);
-  mask-image: linear-gradient(180deg, transparent 0, #000 13%, #000 100%);
+  perspective: 540px; perspective-origin: 50% 0%; overflow: hidden;
+  /* 頂端只留 4% 微淡出防鋸齒：路面從涼亭台階「完全不透明」開始，不再跟原畫的路雙重曝光 */
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 4%, #000 100%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 4%, #000 100%);
 }
 .poem-floor-plane {
   position: absolute; bottom: 0; left: 50%; width: 160%; height: 480%;
@@ -60,15 +65,11 @@ html, body { height: 100%; overflow: hidden; }
 }
 .poem-floor-tex {
   position: absolute; left: 0; right: 0; top: -340px; height: calc(100% + 340px);
-  background: url("img/poem/floor_tile.webp?v=2") repeat;
+  background: url("img/poem/floor_tile.webp?v=3") repeat;
   background-size: 100% 110px; will-change: transform;
 }
-/* 地平線霧帶：遮住捲動路面與靜止遠景的接縫（top 由 JS 設） */
-.poem-fog {
-  position: absolute; left: -4%; right: -4%; height: 6%; z-index: 2; pointer-events: none;
-  background: linear-gradient(180deg, rgba(226, 233, 219, 0) 0%, rgba(226, 233, 219, 0.38) 50%, rgba(226, 233, 219, 0) 100%);
-  filter: blur(1px);
-}
+/* 霧帶已拆（派派 6/12：任何帶子/柔焦都造成分界感），留空殼相容 JS */
+.poem-fog { display: none; }
 
 /* 路邊道具流（草叢/小石，跟門同一套透視流過去） */
 .poem-prop {
@@ -143,7 +144,7 @@ html, body { height: 100%; overflow: hidden; }
 
 /* 跑者（騎雲小仙女，背對鏡頭） */
 #poem-runner {
-  position: absolute; bottom: 6%; left: 0; width: min(34vw, 170px);
+  position: absolute; bottom: 6%; left: 0; width: min(30vw, 150px);
   will-change: transform; pointer-events: none; z-index: 20;
 }
 #poem-runner img { width: 100%; display: block; -webkit-user-drag: none; }

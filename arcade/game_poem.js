@@ -90,23 +90,23 @@
         geom.W = W; geom.H = H;
         geom.laneX = [W * 0.26, W * 0.74];
         geom.minX = W * 0.13; geom.maxX = W * 0.87;
-        geom.gateW = Math.min(W * 0.5, 230);
+        geom.gateW = Math.min(W * 0.46, 205);
         // 路的消失點＝涼亭底（派派 6/12 紅線）：背景方圖 cover + 底部對齊，涼亭底在圖高約 41%
         const dispH = Math.max(W, H);
         geom.horizonY = Math.max(H * 0.14, Math.min(H * 0.55, H - dispH * 0.59));
         // 路面捲動平面：全寬（含柵欄/草邊一起流）＋貼圖高度按平面寬等比
         const fl = $("poem-floor"); if (fl) fl.style.top = geom.horizonY + "px";
         const pl = document.querySelector(".poem-floor-plane");
-        const planeW = Math.round(dispH * 1.57);   // 貼圖路面佔比 0.819，對齊畫面底部的路寬
+        const planeW = Math.round(dispH * 1.57);   // 平面加寬對齊原畫柵欄透視線（派派紅線）；石板大小靠貼圖內路佔比 52% 控制
         if (pl) pl.style.width = planeW + "px";
-        geom.tileH = Math.max(70, Math.round(planeW * 70 / 1024 * 1.5));
+        geom.tileH = Math.max(70, Math.round(planeW * 70 / 1024 * 1.35));
         const tex = $("poem-floor-tex");
         if (tex) tex.style.backgroundSize = "100% " + geom.tileH + "px";
         const fg = $("poem-fog"); if (fg) fg.style.top = (geom.horizonY - H * 0.045) + "px";
         // 遠景無限拉近層：跟 .poem-world 的 cover 背景對齊同一塊像素（高度只到地平線）
         const far = $("poem-far");
         if (far) {
-            far.style.height = Math.round(geom.horizonY + H * 0.05) + "px";   // 底邊藏進路面淡出區，切口不露出（派派：上半部被卡到）
+            far.style.height = Math.round(geom.horizonY + H * 0.02) + "px";   // 只蓋到地平線下一點點（多了會露原畫中景）
             far.querySelectorAll(".poem-far-l").forEach((l) => {
                 l.style.backgroundSize = dispH + "px " + dispH + "px";
                 l.style.backgroundPosition = Math.round((W - dispH) / 2) + "px " + Math.round(H - dispH) + "px";
@@ -116,26 +116,35 @@
         }
         // 兩側竹牆：rotateY 立面，近端在畫面外側、遠端收向消失點
         const walls = $("poem-walls");
-        if (walls) { walls.style.perspective = "430px"; walls.style.perspectiveOrigin = "50% " + Math.round(geom.horizonY) + "px"; }
+        if (walls) { walls.style.perspective = "540px"; walls.style.perspectiveOrigin = "50% " + Math.round(geom.horizonY) + "px"; }
         const wallH = H * 1.5, wallTop = geom.horizonY - wallH * 0.62, depthW = dispH * 2;
         const wl = $("poem-wall-l"), wr = $("poem-wall-r");
         if (wl) {
             wl.style.top = wallTop + "px"; wl.style.height = wallH + "px";
             wl.style.left = (W * -0.02 - depthW) + "px"; wl.style.width = depthW + "px";
             wl.style.transformOrigin = "100% 50%";
-            wl.style.transform = "rotateY(-72deg)";
+            wl.style.transform = "rotateY(-76deg)";
         }
         if (wr) {
             wr.style.top = wallTop + "px"; wr.style.height = wallH + "px";
             wr.style.left = (W * 1.02) + "px"; wr.style.width = depthW + "px";
             wr.style.transformOrigin = "0% 50%";
-            wr.style.transform = "rotateY(72deg)";
+            wr.style.transform = "rotateY(76deg)";
         }
-        geom.wallTileW = Math.max(120, Math.round(220 * wallH / 330));   // 貼圖 auto 100% 等比後的單塊寬
+        geom.wallTileW = Math.max(120, Math.round(220 * wallH / 470));   // 貼圖 auto 100% 等比後的單塊寬（新牆貼圖 220x470）
         // 貼圖層外擴必須 ≥ 一塊貼圖寬，否則 translateX 捲到大位移時牆緣露空白（Codex P3）
         [$("poem-wall-tex-l"), $("poem-wall-tex-r")].forEach((t) => {
             if (t) { t.style.left = -geom.wallTileW + "px"; t.style.right = -geom.wallTileW + "px"; }
         });
+        // 地平線以下縫隙補色層（取代原畫殘留）
+        let und = document.querySelector(".poem-under");
+        if (!und) {
+            und = document.createElement("div");
+            und.className = "poem-under";
+            const wd = $("poem-world");
+            if (wd) wd.insertBefore(und, wd.firstChild);
+        }
+        und.style.top = Math.round(geom.horizonY) + "px";
         runner.x = Math.max(geom.minX, Math.min(geom.maxX, runner.x || W * 0.5));
         runner.targetX = runner.x;
     }
@@ -343,7 +352,7 @@
                 im.src = "arcade/img/poem/" + PROP_IMGS[Math.floor(Math.random() * PROP_IMGS.length)] + "?v=2";
                 im.alt = ""; im.draggable = false;
                 p.appendChild(im);
-                p.style.width = Math.round(geom.gateW * (0.34 + Math.random() * 0.16)) + "px";
+                p.style.width = Math.round(geom.gateW * (0.30 + Math.random() * 0.14)) + "px";
                 if (world) world.appendChild(p);
                 props.push({ el: p, side: propSide, t0: ts, dur: dur * 0.92 });
             }
@@ -407,13 +416,15 @@
         if (!stillCurrent()) return;
         if (!poems.length) { overlay.innerHTML = '<div class="poem-loading">題庫載入失敗，請回遊樂場再試</div>'; return; }
         questions = buildQuestions(); qIdx = 0;
+        // 版本號必須跟 CSS/spawn 實際引用一致，否則「準備中」白等（Codex R9 P3）
         await preloadImages([
             "arcade/img/poem/bg.webp?v=1",
             "arcade/img/poem/runner.webp?v=1",
             "arcade/img/poem/gate.webp?v=1",
-            "arcade/img/poem/floor_tile.webp?v=1",
-            "arcade/img/poem/prop_grass.webp?v=1",
-            "arcade/img/poem/prop_stone.webp?v=1",
+            "arcade/img/poem/floor_tile.webp?v=3",
+            "arcade/img/poem/wall_tile.webp?v=2",
+            "arcade/img/poem/prop_grass.webp?v=2",
+            "arcade/img/poem/prop_stone.webp?v=2",
         ]);
         if (!stillCurrent()) return;
 

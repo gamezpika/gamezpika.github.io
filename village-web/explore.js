@@ -749,7 +749,8 @@ class ExploreScene extends Phaser.Scene {
     const txt = this.add.text(0, 0, text, {
       fontFamily: '"PingFang TC","Microsoft JhengHei",sans-serif',
       fontSize: "17px", color: "#3a2a14", align: "center", lineSpacing: 3,
-      wordWrap: { width: MAXW },
+      // useAdvancedWrap 必開：中文無空格，預設斷行斷不了 → 泡泡會跟著文字寬到橫跨整個畫面
+      wordWrap: { width: MAXW, useAdvancedWrap: true },
     }).setOrigin(0.5, 0.5);
     const w = Math.ceil(txt.width) + PAD * 2, h = Math.ceil(txt.height) + PAD * 2;
     const top = -(TAIL + h), left = -w / 2;
@@ -826,7 +827,9 @@ class ExploreScene extends Phaser.Scene {
     const body = this.add.text(0, 0, item.body, {
       fontFamily: "-apple-system, 'PingFang TC', sans-serif",
       fontSize: 18 * DPR, color: "#4a3520",
-      wordWrap: { width: 320 * DPR },   // 長台詞自動換行（競技場 NPC 台詞較長，原本會爆框）
+      // 長台詞自動換行。useAdvancedWrap 必開：Phaser 預設只在「空格」斷行，
+      // 中文整句沒空格會被當一個超長單字直接爆框（派派 6/12 寶箱對話實證）
+      wordWrap: { width: 320 * DPR, useAdvancedWrap: true },
       align: "center", lineSpacing: 6 * DPR,
     }).setOrigin(0.5);
     // 框高隨內文長度自適應；短台詞維持原本 200 高不變

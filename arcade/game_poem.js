@@ -106,7 +106,7 @@
         // 遠景無限拉近層：跟 .poem-world 的 cover 背景對齊同一塊像素（高度只到地平線）
         const far = $("poem-far");
         if (far) {
-            far.style.height = Math.round(geom.horizonY) + "px";
+            far.style.height = Math.round(geom.horizonY + H * 0.05) + "px";   // 底邊藏進路面淡出區，切口不露出（派派：上半部被卡到）
             far.querySelectorAll(".poem-far-l").forEach((l) => {
                 l.style.backgroundSize = dispH + "px " + dispH + "px";
                 l.style.backgroundPosition = Math.round((W - dispH) / 2) + "px " + Math.round(H - dispH) + "px";
@@ -314,8 +314,8 @@
             const farLs = document.querySelectorAll(".poem-far-l");
             farLs.forEach((l, i) => {
                 const p = ((floorOff + i * FAR_CYCLE / 2) % FAR_CYCLE) / FAR_CYCLE;
-                const fop = Math.max(0, Math.min(1, Math.min(p / 0.2, (1 - p) / 0.2)));
-                l.style.transform = "scale(" + (1 + 0.22 * p) + ")";
+                const fop = Math.max(0, Math.min(1, Math.min(p / 0.28, (1 - p) / 0.28)));
+                l.style.transform = "scale(" + (1 + 0.15 * p) + ")";
                 l.style.opacity = fop;
             });
             // 鏡頭律動：跑步晃動頻率/幅度都隨速度（步伐越快越急）+ 答對瞬間輕微拉近彈回

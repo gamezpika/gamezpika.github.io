@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>詩詞接龍：唐詩三百首</title>
 <link rel="stylesheet" href="arcade/base.css?v=2">
-<link rel="stylesheet" href="arcade/poem.css?v=1">
+<link rel="stylesheet" href="arcade/poem.css?v=3">
 <link rel="stylesheet" href="arcade/game-ui.css?v=2">
 </head>
 <body>
@@ -15,17 +15,17 @@
         <button class="btn-back" id="poem-game-back">←</button>
         <span class="screen-title">📜 詩詞接龍：唐詩三百首</span>
     </header>
-    <div class="poem-stats">
-        <span id="poem-score">答對 0 題</span>
-        <span class="poem-hearts" id="poem-hearts">❤️❤️❤️</span>
-        <span id="poem-best">最高 0 題</span>
-    </div>
-    <div class="poem-banner">
-        <div class="poem-q" id="poem-question"></div>
-        <div class="poem-hint">跑進「下一句」正確的那座門！</div>
-    </div>
     <div class="poem-stage" id="poem-stage">
+        <div class="poem-top">
+            <span class="poem-pill" id="poem-score">答對 0 題</span>
+            <div class="poem-plaque">
+                <div class="poem-q" id="poem-question"></div>
+                <div class="poem-hint">跑進「下一句」正確的那座門！</div>
+            </div>
+            <span class="poem-pill" id="poem-best">最高 0 題</span>
+        </div>
         <div id="poem-runner"><img src="arcade/img/poem/runner.webp?v=1" alt="" draggable="false"></div>
+        <div class="poem-hearts" id="poem-hearts">❤️❤️❤️</div>
         <div class="poem-countdown" id="poem-countdown" style="display:none"></div>
     </div>
 </div>
@@ -35,7 +35,7 @@
 
 <script src="arcade/shim.js?v=1"></script>
 <script src="arcade/game-ui.js?v=3"></script>
-<script src="arcade/game_poem.js?v=2"></script>
+<script src="arcade/game_poem.js?v=5"></script>
 <script>
 // 封面＋玩法說明卡（鐵律：淨新玩法必備說明卡），按「開始遊戲」才開局
 (function boot() {

@@ -1,35 +1,49 @@
-/* 詩詞接龍：唐詩三百首 — 中國風二道跑酷 */
+/* 詩詞接龍：唐詩三百首 — 中國風二道跑酷（題目/計分/愛心全融入場景浮層） */
 
-#screen-poem-game { display: flex; flex-direction: column; height: 100%; }
-
-/* 計分列 */
-.poem-stats {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 14px; gap: 10px;
-  font-size: 15px; font-weight: 800; color: #5a3a18;
+/* 100dvh：iPhone Safari 網址列吃高度，100vh 會把舞台底部推出畫面（JS 再用 innerHeight 保底） */
+#screen-poem-game {
+  display: flex; flex-direction: column;
+  height: 100vh; height: 100dvh; min-height: 0; overflow: hidden;
 }
-.poem-hearts { font-size: 17px; letter-spacing: 2px; }
 
-/* 題目橫幅（中國風紅金，題目固定可慢慢讀） */
-.poem-banner {
-  margin: 0 12px 8px; padding: 10px 14px 12px;
-  background: linear-gradient(180deg, #c0392b, #96281b);
-  border: 3px solid #ffd98a; border-radius: 16px;
-  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.18);
-  text-align: center; color: #fff7e6;
-}
-.poem-banner .poem-q {
-  font-size: 22px; font-weight: 900; letter-spacing: 2px; line-height: 1.4;
-  min-height: 31px;
-}
-.poem-banner .poem-hint { font-size: 12px; opacity: 0.92; margin-top: 2px; }
-
-/* 舞台 */
+/* 舞台（佔滿 header 以下全部高度） */
 .poem-stage {
   position: relative; flex: 1; min-height: 0; overflow: hidden;
   touch-action: none; user-select: none; -webkit-user-select: none;
   background: url("img/poem/bg.webp?v=1") center bottom / cover no-repeat;
-  border-radius: 18px 18px 0 0; margin: 0 6px;
+}
+
+/* 場景內頂部浮層：計分藥丸＋題目匾額（壓在場景上，不另佔版面） */
+.poem-top {
+  position: absolute; top: 8px; left: 6px; right: 6px; z-index: 35;
+  display: flex; align-items: flex-start; justify-content: center; gap: 6px;
+  pointer-events: none;
+}
+.poem-pill {
+  flex: 0 0 auto; margin-top: 6px;
+  font-size: 12px; font-weight: 800; color: #fff7e6; white-space: nowrap;
+  background: rgba(90, 42, 16, 0.82); border: 2px solid #ffd98a;
+  padding: 4px 9px; border-radius: 999px;
+}
+.poem-plaque {
+  flex: 0 1 auto; min-width: 0; max-width: 62%;
+  background: linear-gradient(180deg, rgba(192, 57, 43, 0.95), rgba(150, 40, 27, 0.95));
+  border: 3px solid #ffd98a; border-radius: 14px;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.32);
+  padding: 7px 12px 8px; text-align: center; color: #fff7e6;
+}
+.poem-plaque .poem-q {
+  font-size: 20px; font-weight: 900; letter-spacing: 1px; line-height: 1.35;
+  min-height: 27px; white-space: nowrap;
+}
+.poem-plaque .poem-hint { font-size: 11px; opacity: 0.92; margin-top: 1px; }
+
+/* 愛心：舞台底部中央小膠囊（照參考影片） */
+.poem-hearts {
+  position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+  z-index: 35; font-size: 16px; letter-spacing: 3px; white-space: nowrap;
+  background: rgba(40, 24, 10, 0.72); border: 2px solid #ffd98a;
+  padding: 5px 16px; border-radius: 999px; pointer-events: none;
 }
 
 /* 牌樓門（transform 由 JS 控：遠小近大） */
@@ -39,11 +53,12 @@
   transform-origin: 50% 92%;
 }
 .poem-gate-img { width: 100%; display: block; -webkit-user-drag: none; }
+/* 匾額文字：精準鎖進匾額框（實測圖內 y39%~51%、寬54.7%）置中；字級由 JS 依門寬算 */
 .poem-gate-label {
-  position: absolute; left: 14%; right: 14%; top: 33.5%;
-  text-align: center; font-weight: 900; color: #5a2a10;
-  font-size: 24px; letter-spacing: 1px; white-space: nowrap;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+  position: absolute; left: 23%; right: 22.5%; top: 38.8%; height: 12.6%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; color: #4a2410; white-space: nowrap;
+  text-shadow: -1px -1px 0 #fff3dc, 1px -1px 0 #fff3dc, -1px 1px 0 #fff3dc, 1px 1px 0 #fff3dc, 0 2px 3px rgba(0, 0, 0, 0.18);
 }
 .poem-gate.is-correct .poem-gate-img { filter: drop-shadow(0 0 14px #2bb05a) saturate(1.15); }
 .poem-gate.chosen-ok .poem-gate-img { filter: drop-shadow(0 0 18px #2bb05a) brightness(1.08); }
@@ -51,7 +66,7 @@
 
 /* 跑者（騎雲小仙女，背對鏡頭） */
 #poem-runner {
-  position: absolute; bottom: 2%; left: 0; width: min(34vw, 170px);
+  position: absolute; bottom: 6%; left: 0; width: min(34vw, 170px);
   will-change: transform; pointer-events: none; z-index: 20;
 }
 #poem-runner img { width: 100%; display: block; -webkit-user-drag: none; }

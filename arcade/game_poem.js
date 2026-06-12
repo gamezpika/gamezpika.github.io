@@ -65,13 +65,23 @@
     }
 
     // ── 幾何 ─────────────────────────────────────
+    // iPhone Safari 網址列吃高度：頁高用 innerHeight 釘死（搭配 CSS 100dvh 雙保險）
+    function fitViewport() {
+        const sc = $("screen-poem-game");
+        if (sc) sc.style.height = window.innerHeight + "px";
+    }
     function measure() {
+        fitViewport();
         const st = $("poem-stage");
         const W = st.clientWidth, H = st.clientHeight;
         geom.W = W; geom.H = H;
-        geom.laneX = [W * 0.27, W * 0.73];
+        geom.laneX = [W * 0.26, W * 0.74];
         geom.minX = W * 0.13; geom.maxX = W * 0.87;
-        geom.gateW = Math.min(W * 0.42, 200);
+        geom.gateW = Math.min(W * 0.5, 230);
+        // 路的消失點：背景方圖 cover + 底部對齊，消失點在圖高約 48% → 換算回舞台座標
+        // （門必須從「路的盡頭」長出來，不是從天上掉下來）
+        const dispH = Math.max(W, H);
+        geom.horizonY = Math.max(H * 0.20, Math.min(H * 0.60, H - dispH * 0.52));
         runner.x = Math.max(geom.minX, Math.min(geom.maxX, runner.x || W * 0.5));
         runner.targetX = runner.x;
     }
@@ -87,13 +97,21 @@
 
         const st = $("poem-stage");
         const gates = [];
+        // 匾額文字字級跟門寬連動：匾額實際內寬約 0.52×門寬，塞 5 個字留邊（不爆框）
+        const labelFs = Math.max(13, Math.floor(geom.gateW * 0.52 / 5.15));
         labels.forEach((ans, lane) => {
             const el = document.createElement("div");
             el.className = "poem-gate";
             el.style.width = geom.gateW + "px";
-            el.innerHTML =
-                '<img class="poem-gate-img" src="arcade/img/poem/gate.webp?v=1" alt="" draggable="false">' +
-                '<span class="poem-gate-label">' + ans + "</span>";
+            const img = document.createElement("img");
+            img.className = "poem-gate-img";
+            img.src = "arcade/img/poem/gate.webp?v=1";
+            img.alt = ""; img.draggable = false;
+            const lb = document.createElement("span");
+            lb.className = "poem-gate-label";
+            lb.style.fontSize = labelFs + "px";
+            lb.textContent = ans;                 // textContent：順手把 innerHTML 換掉（防禦縱深）
+            el.appendChild(img); el.appendChild(lb);
             st.appendChild(el);
             gates.push({ el, lane, ans });
         });
@@ -102,17 +120,18 @@
         placeGates(0);
         phase = "approach";
     }
-    // t: 0(遠)→1(到跑者面前)；二次方緩入＝透視逼近感
+    // t: 0(路的盡頭)→1(到跑者面前)；二次方緩入＝透視逼近感
     function placeGates(t) {
         if (!row) return;
         const e = t * t;
-        const { W, H, laneX } = geom;
-        const y = H * 0.30 + (H * 0.80 - H * 0.30) * e;
-        const sc = 0.16 + 0.84 * e;
-        // 遠處兩門靠攏在路中央、近處拉開到兩道
+        const { W, H, laneX, horizonY } = geom;
+        const y = horizonY + (H * 0.86 - horizonY) * e;     // 從消失點沿路面下來（不從天上掉）
+        const sc = 0.06 + 0.94 * e;                          // 從一個小點長出來
+        const op = Math.min(1, t / 0.16);                    // 前 16% 淡入＝「從路盡頭冒出」
         row.gates.forEach((g) => {
-            const farX = W * (g.lane === 0 ? 0.42 : 0.58);
+            const farX = W * (g.lane === 0 ? 0.46 : 0.54);   // 遠處貼著路中央、近處沿路展開
             const x = farX + (laneX[g.lane] - farX) * e;
+            g.el.style.opacity = op;
             g.el.style.transform =
                 "translate(" + x + "px," + y + "px) translate(-50%,-92%) scale(" + sc + ")";
             g.el.style.zIndex = 5 + Math.round(e * 10);
@@ -337,7 +356,20 @@
             if (e.key === "ArrowLeft") runner.targetX = geom.laneX[0];
             else if (e.key === "ArrowRight") runner.targetX = geom.laneX[1];
         });
-        window.addEventListener("resize", () => { if (running || phase === "over") measure(); });
+        window.addEventListener("resize", () => {
+            fitViewport();
+            if (!(running || phase === "over")) return;
+            measure();
+            // 進行中轉向：當題的門也要跟新尺寸（Codex P3，不然這題會用舊寬擠新版面）
+            if (row) {
+                const fs = Math.max(13, Math.floor(geom.gateW * 0.52 / 5.15));
+                row.gates.forEach((g) => {
+                    g.el.style.width = geom.gateW + "px";
+                    const lb = g.el.querySelector(".poem-gate-label");
+                    if (lb) lb.style.fontSize = fs + "px";
+                });
+            }
+        });
         // 切到背景 rAF 停但牆鐘照走 → 回來門會瞬判；把隱藏時段補回 t0（Codex P2）
         let hiddenAt = 0;
         document.addEventListener("visibilitychange", () => {
@@ -349,6 +381,7 @@
     }
 
     function init() {
+        fitViewport();   // 進頁先釘住可視高度（封面/教學卡階段就要對）
         $("poem-entry-btn").addEventListener("click", startGame);
         $("poem-game-back").addEventListener("click", () => {
             stopGame();

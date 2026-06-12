@@ -24,7 +24,7 @@
 
     async function loadData() {
         if (DATA) return;
-        const r = await fetch("arcade/idiom_levels.json?v=1");
+        const r = await fetch("arcade/idiom_levels.json?v=2");
         DATA = await r.json();
     }
     function levels() { return DATA[mode] || []; }
@@ -45,6 +45,7 @@
         // 棋盤格子（空格不渲染磚）
         const map = {};   // "r,c" → {ch, el}
         level.words.forEach((w) => w.cells.forEach(([r, c], i) => { map[r + "," + c] = { ch: w.w[i] }; }));
+        (level.deco || []).forEach(([r, c, ch]) => { const k = r + "," + c; if (!map[k]) map[k] = { ch }; });   // 干擾字（凌亂感，派派 6/12）
         const cellW = Math.min(46, Math.floor((Math.min(window.innerWidth, 520) - 36) / level.cols));
         board.style.setProperty("--cell", cellW + "px");
         for (let r = 0; r < level.rows; r++) {

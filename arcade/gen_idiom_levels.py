@@ -109,10 +109,70 @@ def gen_level(pool, rng, used_counter):
             "exp": p["item"]["exp"],
             "cells": [[y - y0, x - x0] for (y, x) in p["cells"]],
         })
-    return {"rows": y1 - y0 + 1, "cols": x1 - x0 + 1, "words": grid_cells}
+    rows, cols = y1 - y0 + 1, x1 - x0 + 1
+    deco = gen_decoys(rng, grid_cells, rows, cols,
+                      [it["w"] for it in POOL_ALL], len(grid_cells[0]["w"]))
+    return {"rows": rows, "cols": cols, "words": grid_cells, "deco": deco}
+
+
+def gen_decoys(rng, words, rows, cols, all_words, wlen):
+    """空格撒干擾字（約 6 成、形狀凌亂），並保證不會在橫/直線上湊出任何題庫詞。"""
+    grid = [["" for _ in range(cols)] for _ in range(rows)]
+    legit = set()
+    for w in words:
+        for i, (r, c) in enumerate(w["cells"]):
+            grid[r][c] = w["w"][i]
+            legit.add((r, c))
+    # 干擾字池：題庫常用字（看起來像會是答案的字）
+    charpool = list({ch for w in all_words for ch in w})
+    empties = [(r, c) for r in range(rows) for c in range(cols) if not grid[r][c]]
+    rng.shuffle(empties)
+    targets = empties[: int(len(empties) * 0.6)]
+
+    def bad_window_exists():
+        word_set = set(all_words)
+        for r in range(rows):
+            for c in range(cols):
+                # 橫
+                if c + wlen <= cols:
+                    seg = [grid[r][c + i] for i in range(wlen)]
+                    if all(seg) and "".join(seg) in word_set:
+                        cells = {(r, c + i) for i in range(wlen)}
+                        if not cells <= legit:
+                            return (r, c, "h")
+                # 直
+                if r + wlen <= rows:
+                    seg = [grid[r + i][c] for i in range(wlen)]
+                    if all(seg) and "".join(seg) in word_set:
+                        cells = {(r + i, c) for i in range(wlen)}
+                        if not cells <= legit:
+                            return (r, c, "v")
+        return None
+
+    for (r, c) in targets:
+        grid[r][c] = rng.choice(charpool)
+    guard = 0
+    while guard < 200:
+        bad = bad_window_exists()
+        if not bad:
+            break
+        guard += 1
+        br, bc, d = bad
+        # 把該窗口裡第一個「干擾格」換字
+        for i in range(wlen):
+            rr, cc = (br, bc + i) if d == "h" else (br + i, bc)
+            if (rr, cc) not in legit:
+                grid[rr][cc] = rng.choice(charpool)
+                break
+    return [[r, c, grid[r][c]] for (r, c) in targets]
+
+
+POOL_ALL = []
 
 
 def gen_mode(pool, rng):
+    global POOL_ALL
+    POOL_ALL = pool
     used = {it["w"]: 0 for it in pool}
     levels = []
     guard = 0

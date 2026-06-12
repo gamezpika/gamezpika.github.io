@@ -1242,8 +1242,13 @@
       const seq = card ? +card.dataset.seq : 0;
       const q = card ? (ln.quests || [])[+card.dataset.qi] : null;
       try { localStorage.setItem(pkey, String(seq)); } catch (e2) {}
+      // 支線道具獎勵：真的放進背包＋彈窗秀圖（主線走真後台不進這裡的入包邏輯）
+      const got = (chain === "side" && q) ? sideRewardItems(q.reward) : [];
+      const granted = got.filter(sideItemGrant);   // 滿包 addToBag 回 false，沒進包的不能騙玩家說獲得（Codex P2）
       caBubble(ov, (q && q.dialog) ? q.dialog : "好！這份獎勵你當之無愧。");
       caRenderNpc(ov);   // 重渲染：解鎖下一關
+      if (granted.length) caShowItemGet(ov, granted);
+      if (granted.length < got.length) caBubble(ov, "背包滿了，道具裝不下！整理出空位後重新進入遊戲，會自動補發給你。");
     }));
   }
 
@@ -1312,7 +1317,10 @@
   }
   function caClose() {
     const ov = document.getElementById("ca-overlay");
-    if (ov) { ov.classList.remove("open"); ov.classList.remove("ca-quizpage"); }
+    if (ov) {
+      ov.classList.remove("open"); ov.classList.remove("ca-quizpage");
+      const ig = ov.querySelector(".ca-itemget"); if (ig) ig.remove();   // 獲得道具彈窗別殘留到下次開
+    }
     caQuizHidPrin = false;   // 答題中直接關閉：旗標歸零，免得下次開森林/布告欄被誤還原立繪
     release();
   }
@@ -1995,20 +2003,16 @@
     { id: "cert_science", img: "cert_science.png", name: "自然證照", desc: "通過自然認證的專業證書，自然執業人員的憑證。" },
     { id: "cert_social", img: "cert_social.png", name: "社會證照", desc: "通過社會認證的專業證書，社會執業人員的憑證。" },
     { id: "cert_teacher_cn", img: "cert_teacher_cn.png", name: "國語教師證", desc: "國語學院教師資格證書（依學院分證，不再共用）。" },
-    { id: "cert_teacher_math", img: "cert_teacher_math.png", name: "數學教師證", desc: "數學學院教師資格證書。" },
+    // cert_teacher_math 不預塞：歐幾里得支線任務獎勵，做完任務才入包（SIDE_QUEST_ITEMS）
     { id: "cert_teacher_en", img: "cert_teacher_en.png", name: "英語教師證", desc: "英語學院教師資格證書。" },
     { id: "cert_teacher_sci", img: "cert_teacher_sci.png", name: "自然教師證", desc: "自然學院教師資格證書。" },
     { id: "cert_teacher_social", img: "cert_teacher_social.png", name: "社會教師證", desc: "社會學院教師資格證書。" },
-    { id: "tool_reporter", img: "tool_reporter.png", name: "記者證", desc: "記者的身分證明，憑它追逐真相、報導世界。" },
-    { id: "tool_writer", img: "tool_writer.png", name: "靈感鋼筆", desc: "作家的靈感泉源，握筆時文思泉湧、創造故事。" },
+    // 記者證/靈感鋼筆/研究人員資格證/社工證/助理證 不預塞：支線任務獎勵，做完才入包（SIDE_QUEST_ITEMS）
     { id: "tool_trader", img: "tool_trader.png", name: "財金人員資格證", desc: "金融市場的入場券，交易員運籌帷幄的證明。" },
     { id: "tool_accountant", img: "tool_accountant.png", name: "會計師資格證", desc: "會計師的專業資格，與數字為伍的理財憑證。" },
     { id: "tool_translator", img: "tool_translator.png", name: "超級電子字典", desc: "翻譯的好幫手，跨越語言隔閡、即時查詢。" },
     { id: "tool_foreign_corp", img: "tool_foreign_corp.png", name: "外商員工證", desc: "外商企業的員工證，通往國際舞台的門票。" },
     { id: "tool_engineer", img: "tool_engineer.png", name: "科技業員工證", desc: "科技業的員工證，用科學打造未來的憑證。" },
-    { id: "tool_researcher", img: "tool_researcher.png", name: "研究人員資格證", desc: "研究人員的資格證，在實驗室追尋真理的證明。" },
-    { id: "tool_social_worker", img: "tool_social_worker.png", name: "社工證", desc: "社工的專業證照，用愛心幫助他人的憑證。" },
-    { id: "tool_congress_aide", img: "tool_congress_aide.png", name: "助理證", desc: "國會助理的識別證，在議事殿堂幕後奔走。" },
   ].map((it) => ({ id: it.id, img: JT_IMG + it.img, name: it.name, desc: it.desc }));
   function bagWrite(b) { try { localStorage.setItem(BAG_KEY, JSON.stringify(b)); } catch (e) {} }
   function bagCurrent() {
@@ -2031,6 +2035,62 @@
     b.push(item); bagWrite(b); return true;
   }
   window.addToBag = addToBag;
+
+  /* ── 支線任務道具入背包（派派 6/12 核准：第 1+2 類共 12 件；圖鑑/人物圖鑑/稱號類前綴不在白名單、不入包）──
+     subj+seq 對應 localStorage village_<subj>_side 的進度值，開機 reconcile 用它判定「已領沒領」 */
+  const SIDE_ITEM_RE = /(轉職道具|任務道具|道具|文件|書籍)「([^」]+)」/g;
+  const SIDE_QUEST_ITEMS = {
+    "靈感鋼筆": { id: "tool_writer", img: "tool_writer.png", subj: "chinese", seq: 8, desc: "作家的靈感泉源，握筆時文思泉湧、創造故事。" },
+    "鬼面具": { id: "ghost_mask", img: "ghost_mask.png", subj: "chinese", seq: 10, desc: "聊齋畫皮裡的青面面具。蒲松齡的任務信物，提醒人心比鬼面更難測。" },
+    "判決書": { id: "verdict_doc", img: "verdict_doc.png", subj: "chinese", seq: 11, desc: "席方平案的判決文書，正義雖遲但到的證明。" },
+    "記者證": { id: "tool_reporter", img: "tool_reporter.png", subj: "chinese", seq: 12, desc: "記者的身分證明，憑它追逐真相、報導世界。" },
+    "無理數事件調查報告": { id: "report_irrational", img: "report_irrational.png", subj: "math", seq: 3, desc: "畢氏學派祕密事件的調查檔案，√2 的真相就藏在裡面。" },
+    "定理的證明": { id: "book_proof", img: "book_proof.png", subj: "math", seq: 6, desc: "歐幾里得的幾何證明集，一步一步推理出真理。" },
+    "數學教師證": { id: "cert_teacher_math", img: "cert_teacher_math.png", subj: "math", seq: 8, desc: "數學學院教師資格證書。" },
+    "青囊書": { id: "book_qingnang", img: "book_qingnang.png", subj: "science", seq: 3, desc: "華佗畢生醫術的結晶，失而復得的傳世醫書。" },
+    "研究人員資格證": { id: "tool_researcher", img: "tool_researcher.png", subj: "science", seq: 8, desc: "研究人員的資格證，在實驗室追尋真理的證明。" },
+    "助理證": { id: "tool_congress_aide", img: "tool_congress_aide.png", subj: "social", seq: 4, desc: "國會助理的識別證，在議事殿堂幕後奔走。" },
+    "一條鞭法": { id: "book_yitiaobian", img: "book_yitiaobian.png", subj: "social", seq: 7, desc: "張居正改革的政策典籍，一條鞭理清天下賦稅。" },
+    "社工證": { id: "tool_social_worker", img: "tool_social_worker.png", subj: "social", seq: 8, desc: "社工的專業證照，用愛心幫助他人的憑證。" },
+  };
+  // 從獎勵文字撈出可入包的道具（只認白名單前綴＋註冊表名字，圖鑑「青囊書」這種不會誤中）
+  function sideRewardItems(rw) {
+    const out = []; SIDE_ITEM_RE.lastIndex = 0;
+    let m; while ((m = SIDE_ITEM_RE.exec(String(rw || "")))) {
+      const def = SIDE_QUEST_ITEMS[m[2]];
+      if (def && !out.some((d) => d.id === def.id)) out.push(Object.assign({ name: m[2] }, def));
+    }
+    return out;
+  }
+  function sideItemGrant(def) {
+    if (bagCurrent().some((it) => it && it.id === def.id)) return true;   // 已有就不重複
+    return addToBag({ id: def.id, img: JT_IMG + def.img, name: def.name, desc: def.desc });
+  }
+  // 開機對帳：照支線進度補發/收回（已領過卻不在包→補發；舊版預塞但任務還沒做→收回，做了才有獲得感）
+  function bagReconcileQuestItems() {
+    const b = bagCurrent(); let dirty = false;
+    Object.keys(SIDE_QUEST_ITEMS).forEach((nm) => {
+      const def = SIDE_QUEST_ITEMS[nm];
+      let prog = 0; try { prog = parseInt(localStorage.getItem("village_" + def.subj + "_side") || "0", 10) || 0; } catch (e) {}
+      const idx = b.findIndex((it) => it && it.id === def.id);
+      if (prog >= def.seq && idx < 0 && b.length < BAG_MAX) { b.push({ id: def.id, img: JT_IMG + def.img, name: nm, desc: def.desc }); dirty = true; }
+      else if (prog < def.seq && idx >= 0) { b.splice(idx, 1); dirty = true; }
+    });
+    if (dirty) bagWrite(b);
+  }
+  try { bagReconcileQuestItems(); } catch (e) {}
+  // 獲得道具彈窗（蓋在面板上，點任意處關閉）
+  function caShowItemGet(ov, items) {
+    const panel = ov.querySelector(".shop-panel"); if (!panel || !items.length) return;
+    const old = panel.querySelector(".ca-itemget"); if (old) old.remove();
+    const d = el("div"); d.className = "ca-itemget";
+    d.innerHTML = `<div class="ca-itemget-card">
+      <div class="ca-itemget-ttl">🎁 獲得道具！</div>
+      ${items.map((it) => `<img src="${JT_IMG + it.img}?v=1" alt="${aoEsc(it.name)}"><div class="ca-itemget-nm">${aoEsc(it.name)}</div>`).join("")}
+      <div class="ca-itemget-hint">已放進背包，點一下關閉</div></div>`;
+    d.addEventListener("click", () => d.remove());
+    panel.appendChild(d);
+  }
 
   function eqBuildOverlay() {
     let ov = document.getElementById("eq-overlay");

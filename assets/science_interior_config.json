@@ -734,12 +734,12 @@
         "id": "einstein",
         "name": "愛因斯坦",
         "sprite": {
-          "scale": 0.09,
+          "scale": 0.076,
           "sprites": {
             "down": {
               "image": "einstein_front.webp",
-              "frame_width": 700,
-              "frame_height": 1264,
+              "frame_width": 751,
+              "frame_height": 1494,
               "frames": 1,
               "frame_rate": 6
             }

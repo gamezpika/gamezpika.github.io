@@ -734,12 +734,12 @@
         "id": "weber",
         "name": "韋伯",
         "sprite": {
-          "scale": 0.09,
+          "scale": 0.074,
           "sprites": {
             "down": {
               "image": "weber_front.webp",
-              "frame_width": 700,
-              "frame_height": 1264,
+              "frame_width": 651,
+              "frame_height": 1541,
               "frames": 1,
               "frame_rate": 6
             }

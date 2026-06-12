@@ -373,6 +373,8 @@
 .ao-quest-lock { flex-shrink: 0; align-self: center; font-size: 12px; font-weight: 800; color: #a78a60; white-space: nowrap; }
 /* 人物圖鑑分頁 */
 .ao-content { overflow-y: auto; min-height: 0; }
+/* 答題獨立頁：藏外層（任務一覽/典籍/圖鑑）分頁列，題目佔滿整個面板（立繪由 ao-noprincipal 藏） */
+#ca-overlay.ca-quizpage .ao-right > .ao-tabs4 { display: none; }
 .ca-figs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .ca-fig {
   position: relative; cursor: pointer; text-align: center;

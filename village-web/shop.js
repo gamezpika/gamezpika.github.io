@@ -658,6 +658,8 @@
   function caSetPrincipal(ov, img, owner) {
     const prin = ov.querySelector(".ao-principal"); if (prin) prin.style.display = "";   // 森林練習會隱藏它，這裡還原（overlay 單例重用）
     ov.classList.remove("ao-noprincipal");
+    ov.classList.remove("ca-quizpage");
+    caQuizHidPrin = false;   // 立繪已還原，避免殘留旗標害下個流程誤還原
     if (img) ov.querySelector(".ao-principal-img").src = img + "?v=1";
     ov.querySelector(".ao-owner").textContent = owner || "";
   }
@@ -957,9 +959,16 @@
   function caStars(n) { n = Math.max(0, Math.min(3, Number(n) || 0)); return "⭐".repeat(n) + "☆".repeat(3 - n); }
   function caStars(n) { n = Math.max(0, Math.min(3, Number(n) || 0)); return "⭐".repeat(n) + "☆".repeat(3 - n); }
   let caPractChs = null, caPractGrade = null, caPractSource = null;
+  let caQuizHidPrin = false;   // 答題頁有沒有「動手藏過」立繪（森林/布告欄本來就藏著的不算，回選章節時不用還原）
 
   async function caOpenPractice(ov, sourceFilter) {
     if (sourceFilter !== undefined) caPractSource = sourceFilter || null;   // 'ai'=基礎練習(五大學院)；'uploaded'=課本(禁忌森林)；不帶參數=沿用(換一章用)
+    ov.classList.remove("ca-quizpage");
+    if (caQuizHidPrin) {   // 從答題頁回來：把學院模式藏掉的立繪還原（森林/布告欄 caQuizHidPrin=false 不會誤還原）
+      const prin = ov.querySelector(".ao-principal"); if (prin) prin.style.display = "";
+      ov.classList.remove("ao-noprincipal");
+      caQuizHidPrin = false;
+    }
     const t = demoToken(); if (!t) { caBubble(ov, "請先建立角色～"); return; }
     const hdr = { "Content-Type": "application/json", "Authorization": "Bearer " + t };
     const box = ov.querySelector(".ao-content");
@@ -1055,6 +1064,10 @@
     const t = demoToken(); if (!t) { caBubble(ov, "請先建立角色～"); return; }
     const hdr = { "Content-Type": "application/json", "Authorization": "Bearer " + t };
     const box = ov.querySelector(".ao-content");
+    // 題目獨立成整頁：藏立繪+外層分頁，題目佔滿面板（派派 6/12：題目不要擠在立繪下方）
+    const prin = ov.querySelector(".ao-principal");
+    if (prin && prin.style.display !== "none") { caQuizHidPrin = true; prin.style.display = "none"; ov.classList.add("ao-noprincipal"); }
+    ov.classList.add("ca-quizpage");
     ov.querySelector(".shop-title").textContent = caSubjConf().label + " · 練習";
     box.innerHTML = `<div class="jc-empty">題目載入中…</div>`;
     let sess; try { sess = await fetch(DEMO_API + "/api/" + caSubject + "/session/start", { method: "POST", headers: hdr, body: JSON.stringify({ topic_id: pick.id, game: caSubjConf().game }) }).then((r) => r.json()); } catch (e) { box.innerHTML = `<div class="jc-empty">開始失敗</div>`; return; }
@@ -1283,7 +1296,8 @@
   }
   function caClose() {
     const ov = document.getElementById("ca-overlay");
-    if (ov) ov.classList.remove("open");
+    if (ov) { ov.classList.remove("open"); ov.classList.remove("ca-quizpage"); }
+    caQuizHidPrin = false;   // 答題中直接關閉：旗標歸零，免得下次開森林/布告欄被誤還原立繪
     release();
   }
   window.openChineseAcademy = openChineseAcademy;

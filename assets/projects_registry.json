@@ -12489,6 +12489,141 @@
           "grid_rows": 1,
           "frames": 2,
           "frame_rate": 5
+        },
+        {
+          "image": "monster_math_t1.webp",
+          "name": "怪物 數字哥布林",
+          "type": "npc",
+          "scale": 0.26,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.04
+        },
+        {
+          "image": "monster_math_t2.webp",
+          "name": "怪物 算式史萊姆",
+          "type": "npc",
+          "scale": 0.26,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.04
+        },
+        {
+          "image": "monster_math_t3.webp",
+          "name": "👑 魔王 算術魔王",
+          "type": "npc",
+          "scale": 0.34,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.04
+        },
+        {
+          "image": "monster_chinese_t1.webp",
+          "name": "怪物 注音小妖",
+          "type": "npc",
+          "scale": 0.26,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.04
+        },
+        {
+          "image": "monster_chinese_t2.webp",
+          "name": "怪物 字義獸",
+          "type": "npc",
+          "scale": 0.26,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.04
+        },
+        {
+          "image": "monster_chinese_t3.webp",
+          "name": "👑 魔王 字詞魔王",
+          "type": "npc",
+          "scale": 0.34,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.04
+        },
+        {
+          "image": "monster_english_t1.webp",
+          "name": "怪物 ABC哥布林",
+          "type": "npc",
+          "scale": 0.26,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.04
+        },
+        {
+          "image": "monster_english_t2.webp",
+          "name": "怪物 英文奇美拉",
+          "type": "npc",
+          "scale": 0.26,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.04
+        },
+        {
+          "image": "monster_english_t3.webp",
+          "name": "👑 魔王 字母巨龍",
+          "type": "npc",
+          "scale": 0.34,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.04
+        },
+        {
+          "image": "monster_science_t1.webp",
+          "name": "怪物 藤蔓魔",
+          "type": "npc",
+          "scale": 0.26,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.04
+        },
+        {
+          "image": "monster_science_t2.webp",
+          "name": "怪物 元素獸",
+          "type": "npc",
+          "scale": 0.26,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.04
+        },
+        {
+          "image": "monster_science_t3.webp",
+          "name": "👑 魔王 元素魔物",
+          "type": "npc",
+          "scale": 0.34,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.04
+        },
+        {
+          "image": "monster_social_t1.webp",
+          "name": "怪物 恐龍將軍",
+          "type": "npc",
+          "scale": 0.26,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.04
+        },
+        {
+          "image": "monster_social_t2.webp",
+          "name": "怪物 城邦守衛",
+          "type": "npc",
+          "scale": 0.26,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.04
+        },
+        {
+          "image": "monster_social_t3.webp",
+          "name": "👑 魔王 王座魔神",
+          "type": "npc",
+          "scale": 0.34,
+          "default_interaction": "open_shop",
+          "bbox_w_norm": 0.06,
+          "bbox_h_norm": 0.04
         }
       ]
     },

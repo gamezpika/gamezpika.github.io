@@ -183,6 +183,22 @@
       if (onClose) onClose();
       return;
     }
+    // 禁忌森林深處怪物/魔王（pptx v8 P62）：bossfight:<subject>:<tier> → 跳獨立魔王戰頁
+    if (shopId.indexOf("bossfight:") === 0) {
+      const parts = shopId.split(":");
+      const bSubj = parts[1] || "math";
+      const bTier = parts[2] || "1";
+      let q = "?subject=" + encodeURIComponent(bSubj) + "&tier=" + encodeURIComponent(bTier);
+      try {
+        const sc = window.game.scene.scenes.find((s) => s.player && s.WORLD_W);
+        if (sc) {
+          q += "&map=" + encodeURIComponent(sc.mapId || "forest_deep");
+          q += "&back_spawn=" + (sc.player.x / sc.WORLD_W).toFixed(4) + "," + (sc.player.y / sc.WORLD_H).toFixed(4);
+        }
+      } catch (e) {}
+      location.href = "../arcade-boss.html" + q;
+      return;
+    }
     if (shopId === "job_center") { openJobCenter(onClose); return; }
     if (shopId === "academy_office") { openAcademyOffice(onClose); return; }
     if (shopId === "dorm") { openDormHub(onClose); return; }

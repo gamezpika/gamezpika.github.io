@@ -1,0 +1,403 @@
+/* boss-phaser.css — 純 Phaser 戰鬥畫面 host styling
+ * H0-H1: 只 host phaser canvas + loading overlay
+ * H2-H8: HUD/題目/選項都在 canvas 內 render，不需要外部 CSS */
+
+/* 預設隱藏 Phaser host；只在 .phaser-mode 切換時顯示 */
+#boss-phaser-root {
+    display: none;
+}
+
+.phaser-mode #boss-phaser-root {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: #1a0a2e;
+    overflow: hidden;
+    z-index: 5;
+}
+
+/* phaser-mode 隱藏舊版 boss-fight markup */
+.phaser-mode #screen-boss-game .bf-bg,
+.phaser-mode #screen-boss-game .bf-topbar,
+.phaser-mode #screen-boss-game .bf-arena,
+.phaser-mode #screen-boss-game .bf-quiz-panel {
+    display: none !important;
+}
+
+#boss-phaser-root canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    position: relative;
+    z-index: 20;
+}
+
+.bf-loading-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #1a0a2e 0%, #2d1654 100%);
+    /* z-index 35 蓋過 Phaser canvas (20) 跟 HUD overlay (30)，避免 canvas 黑底先閃出來 */
+    z-index: 35;
+    transition: opacity 0.3s ease;
+}
+
+.bf-loading-overlay.hide {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.bf-load-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    width: 70%;
+    max-width: 280px;
+}
+.bf-load-text {
+    font-size: 16px; font-weight: bold;
+    color: #fff;
+    text-align: center;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-width: 92vw;
+}
+.bf-load-bar {
+    width: 100%;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 5px;
+    overflow: hidden;
+}
+.bf-load-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #ffcf60 0%, #ff8a3d 100%);
+    transition: width 0.25s ease;
+    border-radius: 5px;
+}
+.bf-load-pct {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: sans-serif;
+}
+
+/* ── HTML overlay（DOM 渲染題目/選項/HUD，文字保證 native sharp）── */
+/* 預設 hidden — 用 .is-on class 切顯。
+   CRITICAL: 不能依賴 HTML hidden 屬性，因為 .bh-overlay class rule 會 override 它（同 specificity，author 贏 UA）。
+   結果是 BossPreload loading 期間 HUD 空模板會先閃出來，看起來像卡題目。 */
+.bh-overlay {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    flex-direction: column;
+    pointer-events: none;
+    font-family: "PingFang TC", "Noto Sans TC", sans-serif;
+    color: #fff;
+    -webkit-font-smoothing: antialiased;
+}
+.bh-overlay.is-on { display: flex; }
+.bh-overlay > * { pointer-events: auto; }
+.bh-overlay > .bh-mid { pointer-events: none; flex: 1; }
+
+/* Topbar 52px */
+.bh-topbar {
+    height: 52px;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 8px;
+}
+.bh-back {
+    background: none; border: none; color: #fff;
+    font-size: 22px; line-height: 1; cursor: pointer; padding: 4px 6px;
+}
+.bh-back:hover { color: #ffcf60; }
+.bh-title {
+    flex: 1; text-align: center;
+    font-size: 15px; font-weight: bold; color: #fff;
+}
+.bh-progress {
+    font-size: 13px; color: #ccc; min-width: 40px; text-align: right;
+    font-family: sans-serif;
+}
+
+/* HP bar 18px */
+.bh-hpbar {
+    height: 18px;
+    margin: 0 12px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.bh-ehearts {
+    display: flex; gap: 2px; align-items: center;
+}
+.bh-hp-label {
+    margin-left: 8px;
+    font-size: 11px; font-weight: bold;
+    text-shadow: 0 0 3px rgba(0,0,0,0.6);
+    white-space: nowrap;
+}
+/* P62 愛心：10 顆、每顆=總血量 10%、最後一顆比例填色（灰底 + 紅心寬度裁切） */
+.bh-heart {
+    position: relative;
+    width: 16px; height: 16px;
+    display: inline-block;
+    flex: none;
+}
+.bh-heart img {
+    width: 16px; height: 16px; display: block;
+}
+.bh-heart-clip {
+    position: absolute; inset: 0;
+    overflow: hidden;
+}
+.bh-hearts .bh-heart,
+.bh-hearts .bh-heart img { width: 20px; height: 20px; }
+
+/* Quiz panel（底部，高度自適應） */
+.bh-quiz {
+    /* 5/21 派派 B：opacity 0.92→0.72，讓魔王底色淡淡透過題目區 */
+    background: rgba(18, 8, 39, 0.72);
+    padding: 12px 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;  /* ::before 漸層需 relative 定位錨點 */
+}
+
+/* 5/21 派派：題目區頂部漸層 — 把魔王底部「淡入」題目區，不要硬切一道線
+   ::before 沿 .bh-quiz 頂部往上 56px，上半透明（魔王看得到）→ 下半實心同 .bh-quiz 背景 */
+.bh-quiz::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: linear-gradient(
+        to bottom,
+        rgba(18, 8, 39, 0) 0%,
+        rgba(18, 8, 39, 0.55) 50%,
+        rgba(18, 8, 39, 0.92) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+}
+
+.bh-stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+.bh-hearts {
+    display: flex; gap: 2px; align-items: center;
+}
+.bh-php-label {
+    font-size: 12px; font-weight: bold; color: #ffd1d1;
+    text-shadow: 0 0 3px rgba(0,0,0,0.6);
+    white-space: nowrap;
+}
+/* 連對倍率標示（P62）：連3後×2 橘、連5後×3 紅 */
+.bh-combo {
+    margin-left: auto;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #f39c12;
+    color: #fff;
+    font-size: 12px; font-weight: 900;
+    white-space: nowrap;
+    animation: bhComboPop 0.3s ease-out;
+}
+.bh-combo.x3 { background: #e74c3c; }
+@keyframes bhComboPop {
+    0% { transform: scale(0.6); }
+    60% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+/* Question card */
+.bh-card {
+    /* 5/21 派派 v6 統一規格（跟考試 exam-q-card 同）：radius 12 / padding 18+14 / shadow
+       boss 特例：bg 保留半透明（露出魔王底色），其他場景純白 */
+    background: rgba(255, 255, 255, 0.88);
+    border-radius: 12px;
+    padding: 18px 14px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    min-height: 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #1a1a1a;
+}
+.bh-display {
+    font-size: 16px; font-weight: 600;
+    line-height: 1.4;
+    word-break: break-word;
+}
+.bh-display.fs-sm { font-size: 14px; }
+.bh-display.fs-xs { font-size: 13px; }
+.bh-prompt {
+    font-size: 12px; color: #666;
+    margin-top: 6px;
+    font-family: sans-serif;
+}
+.bh-prompt:empty { display: none; }
+
+/* Choice buttons 2×2 */
+.bh-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+.bh-choice {
+    appearance: none; -webkit-appearance: none;
+    /* 5/21 派派 v6 統一規格（跟 5 場景一致）：純白 + 淡灰邊 + radius 10 + padding 14/12 + font 15 */
+    background: #fff;
+    color: #1a1a1a;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 14px 12px;
+    min-height: 50px;
+    font-size: 15px; font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: center;
+    line-height: 1.4;
+    word-break: break-word;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.05s ease;
+    /* 5/21 派派回報「總有一格顏色不一樣」— iOS LIFF webview tap-highlight + focus outline
+       殘留在最後點過的按鈕上。鏡像 PVP 5/9 解法（pvp-v2.css:302）。 */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+    outline: none;
+}
+.bh-choice:focus { outline: none; }
+.bh-choice:focus-visible { outline: 2px solid #6b46c1; outline-offset: 2px; }
+/* 5/21 派派截圖：iOS LIFF webview sticky :hover — touch 後 hover 黏在按鈕上不消
+   → 包 @media 只在真有 mouse cursor 的裝置（桌機 PC/Mac）才套，touch 完全跳過 */
+@media (hover: hover) and (pointer: fine) {
+    .bh-choice:not([disabled]):hover { background: #f0e6ff; }
+}
+.bh-choice:not([disabled]):active { transform: scale(0.97); }
+.bh-choice[disabled] { background: #dddddd; color: #888; cursor: default; }
+/* answer feedback 必須排在 [disabled] 之後，否則同 specificity 下後者會贏，
+   答對綠 / 答錯紅就會被灰底蓋掉（lockChoices 永遠先觸發 disabled）*/
+.bh-choice.is-correct,
+.bh-choice[disabled].is-correct { background: #27ae60; color: #fff; }
+.bh-choice.is-wrong,
+.bh-choice[disabled].is-wrong { background: #e74c3c; color: #fff; }
+
+/* 5/20 派派：G1/G2 注音題魔王戰排版 — 字距 + 行高給呼吸感 + 選項 1 欄大按鈕
+   .bopo class 由 boss-phaser.js HUD.setQuestion/setChoices 加（題目 grade<=2 觸發）
+   codex P2: Phaser 預留 _QUIZ_H = min(H*0.52, 370)，HTML overlay 必須卡死該高度
+   不能 overflow 蓋 boss arena → .bh-quiz max-height 100% + overflow-y: auto，
+   選項 padding/字級壓縮，line-height 控制在 1.7 不灌爆 */
+.bh-quiz {
+    max-height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+.bh-display.bopo,
+.bh-prompt.bopo { line-height: 2.0; }  /* 從 2.4 壓回，避免 ruby 撐高 */
+/* 5/21 派派 v5：0.05em 太擠看起來字小，回 0.10em 折衷 — rt 自然 gap 還夠 */
+.bh-display.bopo ruby,
+.bh-prompt.bopo ruby,
+.bh-choices.bopo .bh-choice ruby { margin: 0 0.30em; }
+.bh-display.bopo ruby rt,
+.bh-prompt.bopo ruby rt,
+.bh-choices.bopo .bh-choice ruby rt {  /* codex 提醒：choice ruby rt 也樣式化 */
+    font-size: 0.5em;
+    opacity: 0.85;
+    letter-spacing: 0.05em;
+    line-height: 1.1;
+}
+.bh-choices.bopo {
+    grid-template-columns: 1fr;
+    gap: 6px;  /* 4 個按鈕 + 注音 + 選項 1 欄擠進 _QUIZ_H 空間，gap 縮 */
+    counter-reset: bhchoice;
+}
+.bh-choices.bopo .bh-choice {
+    text-align: left;
+    /* 5/21 派派：橫向 padding 6→2 把右邊留白吃掉，每行多塞 ~3 字 */
+    padding: 18px 2px 10px;
+    min-height: 44px;
+    font-size: 15px;
+    line-height: 1.7;  /* 從 2.3 壓回 — ruby 注音已在 rt 上方撐空間 */
+}
+.bh-choices.bopo .bh-choice::before {
+    counter-increment: bhchoice;
+    content: counter(bhchoice, upper-alpha) "．";
+    font-weight: 800;
+    color: #6b46c1;
+    margin-right: 6px;
+    font-size: 1.05em;
+}
+
+/* 5/21 派派回報：注音題 .bh-card 用 justify-content: center 把超長題目向上下溢出，
+   第一行常被 clip 看不到。改 top-align 讓題目從上往下排，超長就讓 .bh-quiz 滾。
+   另外 text-wrap pretty/balance 自動避免「最後一行只有 1-2 字」的孤兒（widow line）。
+   .bopo class 由 JS HUD.setQuestion 同步加到 .bh-card 父層。*/
+.bh-card.bopo {
+    justify-content: flex-start;
+    align-items: stretch;
+    text-align: center;
+    /* 5/21 派派：兩邊留白再砍 6→2，每行多塞 1 字。padding-top 22 buffer ruby rt */
+    padding: 22px 2px 14px;
+    flex-shrink: 0;
+    /* 5/21 派派：bopo 字本來就要大（不縮字），長題目改 card 內捲軸。
+       50vh 在 H=800 是 400px ≈ 12 行注音，極長題目才會觸發 scroll */
+    max-height: 50vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+.bh-choices.bopo { flex-shrink: 0; }
+.bh-display.bopo,
+.bh-prompt.bopo,
+.bh-choices.bopo .bh-choice {
+    /* v6.3 派派：CJK 字之間禁斷，瀏覽器強制在 <wbr> 標點處才斷
+       配 overflow-wrap: anywhere 作為超長無斷點 fallback */
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+}
+
+/* Damage float — 動畫由 JS 觸發 */
+.bh-damage {
+    position: absolute;
+    left: 50%;
+    bottom: 50%;
+    transform: translate(-50%, 0);
+    font-size: 38px; font-weight: bold;
+    color: #ff4444;
+    text-shadow:
+        -1px -1px 0 #fff, 1px -1px 0 #fff,
+        -1px 1px 0 #fff, 1px 1px 0 #fff,
+        0 0 6px rgba(255,255,255,0.6);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 35;
+}
+.bh-damage.show {
+    animation: bh-dmg 800ms ease-out forwards;
+}
+@keyframes bh-dmg {
+    0%   { opacity: 0; transform: translate(-50%, 20px); }
+    20%  { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, -60px); }
+}

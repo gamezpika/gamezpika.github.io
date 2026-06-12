@@ -62,7 +62,413 @@
         "label": "離開深處"
       }
     ],
-    "buildings": [],
+    "buildings": [
+      {
+        "id": "monster_math_t3",
+        "name": "魔王 算術魔王",
+        "category": "npc",
+        "sprite": {
+          "image": "monster_math_t3.webp",
+          "scale": 0.34,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.18,
+          "y": 0.3
+        },
+        "bounding_box": {
+          "x_min": 0.15,
+          "y_min": 0.26,
+          "x_max": 0.21,
+          "y_max": 0.295
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "bossfight:math:3",
+          "label": "挑戰魔王 算術魔王",
+          "radius": 170
+        }
+      },
+      {
+        "id": "monster_chinese_t3",
+        "name": "魔王 字詞魔王",
+        "category": "npc",
+        "sprite": {
+          "image": "monster_chinese_t3.webp",
+          "scale": 0.34,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.34,
+          "y": 0.3
+        },
+        "bounding_box": {
+          "x_min": 0.31000000000000005,
+          "y_min": 0.26,
+          "x_max": 0.37,
+          "y_max": 0.295
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "bossfight:chinese:3",
+          "label": "挑戰魔王 字詞魔王",
+          "radius": 170
+        }
+      },
+      {
+        "id": "monster_english_t3",
+        "name": "魔王 字母巨龍",
+        "category": "npc",
+        "sprite": {
+          "image": "monster_english_t3.webp",
+          "scale": 0.34,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.5,
+          "y": 0.3
+        },
+        "bounding_box": {
+          "x_min": 0.47,
+          "y_min": 0.26,
+          "x_max": 0.53,
+          "y_max": 0.295
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "bossfight:english:3",
+          "label": "挑戰魔王 字母巨龍",
+          "radius": 170
+        }
+      },
+      {
+        "id": "monster_science_t3",
+        "name": "魔王 元素魔物",
+        "category": "npc",
+        "sprite": {
+          "image": "monster_science_t3.webp",
+          "scale": 0.34,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.66,
+          "y": 0.3
+        },
+        "bounding_box": {
+          "x_min": 0.63,
+          "y_min": 0.26,
+          "x_max": 0.6900000000000001,
+          "y_max": 0.295
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "bossfight:science:3",
+          "label": "挑戰魔王 元素魔物",
+          "radius": 170
+        }
+      },
+      {
+        "id": "monster_social_t3",
+        "name": "魔王 王座魔神",
+        "category": "npc",
+        "sprite": {
+          "image": "monster_social_t3.webp",
+          "scale": 0.34,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.82,
+          "y": 0.3
+        },
+        "bounding_box": {
+          "x_min": 0.7899999999999999,
+          "y_min": 0.26,
+          "x_max": 0.85,
+          "y_max": 0.295
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "bossfight:social:3",
+          "label": "挑戰魔王 王座魔神",
+          "radius": 170
+        }
+      },
+      {
+        "id": "monster_math_t2",
+        "name": "算式史萊姆",
+        "category": "npc",
+        "sprite": {
+          "image": "monster_math_t2.webp",
+          "scale": 0.27,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.16,
+          "y": 0.47
+        },
+        "bounding_box": {
+          "x_min": 0.13,
+          "y_min": 0.43,
+          "x_max": 0.19,
+          "y_max": 0.46499999999999997
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "bossfight:math:2",
+          "label": "挑戰算式史萊姆",
+          "radius": 170
+        }
+      },
+      {
+        "id": "monster_chinese_t2",
+        "name": "字義獸",
+        "category": "npc",
+        "sprite": {
+          "image": "monster_chinese_t2.webp",
+          "scale": 0.27,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.33,
+          "y": 0.47
+        },
+        "bounding_box": {
+          "x_min": 0.30000000000000004,
+          "y_min": 0.43,
+          "x_max": 0.36,
+          "y_max": 0.46499999999999997
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "bossfight:chinese:2",
+          "label": "挑戰字義獸",
+          "radius": 170
+        }
+      },
+      {
+        "id": "monster_english_t2",
+        "name": "英文奇美拉",
+        "category": "npc",
+        "sprite": {
+          "image": "monster_english_t2.webp",
+          "scale": 0.27,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.5,
+          "y": 0.47
+        },
+        "bounding_box": {
+          "x_min": 0.47,
+          "y_min": 0.43,
+          "x_max": 0.53,
+          "y_max": 0.46499999999999997
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "bossfight:english:2",
+          "label": "挑戰英文奇美拉",
+          "radius": 170
+        }
+      },
+      {
+        "id": "monster_science_t2",
+        "name": "元素獸",
+        "category": "npc",
+        "sprite": {
+          "image": "monster_science_t2.webp",
+          "scale": 0.27,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.67,
+          "y": 0.47
+        },
+        "bounding_box": {
+          "x_min": 0.64,
+          "y_min": 0.43,
+          "x_max": 0.7000000000000001,
+          "y_max": 0.46499999999999997
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "bossfight:science:2",
+          "label": "挑戰元素獸",
+          "radius": 170
+        }
+      },
+      {
+        "id": "monster_social_t2",
+        "name": "城邦守衛",
+        "category": "npc",
+        "sprite": {
+          "image": "monster_social_t2.webp",
+          "scale": 0.27,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.84,
+          "y": 0.47
+        },
+        "bounding_box": {
+          "x_min": 0.8099999999999999,
+          "y_min": 0.43,
+          "x_max": 0.87,
+          "y_max": 0.46499999999999997
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "bossfight:social:2",
+          "label": "挑戰城邦守衛",
+          "radius": 170
+        }
+      },
+      {
+        "id": "monster_math_t1",
+        "name": "數字哥布林",
+        "category": "npc",
+        "sprite": {
+          "image": "monster_math_t1.webp",
+          "scale": 0.26,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.2,
+          "y": 0.62
+        },
+        "bounding_box": {
+          "x_min": 0.17,
+          "y_min": 0.58,
+          "x_max": 0.23,
+          "y_max": 0.615
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "bossfight:math:1",
+          "label": "挑戰數字哥布林",
+          "radius": 170
+        }
+      },
+      {
+        "id": "monster_chinese_t1",
+        "name": "注音小妖",
+        "category": "npc",
+        "sprite": {
+          "image": "monster_chinese_t1.webp",
+          "scale": 0.26,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.35,
+          "y": 0.62
+        },
+        "bounding_box": {
+          "x_min": 0.31999999999999995,
+          "y_min": 0.58,
+          "x_max": 0.38,
+          "y_max": 0.615
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "bossfight:chinese:1",
+          "label": "挑戰注音小妖",
+          "radius": 170
+        }
+      },
+      {
+        "id": "monster_english_t1",
+        "name": "ABC哥布林",
+        "category": "npc",
+        "sprite": {
+          "image": "monster_english_t1.webp",
+          "scale": 0.26,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.5,
+          "y": 0.62
+        },
+        "bounding_box": {
+          "x_min": 0.47,
+          "y_min": 0.58,
+          "x_max": 0.53,
+          "y_max": 0.615
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "bossfight:english:1",
+          "label": "挑戰ABC哥布林",
+          "radius": 170
+        }
+      },
+      {
+        "id": "monster_science_t1",
+        "name": "藤蔓魔",
+        "category": "npc",
+        "sprite": {
+          "image": "monster_science_t1.webp",
+          "scale": 0.26,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.65,
+          "y": 0.62
+        },
+        "bounding_box": {
+          "x_min": 0.62,
+          "y_min": 0.58,
+          "x_max": 0.68,
+          "y_max": 0.615
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "bossfight:science:1",
+          "label": "挑戰藤蔓魔",
+          "radius": 170
+        }
+      },
+      {
+        "id": "monster_social_t1",
+        "name": "恐龍將軍",
+        "category": "npc",
+        "sprite": {
+          "image": "monster_social_t1.webp",
+          "scale": 0.26,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.8,
+          "y": 0.62
+        },
+        "bounding_box": {
+          "x_min": 0.77,
+          "y_min": 0.58,
+          "x_max": 0.8300000000000001,
+          "y_max": 0.615
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "bossfight:social:1",
+          "label": "挑戰恐龍將軍",
+          "radius": 170
+        }
+      }
+    ],
     "obstacle_areas": [
       {
         "id": "area_001",

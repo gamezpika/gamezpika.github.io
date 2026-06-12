@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>魔王戰</title>
+<link rel="stylesheet" href="arcade/base.css?v=2">
+<link rel="stylesheet" href="arcade/boss/boss-phaser.css?v=1">
+<style>
+/* 獨立頁殼：app.html 的 .phaser-mode/#screen-boss-game 由 style.css 提供，這裡自帶等價樣式 */
+body { background: #120827; }
+#screen-boss-game { position: fixed; inset: 0; }
+#boss-phaser-root { position: absolute; inset: 0; }
+#screen-boss-result {
+    min-height: 100vh;
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    background: radial-gradient(ellipse at 50% 30%, #2a1545 0%, #120827 70%);
+    color: #fff; text-align: center; padding: 24px;
+}
+#screen-boss-result.active { display: flex; }
+.boss-result-content { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.boss-sprite-end { width: 180px; height: 180px; object-fit: contain; }
+.boss-result-title { font-size: 26px; font-weight: 900; margin: 0; }
+.boss-result-sub { font-size: 15px; color: #d8c8f0; }
+.boss-result-coins { font-size: 20px; font-weight: 800; color: #ffd24a; }
+.boss-result-bonus { font-size: 14px; color: #ffd24a; }
+.btn-primary {
+    margin-top: 14px; border: none; border-radius: 14px;
+    padding: 13px 30px; font-size: 16px; font-weight: 900;
+    background: linear-gradient(135deg, #ff9a40, #ff5e3a); color: #fff; cursor: pointer;
+}
+.emo { width: 20px; height: 20px; vertical-align: -4px; }
+</style>
+</head>
+<body class="phaser-mode">
+
+<div id="screen-boss-game" class="screen active">
+    <!-- Phaser 版 host（markup 同 app.html 新版） -->
+    <div id="boss-phaser-root">
+        <div class="bf-loading-overlay" id="boss-phaser-loading">
+            <div class="bf-load-box">
+                <div class="bf-load-text" id="boss-phaser-loadtext">載入魔王中…</div>
+                <div class="bf-load-bar"><div class="bf-load-fill" id="boss-phaser-loadbar"></div></div>
+                <div class="bf-load-pct" id="boss-phaser-loadpct">0%</div>
+            </div>
+        </div>
+        <div class="bh-overlay" id="bh-overlay" hidden>
+            <div class="bh-topbar">
+                <button class="bh-back" id="bh-back" aria-label="退出">✕</button>
+                <span class="bh-title" id="bh-title"></span>
+                <span class="bh-progress" id="bh-progress">1/10</span>
+            </div>
+            <div class="bh-hpbar">
+                <div class="bh-ehearts" id="bh-ehearts"></div>
+                <span class="bh-hp-label" id="bh-hp-label"></span>
+            </div>
+            <div class="bh-mid"></div>
+            <div class="bh-quiz">
+                <div class="bh-stats">
+                    <div class="bh-hearts" id="bh-hearts"></div>
+                    <span class="bh-php-label" id="bh-php-label"></span>
+                    <span class="bh-combo" id="bh-combo" style="display:none"></span>
+                </div>
+                <div class="bh-card">
+                    <div class="bh-display" id="bh-display"></div>
+                    <div class="bh-prompt" id="bh-prompt"></div>
+                </div>
+                <div class="bh-choices" id="bh-choices">
+                    <button class="bh-choice" data-idx="0"></button>
+                    <button class="bh-choice" data-idx="1"></button>
+                    <button class="bh-choice" data-idx="2"></button>
+                    <button class="bh-choice" data-idx="3"></button>
+                </div>
+            </div>
+            <div class="bh-damage" id="bh-damage"></div>
+        </div>
+    </div>
+</div>
+
+<!-- 結算畫面（同 app.html 結構） -->
+<div id="screen-boss-result" class="screen">
+    <div class="boss-result-content">
+        <img class="boss-sprite boss-sprite-end" id="boss-sprite-end" src="" alt="魔王">
+        <h1 class="boss-result-title" id="boss-result-title">結果</h1>
+        <div class="boss-result-sub" id="boss-result-sub"></div>
+        <div class="boss-result-coins" id="boss-result-coins"></div>
+        <div class="boss-result-bonus" id="boss-result-bonus" style="display:none"></div>
+        <button class="btn-primary" id="boss-result-back">回禁忌森林深處</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+<script src="arcade/shim.js?v=2"></script>
+<script src="arcade/boss/bopomofo.js?v=1"></script>
+<script src="arcade/boss/boss-phaser.js?v=1"></script>
+<script>
+// 啟動：?subject=math&tier=1（地圖怪物 NPC 跳轉帶入）；返回回禁忌森林深處原機台前
+(function () {
+    const qp = new URLSearchParams(location.search);
+    const SUBJECTS = ["math", "chinese", "english", "science", "social"];
+    const subject = SUBJECTS.includes(qp.get("subject")) ? qp.get("subject") : "math";
+    const tier = Math.max(1, Math.min(3, parseInt(qp.get("tier") || "1", 10) || 1));
+    const backMap = /^[a-z0-9_]+$/.test(qp.get("map") || "") ? qp.get("map") : "forest_deep";
+
+    window.__bossExit = function () {
+        const bs = qp.get("back_spawn") || "";
+        location.href = "village-web/index.html?map=" + backMap
+            + (/^0\.\d+,0\.\d+$/.test(bs) ? "&spawn=" + bs : "");
+    };
+
+    function boot() {
+        if (!window.bossIsland || typeof Phaser === "undefined") {
+            document.getElementById("boss-phaser-loadtext").textContent = "引擎沒載到，請重新整理";
+            return;
+        }
+        window.bossIsland.start(subject, tier);
+    }
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", boot);
+    } else {
+        boot();
+    }
+})();
+</script>
+</body>
+</html>

@@ -1,7 +1,9 @@
 /* arcade 獨立頁共用墊片：取代 LIFF app 的 eduApp/eduApi 殼
  * 遊戲 JS（game_whack.js / english_puzzle.js）原封從正式版搬來，只認這兩個介面。 */
 (function () {
-    const API = "https://eduarena-tutoring-production.up.railway.app";
+    // 本機測試可用 ?api=http://localhost:8000 指到本機後端
+    const API = new URLSearchParams(location.search).get("api")
+        || "https://eduarena-tutoring-production.up.railway.app";
     window.ARCADE_API = API;
 
     // 返回網址：機台跳轉時帶來 ?back_spawn=x,y → 回去落在原本機台前面（不是傳送點）

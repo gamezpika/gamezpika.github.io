@@ -33,7 +33,7 @@
     let dragging = false;
 
     // 奔跑感：路面捲動 + 路邊道具流 + 鏡頭律動
-    const FLOOR_TILE_H = 170;            // 貼圖在平面上的顯示高(px)，捲動以此循環
+    // 貼圖循環高(px)由 measure() 依平面寬等比算進 geom.tileH（背景 size 與 modulo 必須同值）
     let floorOff = 0;                    // 路面捲動累積量
     let pulseAt = -1e9;                  // 答對衝刺脈動時間戳
     let props = [], lastPropAt = 0, propSide = 0;
@@ -74,10 +74,13 @@
     }
 
     // ── 幾何 ─────────────────────────────────────
-    // iPhone Safari 網址列吃高度：頁高用 innerHeight 釘死（搭配 CSS 100dvh 雙保險）
+    // iPhone Safari 網址列吃高度：頁高用 visualViewport/innerHeight 釘死＋鎖回頂（搭配 CSS 100dvh/overflow:hidden）
     function fitViewport() {
+        const h = (window.visualViewport && window.visualViewport.height)
+            ? Math.round(window.visualViewport.height) : window.innerHeight;
         const sc = $("screen-poem-game");
-        if (sc) sc.style.height = window.innerHeight + "px";
+        if (sc) sc.style.height = h + "px";
+        window.scrollTo(0, 0);
     }
     function measure() {
         fitViewport();
@@ -87,12 +90,17 @@
         geom.laneX = [W * 0.26, W * 0.74];
         geom.minX = W * 0.13; geom.maxX = W * 0.87;
         geom.gateW = Math.min(W * 0.5, 230);
-        // 路的消失點：背景方圖 cover + 底部對齊，消失點在圖高約 48% → 換算回舞台座標
-        // （門必須從「路的盡頭」長出來，不是從天上掉下來）
+        // 路的消失點＝涼亭底（派派 6/12 紅線）：背景方圖 cover + 底部對齊，涼亭底在圖高約 41%
         const dispH = Math.max(W, H);
-        geom.horizonY = Math.max(H * 0.20, Math.min(H * 0.60, H - dispH * 0.52));
-        // 路面捲動平面與霧帶對齊消失點
+        geom.horizonY = Math.max(H * 0.14, Math.min(H * 0.55, H - dispH * 0.59));
+        // 路面捲動平面：全寬（含柵欄/草邊一起流）＋貼圖高度按平面寬等比
         const fl = $("poem-floor"); if (fl) fl.style.top = geom.horizonY + "px";
+        const pl = document.querySelector(".poem-floor-plane");
+        const planeW = Math.round(dispH * 1.57);   // 貼圖路面佔比 0.819，對齊畫面底部的路寬
+        if (pl) pl.style.width = planeW + "px";
+        geom.tileH = Math.max(70, Math.round(planeW * 70 / 1024 * 1.5));
+        const tex = $("poem-floor-tex");
+        if (tex) tex.style.backgroundSize = "100% " + geom.tileH + "px";
         const fg = $("poem-fog"); if (fg) fg.style.top = (geom.horizonY - H * 0.045) + "px";
         runner.x = Math.max(geom.minX, Math.min(geom.maxX, runner.x || W * 0.5));
         runner.targetX = runner.x;
@@ -257,7 +265,7 @@
             const dur = curDur();
             floorOff += dt * 150 * (APPROACH_BASE / dur);
             const tex = $("poem-floor-tex");
-            if (tex) tex.style.transform = "translateY(" + (floorOff % FLOOR_TILE_H) + "px)";
+            if (tex) tex.style.transform = "translateY(" + (floorOff % (geom.tileH || 110)) + "px)";
             // 鏡頭律動：跑步上下小晃 + 答對瞬間輕微拉近彈回
             const pulse = 1 + 0.032 * Math.max(0, 1 - (ts - pulseAt) / 360);
             const world = $("poem-world");
@@ -415,7 +423,7 @@
             if (e.key === "ArrowLeft") runner.targetX = geom.laneX[0];
             else if (e.key === "ArrowRight") runner.targetX = geom.laneX[1];
         });
-        window.addEventListener("resize", () => {
+        const onViewport = () => {
             fitViewport();
             if (!(running || phase === "over")) return;
             measure();
@@ -428,7 +436,9 @@
                     if (lb) lb.style.fontSize = fs + "px";
                 });
             }
-        });
+        };
+        window.addEventListener("resize", onViewport);
+        if (window.visualViewport) window.visualViewport.addEventListener("resize", onViewport);
         // 切到背景 rAF 停但牆鐘照走 → 回來門會瞬判；把隱藏時段補回 t0（Codex P2）
         let hiddenAt = 0;
         document.addEventListener("visibilitychange", () => {

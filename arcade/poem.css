@@ -1,6 +1,9 @@
 /* 詩詞接龍：唐詩三百首 — 中國風二道跑酷（題目/計分/愛心全融入場景浮層） */
 
-/* 100dvh：iPhone Safari 網址列吃高度，100vh 會把舞台底部推出畫面（JS 再用 innerHeight 保底） */
+/* 鎖死頁面：不准捲動（被卡掉根因＝body 可捲動+100vh 超出 Safari 可視高） */
+html, body { height: 100%; overflow: hidden; }
+
+/* 100dvh：iPhone Safari 網址列吃高度，100vh 會把舞台底部推出畫面（JS 再用 visualViewport 保底） */
 #screen-poem-game {
   display: flex; flex-direction: column;
   height: 100vh; height: 100dvh; min-height: 0; overflow: hidden;
@@ -25,14 +28,14 @@
   perspective: 430px; perspective-origin: 50% 0%; overflow: hidden;
 }
 .poem-floor-plane {
-  position: absolute; bottom: 0; left: 50%; width: 106%; height: 340%;
+  position: absolute; bottom: 0; left: 50%; width: 160%; height: 480%;
   transform: translateX(-50%) rotateX(68deg); transform-origin: 50% 100%;
   overflow: hidden;
 }
 .poem-floor-tex {
   position: absolute; left: 0; right: 0; top: -340px; height: calc(100% + 340px);
-  background: url("img/poem/floor_tile.webp?v=1") repeat;
-  background-size: 100% 170px; will-change: transform;
+  background: url("img/poem/floor_tile.webp?v=2") repeat;
+  background-size: 100% 110px; will-change: transform;
 }
 /* 地平線霧帶：遮住捲動路面與靜止遠景的接縫（top 由 JS 設） */
 .poem-fog {

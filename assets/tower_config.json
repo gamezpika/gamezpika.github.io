@@ -62,7 +62,39 @@
         "label": "回五大學院"
       }
     ],
-    "buildings": [],
+    "buildings": [
+      {
+        "id": "tower_diviner",
+        "name": "占卜師",
+        "category": "npc",
+        "sprite": {
+          "image": "tower_diviner_anim.webp",
+          "scale": 0.325,
+          "anchor_x": 0.5,
+          "anchor_y": 1,
+          "frame_width": 328,
+          "frame_height": 600,
+          "frames": 8,
+          "frame_rate": 4
+        },
+        "anchor": {
+          "x": 0.5,
+          "y": 0.4
+        },
+        "bounding_box": {
+          "x_min": 0.475,
+          "y_min": 0.375,
+          "x_max": 0.525,
+          "y_max": 0.4
+        },
+        "interaction": {
+          "type": "open_modal",
+          "label": "占卜師",
+          "body": "水晶球中映出了魔王的影子……勇者啊，待時機成熟，我便為你開啟挑戰之門。",
+          "radius": 160
+        }
+      }
+    ],
     "obstacle_areas": [],
     "npcs": [],
     "objects": []

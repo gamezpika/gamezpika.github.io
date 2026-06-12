@@ -14934,6 +14934,21 @@
           "grid_rows": 1,
           "frames": 2,
           "frame_rate": 5
+        },
+        {
+          "image": "tower_diviner_anim.webp",
+          "name": "占卜師(動畫)",
+          "type": "building",
+          "scale": 0.325,
+          "default_interaction": "open_modal",
+          "bbox_w_norm": 0.05,
+          "bbox_h_norm": 0.025,
+          "frame_width": 328,
+          "frame_height": 600,
+          "grid_cols": 8,
+          "grid_rows": 1,
+          "frames": 8,
+          "frame_rate": 4
         }
       ]
     },

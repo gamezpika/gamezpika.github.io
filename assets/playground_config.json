@@ -1383,7 +1383,7 @@
       },
       {
         "id": "arcade_cabinet_22",
-        "name": "統一街機(插牌)",
+        "name": "詩詞接龍：唐詩三百首",
         "category": "building",
         "sprite": {
           "image": "arcade_cabinet_yellow.webp",
@@ -1403,9 +1403,9 @@
           "y_max": 0.49481849587264126
         },
         "interaction": {
-          "type": "open_modal",
-          "label": "統一街機(插牌)",
-          "body": "🕹️ 新遊戲籌備中，敬請期待！",
+          "type": "open_shop",
+          "shop_id": "arcade:poem",
+          "label": "詩詞接龍：唐詩三百首",
           "radius": 110
         },
         "path": [],
@@ -1433,7 +1433,8 @@
         ],
         "mask_color": "#FF3B30",
         "render_order": 500,
-        "interaction_type": "open_modal"
+        "interaction_type": "open_modal",
+        "sign_text": "詩詞接龍"
       },
       {
         "id": "arcade_whack",

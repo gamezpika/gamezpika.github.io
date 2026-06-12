@@ -1,0 +1,122 @@
+/* 詩詞接龍：唐詩三百首 — 中國風二道跑酷 */
+
+#screen-poem-game { display: flex; flex-direction: column; height: 100%; }
+
+/* 計分列 */
+.poem-stats {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 14px; gap: 10px;
+  font-size: 15px; font-weight: 800; color: #5a3a18;
+}
+.poem-hearts { font-size: 17px; letter-spacing: 2px; }
+
+/* 題目橫幅（中國風紅金，題目固定可慢慢讀） */
+.poem-banner {
+  margin: 0 12px 8px; padding: 10px 14px 12px;
+  background: linear-gradient(180deg, #c0392b, #96281b);
+  border: 3px solid #ffd98a; border-radius: 16px;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.18);
+  text-align: center; color: #fff7e6;
+}
+.poem-banner .poem-q {
+  font-size: 22px; font-weight: 900; letter-spacing: 2px; line-height: 1.4;
+  min-height: 31px;
+}
+.poem-banner .poem-hint { font-size: 12px; opacity: 0.92; margin-top: 2px; }
+
+/* 舞台 */
+.poem-stage {
+  position: relative; flex: 1; min-height: 0; overflow: hidden;
+  touch-action: none; user-select: none; -webkit-user-select: none;
+  background: url("img/poem/bg.webp?v=1") center bottom / cover no-repeat;
+  border-radius: 18px 18px 0 0; margin: 0 6px;
+}
+
+/* 牌樓門（transform 由 JS 控：遠小近大） */
+.poem-gate {
+  position: absolute; left: 0; top: 0;
+  will-change: transform; pointer-events: none;
+  transform-origin: 50% 92%;
+}
+.poem-gate-img { width: 100%; display: block; -webkit-user-drag: none; }
+.poem-gate-label {
+  position: absolute; left: 14%; right: 14%; top: 33.5%;
+  text-align: center; font-weight: 900; color: #5a2a10;
+  font-size: 24px; letter-spacing: 1px; white-space: nowrap;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+.poem-gate.is-correct .poem-gate-img { filter: drop-shadow(0 0 14px #2bb05a) saturate(1.15); }
+.poem-gate.chosen-ok .poem-gate-img { filter: drop-shadow(0 0 18px #2bb05a) brightness(1.08); }
+.poem-gate.chosen-bad .poem-gate-img { filter: drop-shadow(0 0 16px #e8533a) grayscale(0.35); }
+
+/* 跑者（騎雲小仙女，背對鏡頭） */
+#poem-runner {
+  position: absolute; bottom: 2%; left: 0; width: min(34vw, 170px);
+  will-change: transform; pointer-events: none; z-index: 20;
+}
+#poem-runner img { width: 100%; display: block; -webkit-user-drag: none; }
+#poem-runner.stumble { animation: poem-stumble 0.42s ease; }
+@keyframes poem-stumble {
+  0% { filter: none; } 30% { filter: brightness(1.6) saturate(0.4); }
+  100% { filter: none; }
+}
+
+/* 判定大勾叉 */
+.poem-mark {
+  position: absolute; left: 50%; top: 34%; transform: translate(-50%, -50%) scale(0.4);
+  font-size: 96px; font-weight: 900; z-index: 30; pointer-events: none;
+  animation: poem-mark-pop 0.5s cubic-bezier(0.2, 1.4, 0.5, 1) forwards;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+.poem-mark.ok { color: #2bb05a; }
+.poem-mark.bad { color: #e8533a; }
+@keyframes poem-mark-pop { to { transform: translate(-50%, -50%) scale(1); } }
+
+/* 浮字（詩名出處 / 正解） */
+.poem-float {
+  position: absolute; top: 52%; transform: translate(-50%, 0);
+  z-index: 30; pointer-events: none; white-space: nowrap;
+  font-size: 16px; font-weight: 900; padding: 5px 14px; border-radius: 999px;
+  background: rgba(255, 248, 236, 0.95); border: 2px solid #d8a85a; color: #5a3a18;
+  animation: poem-float-up 1s ease forwards;
+}
+.poem-float.bad { color: #c0392b; border-color: #e8a09a; }
+.poem-float.from { color: #2e7d4f; border-color: #9ad0a8; }
+@keyframes poem-float-up {
+  from { opacity: 0; transform: translate(-50%, 14px); }
+  20% { opacity: 1; }
+  to { opacity: 0; transform: translate(-50%, -26px); }
+}
+
+/* 火花 / 紅閃 */
+.poem-spark {
+  position: absolute; width: 8px; height: 8px; border-radius: 50%;
+  background: #ffd98a; z-index: 25; pointer-events: none;
+  animation: poem-spark-fly 0.55s ease-out forwards;
+}
+@keyframes poem-spark-fly {
+  to { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; }
+}
+.poem-hitflash {
+  position: absolute; inset: 0; z-index: 28; pointer-events: none;
+  background: rgba(232, 83, 58, 0.28);
+  animation: poem-flash 0.42s ease forwards;
+}
+@keyframes poem-flash { from { opacity: 1; } to { opacity: 0; } }
+
+/* 倒數/載入 罩 */
+.poem-countdown {
+  position: absolute; inset: 0; z-index: 40;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(20, 14, 8, 0.45);
+}
+.poem-cd-num {
+  font-size: 84px; font-weight: 900; color: #fff7e6;
+  text-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+  animation: poem-mark-pop 0.45s cubic-bezier(0.2, 1.4, 0.5, 1);
+}
+.poem-cd-num.go { color: #ffd98a; }
+.poem-loading {
+  font-size: 17px; font-weight: 800; color: #fff7e6;
+  background: rgba(0, 0, 0, 0.4); padding: 12px 22px; border-radius: 999px;
+}

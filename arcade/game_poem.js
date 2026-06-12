@@ -34,7 +34,8 @@
 
     // 奔跑感：路面捲動 + 路邊道具流 + 鏡頭律動
     // 貼圖循環高(px)由 measure() 依平面寬等比算進 geom.tileH（背景 size 與 modulo 必須同值）
-    let floorOff = 0;                    // 路面捲動累積量
+    let floorOff = 0;                    // 路面捲動累積量（＝世界里程，牆/遠景/晃動全吃它）
+    let bobPh = 0;                       // 跑步晃動相位（頻率隨速度）
     let pulseAt = -1e9;                  // 答對衝刺脈動時間戳
     let props = [], lastPropAt = 0, propSide = 0;
     const PROP_IMGS = ["prop_grass.webp", "prop_stone.webp"];
@@ -308,11 +309,21 @@
             const wtl = $("poem-wall-tex-l"), wtr = $("poem-wall-tex-r");
             if (wtl) wtl.style.transform = "translateX(" + wOff + "px)";
             if (wtr) wtr.style.transform = "translateX(" + (-wOff) + "px)";
-            // 鏡頭律動：跑步上下小晃（越快晃越有勁）+ 答對瞬間輕微拉近彈回
+            // 遠景拉近：跟地板同一個里程驅動（答越快涼亭靠近越快，全世界一個速度）
+            const FAR_CYCLE = 1200;   // 每 1200px 里程一輪（基速時約 6.5s）
+            const farLs = document.querySelectorAll(".poem-far-l");
+            farLs.forEach((l, i) => {
+                const p = ((floorOff + i * FAR_CYCLE / 2) % FAR_CYCLE) / FAR_CYCLE;
+                const fop = Math.max(0, Math.min(1, Math.min(p / 0.2, (1 - p) / 0.2)));
+                l.style.transform = "scale(" + (1 + 0.22 * p) + ")";
+                l.style.opacity = fop;
+            });
+            // 鏡頭律動：跑步晃動頻率/幅度都隨速度（步伐越快越急）+ 答對瞬間輕微拉近彈回
+            bobPh += dt * 7.2 * spd;
             const pulse = 1 + 0.032 * Math.max(0, 1 - (ts - pulseAt) / 360);
             const bobAmp = 2.2 + 1.6 * Math.max(0, spd - 1);
             const world = $("poem-world");
-            if (world) world.style.transform = "translateY(" + (Math.sin(ts / 92) * bobAmp) + "px) scale(" + pulse + ")";
+            if (world) world.style.transform = "translateY(" + (Math.sin(bobPh) * bobAmp) + "px) scale(" + pulse + ")";
             // 高速衝刺：兩側速度線
             if (spd > 1.25 && Math.random() < dt * (spd - 1.1) * 6) {
                 const sl = document.createElement("div");

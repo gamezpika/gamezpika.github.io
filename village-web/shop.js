@@ -168,7 +168,7 @@
   async function openShop(shopId, onClose) {
     // 遊樂場機台：arcade:<key> → 跳獨立遊戲頁（頁內自建 demo 身分、玩完導回遊樂場）
     if (shopId.indexOf("arcade:") === 0) {
-      const ARCADE_PAGES = { whack: "arcade-whack.html", listen: "arcade-listen.html", figures: "figures.html?from=playground", poem: "arcade-poem.html" };
+      const ARCADE_PAGES = { whack: "arcade-whack.html", listen: "arcade-listen.html", figures: "figures.html?from=playground", poem: "arcade-poem.html", idiom: "arcade-idiom.html" };
       const page = ARCADE_PAGES[shopId.slice(7)];
       if (page) {
         // 帶上玩家當下位置 → 返回時落回原本機台前面（不是傳送點）

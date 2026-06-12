@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>拼字小狀元：成語＆唐詩</title>
+<link rel="stylesheet" href="arcade/base.css?v=2">
+<link rel="stylesheet" href="arcade/idiom.css?v=2">
+<link rel="stylesheet" href="arcade/game-ui.css?v=2">
+</head>
+<body>
+
+<div id="screen-idiom-game" class="screen active">
+    <header class="screen-header">
+        <button class="btn-back" id="idiom-game-back">←</button>
+        <span class="screen-title">🧩 拼字小狀元</span>
+    </header>
+    <div class="id-top">
+        <span class="id-pill" id="id-hint">💡 提示 ×3</span>
+        <span class="id-title" id="id-stage-title">成語拼字 · 第 1 關</span>
+        <span class="id-pill" id="id-btn-mode">⇄ 換模式</span>
+    </div>
+    <div class="id-board-wrap"><div class="id-board" id="id-board"></div></div>
+    <div class="id-slots" id="id-slots"></div>
+    <div class="id-top" style="padding:2px 14px;">
+        <span class="id-pill" style="cursor:default;" id="id-progress">0 / 0</span>
+        <span style="font-size:12px;color:#a08453;">點棋盤上的字，拼出藏在裡面的詞</span>
+    </div>
+    <div class="id-found-wrap"><div class="id-found" id="id-found"></div></div>
+    <div class="id-actions">
+        <button class="id-btn ghost" id="id-btn-clear">🧹 清除</button>
+        <button class="id-btn" id="id-btn-hint">💡 提示</button>
+    </div>
+</div>
+
+<!-- 解釋彈窗 -->
+<div class="id-overlay" id="id-exp">
+    <div class="id-card">
+        <div id="id-exp-word"></div>
+        <div id="id-exp-text"></div>
+        <button class="id-btn" id="id-exp-close">知道了</button>
+    </div>
+</div>
+
+<!-- 模式選擇 -->
+<div class="id-overlay" id="id-modepick">
+    <div class="id-card">
+        <div class="id-mode-title">選擇玩法</div>
+        <div class="id-mode-sub">從棋盤點字，拼出藏在裡面的詞！</div>
+        <button class="id-mode-btn" id="id-pick-idiom">🀄 成語拼字（4 字）</button>
+        <button class="id-mode-btn poem" id="id-pick-poem">📜 唐詩拼字（5 字）</button>
+    </div>
+</div>
+
+<!-- 封面「開始遊戲」觸發（不顯示） -->
+<button id="idiom-entry-btn" style="display:none"></button>
+
+<script src="arcade/shim.js?v=1"></script>
+<script src="arcade/game-ui.js?v=3"></script>
+<script src="arcade/game_idiom.js?v=3"></script>
+<script>
+// 封面＋玩法說明卡（鐵律：淨新玩法必備說明卡），按「開始遊戲」→ 選模式
+(function boot() {
+    function showIntro() {
+        window.arcadeUI.intro({
+            icon: "🧩",
+            title: "拼字小狀元",
+            sub: "成語＆唐詩 拼字解謎",
+            steps: [
+                { ico: "🀄", text: "棋盤裡縱橫交叉藏著好幾條成語（或唐詩句）" },
+                { ico: "👆", text: "依順序點棋盤上的字，拼進下方答案格——拼對就亮金收集！" },
+                { ico: "💡", text: "卡關按「提示」會閃出一條詞的位置（每關 3 次）；全部找齊就過關！" },
+            ],
+            onStart: function () { document.getElementById("idiom-entry-btn").click(); },
+        });
+    }
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", showIntro);
+    } else {
+        showIntro();
+    }
+})();
+</script>
+</body>
+</html>

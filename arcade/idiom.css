@@ -1,0 +1,140 @@
+/* 拼字小狀元 — 彩色中國風（沿用村莊 demo 的奶油+紅金視覺語言） */
+
+#screen-idiom-game {
+  display: flex; flex-direction: column;
+  height: 100vh; height: 100dvh; min-height: 0; overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% -10%, #fff3d6 0%, transparent 55%),
+    linear-gradient(180deg, #f7e7c4 0%, #efd9a8 60%, #e8cd92 100%);
+}
+html, body { height: 100%; overflow: hidden; }
+
+/* 頂列：關卡標題 + 提示數 + 模式切換 */
+.id-top {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; padding: 10px 12px 6px;
+}
+.id-title {
+  font-size: 17px; font-weight: 900; color: #7a3c10; letter-spacing: 1px;
+  background: linear-gradient(180deg, #fff7e6, #ffe9c0);
+  border: 2px solid #d8a85a; border-radius: 999px; padding: 6px 16px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.08);
+}
+.id-pill {
+  font-size: 13px; font-weight: 800; color: #7a3c10; white-space: nowrap;
+  background: #fff3da; border: 2px solid #d8a85a; border-radius: 999px;
+  padding: 5px 10px; cursor: pointer;
+}
+
+/* 棋盤（紅金畫框） */
+.id-board-wrap {
+  margin: 6px 12px; padding: 12px;
+  background: linear-gradient(180deg, #fffaf0, #fdf2dc);
+  border: 4px solid #c0392b; border-radius: 16px;
+  box-shadow: inset 0 0 0 2px #ffd98a, 0 4px 10px rgba(0, 0, 0, 0.12);
+  display: flex; justify-content: center;
+}
+.id-board { display: grid; gap: 5px; }
+.id-cell {
+  width: var(--cell, 42px); height: var(--cell, 42px);
+  display: flex; align-items: center; justify-content: center;
+  font-size: calc(var(--cell, 42px) * 0.56); font-weight: 900; color: #4a2c10;
+  background: linear-gradient(180deg, #fffdf6, #f7ead0);
+  border: 2px solid #c9a25e; border-radius: 9px;
+  box-shadow: 0 2px 0 #d9bd8a; cursor: pointer; user-select: none;
+  transition: transform 0.06s;
+}
+.id-cell:active { transform: translateY(1px); }
+.id-cell.sel {
+  background: linear-gradient(180deg, #e8604a, #c0392b);
+  border-color: #8e2418; color: #fff7e6; box-shadow: 0 2px 0 #8e2418;
+}
+.id-cell.locked {
+  background: linear-gradient(180deg, #ffe9ae, #ffd98a);
+  border-color: #c8961e; color: #8a5a00; box-shadow: none;
+}
+/* 選取狀態優先於已找到（交叉字共用，選取時要看得出來） */
+.id-cell.sel, .id-cell.locked.sel {
+  background: linear-gradient(180deg, #e8604a, #c0392b);
+  border-color: #8e2418; color: #fff7e6; box-shadow: 0 2px 0 #8e2418;
+}
+.id-cell.hinted { animation: id-hint-pulse 0.65s ease 2; }
+@keyframes id-hint-pulse {
+  0%, 100% { box-shadow: 0 2px 0 #d9bd8a; }
+  50% { box-shadow: 0 0 0 4px rgba(232, 96, 74, 0.55); }
+}
+.id-empty { width: var(--cell, 42px); height: var(--cell, 42px); }
+
+/* 答案槽 */
+.id-slots {
+  display: flex; justify-content: center; gap: 8px; margin: 8px 12px 2px;
+}
+.id-slot {
+  width: 46px; height: 46px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; font-weight: 900; color: #c0392b;
+  background: #fffdf6; border: 2px dashed #d8a85a;
+}
+.id-slot.filled { border-style: solid; border-color: #c0392b; background: #fff3da; }
+.id-slots.shake { animation: id-shake 0.4s ease; }
+@keyframes id-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-7px); }
+  50% { transform: translateX(7px); }
+  75% { transform: translateX(-4px); }
+}
+
+/* 已找到列表 */
+.id-found-wrap {
+  flex: 1; min-height: 0; overflow-y: auto;
+  margin: 8px 12px; padding: 10px 12px;
+  background: rgba(255, 250, 240, 0.75);
+  border: 2px solid #e3c089; border-radius: 14px;
+}
+.id-found { display: flex; flex-wrap: wrap; gap: 8px; }
+.id-chip {
+  font-size: 15px; font-weight: 800; color: #2e7d4f;
+  background: #eaf6ec; border: 2px solid #9ad0a8; border-radius: 999px;
+  padding: 5px 12px; cursor: pointer;
+}
+.id-found-empty { font-size: 13px; color: #a08453; }
+
+/* 底部按鈕列 */
+.id-actions {
+  display: flex; justify-content: center; gap: 10px; padding: 4px 12px 14px;
+}
+.id-btn {
+  font-size: 16px; font-weight: 800; color: #fff7e6;
+  background: linear-gradient(180deg, #c8843a, #a8631f);
+  border: 2px solid #fff2dd; border-radius: 999px; padding: 9px 22px;
+  cursor: pointer; box-shadow: 0 3px 0 #7a4715;
+}
+.id-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #7a4715; }
+.id-btn.ghost { background: linear-gradient(180deg, #b5712f, #94591f); }
+
+/* 解釋彈窗 / 模式選擇 */
+.id-overlay {
+  position: fixed; inset: 0; z-index: 5000; display: none;
+  align-items: center; justify-content: center;
+  background: rgba(20, 14, 8, 0.55); backdrop-filter: blur(2px);
+}
+.id-card {
+  background: linear-gradient(180deg, #fffaf0, #ffeecb);
+  border: 4px solid #d8a85a; border-radius: 18px; padding: 20px 26px;
+  text-align: center; max-width: 82%;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+  animation: shop-pop 0.22s cubic-bezier(0.2, 1.3, 0.5, 1);
+}
+#id-exp-word { font-size: 26px; font-weight: 900; color: #c0392b; letter-spacing: 3px; }
+#id-exp-text { font-size: 15px; color: #5a4630; line-height: 1.7; margin: 10px 0 14px; max-width: 280px; }
+.id-mode-btn {
+  display: block; width: 220px; margin: 10px auto;
+  font-size: 19px; font-weight: 900; color: #fff7e6;
+  background: linear-gradient(180deg, #c8843a, #a8631f);
+  border: 3px solid #fff2dd; border-radius: 14px; padding: 14px 0;
+  cursor: pointer; box-shadow: 0 4px 0 #7a4715;
+}
+.id-mode-btn.poem { background: linear-gradient(180deg, #5a8f5a, #3f6f3f); box-shadow: 0 4px 0 #2c4d2c; }
+.id-mode-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #7a4715; }
+.id-mode-title { font-size: 20px; font-weight: 900; color: #7a3c10; margin-bottom: 4px; }
+.id-mode-sub { font-size: 13px; color: #a08453; margin-bottom: 8px; }

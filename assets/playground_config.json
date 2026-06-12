@@ -1383,7 +1383,7 @@
       },
       {
         "id": "arcade_cabinet_22",
-        "name": "詩詞接龍：唐詩三百首",
+        "name": "拼字小狀元：成語＆唐詩",
         "category": "building",
         "sprite": {
           "image": "arcade_cabinet_yellow.webp",
@@ -1404,8 +1404,8 @@
         },
         "interaction": {
           "type": "open_shop",
-          "shop_id": "arcade:poem",
-          "label": "詩詞接龍：唐詩三百首",
+          "shop_id": "arcade:idiom",
+          "label": "拼字小狀元：成語＆唐詩",
           "radius": 110
         },
         "path": [],
@@ -1434,7 +1434,7 @@
         "mask_color": "#FF3B30",
         "render_order": 500,
         "interaction_type": "open_modal",
-        "sign_text": "詩詞接龍"
+        "sign_text": "拼字小狀元"
       },
       {
         "id": "arcade_whack",

@@ -307,6 +307,7 @@ class ExploreScene extends Phaser.Scene {
           label: bLabel,
           body: b.interaction.body || "",
           shop_id: bShop,
+          category: b.category || "",   // 人物(npc)判定用：人物互動要按鈕才開（派派 6/12）
         });
         // 建築門口圓墊（派派 6/12：建築物門口也要傳送點）：
         // 會開面板的建築（open_shop）在門口畫小一號的圈，視覺上跟換地圖大圈同語言。
@@ -1033,11 +1034,23 @@ class ExploreScene extends Phaser.Scene {
 
     this._nearShop = (nearest && (nearest.type === "open_shop" || nearest.type === "open_modal") && !this.modalOpen) ? nearest : null;
     this.currentInteractable = nearest;
-    this._hideEnter();   // 進入按鈕退役（派派 6/11：走近建築直接開）
+    // 派派 6/12：人物（魔王/怪物、各學院院長老師、入魔師長、考官等所有 NPC）
+    // 跟遊戲機台「碰到不自動開」——走近只顯示按鈕，按下才開始對話/開戰。
+    // 判定：走動人物=npc:true、建物型人物=category "npc"、機台=arcade: 前綴；
+    // 其餘建築（商店/面板類）維持 6/11 的走近直接開。
+    const isManual = !!(this._nearShop && this._nearShop.type === "open_shop" && (
+      this._nearShop.npc === true
+      || this._nearShop.category === "npc"
+      || (this._nearShop.shop_id && String(this._nearShop.shop_id).indexOf("arcade:") === 0)));
+    if (isManual && !this.modalOpen && !this._transitioning) {
+      this._showEnter((this._nearShop.label || "對話") + " →");
+    } else {
+      this._hideEnter();   // 進入按鈕退役（派派 6/11：走近建築直接開）
+    }
     // 走近直接開：觸發=互動半徑 60%（要走到門口才開，路過不誤開）。
     // 逐棟抑制：只抑制「剛開過的那棟」（關面板原地不重開），跨棟照常觸發；
     // 離開該棟半徑 70%（遲滯）才解除抑制 → 回頭要先走開一步。
-    const trig = !!(this._nearShop && bestDist < nearest.radius * 0.6);
+    const trig = !!(this._nearShop && !isManual && bestDist < nearest.radius * 0.6);
     // NPC 商店會走動 → 抑制用 shop_id 追蹤、釋放距離跟著 NPC 即時位置算；靜態建築用座標比對
     const mkSuppress = (n) => ({ cx: n.cx, cy: n.cy, r: n.radius, npcShopId: n.npc ? (n.shop_id || "") : null });
     if (this._suppress) {

@@ -65,7 +65,7 @@ html, body { height: 100%; overflow: hidden; }
 }
 .poem-floor-tex {
   position: absolute; left: 0; right: 0; top: -340px; height: calc(100% + 340px);
-  background: url("img/poem/floor_tile.webp?v=3") repeat;
+  background: url("img/poem/floor_tile.webp?v=4") repeat;
   background-size: 100% 110px; will-change: transform;
 }
 /* 霧帶已拆（派派 6/12：任何帶子/柔焦都造成分界感），留空殼相容 JS */
@@ -93,8 +93,8 @@ html, body { height: 100%; overflow: hidden; }
 
 /* 場景內頂部浮層：計分藥丸＋題目匾額（壓在場景上，不另佔版面） */
 .poem-top {
-  position: absolute; top: 8px; left: 6px; right: 6px; z-index: 35;
-  display: flex; align-items: flex-start; justify-content: center; gap: 6px;
+  position: absolute; top: 8px; left: 8px; right: 8px; z-index: 35;
+  display: flex; align-items: flex-start; justify-content: space-between;
   pointer-events: none;
 }
 .poem-pill {
@@ -103,18 +103,26 @@ html, body { height: 100%; overflow: hidden; }
   background: rgba(90, 42, 16, 0.82); border: 2px solid #ffd98a;
   padding: 4px 9px; border-radius: 999px;
 }
-.poem-plaque {
-  flex: 0 1 auto; min-width: 0; max-width: 62%;
-  background: linear-gradient(180deg, rgba(192, 57, 43, 0.95), rgba(150, 40, 27, 0.95));
-  border: 3px solid #ffd98a; border-radius: 14px;
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.32);
-  padding: 7px 12px 8px; text-align: center; color: #fff7e6;
+/* 題目卷軸：浮在上下銜接處（地平線），UI 縫合兩層；門從卷軸後冒出（top 由 JS 設） */
+.poem-scroll {
+  position: absolute; left: 50%; transform: translate(-50%, -10%);   /* 上緣貼台階口：蓋接縫、不擋涼亭 */
+  z-index: 30; pointer-events: none; white-space: nowrap; text-align: center;
+  background: linear-gradient(180deg, #fbf3dd 0%, #f3e6c4 70%, #e9d8ae 100%);
+  border: 2px solid #b98a4e; border-radius: 10px;
+  padding: 8px 24px 9px; color: #4a2c10;
+  box-shadow: 0 7px 16px rgba(40, 20, 5, 0.38), inset 0 1px 0 #fffaf0;
 }
-.poem-plaque .poem-q {
-  font-size: 20px; font-weight: 900; letter-spacing: 1px; line-height: 1.35;
-  min-height: 27px; white-space: nowrap;
+.poem-scroll::before, .poem-scroll::after {
+  content: ""; position: absolute; top: -7%; bottom: -7%; width: 15px;
+  background: linear-gradient(90deg, #6e4019, #a86c33 45%, #6e4019);
+  border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
 }
-.poem-plaque .poem-hint { font-size: 11px; opacity: 0.92; margin-top: 1px; }
+.poem-scroll::before { left: -11px; }
+.poem-scroll::after { right: -11px; }
+.poem-scroll .poem-q {
+  font-size: 21px; font-weight: 900; letter-spacing: 2px; line-height: 1.35; min-height: 28px;
+}
+.poem-scroll .poem-hint { font-size: 10px; color: #8a6a40; margin-top: 1px; }
 
 /* 愛心：舞台底部中央小膠囊（照參考影片） */
 .poem-hearts {

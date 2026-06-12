@@ -22,6 +22,36 @@ html, body { height: 100%; overflow: hidden; }
   background: url("img/poem/bg.webp?v=1") center bottom / cover no-repeat;
 }
 
+/* 遠景（涼亭/遠山）無限拉近：兩層同圖交叉淡化循環，永遠在「快到了」（尺寸/定位 JS 設） */
+.poem-far { position: absolute; left: 0; top: 0; right: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.poem-far-l {
+  position: absolute; inset: 0; background-repeat: no-repeat;
+  transform-origin: 50% 100%; will-change: transform, opacity;
+  animation: poem-farzoom 9s linear infinite;
+}
+.poem-far-l.b { animation-delay: -4.5s; }
+@keyframes poem-farzoom {
+  0% { transform: scale(1); opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: scale(1.13); opacity: 0; }
+}
+
+/* 兩側竹牆：rotateY 立面 + 貼圖向鏡頭捲動（幾何全由 JS 設；DOM 在 floor 前=被路面蓋住下緣） */
+.poem-walls { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.poem-wall { position: absolute; overflow: hidden; backface-visibility: hidden; }
+.poem-wall-tex {
+  position: absolute; top: 0; bottom: 0; left: -460px; right: -460px;
+  background: url("img/poem/wall_tile.webp?v=1") repeat-x;
+  background-size: auto 100%; will-change: transform;
+}
+
+/* 衝刺速度線（高速時兩側） */
+.poem-speedline {
+  position: absolute; width: 3px; height: 64px; border-radius: 2px; z-index: 24; pointer-events: none;
+  background: linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,0.7), rgba(255,255,255,0));
+}
+
 /* 偽 3D 路面：透視平面 + 無縫石板貼圖向鏡頭捲動（top 由 JS 設為路消失點） */
 .poem-floor {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>詩詞接龍：唐詩三百首</title>
 <link rel="stylesheet" href="arcade/base.css?v=2">
-<link rel="stylesheet" href="arcade/poem.css?v=5">
+<link rel="stylesheet" href="arcade/poem.css?v=6">
 <link rel="stylesheet" href="arcade/game-ui.css?v=2">
 </head>
 <body>
@@ -17,6 +17,11 @@
     </header>
     <div class="poem-stage" id="poem-stage">
         <div class="poem-world" id="poem-world">
+            <div class="poem-far" id="poem-far"><div class="poem-far-l a"></div><div class="poem-far-l b"></div></div>
+            <div class="poem-walls" id="poem-walls">
+                <div class="poem-wall" id="poem-wall-l"><div class="poem-wall-tex" id="poem-wall-tex-l"></div></div>
+                <div class="poem-wall" id="poem-wall-r"><div class="poem-wall-tex" id="poem-wall-tex-r"></div></div>
+            </div>
             <div class="poem-floor" id="poem-floor"><div class="poem-floor-plane"><div class="poem-floor-tex" id="poem-floor-tex"></div></div></div>
             <div class="poem-fog" id="poem-fog"></div>
             <div id="poem-runner"><img src="arcade/img/poem/runner.webp?v=1" alt="" draggable="false"></div>
@@ -39,7 +44,7 @@
 
 <script src="arcade/shim.js?v=1"></script>
 <script src="arcade/game-ui.js?v=3"></script>
-<script src="arcade/game_poem.js?v=7"></script>
+<script src="arcade/game_poem.js?v=9"></script>
 <script>
 // 封面＋玩法說明卡（鐵律：淨新玩法必備說明卡），按「開始遊戲」才開局
 (function boot() {

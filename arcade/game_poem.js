@@ -14,8 +14,8 @@
 
     const HEARTS_MAX = 3;
     const APPROACH_BASE = 3800;     // 第一題門逼近時長(ms)，讀題時間
-    const APPROACH_STEP = 70;       // 每答對一題加快
-    const APPROACH_MIN = 2300;      // 最快不低於這個（要留得住讀題時間）
+    const APPROACH_STEP = 110;      // 每答對一題加快（派派 6/12：加速要更有感）
+    const APPROACH_MIN = 1900;      // 最快不低於這個（要留得住讀題時間）
     const FEEDBACK_MS = 1050;       // 判定後演出時長
     const LANE_K = 230, LANE_D = 24, LEAN_MAX = 14;
     const BEST_KEY = "arcade_poem_best";
@@ -102,6 +102,39 @@
         const tex = $("poem-floor-tex");
         if (tex) tex.style.backgroundSize = "100% " + geom.tileH + "px";
         const fg = $("poem-fog"); if (fg) fg.style.top = (geom.horizonY - H * 0.045) + "px";
+        // 遠景無限拉近層：跟 .poem-world 的 cover 背景對齊同一塊像素（高度只到地平線）
+        const far = $("poem-far");
+        if (far) {
+            far.style.height = Math.round(geom.horizonY) + "px";
+            far.querySelectorAll(".poem-far-l").forEach((l) => {
+                l.style.backgroundSize = dispH + "px " + dispH + "px";
+                l.style.backgroundPosition = Math.round((W - dispH) / 2) + "px " + Math.round(H - dispH) + "px";
+                // inline style 的相對路徑是對 HTML 解析（不是對 CSS 檔），必須帶 arcade/ 前綴（Codex P2）
+                l.style.backgroundImage = "url('arcade/img/poem/bg.webp?v=1')";
+            });
+        }
+        // 兩側竹牆：rotateY 立面，近端在畫面外側、遠端收向消失點
+        const walls = $("poem-walls");
+        if (walls) { walls.style.perspective = "430px"; walls.style.perspectiveOrigin = "50% " + Math.round(geom.horizonY) + "px"; }
+        const wallH = H * 1.5, wallTop = geom.horizonY - wallH * 0.62, depthW = dispH * 2;
+        const wl = $("poem-wall-l"), wr = $("poem-wall-r");
+        if (wl) {
+            wl.style.top = wallTop + "px"; wl.style.height = wallH + "px";
+            wl.style.left = (W * -0.02 - depthW) + "px"; wl.style.width = depthW + "px";
+            wl.style.transformOrigin = "100% 50%";
+            wl.style.transform = "rotateY(-72deg)";
+        }
+        if (wr) {
+            wr.style.top = wallTop + "px"; wr.style.height = wallH + "px";
+            wr.style.left = (W * 1.02) + "px"; wr.style.width = depthW + "px";
+            wr.style.transformOrigin = "0% 50%";
+            wr.style.transform = "rotateY(72deg)";
+        }
+        geom.wallTileW = Math.max(120, Math.round(220 * wallH / 330));   // 貼圖 auto 100% 等比後的單塊寬
+        // 貼圖層外擴必須 ≥ 一塊貼圖寬，否則 translateX 捲到大位移時牆緣露空白（Codex P3）
+        [$("poem-wall-tex-l"), $("poem-wall-tex-r")].forEach((t) => {
+            if (t) { t.style.left = -geom.wallTileW + "px"; t.style.right = -geom.wallTileW + "px"; }
+        });
         runner.x = Math.max(geom.minX, Math.min(geom.maxX, runner.x || W * 0.5));
         runner.targetX = runner.x;
     }
@@ -261,15 +294,31 @@
                 placeGates(t);
                 if (t >= 1) resolveRow();
             }
-            // 路面捲動：速度跟逼近時長綁定（答越多路流越快）
+            // 路面捲動：速度跟逼近時長綁定，1.4 次方放大加速差（答越多路流越快、要有感）
             const dur = curDur();
-            floorOff += dt * 150 * (APPROACH_BASE / dur);
+            const spd = Math.pow(APPROACH_BASE / dur, 1.4);
+            floorOff += dt * 150 * spd;
             const tex = $("poem-floor-tex");
             if (tex) tex.style.transform = "translateY(" + (floorOff % (geom.tileH || 110)) + "px)";
-            // 鏡頭律動：跑步上下小晃 + 答對瞬間輕微拉近彈回
+            // 兩側竹牆同步捲動（方向：貼圖流向近端＝向鏡頭）
+            const wOff = (floorOff * 1.15) % (geom.wallTileW || 300);
+            const wtl = $("poem-wall-tex-l"), wtr = $("poem-wall-tex-r");
+            if (wtl) wtl.style.transform = "translateX(" + wOff + "px)";
+            if (wtr) wtr.style.transform = "translateX(" + (-wOff) + "px)";
+            // 鏡頭律動：跑步上下小晃（越快晃越有勁）+ 答對瞬間輕微拉近彈回
             const pulse = 1 + 0.032 * Math.max(0, 1 - (ts - pulseAt) / 360);
+            const bobAmp = 2.2 + 1.6 * Math.max(0, spd - 1);
             const world = $("poem-world");
-            if (world) world.style.transform = "translateY(" + (Math.sin(ts / 92) * 2.2) + "px) scale(" + pulse + ")";
+            if (world) world.style.transform = "translateY(" + (Math.sin(ts / 92) * bobAmp) + "px) scale(" + pulse + ")";
+            // 高速衝刺：兩側速度線
+            if (spd > 1.25 && Math.random() < dt * (spd - 1.1) * 6) {
+                const sl = document.createElement("div");
+                sl.className = "poem-speedline";
+                const sideL = Math.random() < 0.5;
+                sl.style.left = geom.W * (sideL ? 0.03 + Math.random() * 0.09 : 0.88 + Math.random() * 0.09) + "px";
+                if (world) world.appendChild(sl);
+                props.push({ el: sl, line: true, t0: ts, dur: 460 });
+            }
             // 路邊道具流：持續從消失點冒出流過去（左右交替），世界一直在動
             if (ts - lastPropAt > 760 * (dur / APPROACH_BASE)) {
                 lastPropAt = ts;
@@ -288,6 +337,12 @@
                 const p = props[i];
                 const pt = (ts - p.t0) / p.dur;
                 if (pt >= 1.12) { p.el.remove(); props.splice(i, 1); continue; }
+                if (p.line) {   // 速度線：從地平線直線加速掠過
+                    const le = pt * pt;
+                    p.el.style.opacity = Math.min(1, pt / 0.2) * (1 - Math.max(0, pt - 0.7) / 0.3);
+                    p.el.style.transform = "translateY(" + (geom.horizonY + (geom.H * 1.05 - geom.horizonY) * le) + "px) scaleY(" + (0.5 + le * 1.3) + ")";
+                    continue;
+                }
                 const pe = Math.pow(Math.min(1, pt), 1.8);
                 const px = geom.W * ((p.side === 0 ? 0.435 : 0.565) + ((p.side === 0 ? 0.05 : 0.95) - (p.side === 0 ? 0.435 : 0.565)) * pe);
                 const py = geom.horizonY + (geom.H * 0.98 - geom.horizonY) * pe;

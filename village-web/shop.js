@@ -2214,6 +2214,7 @@
               <div class="eq-portrait"><img id="eq-port" alt="目前造型"></div>
               <div class="eq-slots"></div>
             </div>
+            <button class="jc-act eq-genderbtn">⚧ 切換性別</button>
             <button class="jc-act eq-charbtn">📊 角色數值</button>
           </div>
           <div class="eq-backpack">
@@ -2234,6 +2235,13 @@
     ov.querySelector(".shop-close").addEventListener("click", eqClose);
     ov.addEventListener("click", (e) => { if (e.target === ov) eqClose(); });
     ov.querySelector(".eq-charbtn").addEventListener("click", () => { eqClose(); openCharSheet(); });
+    // 性別切換（demo）：toggle village_gender → 立繪/走路造型即時更新
+    ov.querySelector(".eq-genderbtn").addEventListener("click", () => {
+      const next = isFemale() ? "male" : "female";
+      try { localStorage.setItem("village_gender", next); } catch (e) {}
+      eqRender(ov);                                   // 重繪立繪+按鈕文字
+      if (window.applyWalkOutfit) window.applyWalkOutfit();   // 村莊走路造型即時換
+    });
     const pop = ov.querySelector(".eq-item-pop");
     pop.querySelector(".eq-item-x").addEventListener("click", () => { pop.style.display = "none"; });
     pop.addEventListener("click", (e) => { if (e.target === pop) pop.style.display = "none"; });
@@ -2246,11 +2254,15 @@
     const s = getEquip();
     // 左大立繪 = 目前造型
     ov.querySelector("#eq-port").src = bodyImg(eqItem("body", s.body)) + "?v=1";
+    // 性別切換按鈕（demo）：顯示目前性別
+    const gb = ov.querySelector(".eq-genderbtn");
+    if (gb) gb.textContent = isFemale() ? "♀ 目前：女生（點我切換）" : "♂ 目前：男生（點我切換）";
     // 中三格 帽子/衣服/武器
     ov.querySelector(".eq-slots").innerHTML = EQ_SLOTS.map((cat) => {
       const it = eqItem(cat, s[cat]);
+      const img = (cat === "body") ? bodyImg(it) : it.img;   // 衣服格 basic 也按性別
       return `<div class="eq-slot" data-cat="${cat}">
-          <div class="eq-slot-ic"><img src="${it.img}?v=1" alt="${it.name}"></div>
+          <div class="eq-slot-ic"><img src="${img}?v=1" alt="${it.name}"></div>
           <div class="eq-slot-tx"><div class="eq-slot-lb">${EQ_SLOT_LB[cat]}</div><div class="eq-slot-nm">${it.name}</div></div>
         </div>`;
     }).join("");

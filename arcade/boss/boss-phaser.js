@@ -537,14 +537,15 @@
                     // → 小手機(H≈520)QUIZ_H 至少 380；大手機 cap 500 防 boss 變太小
                     this._QUIZ_H    = this._BOPO_MODE
                         ? Math.max(Math.min(Math.round(H * 0.62), 500), 380)
-                        : Math.min(Math.round(H * 0.52), 370);
+                        : Math.min(Math.round(H * 0.58), 420);  // 6/14 派派：魔王圖空閒處太多，加大 quiz 區→魔王上移縮、選項往上移到中段
                     this._BOSS_FIT_MULT = this._BOPO_MODE ? 0.95 : 0.82;
                     this._BOSS_TOP  = this._TOPBAR_H + this._HP_H + 8;
                     this._BOSS_BOT  = H - this._QUIZ_H - 4;
                     // 把 _QUIZ_H 同步到 .bh-quiz max-height — 超長注音題就會在 panel 內 scroll，
                     // 不會視覺上溢出蓋住 boss 下半身（CSS max-height:100% 沒有實質約束）。
                     const _quizEl = document.querySelector("#bh-overlay .bh-quiz");
-                    if (_quizEl) _quizEl.style.maxHeight = this._QUIZ_H + "px";
+                    // 撐滿 _QUIZ_H + 內容頂部對齊（flex-start）→ 選項上移到畫面中段，不擠底部
+                    if (_quizEl) { _quizEl.style.maxHeight = this._QUIZ_H + "px"; _quizEl.style.minHeight = this._QUIZ_H + "px"; }
 
                     _step = "buildBg";       this._buildBg();
                     _step = "buildBoss";     this._buildBoss();

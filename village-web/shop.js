@@ -2235,10 +2235,12 @@
     ov.querySelector(".shop-close").addEventListener("click", eqClose);
     ov.addEventListener("click", (e) => { if (e.target === ov) eqClose(); });
     ov.querySelector(".eq-charbtn").addEventListener("click", () => { eqClose(); openCharSheet(); });
-    // 性別切換（demo）：toggle village_gender → 立繪/走路造型即時更新
+    // 性別切換（demo）：toggle village_gender + 換回該性別「原本造型」→ 才看得出男/女外表差異
+    // （穿著的真商品造型是固定的、不分性別，不回 basic 的話切性別看起來沒變）
     ov.querySelector(".eq-genderbtn").addEventListener("click", () => {
       const next = isFemale() ? "male" : "female";
       try { localStorage.setItem("village_gender", next); } catch (e) {}
+      setEquip("body", "basic");                      // 回原本造型，立繪/走路才會呈現該性別預設
       eqRender(ov);                                   // 重繪立繪+按鈕文字
       if (window.applyWalkOutfit) window.applyWalkOutfit();   // 村莊走路造型即時換
     });

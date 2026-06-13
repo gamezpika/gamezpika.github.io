@@ -2214,8 +2214,11 @@
               <div class="eq-portrait"><img id="eq-port" alt="目前造型"></div>
               <div class="eq-slots"></div>
             </div>
-            <button class="jc-act eq-genderbtn">⚧ 切換性別</button>
-            <button class="jc-act eq-charbtn">📊 角色數值</button>
+            <div class="eq-gender" role="group" aria-label="切換性別">
+              <button class="eq-g-opt" data-g="male"><img class="ui-ic" src="icons/ic_male.webp?v=1" alt=""> 男生</button>
+              <button class="eq-g-opt" data-g="female"><img class="ui-ic" src="icons/ic_female.webp?v=1" alt=""> 女生</button>
+            </div>
+            <button class="jc-act eq-charbtn"><img class="ui-ic" src="icons/ic_stats.webp?v=1" alt=""> 角色數值</button>
           </div>
           <div class="eq-backpack">
             <div class="eq-bp-head">背包</div>
@@ -2235,15 +2238,16 @@
     ov.querySelector(".shop-close").addEventListener("click", eqClose);
     ov.addEventListener("click", (e) => { if (e.target === ov) eqClose(); });
     ov.querySelector(".eq-charbtn").addEventListener("click", () => { eqClose(); openCharSheet(); });
-    // 性別切換（demo）：toggle village_gender + 換回該性別「原本造型」→ 才看得出男/女外表差異
+    // 性別切換（demo）：點不同性別 → 換回該性別「原本造型」才看得出男/女外表差異
     // （穿著的真商品造型是固定的、不分性別，不回 basic 的話切性別看起來沒變）
-    ov.querySelector(".eq-genderbtn").addEventListener("click", () => {
-      const next = isFemale() ? "male" : "female";
-      try { localStorage.setItem("village_gender", next); } catch (e) {}
+    ov.querySelectorAll(".eq-g-opt").forEach((opt) => opt.addEventListener("click", () => {
+      const g = opt.dataset.g;
+      if ((isFemale() ? "female" : "male") === g) return;   // 已是該性別不動作（不脫掉身上衣服）
+      try { localStorage.setItem("village_gender", g); } catch (e) {}
       setEquip("body", "basic");                      // 回原本造型，立繪/走路才會呈現該性別預設
-      eqRender(ov);                                   // 重繪立繪+按鈕文字
+      eqRender(ov);                                   // 重繪立繪+高亮
       if (window.applyWalkOutfit) window.applyWalkOutfit();   // 村莊走路造型即時換
-    });
+    }));
     const pop = ov.querySelector(".eq-item-pop");
     pop.querySelector(".eq-item-x").addEventListener("click", () => { pop.style.display = "none"; });
     pop.addEventListener("click", (e) => { if (e.target === pop) pop.style.display = "none"; });
@@ -2256,9 +2260,9 @@
     const s = getEquip();
     // 左大立繪 = 目前造型
     ov.querySelector("#eq-port").src = bodyImg(eqItem("body", s.body)) + "?v=1";
-    // 性別切換按鈕（demo）：顯示目前性別
-    const gb = ov.querySelector(".eq-genderbtn");
-    if (gb) gb.textContent = isFemale() ? "♀ 目前：女生（點我切換）" : "♂ 目前：男生（點我切換）";
+    // 性別切換器（demo）：高亮目前性別那半
+    const cur = isFemale() ? "female" : "male";
+    ov.querySelectorAll(".eq-g-opt").forEach((o) => o.classList.toggle("on", o.dataset.g === cur));
     // 中三格 帽子/衣服/武器
     ov.querySelector(".eq-slots").innerHTML = EQ_SLOTS.map((cat) => {
       const it = eqItem(cat, s[cat]);
@@ -2306,7 +2310,8 @@
     const ov = caBuildOverlay();
     const tabs = ov.querySelector(".ao-tabs4"); if (tabs) tabs.innerHTML = "";
     const s = getEquip();
-    caSetPrincipal(ov, bodyImg(eqItem("body", s.body)), "👤 角色資訊");
+    caSetPrincipal(ov, bodyImg(eqItem("body", s.body)), "角色資訊");
+    { const own = ov.querySelector(".ao-owner"); if (own) own.innerHTML = '<img class="ui-ic" src="icons/ic_char.webp?v=1" alt=""> 角色資訊'; }
     caBubble(ov, "這是你的角色狀態～");
     ov.querySelector(".shop-title").textContent = "角色頁面";
     ov.classList.add("open");
@@ -2331,9 +2336,9 @@
       <div style="font-size:15px;color:#3a2c1a;margin-bottom:4px;">年級：<b>${aoEsc(String(grade))}</b></div>
       <div style="font-size:15px;color:#3a2c1a;margin-bottom:10px;">當前職業：<b>${aoEsc(jobName)}</b></div>
       <div style="display:flex;gap:8px;margin-bottom:12px;">
-        <div style="flex:1;text-align:center;background:#fdecea;border-radius:10px;padding:8px 4px;"><div style="font-size:12px;color:#c0392b;">⚔️ 攻擊力</div><div style="font-size:20px;font-weight:900;color:#c0392b;">${st.atk}</div></div>
-        <div style="flex:1;text-align:center;background:#eaf2fb;border-radius:10px;padding:8px 4px;"><div style="font-size:12px;color:#2b6cb0;">🛡️ 防禦力</div><div style="font-size:20px;font-weight:900;color:#2b6cb0;">${st.def}</div></div>
-        <div style="flex:1;text-align:center;background:#eafaea;border-radius:10px;padding:8px 4px;"><div style="font-size:12px;color:#3a8f3a;">❤️ 血量</div><div style="font-size:20px;font-weight:900;color:#3a8f3a;">${st.hp}</div></div>
+        <div style="flex:1;text-align:center;background:#fdecea;border-radius:10px;padding:8px 4px;"><div style="font-size:12px;color:#c0392b;"><img class="ui-ic" src="icons/ic_atk.webp?v=1" alt=""> 攻擊力</div><div style="font-size:20px;font-weight:900;color:#c0392b;">${st.atk}</div></div>
+        <div style="flex:1;text-align:center;background:#eaf2fb;border-radius:10px;padding:8px 4px;"><div style="font-size:12px;color:#2b6cb0;"><img class="ui-ic" src="icons/ic_def.webp?v=1" alt=""> 防禦力</div><div style="font-size:20px;font-weight:900;color:#2b6cb0;">${st.def}</div></div>
+        <div style="flex:1;text-align:center;background:#eafaea;border-radius:10px;padding:8px 4px;"><div style="font-size:12px;color:#3a8f3a;"><img class="ui-ic" src="icons/ic_hp.webp?v=1" alt=""> 血量</div><div style="font-size:20px;font-weight:900;color:#3a8f3a;">${st.hp}</div></div>
       </div>
       ${rows}
       <div style="font-size:11px;color:#8a6d3b;margin-top:10px;opacity:.85;line-height:1.5;">攻防血由裝備加成（武器+攻／衣服+防／帽子·寵物+血）；精通值靠通關累積（每級需 LV×500 經驗）。</div>
@@ -2353,7 +2358,7 @@
         <button class="shop-close" aria-label="關閉">×</button>
         <div class="dh-leftcol">
           <div class="dh-preview"><img class="dh-port" alt="目前造型" draggable="false"></div>
-          <div class="dh-owner">🏠 你的小屋</div>
+          <div class="dh-owner"><img class="ui-ic" src="icons/ic_home.webp?v=1" alt=""> 你的小屋</div>
         </div>
         <div class="dh-rightcol">
           <div class="jc-tabs dh-tabs">

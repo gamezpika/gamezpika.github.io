@@ -79,8 +79,11 @@
     if (a.indexOf(id) < 0) { a.push(id); try { localStorage.setItem(OUTFIT_OWN_KEY, JSON.stringify(a)); } catch (e) {} }
   }
   function realOutfitId(it) {
-    const m = /outfits\/(m_beach|m_biker|f_beach|f_blackcat)\.webp$/.exec(it.img || "");
-    return m ? m[1] : null;
+    // 資料驅動：EQUIP.body 裡標 shop:true 的造型＝真商品（美人魚/配件類沒入表，自動維持純展示）
+    const m = /outfits\/([a-z0-9_]+)\.webp$/.exec(it.img || "");
+    if (!m) return null;
+    const eq = EQUIP.body.items.find((x) => x.id === m[1] && x.shop);
+    return eq ? m[1] : null;
   }
 
   function renderGrid(ov, shop, cat) {
@@ -1987,20 +1990,38 @@
   const EQUIP = {
     // body=目前造型(衣服店買的)，顯示在左大立繪，不放右格；def=防禦加成
     // shop:true = 服裝店真商品（要買過才出現在更衣室；買了走路圖整套換，見 explore.js WALK_OUTFITS）
-    // ⚠️ 第一項是 getEquip() 的預設值，shop 商品不能排第一
+    // ⚠️ 第一項是 getEquip() 的預設值＝原本造型（藍帽小男孩），shop 商品不能排第一
+    // 美人魚/名牌包/珍珠項鍊/公事包 4 件派派定案跳過（配件類/魚尾不能走路），維持純展示不入此表
     body: { label: "造型", items: [
-      { id: "f_academic", img: "outfits/f_academic.webp", name: "學院風", def: 5 },
-      { id: "f_dress", img: "outfits/f_dress.webp", name: "洋裝", def: 4 },
-      { id: "f_elf", img: "outfits/f_elf.webp", name: "精靈裝", def: 6 },
-      { id: "f_kawaii", img: "outfits/f_kawaii.webp", name: "可愛風", def: 4 },
-      { id: "m_knight", img: "outfits/m_knight.webp", name: "騎士裝", def: 10 },
-      { id: "m_sports", img: "outfits/m_sports.webp", name: "運動服", def: 6 },
-      { id: "m_superhero", img: "outfits/m_superhero.webp", name: "英雄裝", def: 8 },
-      { id: "m_wizard_kid", img: "outfits/m_wizard_kid.webp", name: "小巫師", def: 7 },
-      { id: "m_beach", img: "outfits/m_beach.webp", name: "男 海灘風", def: 6, shop: true },
-      { id: "m_biker", img: "outfits/m_biker.webp", name: "男 機車服", def: 8, shop: true },
+      { id: "basic", img: "outfits/m_default.webp", name: "原本造型", def: 5 },
+      { id: "f_academic", img: "outfits/f_academic.webp", name: "女 學院風", def: 5, shop: true },
+      { id: "f_angel", img: "outfits/f_angel.webp", name: "女 天使裝", def: 7, shop: true },
       { id: "f_beach", img: "outfits/f_beach.webp", name: "女 海灘風", def: 6, shop: true },
       { id: "f_blackcat", img: "outfits/f_blackcat.webp", name: "女 黑貓裝", def: 8, shop: true },
+      { id: "f_bunny", img: "outfits/f_bunny.webp", name: "女 兔子裝", def: 5, shop: true },
+      { id: "f_dress", img: "outfits/f_dress.webp", name: "女 洋裝", def: 4, shop: true },
+      { id: "f_dress_pearl", img: "outfits/f_dress_pearl.webp", name: "女 珍珠洋裝", def: 5, shop: true },
+      { id: "f_elf", img: "outfits/f_elf.webp", name: "女 精靈裝", def: 6, shop: true },
+      { id: "f_kawaii", img: "outfits/f_kawaii.webp", name: "女 可愛風", def: 4, shop: true },
+      { id: "f_lady_full", img: "outfits/f_lady_full.webp", name: "女 淑女全套", def: 5, shop: true },
+      { id: "f_party_dress", img: "outfits/f_party_dress.webp", name: "女 派對洋裝", def: 5, shop: true },
+      { id: "f_reindeer", img: "outfits/f_reindeer.webp", name: "女 馴鹿裝", def: 6, shop: true },
+      { id: "f_streetwear", img: "outfits/f_streetwear.webp", name: "女 街頭風", def: 7, shop: true },
+      { id: "m_beach", img: "outfits/m_beach.webp", name: "男 海灘風", def: 6, shop: true },
+      { id: "m_biker", img: "outfits/m_biker.webp", name: "男 機車服", def: 8, shop: true },
+      { id: "m_casual", img: "outfits/m_casual.webp", name: "男 休閒風", def: 5, shop: true },
+      { id: "m_dino", img: "outfits/m_dino.webp", name: "男 Dino", def: 6, shop: true },
+      { id: "m_knight", img: "outfits/m_knight.webp", name: "男 Knight", def: 10, shop: true },
+      { id: "m_santa", img: "outfits/m_santa.webp", name: "男 Santa", def: 6, shop: true },
+      { id: "m_sports", img: "outfits/m_sports.webp", name: "男 Sports", def: 6, shop: true },
+      { id: "m_streetwear", img: "outfits/m_streetwear.webp", name: "男 街頭風", def: 5, shop: true },
+      { id: "m_suit_full", img: "outfits/m_suit_full.webp", name: "男 Suit Full", def: 7, shop: true },
+      { id: "m_suit_jacket", img: "outfits/m_suit_jacket.webp", name: "男 Suit Jacket", def: 5, shop: true },
+      { id: "m_suit_pants", img: "outfits/m_suit_pants.webp", name: "男 Suit Pants", def: 4, shop: true },
+      { id: "m_suit_set", img: "outfits/m_suit_set.webp", name: "男 Suit Set", def: 6, shop: true },
+      { id: "m_superhero", img: "outfits/m_superhero.webp", name: "男 Superhero", def: 8, shop: true },
+      { id: "m_vampire", img: "outfits/m_vampire.webp", name: "男 Vampire", def: 7, shop: true },
+      { id: "m_wizard_kid", img: "outfits/m_wizard_kid.webp", name: "男 Wizard Kid", def: 7, shop: true },
     ] },
     hat: { label: "帽子", items: [
       { id: "hat_student", img: "equip/hat_student.webp", name: "學生帽", hp: 20 },
@@ -2072,6 +2093,9 @@
     let s = {};
     try { const p = JSON.parse(localStorage.getItem(EQ_KEY) || "{}"); if (p && typeof p === "object") s = p; } catch (e) {}
     EQ_ALL.forEach((cat) => { if (!EQUIP[cat].items.some((it) => it.id === s[cat])) s[cat] = EQUIP[cat].items[0].id; });
+    // 移轉防呆：穿著的造型是真商品但沒買過（舊存檔預設 f_academic 轉真商品）→ 回原本造型
+    const bIt = EQUIP.body.items.find((it) => it.id === s.body);
+    if (bIt && bIt.shop && ownedOutfits().indexOf(bIt.id) < 0) s.body = EQUIP.body.items[0].id;
     return s;
   }
   function eqItem(cat, id) { return EQUIP[cat].items.find((it) => it.id === id) || EQUIP[cat].items[0]; }

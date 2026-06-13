@@ -11,18 +11,28 @@ function _qParam(name) {
   try { return new URLSearchParams(window.location.search).get(name); } catch (e) { return null; }
 }
 
-// 走路造型（服裝店真換裝）：買了這 4 套，走路圖整套換人；不在表內＝預設小男孩
+// 走路造型（服裝店真換裝）：買了這 28 套，走路圖整套換人；不在表內＝預設小男孩
 // 圖檔尺寸/幀數跟 player1/2/3 完全相同 → 沿用 config 的 frame_width/height
-const WALK_OUTFITS = {
-  m_beach:    { side: "walk_m_beach_side.webp",    down: "walk_m_beach_down.webp",    up: "walk_m_beach_up.webp" },
-  m_biker:    { side: "walk_m_biker_side.webp",    down: "walk_m_biker_down.webp",    up: "walk_m_biker_up.webp" },
-  f_beach:    { side: "walk_f_beach_side.webp",    down: "walk_f_beach_down.webp",    up: "walk_f_beach_up.webp" },
-  f_blackcat: { side: "walk_f_blackcat_side.webp", down: "walk_f_blackcat_down.webp", up: "walk_f_blackcat_up.webp" },
-};
+// （美人魚/名牌包/珍珠項鍊/公事包 4 件跳過＝純展示，派派 6/13 定案）
+const WALK_OUTFIT_IDS = [
+  "f_academic", "f_angel", "f_beach", "f_blackcat", "f_bunny", "f_dress", "f_dress_pearl",
+  "f_elf", "f_kawaii", "f_lady_full", "f_party_dress", "f_reindeer", "f_streetwear",
+  "m_beach", "m_biker", "m_casual", "m_dino", "m_knight", "m_santa", "m_sports",
+  "m_streetwear", "m_suit_full", "m_suit_jacket", "m_suit_pants", "m_suit_set",
+  "m_superhero", "m_vampire", "m_wizard_kid",
+];
+const WALK_OUTFITS = {};
+WALK_OUTFIT_IDS.forEach((id) => {
+  WALK_OUTFITS[id] = { side: "walk_" + id + "_side.webp", down: "walk_" + id + "_down.webp", up: "walk_" + id + "_up.webp" };
+});
 function walkOutfitCurrent() {
   try {
     const body = (JSON.parse(localStorage.getItem("village_equip") || "{}") || {}).body;
-    if (WALK_OUTFITS[body]) return { id: body, sheets: WALK_OUTFITS[body] };
+    if (WALK_OUTFITS[body]) {
+      // 要真的買過才套造型（舊存檔預設 f_academic 轉真商品後沒買過 → 走預設小男孩，跟 shop.js getEquip 移轉一致）
+      const own = JSON.parse(localStorage.getItem("village_outfits_owned") || "[]");
+      if (Array.isArray(own) && own.indexOf(body) >= 0) return { id: body, sheets: WALK_OUTFITS[body] };
+    }
   } catch (e) {}
   return { id: "default", sheets: null };
 }
@@ -143,9 +153,9 @@ class ExploreScene extends Phaser.Scene {
     const ow = oc.sheets;
     // 紀錄這批 texture 實際載的是哪套造型（換裝對帳用，texture 是 game 全域所以放 window）
     if (!this.textures.exists("hero")) window.__walkOutfitApplied = oc.id;
-    if (!this.textures.exists("hero"))      this.load.spritesheet("hero",      this.assetBase + (ow ? ow.side : ps.side.image) + "?v=3", { frameWidth: ps.side.frame_width, frameHeight: ps.side.frame_height });
-    if (!this.textures.exists("hero_down")) this.load.spritesheet("hero_down", this.assetBase + (ow ? ow.down : ps.down.image) + "?v=3", { frameWidth: ps.down.frame_width, frameHeight: ps.down.frame_height });
-    if (!this.textures.exists("hero_up"))   this.load.spritesheet("hero_up",   this.assetBase + (ow ? ow.up   : ps.up.image)   + "?v=3", { frameWidth: ps.up.frame_width,   frameHeight: ps.up.frame_height });
+    if (!this.textures.exists("hero"))      this.load.spritesheet("hero",      this.assetBase + (ow ? ow.side : ps.side.image) + "?v=4", { frameWidth: ps.side.frame_width, frameHeight: ps.side.frame_height });
+    if (!this.textures.exists("hero_down")) this.load.spritesheet("hero_down", this.assetBase + (ow ? ow.down : ps.down.image) + "?v=4", { frameWidth: ps.down.frame_width, frameHeight: ps.down.frame_height });
+    if (!this.textures.exists("hero_up"))   this.load.spritesheet("hero_up",   this.assetBase + (ow ? ow.up   : ps.up.image)   + "?v=4", { frameWidth: ps.up.frame_width,   frameHeight: ps.up.frame_height });
 
     // NPC sprites（每隻 NPC 可帶自己的 side/down/up；沒給就 fallback 用 hero）
     if (Array.isArray(config.npcs)) {
@@ -1286,9 +1296,9 @@ window.applyWalkOutfit = function (sceneArg) {
   // 第一階段：先載到暫存 key，玩家照常顯示舊造型（不能先刪 hero——畫面上還在用，會 glTexture 噴錯）
   const SWAP = ["hero_swap_side", "hero_swap_down", "hero_swap_up"];
   SWAP.forEach((k) => { if (sc.textures.exists(k)) sc.textures.remove(k); });
-  sc.load.spritesheet("hero_swap_side", sc.assetBase + files.hero      + "?v=3", { frameWidth: ps.side.frame_width, frameHeight: ps.side.frame_height });
-  sc.load.spritesheet("hero_swap_down", sc.assetBase + files.hero_down + "?v=3", { frameWidth: ps.down.frame_width, frameHeight: ps.down.frame_height });
-  sc.load.spritesheet("hero_swap_up",   sc.assetBase + files.hero_up   + "?v=3", { frameWidth: ps.up.frame_width,   frameHeight: ps.up.frame_height });
+  sc.load.spritesheet("hero_swap_side", sc.assetBase + files.hero      + "?v=4", { frameWidth: ps.side.frame_width, frameHeight: ps.side.frame_height });
+  sc.load.spritesheet("hero_swap_down", sc.assetBase + files.hero_down + "?v=4", { frameWidth: ps.down.frame_width, frameHeight: ps.down.frame_height });
+  sc.load.spritesheet("hero_swap_up",   sc.assetBase + files.hero_up   + "?v=4", { frameWidth: ps.up.frame_width,   frameHeight: ps.up.frame_height });
   sc.load.once("complete", () => {
     if (gen !== sc._outfitGen) return;   // restart 已重置狀態，殘留回呼不准碰新場景（create 端會自癒補套）
     const done = (okId) => {

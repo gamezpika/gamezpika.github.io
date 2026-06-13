@@ -25,14 +25,21 @@ const WALK_OUTFITS = {};
 WALK_OUTFIT_IDS.forEach((id) => {
   WALK_OUTFITS[id] = { side: "walk_" + id + "_side.webp", down: "walk_" + id + "_down.webp", up: "walk_" + id + "_up.webp" };
 });
+// 女生初始造型（還沒買衣服的預設樣子）：棕髮女孩素色裙裝；男生預設沿用 config 原 player 男孩
+const DEFAULT_F_SHEETS = { side: "walk_f_default_side.webp", down: "walk_f_default_down.webp", up: "walk_f_default_up.webp" };
+function isFemalePlayer() {
+  try { return localStorage.getItem("village_gender") === "female"; } catch (e) { return false; }
+}
 function walkOutfitCurrent() {
   try {
     const body = (JSON.parse(localStorage.getItem("village_equip") || "{}") || {}).body;
     if (WALK_OUTFITS[body]) {
-      // 要真的買過才套造型（舊存檔預設 f_academic 轉真商品後沒買過 → 走預設小男孩，跟 shop.js getEquip 移轉一致）
+      // 要真的買過才套造型（舊存檔預設 f_academic 轉真商品後沒買過 → 走預設，跟 shop.js getEquip 移轉一致）
       const own = JSON.parse(localStorage.getItem("village_outfits_owned") || "[]");
       if (Array.isArray(own) && own.indexOf(body) >= 0) return { id: body, sheets: WALK_OUTFITS[body] };
     }
+    // 預設造型：女生玩家載女版初始圖，男生用 config 原 player（sheets:null）
+    if (isFemalePlayer()) return { id: "default_f", sheets: DEFAULT_F_SHEETS };
   } catch (e) {}
   return { id: "default", sheets: null };
 }

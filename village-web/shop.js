@@ -403,6 +403,8 @@
   const setJob = (k) => localStorage.setItem(JC_KEY, k);
   // 性別（讀 onboarding 建角存的 village_gender）：女角職業圖用 _female 版
   const isFemale = () => localStorage.getItem("village_gender") === "female";
+  // 「原本造型」(basic) 卡圖按性別：女生顯示女版初始造型，其餘衣服圖照舊
+  const bodyImg = (it) => (it && it.id === "basic" && isFemale()) ? "outfits/f_default.webp" : (it ? it.img : "");
   // 依性別取圖檔名（女→插 _female），附 onerror 退回男版的 HTML 屬性
   const femFile = (file) => file.replace(/\.png$/, "_female.png");
   const spriteFile = (file) => (isFemale() ? femFile(file) : file);
@@ -541,7 +543,7 @@
 
   async function aoLoad() {
     if (AO_CONTENT) return AO_CONTENT;
-    const r = await fetch("academy_content.json?v=2");
+    const r = await fetch("academy_content.json?v=3");
     if (!r.ok) throw new Error("academy content HTTP " + r.status);
     AO_CONTENT = await r.json();
     return AO_CONTENT;
@@ -2243,7 +2245,7 @@
   function eqRender(ov) {
     const s = getEquip();
     // 左大立繪 = 目前造型
-    ov.querySelector("#eq-port").src = eqItem("body", s.body).img + "?v=1";
+    ov.querySelector("#eq-port").src = bodyImg(eqItem("body", s.body)) + "?v=1";
     // 中三格 帽子/衣服/武器
     ov.querySelector(".eq-slots").innerHTML = EQ_SLOTS.map((cat) => {
       const it = eqItem(cat, s[cat]);
@@ -2290,7 +2292,7 @@
     const ov = caBuildOverlay();
     const tabs = ov.querySelector(".ao-tabs4"); if (tabs) tabs.innerHTML = "";
     const s = getEquip();
-    caSetPrincipal(ov, eqItem("body", s.body).img, "👤 角色資訊");
+    caSetPrincipal(ov, bodyImg(eqItem("body", s.body)), "👤 角色資訊");
     caBubble(ov, "這是你的角色狀態～");
     ov.querySelector(".shop-title").textContent = "角色頁面";
     ov.classList.add("open");
@@ -2367,7 +2369,7 @@
     ov.querySelectorAll(".dh-tabs .jc-tab").forEach((b) =>
       b.classList.toggle("active", b.dataset.tab === dhTab));
     const s = getEquip();
-    ov.querySelector(".dh-port").src = eqItem("body", s.body).img + "?v=1";   // 左預覽=目前造型
+    ov.querySelector(".dh-port").src = bodyImg(eqItem("body", s.body)) + "?v=1";   // 左預覽=目前造型
     const box = ov.querySelector(".dh-content"); box.innerHTML = "";
 
     if (dhTab === "outfit") {
@@ -2376,7 +2378,7 @@
       const owned = ownedOutfits();
       box.innerHTML = `<div class="dh-grid">` +
         EQUIP.body.items.filter((it) => !it.shop || owned.indexOf(it.id) >= 0)
-          .map((it) => dhCard({ id: it.id, img: it.img, name: it.name, sel: it.id === s.body })).join("") + `</div>`;
+          .map((it) => dhCard({ id: it.id, img: bodyImg(it), name: it.name, sel: it.id === s.body })).join("") + `</div>`;
       box.querySelectorAll(".dh-card").forEach((c) => c.addEventListener("click", () => {
         setEquip("body", c.dataset.id);
         if (window.applyWalkOutfit) window.applyWalkOutfit();

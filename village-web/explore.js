@@ -11,6 +11,12 @@ function _qParam(name) {
   try { return new URLSearchParams(window.location.search).get(name); } catch (e) { return null; }
 }
 
+// 任務 NPC 判定：interaction.shop_id 帶 anpc:/npc_/mnpc_ 前綴的會開任務面板（院長 acad:/圖鑑 afig: 不算）
+function _isQuestNpc(cfg) {
+  const sid = (cfg && cfg.interaction && cfg.interaction.shop_id) || "";
+  return /^(anpc:|npc_|mnpc_)/.test(sid);
+}
+
 // 走路造型（服裝店真換裝）：買了這 28 套，走路圖整套換人；不在表內＝預設小男孩
 // 圖檔尺寸/幀數跟 player1/2/3 完全相同 → 沿用 config 的 frame_width/height
 // （美人魚/名牌包/珍珠項鍊/公事包 4 件跳過＝純展示，派派 6/13 定案）
@@ -163,6 +169,9 @@ class ExploreScene extends Phaser.Scene {
     if (!this.textures.exists("hero"))      this.load.spritesheet("hero",      this.assetBase + (ow ? ow.side : ps.side.image) + "?v=4", { frameWidth: ps.side.frame_width, frameHeight: ps.side.frame_height });
     if (!this.textures.exists("hero_down")) this.load.spritesheet("hero_down", this.assetBase + (ow ? ow.down : ps.down.image) + "?v=4", { frameWidth: ps.down.frame_width, frameHeight: ps.down.frame_height });
     if (!this.textures.exists("hero_up"))   this.load.spritesheet("hero_up",   this.assetBase + (ow ? ow.up   : ps.up.image)   + "?v=4", { frameWidth: ps.up.frame_width,   frameHeight: ps.up.frame_height });
+
+    // 任務 NPC 頭頂黃驚嘆號（所有地圖共用，已載就跳過）
+    if (!this.textures.exists("quest_mark")) this.load.image("quest_mark", "icons/ic_quest.webp?v=1");
 
     // NPC sprites（每隻 NPC 可帶自己的 side/down/up；沒給就 fallback 用 hero）
     if (Array.isArray(config.npcs)) {
@@ -464,7 +473,13 @@ class ExploreScene extends Phaser.Scene {
           patrolIdx: 0,
           animKeys: { side: dSide.anim, down: dDown.anim, up: dUp.anim },
           bubble: null,
+          questMark: null,
         };
+        // 任務 NPC：頭頂掛黃驚嘆號（位置/浮動在主 update 同步）
+        if (_isQuestNpc(npcCfg) && this.textures.exists("quest_mark")) {
+          npc.questMark = this.add.image(npc.body.x, npc.body.y, "quest_mark");
+          npc.questMark.setDisplaySize(26, 26).setDepth(99999);
+        }
         // NPC physics body + collider 跟玩家擋的同一組 obstacles（鳥群在天上豁免）
         this.physics.add.existing(npc.body);
         npc.body.body.setSize(22, 22);
@@ -1235,6 +1250,13 @@ class ExploreScene extends Phaser.Scene {
     }
 
     if (!this.modalOpen) for (const npc of this.npcs) this._updateNPC(npc, delta);
+    // 任務 NPC 頭頂驚嘆號：跟著 NPC、上下浮動（不受 modalOpen 影響，位置才不會飄）
+    const bob = Math.sin(time / 320) * 4;
+    for (const npc of this.npcs) {
+      if (!npc.questMark || !npc.body || !npc.sprite || !npc.sprite.active) continue;
+      npc.questMark.x = npc.body.x;
+      npc.questMark.y = npc.sprite.y - npc.sprite.displayHeight - 10 + bob;
+    }
     this._updateInteractable();
     this._updatePortals();
   }

@@ -476,10 +476,20 @@
                         const items = _failedSprites.slice();
                         _failedSprites = [];
                         setLoadingText(`載入魔王...（重試 ${_retryCount}）`);
+                        let queued = 0;
                         items.forEach(f => {
-                            const base = String(f.url || "").split("?")[0];
-                            if (base) this.load.image(f.key, base + "?retry=" + _retryCount + "_" + Date.now());
+                            const u = String(f.url || "");
+                            if (!u) return;
+                            const sep = u.includes("?") ? "&" : "?";   // Codex P2：保留原 query（signed URL/token），只 append retry cachebust
+                            this.load.image(f.key, u + sep + "retry=" + _retryCount + "_" + Date.now());
+                            queued++;
                         });
+                        if (queued === 0) {   // 沒有可重抓的 URL → 別空轉，直接進戰鬥（魔王圖走 BossFight 自救/placeholder）
+                            console.warn("[BossPhaser] retry: no usable URL, proceeding to BossFight");
+                            hideLoading();
+                            this.scene.start("BossFight", this.session);
+                            return;
+                        }
                         this.load.once("complete", () => this._afterPreload());
                         this.load.start();
                         return;

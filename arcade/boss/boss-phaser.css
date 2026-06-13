@@ -171,6 +171,7 @@
 .bh-quiz {
     /* 5/21 派派 B：opacity 0.92→0.72，讓魔王底色淡淡透過題目區 */
     background: rgba(18, 8, 39, 0.72);
+    box-sizing: border-box;   /* Codex P1：min/maxHeight=_QUIZ_H 要含 padding，否則矮屏 panel 撐高蓋到魔王區 */
     /* 底部多留空間：避開 LINE in-app 瀏覽器底部工具列 / 手機手勢條遮住貼底選項
        safe-area（瀏海機 home indicator）+ 56px 餘裕（LINE 工具列約 44-50px） */
     padding: 12px 12px calc(14px + env(safe-area-inset-bottom, 0px) + 56px);

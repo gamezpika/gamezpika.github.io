@@ -1080,12 +1080,12 @@
         "id": "pythagoras",
         "name": "畢達哥拉斯",
         "sprite": {
-          "scale": 0.31,
+          "scale": 0.09,
           "sprites": {
             "side": {
-              "image": "pythagoras_front.webp",
-              "frame_width": 196,
-              "frame_height": 369,
+              "image": "pythagoras_side.webp",
+              "frame_width": 770,
+              "frame_height": 1264,
               "frames": 1,
               "frame_rate": 6,
               "facing": "left"

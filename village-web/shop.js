@@ -1260,7 +1260,7 @@
       ov.querySelector(".ao-content").innerHTML = `<div class="jc-empty">找不到這位師長</div>`;
       return;
     }
-    ov.querySelector(".shop-title").textContent = "國語學院";
+    ov.querySelector(".shop-title").textContent = (c.academy && c.academy.title) || "國語學院";
     caSetPrincipal(ov, n.img, "👤 " + (n.title || "") + (n.name ? " " + n.name : ""));
     const lines = Array.isArray(n.lines) ? n.lines : [];
     if (typeof caTab !== "number" || caTab >= lines.length) caTab = 0;
@@ -1376,7 +1376,7 @@
     const c = CA_CONTENT || {};
     const figs = Array.isArray(c.figures) ? c.figures : [];
     const f = figs.find((x) => x.name === figName);
-    ov.querySelector(".shop-title").textContent = "國語學院";
+    ov.querySelector(".shop-title").textContent = (c.academy && c.academy.title) || "國語學院";
     ov.querySelector(".ao-tabs4").innerHTML = "";
     if (!f) {
       caBubble(ov, "找不到這位師長。");

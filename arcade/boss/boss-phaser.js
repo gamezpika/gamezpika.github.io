@@ -412,7 +412,8 @@
     let _BootScene = null;
     let BossPreloadScene = null;
     let BossFightScene = null;
-    let _failedSprites = [];  // {key, url} — debug: 收集失敗 sprite 給派派看具體哪張壞
+    let _failedSprites = [];  // {key, url} — 收集失敗 sprite
+    let _retryCount = 0;       // 載失敗自動重試次數（每場 init 歸零）
 
     function defineScenes() {
         if (BossPreloadScene) return;
@@ -430,6 +431,7 @@
             init(data) {
                 this.session = data || null;
                 _failedSprites = [];
+                _retryCount = 0;
                 // 清掉上一場的 listener，避免累積（progress 用 on，會跨場累積）
                 this.load.off("progress");
                 this.load.off("loaderror");
@@ -463,22 +465,33 @@
                         url: file?.url || file?.src || "?",
                     });
                 });
-                this.load.once("complete", () => {
-                    if (!this.session?.sprites) return; // extra guard
-                    if (_failedSprites.length > 0) {
-                        // debug 模式：把每張失敗的 key + URL 都顯示在 loading overlay，不 hideLoading 也不 start BossFight，
-                        // 派派截圖才看得到具體哪張壞、是哪個 URL。修完拿掉。
-                        const msg = _failedSprites
-                            .map(f => `${f.key}\n  ${f.url}`)
-                            .join("\n\n");
-                        console.error("[BossPhaser] sprite load failed:", _failedSprites);
-                        setLoadingText(`⚠ ${_failedSprites.length} 張圖載失敗：\n\n${msg}`);
+                this.load.once("complete", () => this._afterPreload());
+            }
+            _afterPreload() {
+                if (!this.session?.sprites) return; // extra guard
+                if (_failedSprites.length > 0) {
+                    // 載失敗自動重試（網路抖動最常見）：重試 3 次，每次換 cachebust 重抓失敗的圖
+                    if (_retryCount < 3) {
+                        _retryCount++;
+                        const items = _failedSprites.slice();
+                        _failedSprites = [];
+                        setLoadingText(`載入魔王...（重試 ${_retryCount}）`);
+                        items.forEach(f => {
+                            const base = String(f.url || "").split("?")[0];
+                            if (base) this.load.image(f.key, base + "?retry=" + _retryCount + "_" + Date.now());
+                        });
+                        this.load.once("complete", () => this._afterPreload());
+                        this.load.start();
                         return;
                     }
-                    console.log("[BossPhaser] preload complete, starting BossFight", this.session.subject, "t" + (this.session.tier || 1));
-                    hideLoading();
-                    this.scene.start("BossFight", this.session);
-                });
+                    // 重試用盡仍失敗 → 友善錯誤（不再顯示 debug URL）
+                    console.error("[BossPhaser] sprite load failed after retries:", _failedSprites);
+                    setLoadingText("⚠ 圖片載入失敗，請檢查網路後重新整理一次");
+                    return;
+                }
+                console.log("[BossPhaser] preload complete, starting BossFight", this.session.subject, "t" + (this.session.tier || 1));
+                hideLoading();
+                this.scene.start("BossFight", this.session);
             }
         };
 

@@ -11,10 +11,12 @@ function _qParam(name) {
   try { return new URLSearchParams(window.location.search).get(name); } catch (e) { return null; }
 }
 
-// 任務 NPC 判定：interaction.shop_id 帶 anpc:/npc_/mnpc_ 前綴的會開任務面板（院長 acad:/圖鑑 afig: 不算）
-function _isQuestNpc(cfg) {
-  const sid = (cfg && cfg.interaction && cfg.interaction.shop_id) || "";
-  return /^(anpc:|npc_|mnpc_)/.test(sid);
+// 任務 NPC 驚嘆號/問號：狀態跟後端任務系統走（不再用 shop_id 前綴硬判）
+const QUEST_DEMO_API = "https://eduarena-tutoring-production.up.railway.app";
+// 學院室內地圖 → 科目；只有這些地圖的 NPC（且 id 在該科 academy.json）才掛符號
+function _questSubjectOf(mapId) {
+  const m = /^(chinese|math|science|social)_interior$/.exec(mapId || "");
+  return m ? m[1] : null;
 }
 
 // 走路造型（服裝店真換裝）：買了這 28 套，走路圖整套換人；不在表內＝預設小男孩
@@ -170,8 +172,9 @@ class ExploreScene extends Phaser.Scene {
     if (!this.textures.exists("hero_down")) this.load.spritesheet("hero_down", this.assetBase + (ow ? ow.down : ps.down.image) + "?v=4", { frameWidth: ps.down.frame_width, frameHeight: ps.down.frame_height });
     if (!this.textures.exists("hero_up"))   this.load.spritesheet("hero_up",   this.assetBase + (ow ? ow.up   : ps.up.image)   + "?v=4", { frameWidth: ps.up.frame_width,   frameHeight: ps.up.frame_height });
 
-    // 任務 NPC 頭頂黃驚嘆號（所有地圖共用，已載就跳過）
+    // 任務 NPC 頭頂符號（所有地圖共用，已載就跳過）：quest_mark=❗可領獎、quest_ask=❓可接任務
     if (!this.textures.exists("quest_mark")) this.load.image("quest_mark", "icons/ic_quest.webp?v=1");
+    if (!this.textures.exists("quest_ask")) this.load.image("quest_ask", "icons/ic_quest_q.webp?v=1");
 
     // NPC sprites（每隻 NPC 可帶自己的 side/down/up；沒給就 fallback 用 hero）
     if (Array.isArray(config.npcs)) {
@@ -474,12 +477,9 @@ class ExploreScene extends Phaser.Scene {
           animKeys: { side: dSide.anim, down: dDown.anim, up: dUp.anim },
           bubble: null,
           questMark: null,
+          questState: null,   // 'claim'(❗可領)/'avail'(❓可接)/null；由 _refreshQuestMarks 依任務狀態設
         };
-        // 任務 NPC：頭頂掛黃驚嘆號（位置/浮動在主 update 同步）
-        if (_isQuestNpc(npcCfg) && this.textures.exists("quest_mark")) {
-          npc.questMark = this.add.image(npc.body.x, npc.body.y, "quest_mark");
-          npc.questMark.setDisplaySize(26, 26).setDepth(99999);
-        }
+        // 任務 NPC 的 ❗/❓ 改由 _refreshQuestMarks（地圖建好後 async 算任務狀態）統一掛
         // NPC physics body + collider 跟玩家擋的同一組 obstacles（鳥群在天上豁免）
         this.physics.add.existing(npc.body);
         npc.body.body.setSize(22, 22);
@@ -525,6 +525,10 @@ class ExploreScene extends Phaser.Scene {
         this.npcs.push(npc);
       });
     }
+
+    // 任務 NPC 頭頂 ❗/❓：地圖建好後算任務狀態掛符號，並監看任務面板關閉時即時重算
+    this._refreshQuestMarks();
+    this._setupQuestObserver();
 
     // 7. World bounds + camera
     this.physics.world.setBounds(0, 0, this.WORLD_W, this.WORLD_H);
@@ -1152,6 +1156,120 @@ class ExploreScene extends Phaser.Scene {
         window.openShop(nearest.shop_id, () => { this.modalOpen = false; });
       }
     }
+  }
+
+  // 任務 NPC 頭頂 ❗/❓：依任務狀態算（主線走後端 API、支線/無 token 走本機進度），❗可領獎優先於 ❓可接
+  async _refreshQuestMarks() {
+    if (this._qBusy) { this._qPending = true; return; }   // 重入：標記待跑，finally 補一次
+    this._qBusy = true;
+    const runMapId = this.mapId, runId = (this._qRunId = (this._qRunId || 0) + 1);
+    const stale = () => runId !== this._qRunId || this.mapId !== runMapId || !this.scene || !this.scene.isActive();
+    try {
+      if (!this.npcs) return;
+      const subj = _questSubjectOf(this.mapId);
+      if (!subj) {                    // 非學院室內：清掉任何殘留符號
+        for (const npc of this.npcs) { if (npc.questMark) { npc.questMark.destroy(); npc.questMark = null; npc.questState = null; } }
+        return;
+      }
+      // academy.json（各 NPC 的任務鏈定義）快取
+      let acad = (this._questAcad || {})[subj];
+      if (!acad) {
+        try { acad = await (await fetch(subj + "_academy.json?v=1")).json(); }
+        catch (e) { return; }
+        this._questAcad = this._questAcad || {}; this._questAcad[subj] = acad;
+      }
+      if (stale()) return;   // await 後可能已切地圖/重啟
+      const npcsDef = (acad && acad.npcs) || {};
+
+      // 主線狀態：有 token 才向後端拿（後端才是權威）。有 token 但 API 失敗→狀態不可信，主線不顯示（不 fallback 成錯誤的可接）
+      let mainAPI = null, token = "";
+      try { token = localStorage.getItem("eduarena_demo_token") || ""; } catch (e) {}
+      if (token) {
+        try {
+          const r = await fetch(QUEST_DEMO_API + "/api/main-quests?chain=" + subj + "_main",
+            { headers: { "Authorization": "Bearer " + token } });
+          if (!r.ok) throw new Error("http " + r.status);
+          const d = await r.json(); mainAPI = {};
+          (d.quests || []).forEach((q) => { mainAPI[q.seq] = q; });
+        } catch (e) { mainAPI = null; }
+      }
+      if (stale()) return;
+      const lsProg = (chain) => {
+        try { return Math.max(0, parseInt(localStorage.getItem("village_" + subj + "_" + chain) || "0", 10) || 0); }
+        catch (e) { return 0; }
+      };
+      // 一隻 NPC 的綜合狀態：'claim'(❗) 優先 > 'avail'(❓) > null
+      const stateOf = (npcId) => {
+        const def = npcsDef[npcId]; if (!def) return null;
+        let canClaim = false, canAccept = false;
+        (def.lines || []).forEach((ln) => {
+          const chain = ln.chain === "side" ? "side" : "main";
+          const base = Number(ln.seq_start) || 1;
+          const quests = ln.quests || [];
+          for (let qi = 0; qi < quests.length; qi++) {
+            const seq = base + qi;
+            if (chain === "main") {
+              if (mainAPI) {                          // 有 token 且後端成功
+                const aq = mainAPI[seq], st = aq ? aq.status : "locked";
+                if (st === "active" && aq && aq.can_claim) canClaim = true;
+                else if (st === "available") canAccept = true;
+              } else if (!token) {                    // 無 token → 本機進度 fallback
+                if (seq === lsProg("main") + 1) canAccept = true;
+              }
+              // 有 token 但 API 失敗：主線狀態不可信，不顯示
+            } else {                                   // 支線：永遠走本機進度（當前關＝可接）
+              if (seq === lsProg("side") + 1) canAccept = true;
+            }
+          }
+        });
+        return canClaim ? "claim" : (canAccept ? "avail" : null);
+      };
+
+      for (const npc of this.npcs) {
+        const id = npc.cfg && npc.cfg.id;
+        const state = id ? stateOf(id) : null;
+        if (!state) {
+          if (npc.questMark) { npc.questMark.destroy(); npc.questMark = null; }
+          npc.questState = null;
+          continue;
+        }
+        const tex = state === "claim" ? "quest_mark" : "quest_ask";
+        if (!this.textures.exists(tex)) { if (npc.questMark) { npc.questMark.destroy(); npc.questMark = null; } npc.questState = null; continue; }
+        if (!npc.questMark) {
+          npc.questMark = this.add.image(npc.body.x, npc.body.y, tex).setDisplaySize(26, 26).setDepth(99999);
+        } else if (npc.questState !== state) {
+          npc.questMark.setTexture(tex).setDisplaySize(26, 26);
+        }
+        npc.questState = state;
+      }
+    } finally {
+      this._qBusy = false;
+      if (this._qPending) { this._qPending = false; this._refreshQuestMarks(); }   // 補跑重入期間漏掉的更新
+    }
+  }
+
+  // 監看任務面板（ca/ao/en-overlay）class 變動 → 關閉後即時重算符號（不必改 shop.js）
+  _setupQuestObserver() {
+    if (this._questObserver || typeof MutationObserver === "undefined") return;
+    let timer = null;
+    this._questObserver = new MutationObserver((muts) => {
+      for (const m of muts) {
+        const el = m.target;
+        if (el && el.id && /^(ca|ao|en)-overlay$/.test(el.id)) {
+          // 只在面板「關閉」(移除 open) 時重算，避免開啟/操作中多餘觸發
+          if (el.classList && !el.classList.contains("open")) {
+            if (timer) clearTimeout(timer);
+            timer = setTimeout(() => this._refreshQuestMarks(), 300);
+          }
+          break;
+        }
+      }
+    });
+    try { this._questObserver.observe(document.body, { attributes: true, subtree: true, attributeFilter: ["class"] }); } catch (e) {}
+    this.events.once("shutdown", () => {
+      if (timer) clearTimeout(timer);
+      if (this._questObserver) { this._questObserver.disconnect(); this._questObserver = null; }
+    });
   }
 
   update(time, delta) {

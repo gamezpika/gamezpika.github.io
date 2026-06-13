@@ -543,7 +543,9 @@
   // icon 欄位可填 emoji（純文字）或圖片路徑（如 icons/ic_quest_daily.webp）→ 是圖就出 <img>
   const aoIcon = (ic, fallback) => {
     const v = String(ic || fallback || "");
-    return /\.(webp|png|svg|jpg)$/i.test(v)
+    // 只接受同源相對路徑的圖（icons/檔名.webp|png|jpg），其餘一律當 emoji 文字，
+    // 杜絕外部網址 / data: / svg 等非預期資源載入（Codex P3）
+    return /^icons\/[\w.-]+\.(webp|png|jpg)$/i.test(v)
       ? `<img src="${aoEsc(v)}?v=1" alt="" style="width:1.15em;height:1.15em;object-fit:contain;display:block;">`
       : aoEsc(v);
   };
@@ -632,34 +634,50 @@
           <div class="ao-bug-hint" id="ao-bug-hint"></div>
         </div>`;
       const sendBtn = box.querySelector(".ao-send");
+      let bugSending = false;
       sendBtn.addEventListener("click", async () => {
-        const cat = box.querySelector("#ao-bug-cat").value;
-        const txt = box.querySelector("#ao-bug-txt").value.trim();
+        if (bugSending) return;                       // 防重入（Codex P2）
+        const txtEl = box.querySelector("#ao-bug-txt");
         const hint = box.querySelector("#ao-bug-hint");
+        const cat = box.querySelector("#ao-bug-cat").value;
+        const txt = (txtEl.value || "").trim();
         if (!txt) { hint.textContent = "請先描述問題再送出唷～"; hint.className = "ao-bug-hint err"; return; }
-        sendBtn.disabled = true;
+        bugSending = true; sendBtn.disabled = true;
         hint.textContent = "送出中…"; hint.className = "ao-bug-hint";
-        // 真的送到後端後台（/admin/bug-reports 看得到）；網路失敗才退回本機暫存
-        let ok = false;
+        // 結果三態：ok=後端收下 / reject=後端明確拒收(不假裝成功) / neterr=連不上(才退本機備援)
+        let result = "neterr";
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 10000);   // 10 秒逾時，免按鈕卡死
         try {
           let page = "village";
           try { page = new URLSearchParams(location.search).get("map") || "village"; } catch (e) {}
           const r = await fetch(DEMO_API + "/api/bug-report", {
             method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ category: cat, description: txt, page, user_agent: navigator.userAgent }),
+            signal: ctrl.signal,
           });
-          ok = r.ok;
-        } catch (e) { ok = false; }
-        if (!ok) {
-          // 後端不通：存本機當離線備援，不讓玩家白填
+          result = r.ok ? "ok" : "reject";
+        } catch (e) { result = "neterr"; }
+        finally { clearTimeout(timer); bugSending = false; }
+        if (result === "neterr") {
+          // 只有真的連不上才存本機當離線備援，不讓玩家白填
           let list = [];
           try { const p = JSON.parse(localStorage.getItem(BUG_KEY) || "[]"); list = Array.isArray(p) ? p : []; } catch (e) { list = []; }
           list.push({ cat, txt, t: Date.now() });
           try { localStorage.setItem(BUG_KEY, JSON.stringify(list)); } catch (e) {}
         }
+        if (!hint.isConnected) return;                // 面板已被切走/重繪就不動 UI（Codex P2）
         sendBtn.disabled = false;
-        box.querySelector("#ao-bug-txt").value = "";
-        hint.textContent = ok ? "✓ 已收到你的回報，謝謝！我們會盡快處理～" : "✓ 已記下你的回報，謝謝！（暫時連不上伺服器，已先存在本機）";
+        if (result === "reject") {
+          // 後端明確拒收：顯示失敗、保留輸入，不假裝送出成功（Codex P2）
+          hint.textContent = "送出失敗了，請稍後再試一次（你的內容還留著）"; hint.className = "ao-bug-hint err";
+          aoBubble(ov, "唉呀送出失敗了，再試一次好嗎？");
+          return;
+        }
+        txtEl.value = "";
+        hint.textContent = result === "ok"
+          ? "✓ 已收到你的回報，謝謝！我們會盡快處理～"
+          : "✓ 已記下你的回報，謝謝！（暫時連不上伺服器，已先存在本機）";
         hint.className = "ao-bug-hint ok";
         aoBubble(ov, "收到囉，謝謝你的回報！");
       });

@@ -110,35 +110,35 @@
  ],
  "quests": [
   {
-   "icon": "📅",
+   "icon": "icons/ic_quest_daily.webp",
    "title": "每日到校",
    "desc": "今天登入學園，開啟一天的學習旅程。",
    "reward": "100 金幣",
    "progress": "0 / 1"
   },
   {
-   "icon": "📝",
+   "icon": "icons/ic_quest_study.webp",
    "title": "勤學不倦",
    "desc": "完成任一科目 10 道練習題。",
    "reward": "200 金幣",
    "progress": "0 / 10"
   },
   {
-   "icon": "⚔️",
+   "icon": "icons/ic_pk.webp",
    "title": "以辯會友",
    "desc": "到知識競技場 PK 對戰 1 場，切磋學問。",
    "reward": "150 金幣 + 經驗值",
    "progress": "0 / 1"
   },
   {
-   "icon": "🐾",
+   "icon": "icons/ic_pet.webp",
    "title": "照顧夥伴",
    "desc": "餵食並照顧你的寵物 1 次。",
    "reward": "80 金幣",
    "progress": "0 / 1"
   },
   {
-   "icon": "🏛️",
+   "icon": "icons/ic_academy.webp",
    "title": "探索五大學院",
    "desc": "前往任一學院，拜訪該科的院長。",
    "reward": "120 金幣",
@@ -147,32 +147,32 @@
  ],
  "rules": [
   {
-   "icon": "🎮",
+   "icon": "icons/ic_controls.webp",
    "title": "基本操作",
    "body": "點地圖任一處角色就會走過去；滾輪或手機雙指可縮放。走近建築會冒出「進入」按鈕，點一下即可互動。"
   },
   {
-   "icon": "💼",
+   "icon": "icons/ic_job.webp",
    "title": "職業與轉職",
    "body": "到「職業介紹所」選擇入門職業，達成條件後可轉職到更高階職業，每個職業都有專屬技能加成與專屬任務。"
   },
   {
-   "icon": "⚔️",
+   "icon": "icons/ic_pk.webp",
    "title": "知識競技場 PK",
    "body": "與對手答題競速，先達標者獲勝。每天晚上 9 點會結算當日排名並發放獎勵。"
   },
   {
-   "icon": "🐾",
+   "icon": "icons/ic_pet.webp",
    "title": "寵物與牧場",
    "body": "完成新手任務可獲得初始寵物；學園牧場能養動植物，養成後販售換取金幣與資源。"
   },
   {
-   "icon": "🪙",
+   "icon": "icons/ic_coin.webp",
    "title": "金幣與商店",
    "body": "答對題目賺取金幣，可到村莊各商店購買服裝、道具等。金幣與學到的知識都能帶回現實世界。"
   },
   {
-   "icon": "⏰",
+   "icon": "icons/ic_clock.webp",
    "title": "健康遊戲提醒",
    "body": "連續遊玩一段時間會進入強制休息時間，請適度遊戲、注意用眼健康。"
   }

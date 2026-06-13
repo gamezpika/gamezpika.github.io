@@ -540,10 +540,17 @@
   // 內容來自可編輯 JSON，innerHTML 前一律跳脫，避免日後內容含 HTML 被注入
   const aoEsc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  // icon 欄位可填 emoji（純文字）或圖片路徑（如 icons/ic_quest_daily.webp）→ 是圖就出 <img>
+  const aoIcon = (ic, fallback) => {
+    const v = String(ic || fallback || "");
+    return /\.(webp|png|svg|jpg)$/i.test(v)
+      ? `<img src="${aoEsc(v)}?v=1" alt="" style="width:1.15em;height:1.15em;object-fit:contain;display:block;">`
+      : aoEsc(v);
+  };
 
   async function aoLoad() {
     if (AO_CONTENT) return AO_CONTENT;
-    const r = await fetch("academy_content.json?v=4");
+    const r = await fetch("academy_content.json?v=5");
     if (!r.ok) throw new Error("academy content HTTP " + r.status);
     AO_CONTENT = await r.json();
     return AO_CONTENT;
@@ -600,7 +607,7 @@
       aoBubble(ov, "這些是學園的每日任務，完成後別忘了回來領獎勵！");
       box.innerHTML = (c.quests || []).map((q) => `
         <div class="ao-quest">
-          <div class="ao-quest-ic">${aoEsc(q.icon || "📜")}</div>
+          <div class="ao-quest-ic">${aoIcon(q.icon, "📜")}</div>
           <div class="ao-quest-body">
             <div class="ao-quest-title">${aoEsc(q.title)}</div>
             <div class="ao-quest-desc">${aoEsc(q.desc)}</div>
@@ -624,17 +631,35 @@
           <button class="jc-act ao-send">送出回報</button>
           <div class="ao-bug-hint" id="ao-bug-hint"></div>
         </div>`;
-      box.querySelector(".ao-send").addEventListener("click", () => {
+      const sendBtn = box.querySelector(".ao-send");
+      sendBtn.addEventListener("click", async () => {
         const cat = box.querySelector("#ao-bug-cat").value;
         const txt = box.querySelector("#ao-bug-txt").value.trim();
         const hint = box.querySelector("#ao-bug-hint");
         if (!txt) { hint.textContent = "請先描述問題再送出唷～"; hint.className = "ao-bug-hint err"; return; }
-        let list = [];
-        try { const p = JSON.parse(localStorage.getItem(BUG_KEY) || "[]"); list = Array.isArray(p) ? p : []; } catch (e) { list = []; }
-        list.push({ cat, txt, t: Date.now() });
-        try { localStorage.setItem(BUG_KEY, JSON.stringify(list)); } catch (e) {}
+        sendBtn.disabled = true;
+        hint.textContent = "送出中…"; hint.className = "ao-bug-hint";
+        // 真的送到後端後台（/admin/bug-reports 看得到）；網路失敗才退回本機暫存
+        let ok = false;
+        try {
+          let page = "village";
+          try { page = new URLSearchParams(location.search).get("map") || "village"; } catch (e) {}
+          const r = await fetch(DEMO_API + "/api/bug-report", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ category: cat, description: txt, page, user_agent: navigator.userAgent }),
+          });
+          ok = r.ok;
+        } catch (e) { ok = false; }
+        if (!ok) {
+          // 後端不通：存本機當離線備援，不讓玩家白填
+          let list = [];
+          try { const p = JSON.parse(localStorage.getItem(BUG_KEY) || "[]"); list = Array.isArray(p) ? p : []; } catch (e) { list = []; }
+          list.push({ cat, txt, t: Date.now() });
+          try { localStorage.setItem(BUG_KEY, JSON.stringify(list)); } catch (e) {}
+        }
+        sendBtn.disabled = false;
         box.querySelector("#ao-bug-txt").value = "";
-        hint.textContent = "✓ 已收到你的回報，謝謝！（目前為展示版，回報暫存本機）";
+        hint.textContent = ok ? "✓ 已收到你的回報，謝謝！我們會盡快處理～" : "✓ 已記下你的回報，謝謝！（暫時連不上伺服器，已先存在本機）";
         hint.className = "ao-bug-hint ok";
         aoBubble(ov, "收到囉，謝謝你的回報！");
       });
@@ -642,7 +667,7 @@
       aoBubble(ov, "不熟悉玩法嗎？這裡有完整的遊戲規則！");
       box.innerHTML = (c.rules || []).map((r) => `
         <div class="ao-rule">
-          <div class="ao-rule-ic">${aoEsc(r.icon || "📋")}</div>
+          <div class="ao-rule-ic">${aoIcon(r.icon, "📋")}</div>
           <div class="ao-rule-body"><div class="ao-rule-title">${aoEsc(r.title)}</div><div class="ao-rule-txt">${aoEsc(r.body)}</div></div>
         </div>`).join("") || `<div class="jc-empty">目前沒有規則說明</div>`;
     }

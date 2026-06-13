@@ -453,11 +453,6 @@
         "price": 210
       },
       {
-        "img": "outfits/f_hermes_bag.webp",
-        "name": "女 名牌包",
-        "price": 210
-      },
-      {
         "img": "outfits/f_kawaii.webp",
         "name": "女 可愛風",
         "price": 210
@@ -468,18 +463,8 @@
         "price": 120
       },
       {
-        "img": "outfits/f_mermaid.webp",
-        "name": "女 美人魚",
-        "price": 210
-      },
-      {
         "img": "outfits/f_party_dress.webp",
         "name": "女 派對洋裝",
-        "price": 120
-      },
-      {
-        "img": "outfits/f_pearl_necklace.webp",
-        "name": "女 珍珠項鍊",
         "price": 120
       },
       {
@@ -507,11 +492,6 @@
       {
         "img": "outfits/m_biker.webp",
         "name": "男 機車服",
-        "price": 210
-      },
-      {
-        "img": "outfits/m_briefcase.webp",
-        "name": "男 公事包",
         "price": 210
       },
       {

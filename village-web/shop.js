@@ -29,7 +29,7 @@
 
   async function loadCatalog() {
     if (CATALOG) return CATALOG;
-    const r = await fetch("shop_catalog.json?v=1");
+    const r = await fetch("shop_catalog.json?v=2");
     if (!r.ok) throw new Error("catalog HTTP " + r.status);
     CATALOG = await r.json();
     return CATALOG;
@@ -543,7 +543,7 @@
 
   async function aoLoad() {
     if (AO_CONTENT) return AO_CONTENT;
-    const r = await fetch("academy_content.json?v=3");
+    const r = await fetch("academy_content.json?v=4");
     if (!r.ok) throw new Error("academy content HTTP " + r.status);
     AO_CONTENT = await r.json();
     return AO_CONTENT;

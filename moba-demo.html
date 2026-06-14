@@ -100,6 +100,7 @@
       this.W = W; this.H = H;
       this.running = false; this.over = false;
       this.minions = [];
+      this.combo = 0;
 
       // 正方形地圖區（置中，留 letterbox）
       const S = Math.min(W, H);
@@ -184,22 +185,36 @@
       g.lineStyle(3, 0xff5e5e, 0.8).strokeCircle(this.bases.red.x, this.bases.red.y, S * 0.10);
     }
 
-    _spawn(side, lane, strong) {
+    _spawn(side, lane, strong, boost) {
+      const b = boost || 1;
       const path = side === "blue" ? this.lanePaths[lane] : this.lanePaths[lane].slice().reverse();
       const start = path[0];
       const col = side === "blue" ? 0x6fc0ff : 0xff8a8a;
       const rad = strong ? 9 : 6;
       const obj = this.add.circle(start.x, start.y, rad, col).setDepth(7);
       if (strong) obj.setStrokeStyle(2, 0xffd24a);
+      const hp = Math.round((strong ? 28 : 13) * b);
       this.minions.push({
         side, lane, x: start.x, y: start.y, obj, path, wpIdx: 1,
-        hp: strong ? 28 : 13, max: strong ? 28 : 13,
-        atk: strong ? 7 : 3, speed: strong ? 48 : 38, range: 20, cd: 0,
+        hp, max: hp,
+        atk: Math.round((strong ? 7 : 3) * b), speed: strong ? 48 : 38, range: 20, cd: 0,
       });
     }
 
-    _wave(side, lane) {
-      for (let i = 0; i < 4; i++) this.time.delayedCall(i * 130, () => { if (!this.over) this._spawn(side, lane, true); });
+    _wave(side, lane, combo) {
+      const c = Math.min(combo || 0, 5);
+      const n = 4 + c;                       // 連對越多兵越多
+      const boost = 1 + c * 0.18;            // 連對越強兵越猛
+      this._laneFlash(lane, side);
+      const path = this.lanePaths[lane], mid = path[1];
+      const label = ["上路", "中路", "下路"][lane];
+      if (side === "blue") {
+        this._floatText(mid.x, mid.y, "⚡" + label + "強襲！", "#7fc4ff");
+        if (combo >= 2) this._floatText(mid.x, mid.y - 26, "連對 COMBO ×" + combo, "#ffd24a");
+      } else {
+        this._floatText(mid.x, mid.y, "🔴 " + label + "反攻", "#ff8a8a");
+      }
+      for (let i = 0; i < n; i++) this.time.delayedCall(i * 110, () => { if (!this.over) this._spawn(side, lane, true, boost); });
     }
 
     update(time, dt) {
@@ -265,12 +280,35 @@
 
     _damage(target, amt) {
       target.hp -= amt;
-      if (target.alive !== undefined) { if (target.hp <= 0) { target.alive = false; target.obj.destroy(); } }
-      else if (target.dead !== undefined) { if (target.hp <= 0) target.dead = true; }
-      else { if (target.hp < 0) target.hp = 0; this._drawBars(); this._flash(target.side === "blue" ? this.blueCrystal : this.redCrystal); }
+      if (target.alive !== undefined) { // tower
+        if (target.hp <= 0) { target.alive = false; this._floatText(target.x, target.y, "塔被推掉！", "#ffd24a"); target.obj.destroy(); }
+      } else if (target.dead !== undefined) { // minion
+        if (target.hp <= 0) target.dead = true;
+      } else { // crystal
+        if (target.hp < 0) target.hp = 0;
+        this._drawBars();
+        this._floatText(target.x, target.y - 24, "-" + amt, target.side === "blue" ? "#ff8a8a" : "#7fc4ff");
+        this._flash(target.side === "blue" ? this.blueCrystal : this.redCrystal);
+      }
     }
 
     _flash(obj) { if (obj && obj.scene) this.tweens.add({ targets: obj, alpha: 0.4, duration: 70, yoyo: true }); }
+
+    _laneFlash(lane, side) {
+      const path = this.lanePaths[lane];
+      const col = side === "blue" ? 0x7fc4ff : 0xff8a8a;
+      const g = this.add.graphics().setDepth(9);
+      g.lineStyle(22, col, 0.9);
+      g.beginPath(); g.moveTo(path[0].x, path[0].y);
+      for (let i = 1; i < path.length; i++) g.lineTo(path[i].x, path[i].y);
+      g.strokePath();
+      this.tweens.add({ targets: g, alpha: 0, duration: 600, onComplete: () => g.destroy() });
+    }
+
+    _floatText(x, y, text, color) {
+      const t = this.add.text(x, y, text, { fontFamily: "sans-serif", fontSize: "16px", fontStyle: "bold", color: color || "#fff", stroke: "#000", strokeThickness: 3 }).setOrigin(0.5).setDepth(50);
+      this.tweens.add({ targets: t, y: y - 34, alpha: 0, duration: 900, ease: "Cubic.easeOut", onComplete: () => t.destroy() });
+    }
 
     _drawBars() {
       const g = this.barG; g.clear();
@@ -290,7 +328,7 @@
       this.qIdx = 0; this.locked = false;
       this.lanepick.querySelectorAll(".lp-btn").forEach(b => {
         b.addEventListener("click", () => {
-          this._wave("blue", parseInt(b.dataset.lane, 10));
+          this._wave("blue", parseInt(b.dataset.lane, 10), this.combo);
           this.lanepick.classList.remove("on");
           this._nextQuestion();
         });
@@ -321,13 +359,15 @@
       const correct = i === item.a;
       btn.classList.add(correct ? "correct" : "wrong");
       if (correct) {
-        this.qHint.textContent = "✓ 答對！選一路派強援";
+        this.combo++;
+        this.qHint.textContent = this.combo >= 2 ? ("✓ 連對 ×" + this.combo + "！選一路派強援") : "✓ 答對！選一路派強援";
         this.lanepick.classList.add("on");
       } else {
+        this.combo = 0;
         const right = this.qChoices.children[item.a];
         if (right) right.classList.add("correct");
-        this.qHint.textContent = "✗ 答錯！電腦趁機增援";
-        this._wave("red", Phaser.Math.Between(0, 2));
+        this.qHint.textContent = "✗ 答錯！電腦趁機反攻";
+        this._wave("red", Phaser.Math.Between(0, 2), 0);
         this.time.delayedCall(1200, () => this._nextQuestion());
       }
     }

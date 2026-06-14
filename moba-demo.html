@@ -86,7 +86,7 @@
 
     preload() {
       const B = "assets/moba/";
-      if (!this.textures.exists("moba_map")) this.load.image("moba_map", B + "map.webp?v=1");
+      if (!this.textures.exists("moba_map")) this.load.image("moba_map", B + "map_iso.webp?v=1");
       ["minion_blue", "minion_red", "tower_blue", "tower_red"].forEach(k => {
         if (!this.textures.exists(k)) this.load.image(k, B + k + ".webp?v=1");
       });
@@ -99,20 +99,23 @@
       const S = Math.min(W, H); this.S = S; this.ox = (W - S) / 2; this.oy = (H - S) / 2;
       const P = (rx, ry) => ({ x: this.ox + rx * S, y: this.oy + ry * S }); this.P = P;
 
-      const BL = P(0.12, 0.88), TR = P(0.88, 0.12), TL = P(0.12, 0.12), BR = P(0.88, 0.88), C = P(0.5, 0.5);
-      this.lanePaths = [[BL, TL, TR], [BL, C, TR], [BL, BR, TR]];   // 上 中 下（藍→紅）
+      const BL = P(0.17, 0.69), TR = P(0.82, 0.19), C = P(0.50, 0.44), TOP = P(0.33, 0.30), BOT = P(0.64, 0.70);
+      this.lanePaths = [[BL, TOP, TR], [BL, C, TR], [BL, BOT, TR]];   // 上 中 下（藍→紅，對齊斜角底圖）
       // 每路一個拔河進度 prog：0=紅推爆藍基地(紅贏該路)，1=藍推爆紅基地(藍贏該路)，0.5 中點
       this.lanes = [0.5, 0.5, 0.5].map(p => ({ prog: p }));
 
       this._drawMap();
 
-      // 塔（固定視覺裝飾）
-      const towerSpots = [[0.12, 0.5, "blue", 0], [0.5, 0.12, "red", 0], [0.31, 0.69, "blue", 1], [0.69, 0.31, "red", 1], [0.5, 0.88, "blue", 2], [0.88, 0.5, "red", 2]];
-      towerSpots.forEach(([rx, ry, side]) => {
-        const p = P(rx, ry), tk = side === "blue" ? "tower_blue" : "tower_red";
-        if (this.textures.exists(tk)) this.add.image(p.x, p.y, tk).setDisplaySize(34, 40).setDepth(4);
-        else this.add.rectangle(p.x, p.y, 18, 24, side === "blue" ? 0x3f7fd0 : 0xd05f5f).setDepth(4);
-      });
+      // 塔（放路徑上 0.3藍/0.7紅 + 陰影 + y-sort 遠近遮擋）
+      for (let l = 0; l < 3; l++) {
+        [["blue", 0.3], ["red", 0.7]].forEach(([side, t]) => {
+          const p = this._posOnLane(l, t), tk = side === "blue" ? "tower_blue" : "tower_red";
+          this.add.ellipse(p.x, p.y + 16, 26, 10, 0x000000, 0.25).setDepth(p.y - 1);
+          const o = this.textures.exists(tk) ? this.add.image(p.x, p.y, tk).setDisplaySize(32, 38)
+            : this.add.rectangle(p.x, p.y, 18, 24, side === "blue" ? 0x3f7fd0 : 0xd05f5f);
+          o.setDepth(p.y);
+        });
+      }
 
       // 6 英雄（每路 藍 vs 紅），中路藍英雄是玩家(加光圈)
       this.heroes = [];
@@ -126,8 +129,8 @@
 
       // 頂部血條/目標
       const ts = { fontFamily: "sans-serif", fontSize: "12px", fontStyle: "bold", stroke: "#000", strokeThickness: 3 };
-      this.goalText = this.add.text(W / 2, 5, "🎯 任一路推爆對面基地就贏", { ...ts, fontSize: "12.5px", color: "#ffd24a" }).setOrigin(0.5, 0).setDepth(9);
-      this.laneTxt = this.add.text(W / 2, 24, "", { ...ts, color: "#fff" }).setOrigin(0.5, 0).setDepth(9);
+      this.goalText = this.add.text(W / 2, 5, "🎯 任一路推爆對面基地就贏", { ...ts, fontSize: "12.5px", color: "#ffd24a" }).setOrigin(0.5, 0).setDepth(99999);
+      this.laneTxt = this.add.text(W / 2, 24, "", { ...ts, color: "#fff" }).setOrigin(0.5, 0).setDepth(99999);
       this._updatePositions();
 
       this._bindDOM();
@@ -160,8 +163,10 @@
 
     _mkHero(side, lane) {
       const k = side === "blue" ? "minion_blue" : "minion_red";
-      const o = this.textures.exists(k) ? this.add.image(0, 0, k).setDisplaySize(34, 34).setDepth(7)
-        : this.add.circle(0, 0, 11, side === "blue" ? 0x6fc0ff : 0xff8a8a).setDepth(7);
+      const shadow = this.add.ellipse(0, 0, 24, 10, 0x000000, 0.28);
+      const o = this.textures.exists(k) ? this.add.image(0, 0, k).setDisplaySize(34, 34)
+        : this.add.circle(0, 0, 11, side === "blue" ? 0x6fc0ff : 0xff8a8a);
+      o._shadow = shadow;
       return o;
     }
 
@@ -186,9 +191,11 @@
         const prog = this.lanes[h.lane].prog;
         const bp = this._posOnLane(h.lane, Math.max(0.04, prog - 0.05));
         const rp = this._posOnLane(h.lane, Math.min(0.96, prog + 0.05));
-        h.blue.x = bp.x; h.blue.y = bp.y;
-        h.red.x = rp.x; h.red.y = rp.y;
-        if (h.lane === PLAYER_LANE && this.playerRing) { this.playerRing.x = h.blue.x; this.playerRing.y = h.blue.y; }
+        h.blue.x = bp.x; h.blue.y = bp.y; h.blue.setDepth(bp.y);
+        h.red.x = rp.x; h.red.y = rp.y; h.red.setDepth(rp.y);
+        if (h.blue._shadow) { h.blue._shadow.x = bp.x; h.blue._shadow.y = bp.y + 13; h.blue._shadow.setDepth(bp.y - 1); }
+        if (h.red._shadow) { h.red._shadow.x = rp.x; h.red._shadow.y = rp.y + 13; h.red._shadow.setDepth(rp.y - 1); }
+        if (h.lane === PLAYER_LANE && this.playerRing) { this.playerRing.x = bp.x; this.playerRing.y = bp.y; this.playerRing.setDepth(bp.y + 1); }
       }
       // 中路(你的)進度文字
       const mp = Math.round(this.lanes[PLAYER_LANE].prog * 100);

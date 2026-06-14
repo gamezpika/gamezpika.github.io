@@ -172,9 +172,10 @@ class ExploreScene extends Phaser.Scene {
     if (!this.textures.exists("hero_down")) this.load.spritesheet("hero_down", this.assetBase + (ow ? ow.down : ps.down.image) + "?v=4", { frameWidth: ps.down.frame_width, frameHeight: ps.down.frame_height });
     if (!this.textures.exists("hero_up"))   this.load.spritesheet("hero_up",   this.assetBase + (ow ? ow.up   : ps.up.image)   + "?v=4", { frameWidth: ps.up.frame_width,   frameHeight: ps.up.frame_height });
 
-    // 任務 NPC 頭頂符號（所有地圖共用，已載就跳過）：quest_mark=❗可領獎、quest_ask=❓可接任務
+    // 任務 NPC 頭頂符號（所有地圖共用，已載就跳過）：quest_mark=❗可領獎、quest_ask=❓可接任務、quest_progress=灰❗進行中
     if (!this.textures.exists("quest_mark")) this.load.image("quest_mark", "icons/ic_quest.webp?v=1");
     if (!this.textures.exists("quest_ask")) this.load.image("quest_ask", "icons/ic_quest_q.webp?v=1");
+    if (!this.textures.exists("quest_progress")) this.load.image("quest_progress", "icons/ic_quest_progress.webp?v=1");
 
     // NPC sprites（每隻 NPC 可帶自己的 side/down/up；沒給就 fallback 用 hero）
     if (Array.isArray(config.npcs)) {
@@ -477,7 +478,7 @@ class ExploreScene extends Phaser.Scene {
           animKeys: { side: dSide.anim, down: dDown.anim, up: dUp.anim },
           bubble: null,
           questMark: null,
-          questState: null,   // 'claim'(❗可領)/'avail'(❓可接)/null；由 _refreshQuestMarks 依任務狀態設
+          questState: null,   // 'claim'(❗可領)/'avail'(❓可接)/'progress'(灰❗進行中)/null；由 _refreshQuestMarks 依任務狀態設
         };
         // 任務 NPC 的 ❗/❓ 改由 _refreshQuestMarks（地圖建好後 async 算任務狀態）統一掛
         // NPC physics body + collider 跟玩家擋的同一組 obstacles（鳥群在天上豁免）
@@ -1198,10 +1199,10 @@ class ExploreScene extends Phaser.Scene {
         try { return Math.max(0, parseInt(localStorage.getItem("village_" + subj + "_" + chain) || "0", 10) || 0); }
         catch (e) { return 0; }
       };
-      // 一隻 NPC 的綜合狀態：'claim'(❗) 優先 > 'avail'(❓) > null
+      // 一隻 NPC 的綜合狀態：'claim'(❗可領) > 'avail'(❓可接) > 'progress'(灰❗進行中) > null
       const stateOf = (npcId) => {
         const def = npcsDef[npcId]; if (!def) return null;
-        let canClaim = false, canAccept = false;
+        let canClaim = false, canAccept = false, inProgress = false;
         (def.lines || []).forEach((ln) => {
           const chain = ln.chain === "side" ? "side" : "main";
           const base = Number(ln.seq_start) || 1;
@@ -1212,6 +1213,7 @@ class ExploreScene extends Phaser.Scene {
               if (mainAPI) {                          // 有 token 且後端成功
                 const aq = mainAPI[seq], st = aq ? aq.status : "locked";
                 if (st === "active" && aq && aq.can_claim) canClaim = true;
+                else if (st === "active") inProgress = true;   // 已接、還沒達成 → 進行中
                 else if (st === "available") canAccept = true;
               } else if (!token) {                    // 無 token → 本機進度 fallback
                 if (seq === lsProg("main") + 1) canAccept = true;
@@ -1222,7 +1224,7 @@ class ExploreScene extends Phaser.Scene {
             }
           }
         });
-        return canClaim ? "claim" : (canAccept ? "avail" : null);
+        return canClaim ? "claim" : (canAccept ? "avail" : (inProgress ? "progress" : null));
       };
 
       for (const npc of this.npcs) {
@@ -1233,7 +1235,7 @@ class ExploreScene extends Phaser.Scene {
           npc.questState = null;
           continue;
         }
-        const tex = state === "claim" ? "quest_mark" : "quest_ask";
+        const tex = state === "claim" ? "quest_mark" : state === "avail" ? "quest_ask" : "quest_progress";
         if (!this.textures.exists(tex)) { if (npc.questMark) { npc.questMark.destroy(); npc.questMark = null; } npc.questState = null; continue; }
         if (!npc.questMark) {
           npc.questMark = this.add.image(npc.body.x, npc.body.y, tex).setDisplaySize(26, 26).setDepth(99999);

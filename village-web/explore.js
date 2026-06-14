@@ -87,6 +87,12 @@ class ExploreScene extends Phaser.Scene {
     this._nearShop = null;
     this._suppress = null;        // 逐棟抑制：剛開過的那棟（防關面板原地重開）
     this._interactInit = false;   // 落地第一幀若已站在觸發區內→記抑制不開（防機台返回秒重開）
+    // 任務符號重算狀態復位：restart 不重建 scene instance，這些旗標若漏復位，
+    // 「上一張圖還在 await 的 _refreshQuestMarks」會讓 _qBusy 卡 true → 新圖 create() 那次被擋掉 → 符號永遠不重建。
+    // bump _qRunId 讓上一張圖在途的 refresh 變 stale，resume 後被 stale() 擋住、不污染新場景。
+    this._qBusy = false;
+    this._qPending = false;
+    this._qRunId = (this._qRunId || 0) + 1;
   }
 
   // backbuffer 是 css × dpr，UI/zoom 計算要用 CSS 尺寸（除以 dpr）

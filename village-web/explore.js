@@ -1267,8 +1267,12 @@ class ExploreScene extends Phaser.Scene {
         npc.questState = state;
       }
     } finally {
-      this._qBusy = false;
-      if (this._qPending) { this._qPending = false; this._refreshQuestMarks(); }   // 補跑重入期間漏掉的更新
+      // 只有「最新的 run」(runId 仍是 _qRunId)才清 busy/補跑；被 restart 作廢的舊 run resume 後
+      // 不可把新場景 in-flight run 的 _qBusy 誤清掉（Codex P2：否則 observer 觸發的並跑會誤殺新 run）
+      if (runId === this._qRunId) {
+        this._qBusy = false;
+        if (this._qPending) { this._qPending = false; this._refreshQuestMarks(); }   // 補跑重入期間漏掉的更新
+      }
     }
   }
 

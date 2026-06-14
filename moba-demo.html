@@ -148,6 +148,10 @@
       this.blueCrystal = this.add.star(BL.x, BL.y, 6, 13, 26, 0x4a9fff).setStrokeStyle(2, 0xffffff, 0.6).setDepth(6);
       this.redCrystal  = this.add.star(TR.x, TR.y, 6, 13, 26, 0xff5e5e).setStrokeStyle(2, 0xffffff, 0.6).setDepth(6);
       this.barG = this.add.graphics().setDepth(8);
+      const tStyle = { fontFamily: "sans-serif", fontSize: "12px", fontStyle: "bold", stroke: "#000", strokeThickness: 3 };
+      this.goalText = this.add.text(this.W / 2, 5, "🎯 推爆右上紅水晶就贏", { ...tStyle, fontSize: "13px", color: "#ffd24a" }).setOrigin(0.5, 0).setDepth(9);
+      this.bluePctText = this.add.text(10, 20, "我方 100%", { ...tStyle, color: "#7fc4ff" }).setOrigin(0, 0).setDepth(9);
+      this.redPctText = this.add.text(this.W - 10, 20, "敵方 100%", { ...tStyle, color: "#ff8a8a" }).setOrigin(1, 0).setDepth(9);
       this._drawBars();
 
       this._bindDOM();
@@ -196,7 +200,7 @@
       const hp = Math.round((strong ? 28 : 13) * b);
       this.minions.push({
         side, lane, x: start.x, y: start.y, obj, path, wpIdx: 1,
-        hp, max: hp,
+        hp, max: hp, dead: false,   // 必設！否則 _damage 靠 dead!==undefined 判型會把小兵誤判成水晶→永遠不死
         atk: Math.round((strong ? 7 : 3) * b), speed: strong ? 48 : 38, range: 20, cd: 0,
       });
     }
@@ -226,7 +230,7 @@
         m.cd -= dt;
         const tgt = this._nearestEnemy(m);
         if (tgt && Math.hypot(tgt.x - m.x, tgt.y - m.y) <= m.range + (tgt.r || 6)) {
-          if (m.cd <= 0) { this._damage(tgt, m.atk); m.cd = 600; this._flash(m.obj); }
+          if (m.cd <= 0) { this._damage(tgt, m.atk); m.cd = 480; this._flash(m.obj); }
         } else {
           this._advance(m, d);
         }
@@ -287,7 +291,6 @@
       } else { // crystal
         if (target.hp < 0) target.hp = 0;
         this._drawBars();
-        this._floatText(target.x, target.y - 24, "-" + amt, target.side === "blue" ? "#ff8a8a" : "#7fc4ff");
         this._flash(target.side === "blue" ? this.blueCrystal : this.redCrystal);
       }
     }
@@ -318,6 +321,8 @@
       g.fillStyle(0x4a9fff, 1).fillRect(10, 8, bw * Math.max(0, b.hp) / b.max, h);
       g.fillStyle(0x000000, 0.5).fillRect(this.W - 10 - bw, 8, bw, h);
       g.fillStyle(0xff5e5e, 1).fillRect(this.W - 10 - bw, 8, bw * Math.max(0, r.hp) / r.max, h);
+      if (this.bluePctText) this.bluePctText.setText("我方 " + Math.ceil(Math.max(0, b.hp) / b.max * 100) + "%");
+      if (this.redPctText) this.redPctText.setText("敵方 " + Math.ceil(Math.max(0, r.hp) / r.max * 100) + "%");
     }
 
     _bindDOM() {

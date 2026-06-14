@@ -125,7 +125,6 @@
       }
 
       // 頂部血條/目標
-      this.barG = this.add.graphics().setDepth(8);
       const ts = { fontFamily: "sans-serif", fontSize: "12px", fontStyle: "bold", stroke: "#000", strokeThickness: 3 };
       this.goalText = this.add.text(W / 2, 5, "🎯 任一路推爆對面基地就贏", { ...ts, fontSize: "12.5px", color: "#ffd24a" }).setOrigin(0.5, 0).setDepth(9);
       this.laneTxt = this.add.text(W / 2, 24, "", { ...ts, color: "#fff" }).setOrigin(0.5, 0).setDepth(9);
@@ -205,22 +204,8 @@
         if (lane.prog <= 0) { lane.prog = 0; redWin = true; }
       }
       this._updatePositions();
-      this._drawBars();
       if (blueWin) this._end(true);
       else if (redWin) this._end(false);
-    }
-
-    _drawBars() {
-      // 三路進度條（左藍右紅），中路加亮框
-      const g = this.barG; g.clear();
-      const W = this.W, x0 = 12, bw = W - 24, h = 7, gap = 4, top = 40;
-      for (let l = 0; l < 3; l++) {
-        const y = top + l * (h + gap);
-        g.fillStyle(0x000000, 0.45).fillRect(x0, y, bw, h);
-        g.fillStyle(0x4a9fff, 1).fillRect(x0, y, bw * this.lanes[l].prog, h);
-        g.fillStyle(0xff5e5e, 1).fillRect(x0 + bw * this.lanes[l].prog, y, bw * (1 - this.lanes[l].prog), h);
-        if (l === PLAYER_LANE) g.lineStyle(2, 0xffd24a, 1).strokeRect(x0 - 1, y - 1, bw + 2, h + 2);
-      }
     }
 
     _bindDOM() {

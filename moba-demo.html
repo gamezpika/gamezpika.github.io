@@ -95,6 +95,14 @@
   class Battle extends Phaser.Scene {
     constructor() { super("Battle"); }
 
+    preload() {
+      const B = "assets/moba/";
+      if (!this.textures.exists("moba_map")) this.load.image("moba_map", B + "map.webp?v=1");
+      ["minion_blue", "minion_red", "tower_blue", "tower_red"].forEach(k => {
+        if (!this.textures.exists(k)) this.load.image(k, B + k + ".webp?v=1");
+      });
+    }
+
     create() {
       const W = this.scale.width, H = this.scale.height;
       this.W = W; this.H = H;
@@ -139,14 +147,14 @@
       ];
       towerSpots.forEach(([rx, ry, side, lane]) => {
         const p = P(rx, ry);
-        const col = side === "blue" ? 0x3f7fd0 : 0xd05f5f;
-        const obj = this.add.rectangle(p.x, p.y, 20, 26, col).setStrokeStyle(2, 0xffffff, 0.5).setDepth(4);
+        const tkey = side === "blue" ? "tower_blue" : "tower_red";
+        const obj = this.textures.exists(tkey)
+          ? this.add.image(p.x, p.y, tkey).setDisplaySize(36, 42).setDepth(4)
+          : this.add.rectangle(p.x, p.y, 20, 26, side === "blue" ? 0x3f7fd0 : 0xd05f5f).setStrokeStyle(2, 0xffffff, 0.5).setDepth(4);
         this.towers.push({ x: p.x, y: p.y, side, lane, hp: 70, max: 70, range: 64, atk: 9, cd: 0, obj, alive: true });
       });
 
-      // 基地水晶圖示 + 血條
-      this.blueCrystal = this.add.star(BL.x, BL.y, 6, 13, 26, 0x4a9fff).setStrokeStyle(2, 0xffffff, 0.6).setDepth(6);
-      this.redCrystal  = this.add.star(TR.x, TR.y, 6, 13, 26, 0xff5e5e).setStrokeStyle(2, 0xffffff, 0.6).setDepth(6);
+      // 水晶基地視覺用底圖的，這裡只留血條/數字
       this.barG = this.add.graphics().setDepth(8);
       const tStyle = { fontFamily: "sans-serif", fontSize: "12px", fontStyle: "bold", stroke: "#000", strokeThickness: 3 };
       this.goalText = this.add.text(this.W / 2, 5, "🎯 推爆右上紅水晶就贏", { ...tStyle, fontSize: "13px", color: "#ffd24a" }).setOrigin(0.5, 0).setDepth(9);
@@ -169,24 +177,23 @@
     }
 
     _drawMap() {
-      const g = this.add.graphics().setDepth(0);
       const S = this.S, ox = this.ox, oy = this.oy;
-      // 底（地圖外深色 + 地圖區草綠）
-      g.fillStyle(0x0e1630, 1).fillRect(0, 0, this.W, this.H);
-      g.fillStyle(0x3a4a2c, 1).fillRoundedRect(ox + S * 0.04, oy + S * 0.04, S * 0.92, S * 0.92, 18);
-      // 河道：左上↔右下 斜帶（垂直於中路對角）
-      g.lineStyle(S * 0.13, 0x2c6e7a, 0.55);
-      g.beginPath(); g.moveTo(this.P(0.12, 0.12).x, this.P(0.12, 0.12).y); g.lineTo(this.P(0.88, 0.88).x, this.P(0.88, 0.88).y); g.strokePath();
-      // 三路：畫 waypoint 連線（土色寬路）
+      // 地圖外深色底
+      this.add.graphics().setDepth(-2).fillStyle(0x0e1630, 1).fillRect(0, 0, this.W, this.H);
+      // 底圖（含草地/河道/野區/藍紅水晶基地）；沒載到才 fallback 純草地
+      if (this.textures.exists("moba_map")) {
+        this.add.image(ox + S / 2, oy + S / 2, "moba_map").setDisplaySize(S, S).setDepth(-1);
+      } else {
+        this.add.graphics().setDepth(-1).fillStyle(0x3a4a2c, 1).fillRoundedRect(ox + S * 0.04, oy + S * 0.04, S * 0.92, S * 0.92, 18);
+      }
+      // 半透明三路土路（疊底圖上，讓玩家看到走道）
+      const g = this.add.graphics().setDepth(1);
       this.lanePaths.forEach(path => {
-        g.lineStyle(20, 0x6b5a3a, 0.9);
+        g.lineStyle(15, 0x6b5a3a, 0.38);
         g.beginPath(); g.moveTo(path[0].x, path[0].y);
         for (let i = 1; i < path.length; i++) g.lineTo(path[i].x, path[i].y);
         g.strokePath();
       });
-      // 基地圈
-      g.lineStyle(3, 0x4a9fff, 0.8).strokeCircle(this.bases.blue.x, this.bases.blue.y, S * 0.10);
-      g.lineStyle(3, 0xff5e5e, 0.8).strokeCircle(this.bases.red.x, this.bases.red.y, S * 0.10);
     }
 
     _spawn(side, lane, strong, boost) {
@@ -195,8 +202,12 @@
       const start = path[0];
       const col = side === "blue" ? 0x6fc0ff : 0xff8a8a;
       const rad = strong ? 9 : 6;
-      const obj = this.add.circle(start.x, start.y, rad, col).setDepth(7);
-      if (strong) obj.setStrokeStyle(2, 0xffd24a);
+      const mkey = side === "blue" ? "minion_blue" : "minion_red";
+      const sz = strong ? 30 : 22;
+      const obj = this.textures.exists(mkey)
+        ? this.add.image(start.x, start.y, mkey).setDisplaySize(sz, sz).setDepth(7)
+        : this.add.circle(start.x, start.y, rad, col).setDepth(7);
+      if (strong && obj.setStrokeStyle) obj.setStrokeStyle(2, 0xffd24a);
       const hp = Math.round((strong ? 28 : 13) * b);
       this.minions.push({
         side, lane, x: start.x, y: start.y, obj, path, wpIdx: 1,
@@ -291,11 +302,16 @@
       } else { // crystal
         if (target.hp < 0) target.hp = 0;
         this._drawBars();
-        this._flash(target.side === "blue" ? this.blueCrystal : this.redCrystal);
+        this._baseFlash(target);
       }
     }
 
     _flash(obj) { if (obj && obj.scene) this.tweens.add({ targets: obj, alpha: 0.4, duration: 70, yoyo: true }); }
+
+    _baseFlash(base) {
+      const c = this.add.circle(base.x, base.y, this.S * 0.07, base.side === "blue" ? 0x4a9fff : 0xff5e5e, 0.45).setDepth(8);
+      this.tweens.add({ targets: c, alpha: 0, scale: 1.5, duration: 320, onComplete: () => c.destroy() });
+    }
 
     _laneFlash(lane, side) {
       const path = this.lanePaths[lane];

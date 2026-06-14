@@ -436,6 +436,7 @@ class ExploreScene extends Phaser.Scene {
     if (!this.anims.exists("hero_walk_up"))   this.anims.create({ key: "hero_walk_up",   frames: this.anims.generateFrameNumbers("hero_up",   { start: 0, end: (p.sprites.up.frames   || 16) - 1 }), frameRate: p.sprites.up.frame_rate || 14, repeat: -1 });
     if (!this.anims.exists("hero_idle"))      this.anims.create({ key: "hero_idle",      frames: [{ key: "hero_down", frame: 0 }],                                                                  frameRate: 1                                });
     this.playerSprite.play("hero_idle");
+    if (window.__mp) window.__mp.onSceneCreate(this); // 多人整合（feature flag ?mp=1）
     // 換裝一致性自癒：texture 是全域、restart 後 exists 會跳過重載 →
     // 若中途換過裝（或換裝被 portal 打斷），實際載的造型可能 ≠ 目前裝備，這裡對帳補套
     // （create 期間 scene 還不算 active，getScenes(true) 找不到 → 要把 this 傳進去）
@@ -1451,6 +1452,7 @@ class ExploreScene extends Phaser.Scene {
     }
     this._updateInteractable();
     this._updatePortals();
+    if (window.__mp) window.__mp.onUpdate(this, this.player.x, this.player.y, dx, dy, moving); // 多人整合
   }
 }
 

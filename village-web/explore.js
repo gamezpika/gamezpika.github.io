@@ -1173,7 +1173,10 @@ class ExploreScene extends Phaser.Scene {
     this._qBusy = true;
     const runMapId = this.mapId, runId = (this._qRunId = (this._qRunId || 0) + 1);
     this._qDbg = "run#" + runId + " enter";
-    const stale = () => runId !== this._qRunId || this.mapId !== runMapId || !this.scene || !this.scene.isActive();
+    // 過期判定只看 runId(被新 run/restart 取代) + mapId(換圖)；不可查 scene.isActive()，
+    // 因為本函式從 _buildScene(資產載入 callback)呼叫時場景常還在 CREATING(未 RUNNING)，
+    // isActive 會誤判過期→bail→符號永遠不建立(切場景符號消失的真因，?dbg 實測 act:false)。
+    const stale = () => runId !== this._qRunId || this.mapId !== runMapId || !this.scene;
     try {
       if (!this.npcs) { this._qDbg = "ret:no-npcs"; return; }
       const subj = _questSubjectOf(this.mapId);

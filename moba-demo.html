@@ -9,9 +9,8 @@
   html, body { margin: 0; height: 100%; background: #0e1630; font-family: "PingFang TC", "Noto Sans TC", sans-serif; overflow: hidden; }
   #wrap { position: fixed; inset: 0; display: flex; flex-direction: column; }
   #game { flex: 1 1 auto; position: relative; min-height: 0; }
-  #game canvas { display: block; width: 100% !important; height: 100% !important; }
+  #game canvas { display: block; }
 
-  /* 底部答題面板 */
   #quiz { flex: 0 0 auto; background: rgba(12,20,48,0.96); border-top: 2px solid #2a3a6a;
     padding: 10px 12px calc(12px + env(safe-area-inset-bottom, 0px)); color: #fff; }
   #q-text { font-size: 15px; font-weight: 600; text-align: center; min-height: 22px; margin-bottom: 8px; line-height: 1.35; }
@@ -23,7 +22,6 @@
   .q-btn.wrong { background: #e74c3c; color: #fff; }
   #q-hint { text-align: center; font-size: 13px; color: #ffd24a; min-height: 18px; margin-top: 6px; font-weight: 700; }
 
-  /* 選路增援 */
   #lanepick { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center;
     gap: 14px; background: rgba(8,12,30,0.55); z-index: 20; }
   #lanepick.on { display: flex; }
@@ -32,7 +30,6 @@
     background: linear-gradient(135deg, #4a9fff, #2d6fd6); color: #fff; cursor: pointer; box-shadow: 0 3px 10px rgba(0,0,0,0.4); }
   .lp-btn:active { transform: scale(0.97); }
 
-  /* 開場說明卡 / 結算 共用 overlay */
   .ov { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
     gap: 14px; background: rgba(8,12,30,0.92); z-index: 40; color: #fff; text-align: center; padding: 26px; }
   .ov h1 { margin: 0; font-size: 24px; font-weight: 900; }
@@ -51,17 +48,17 @@
   <div id="game">
     <div id="lanepick">
       <div class="lp-title">答對！派強援去哪一路？</div>
-      <button class="lp-btn" data-lane="0">⬆ 上路</button>
-      <button class="lp-btn" data-lane="1">➡ 中路</button>
-      <button class="lp-btn" data-lane="2">⬇ 下路</button>
+      <button class="lp-btn" data-lane="0">↖ 上路</button>
+      <button class="lp-btn" data-lane="1">⤢ 中路</button>
+      <button class="lp-btn" data-lane="2">↘ 下路</button>
     </div>
     <div id="intro" class="ov">
       <h1>⚔️ 三路答題攻防</h1>
       <div class="card">
-        🔵 你是<b>藍方</b>（左），🔴 電腦是<b>紅方</b>（右）。<br>
-        • 三路會<b>自動出小兵</b>往前推、遇敵就打。<br>
-        • 下方<b>答題</b>：答對 → 選一路<b>派強援</b>（一波強兵）；答錯 → 電腦增援。<br>
-        • 把對面的<b>塔</b>推掉、再推爆<b>水晶</b> = <b>獲勝</b>！<br>
+        🔵 你是<b>藍隊</b>（左下），🔴 電腦是<b>紅隊</b>（右上）。<br>
+        • 三路（上路繞邊、中路走對角、下路繞邊）<b>自動出小兵</b>往敵方基地推、遇敵就打。<br>
+        • 下方<b>答題</b>：答對 → 選一路<b>派強援</b>；答錯 → 電腦增援。<br>
+        • 推掉對面的<b>塔</b>、再推爆<b>基地水晶</b> = <b>獲勝</b>！<br>
         <br>📚 <b>讀書 = 戰力</b>：答得又快又準，三路就壓著打。
       </div>
       <button id="startBtn">開始對戰</button>
@@ -82,7 +79,6 @@
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 <script>
 (function () {
-  // ── 內建題庫（最小原型先 hardcode，之後接真題庫）──
   const QUESTIONS = [
     { q: "8 × 7 = ?", choices: ["54", "56", "63", "49"], a: 1 },
     { q: "「蘋果」的英文是？", choices: ["apple", "banana", "orange", "grape"], a: 0 },
@@ -94,8 +90,7 @@
     { q: "「謝謝」的英文是？", choices: ["sorry", "hello", "please", "thanks"], a: 3 },
   ];
 
-  const LANE_LABEL = ["上路", "中路", "下路"];
-  let game, scene;
+  let game;
 
   class Battle extends Phaser.Scene {
     constructor() { super("Battle"); }
@@ -103,176 +98,196 @@
     create() {
       const W = this.scale.width, H = this.scale.height;
       this.W = W; this.H = H;
-      this.running = false;          // intro 期間不跑
-      this.over = false;
+      this.running = false; this.over = false;
       this.minions = [];
-      this.laneY = [H * 0.26, H * 0.5, H * 0.74];
-      this.BLUE_X = W * 0.10;        // 藍方水晶 x
-      this.RED_X = W * 0.90;         // 紅方水晶 x
 
-      // 背景三路
-      const g = this.add.graphics();
-      g.fillStyle(0x12203f, 1).fillRect(0, 0, W, H);
-      this.laneY.forEach(y => {
-        g.lineStyle(34, 0x1b2c54, 1).beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.strokePath();
-        g.lineStyle(2, 0x2a3f74, 0.8).beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.strokePath();
-      });
+      // 正方形地圖區（置中，留 letterbox）
+      const S = Math.min(W, H);
+      this.S = S;
+      this.ox = (W - S) / 2;
+      this.oy = (H - S) / 2;
+      const P = (rx, ry) => ({ x: this.ox + rx * S, y: this.oy + ry * S });
+      this.P = P;
 
-      // 水晶（基地）
-      this.blue = { hp: 100, max: 100, side: "blue", x: this.BLUE_X, y: H * 0.5 };
-      this.red  = { hp: 100, max: 100, side: "red",  x: this.RED_X, y: H * 0.5 };
-      this.blueCrystal = this.add.star(this.BLUE_X, H * 0.5, 6, 12, 24, 0x4a9fff).setDepth(5);
-      this.redCrystal  = this.add.star(this.RED_X, H * 0.5, 6, 12, 24, 0xff5e5e).setDepth(5);
+      // 角落 + 中央
+      const BL = P(0.12, 0.88);   // 藍基地 左下
+      const TR = P(0.88, 0.12);   // 紅基地 右上
+      const TL = P(0.12, 0.12);   // 左上
+      const BR = P(0.88, 0.88);   // 右下
+      const C  = P(0.5, 0.5);     // 中央
+      this.bases = {
+        blue: { x: BL.x, y: BL.y, hp: 120, max: 120, side: "blue" },
+        red:  { x: TR.x, y: TR.y, hp: 120, max: 120, side: "red" },
+      };
+      // 三路 waypoint（藍→紅方向）：上路繞上邊、中路對角、下路繞下邊
+      this.lanePaths = [
+        [BL, TL, TR],   // 0 上路
+        [BL, C, TR],    // 1 中路
+        [BL, BR, TR],   // 2 下路
+      ];
 
-      // 塔：每方每路一座（在己方半場該路）
+      this._drawMap();
+
+      // 塔：每路 藍塔(靠藍端) + 紅塔(靠紅端)，放路徑中段
       this.towers = [];
-      this.laneY.forEach((y, lane) => {
-        this.towers.push(this._mkTower(W * 0.30, y, "blue", lane));
-        this.towers.push(this._mkTower(W * 0.70, y, "red", lane));
+      const towerSpots = [
+        // [rx, ry, side, lane]
+        [0.12, 0.5, "blue", 0], [0.5, 0.12, "red", 0],   // 上路
+        [0.31, 0.69, "blue", 1], [0.69, 0.31, "red", 1], // 中路
+        [0.5, 0.88, "blue", 2], [0.88, 0.5, "red", 2],   // 下路
+      ];
+      towerSpots.forEach(([rx, ry, side, lane]) => {
+        const p = P(rx, ry);
+        const col = side === "blue" ? 0x3f7fd0 : 0xd05f5f;
+        const obj = this.add.rectangle(p.x, p.y, 20, 26, col).setStrokeStyle(2, 0xffffff, 0.5).setDepth(4);
+        this.towers.push({ x: p.x, y: p.y, side, lane, hp: 70, max: 70, range: 64, atk: 9, cd: 0, obj, alive: true });
       });
 
-      // 水晶血條
-      this.blueBar = this.add.graphics().setDepth(6);
-      this.redBar = this.add.graphics().setDepth(6);
+      // 基地水晶圖示 + 血條
+      this.blueCrystal = this.add.star(BL.x, BL.y, 6, 13, 26, 0x4a9fff).setStrokeStyle(2, 0xffffff, 0.6).setDepth(6);
+      this.redCrystal  = this.add.star(TR.x, TR.y, 6, 13, 26, 0xff5e5e).setStrokeStyle(2, 0xffffff, 0.6).setDepth(6);
+      this.barG = this.add.graphics().setDepth(8);
       this._drawBars();
 
-      // DOM
       this._bindDOM();
 
-      // 基礎兵流（雙方每 3.8s 三路各出 1 小兵）— running 才出
+      // 基礎兵流：雙方三路每 3.8s 各出 1 兵
       this.time.addEvent({ delay: 3800, loop: true, callback: () => {
         if (!this.running || this.over) return;
         for (let l = 0; l < 3; l++) { this._spawn("blue", l, false); this._spawn("red", l, false); }
       }});
-
-      // AI：每 6s 隨機補一路（模擬對手答題增援）
+      // AI 每 6s 隨機補一路
       this.time.addEvent({ delay: 6000, loop: true, callback: () => {
         if (!this.running || this.over) return;
         this._wave("red", Phaser.Math.Between(0, 2));
       }});
     }
 
-    _mkTower(x, y, side, lane) {
-      const col = side === "blue" ? 0x3f7fd0 : 0xd05f5f;
-      const r = this.add.rectangle(x, y, 22, 30, col).setStrokeStyle(2, 0xffffff, 0.5).setDepth(4);
-      return { x, y, side, lane, hp: 60, max: 60, range: 70, atk: 8, cd: 0, obj: r, alive: true };
+    _drawMap() {
+      const g = this.add.graphics().setDepth(0);
+      const S = this.S, ox = this.ox, oy = this.oy;
+      // 底（地圖外深色 + 地圖區草綠）
+      g.fillStyle(0x0e1630, 1).fillRect(0, 0, this.W, this.H);
+      g.fillStyle(0x3a4a2c, 1).fillRoundedRect(ox + S * 0.04, oy + S * 0.04, S * 0.92, S * 0.92, 18);
+      // 河道：左上↔右下 斜帶（垂直於中路對角）
+      g.lineStyle(S * 0.13, 0x2c6e7a, 0.55);
+      g.beginPath(); g.moveTo(this.P(0.12, 0.12).x, this.P(0.12, 0.12).y); g.lineTo(this.P(0.88, 0.88).x, this.P(0.88, 0.88).y); g.strokePath();
+      // 三路：畫 waypoint 連線（土色寬路）
+      this.lanePaths.forEach(path => {
+        g.lineStyle(20, 0x6b5a3a, 0.9);
+        g.beginPath(); g.moveTo(path[0].x, path[0].y);
+        for (let i = 1; i < path.length; i++) g.lineTo(path[i].x, path[i].y);
+        g.strokePath();
+      });
+      // 基地圈
+      g.lineStyle(3, 0x4a9fff, 0.8).strokeCircle(this.bases.blue.x, this.bases.blue.y, S * 0.10);
+      g.lineStyle(3, 0xff5e5e, 0.8).strokeCircle(this.bases.red.x, this.bases.red.y, S * 0.10);
     }
 
     _spawn(side, lane, strong) {
-      const x = side === "blue" ? this.BLUE_X + 16 : this.RED_X - 16;
-      const y = this.laneY[lane];
+      const path = side === "blue" ? this.lanePaths[lane] : this.lanePaths[lane].slice().reverse();
+      const start = path[0];
       const col = side === "blue" ? 0x6fc0ff : 0xff8a8a;
       const rad = strong ? 9 : 6;
-      const obj = this.add.circle(x, y, rad, col).setDepth(7);
+      const obj = this.add.circle(start.x, start.y, rad, col).setDepth(7);
       if (strong) obj.setStrokeStyle(2, 0xffd24a);
       this.minions.push({
-        side, lane, x, y, obj,
-        hp: strong ? 26 : 12, max: strong ? 26 : 12,
-        atk: strong ? 6 : 3, speed: strong ? 42 : 34, range: 18, cd: 0,
-        dir: side === "blue" ? 1 : -1,
+        side, lane, x: start.x, y: start.y, obj, path, wpIdx: 1,
+        hp: strong ? 28 : 13, max: strong ? 28 : 13,
+        atk: strong ? 7 : 3, speed: strong ? 48 : 38, range: 20, cd: 0,
       });
     }
 
     _wave(side, lane) {
-      const n = 4;
-      for (let i = 0; i < n; i++) {
-        this.time.delayedCall(i * 130, () => { if (!this.over) this._spawn(side, lane, true); });
-      }
+      for (let i = 0; i < 4; i++) this.time.delayedCall(i * 130, () => { if (!this.over) this._spawn(side, lane, true); });
     }
 
     update(time, dt) {
       if (!this.running || this.over) return;
       const d = dt / 1000;
 
-      // 小兵：找同路最近敵人/敵塔，射程內停下打，否則前進
       for (const m of this.minions) {
         if (m.dead) continue;
         m.cd -= dt;
-        const target = this._nearestEnemy(m);
-        if (target && Math.abs(target.x - m.x) <= m.range + (target.r || 6)) {
-          if (m.cd <= 0) { this._damage(target, m.atk); m.cd = 600; this._flash(m.obj); }
+        const tgt = this._nearestEnemy(m);
+        if (tgt && Math.hypot(tgt.x - m.x, tgt.y - m.y) <= m.range + (tgt.r || 6)) {
+          if (m.cd <= 0) { this._damage(tgt, m.atk); m.cd = 600; this._flash(m.obj); }
         } else {
-          m.x += m.dir * m.speed * d;
-          m.obj.x = m.x;
+          this._advance(m, d);
         }
       }
 
-      // 塔攻擊射程內敵兵
       for (const t of this.towers) {
         if (!t.alive) continue;
         t.cd -= dt;
         if (t.cd > 0) continue;
-        const enemy = this.minions.find(m => !m.dead && m.side !== t.side && Math.abs(m.x - t.x) <= t.range && Math.abs(m.y - t.y) < 24);
-        if (enemy) { this._damage(enemy, t.atk); t.cd = 700; this._flash(t.obj); }
+        const e = this.minions.find(m => !m.dead && m.side !== t.side && Math.hypot(m.x - t.x, m.y - t.y) <= t.range);
+        if (e) { this._damage(e, t.atk); t.cd = 700; this._flash(t.obj); }
       }
 
-      // 清死亡小兵
-      this.minions = this.minions.filter(m => {
-        if (m.dead) { m.obj.destroy(); return false; }
-        return true;
-      });
+      this.minions = this.minions.filter(m => { if (m.dead) { m.obj.destroy(); return false; } return true; });
 
-      // 勝負
-      if (this.blue.hp <= 0) this._end(false);
-      else if (this.red.hp <= 0) this._end(true);
+      if (this.bases.blue.hp <= 0) this._end(false);
+      else if (this.bases.red.hp <= 0) this._end(true);
+    }
+
+    _advance(m, d) {
+      const tgt = m.path[m.wpIdx];
+      if (!tgt) return;
+      const dx = tgt.x - m.x, dy = tgt.y - m.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < 6) {
+        if (m.wpIdx < m.path.length - 1) m.wpIdx++;
+      } else {
+        m.x += dx / dist * m.speed * d;
+        m.y += dy / dist * m.speed * d;
+        m.obj.x = m.x; m.obj.y = m.y;
+      }
     }
 
     _nearestEnemy(m) {
-      // 同路的敵塔（還活著）或敵兵，取最近（依方向最前面那個）
-      let best = null, bestDist = Infinity;
+      let best = null, bestD = Infinity;
       for (const e of this.minions) {
         if (e.dead || e.side === m.side || e.lane !== m.lane) continue;
-        const dist = (e.x - m.x) * m.dir;
-        if (dist >= -4 && dist < bestDist) { best = e; bestDist = dist; e.r = 6; }
+        const dd = Math.hypot(e.x - m.x, e.y - m.y);
+        if (dd < bestD) { best = e; bestD = dd; e.r = 6; }
       }
       for (const t of this.towers) {
         if (!t.alive || t.side === m.side || t.lane !== m.lane) continue;
-        const dist = (t.x - m.x) * m.dir;
-        if (dist >= -4 && dist < bestDist) { best = t; bestDist = dist; t.r = 11; }
+        const dd = Math.hypot(t.x - m.x, t.y - m.y);
+        if (dd < bestD) { best = t; bestD = dd; t.r = 11; }
       }
-      // 到底線打水晶
-      const crystal = m.side === "blue" ? this.red : this.blue;
-      const cd = (crystal.x - m.x) * m.dir;
-      if (cd >= -4 && cd < bestDist) { best = crystal; crystal.r = 20; }
+      const base = m.side === "blue" ? this.bases.red : this.bases.blue;
+      const bd = Math.hypot(base.x - m.x, base.y - m.y);
+      if (bd < bestD) { best = base; base.r = 22; }
       return best;
     }
 
     _damage(target, amt) {
       target.hp -= amt;
-      if (target.obj && target.alive !== undefined) { // tower
-        if (target.hp <= 0) { target.alive = false; target.obj.destroy(); }
-      } else if (target.obj && target.dead !== undefined) { // minion
-        if (target.hp <= 0) target.dead = true;
-      } else { // crystal
-        if (target.hp < 0) target.hp = 0;
-        this._drawBars();
-        this._flash(target === this.blue ? this.blueCrystal : this.redCrystal);
-      }
+      if (target.alive !== undefined) { if (target.hp <= 0) { target.alive = false; target.obj.destroy(); } }
+      else if (target.dead !== undefined) { if (target.hp <= 0) target.dead = true; }
+      else { if (target.hp < 0) target.hp = 0; this._drawBars(); this._flash(target.side === "blue" ? this.blueCrystal : this.redCrystal); }
     }
 
-    _flash(obj) {
-      if (!obj || !obj.scene) return;
-      this.tweens.add({ targets: obj, alpha: 0.4, duration: 70, yoyo: true });
-    }
+    _flash(obj) { if (obj && obj.scene) this.tweens.add({ targets: obj, alpha: 0.4, duration: 70, yoyo: true }); }
 
     _drawBars() {
+      const g = this.barG; g.clear();
       const bw = this.W * 0.30, h = 8;
-      this.blueBar.clear();
-      this.blueBar.fillStyle(0x000000, 0.5).fillRect(10, 8, bw, h);
-      this.blueBar.fillStyle(0x4a9fff, 1).fillRect(10, 8, bw * Math.max(0, this.blue.hp) / this.blue.max, h);
-      this.redBar.clear();
-      this.redBar.fillStyle(0x000000, 0.5).fillRect(this.W - 10 - bw, 8, bw, h);
-      this.redBar.fillStyle(0xff5e5e, 1).fillRect(this.W - 10 - bw * Math.max(0, this.red.hp) / this.red.max, 8, bw * Math.max(0, this.red.hp) / this.red.max, h);
+      const b = this.bases.blue, r = this.bases.red;
+      g.fillStyle(0x000000, 0.5).fillRect(10, 8, bw, h);
+      g.fillStyle(0x4a9fff, 1).fillRect(10, 8, bw * Math.max(0, b.hp) / b.max, h);
+      g.fillStyle(0x000000, 0.5).fillRect(this.W - 10 - bw, 8, bw, h);
+      g.fillStyle(0xff5e5e, 1).fillRect(this.W - 10 - bw, 8, bw * Math.max(0, r.hp) / r.max, h);
     }
 
-    // ── DOM 答題 ──
     _bindDOM() {
       this.qText = document.getElementById("q-text");
       this.qChoices = document.getElementById("q-choices");
       this.qHint = document.getElementById("q-hint");
       this.lanepick = document.getElementById("lanepick");
       this.qIdx = 0; this.locked = false;
-
       this.lanepick.querySelectorAll(".lp-btn").forEach(b => {
         b.addEventListener("click", () => {
           this._wave("blue", parseInt(b.dataset.lane, 10));
@@ -282,10 +297,7 @@
       });
     }
 
-    startGame() {
-      this.running = true;
-      this._nextQuestion();
-    }
+    startGame() { this.running = true; this._nextQuestion(); }
 
     _nextQuestion() {
       if (this.over) return;
@@ -310,7 +322,7 @@
       btn.classList.add(correct ? "correct" : "wrong");
       if (correct) {
         this.qHint.textContent = "✓ 答對！選一路派強援";
-        this.lanepick.classList.add("on");   // 選路後 _nextQuestion
+        this.lanepick.classList.add("on");
       } else {
         const right = this.qChoices.children[item.a];
         if (right) right.classList.add("correct");
@@ -340,12 +352,9 @@
       scene: Battle,
     });
     window.__moba = game;
-    game.events.once("ready", () => { scene = game.scene.getScene("Battle"); });
-
     document.getElementById("startBtn").addEventListener("click", () => {
       document.getElementById("intro").style.display = "none";
-      const s = game.scene.getScene("Battle");
-      s.startGame();
+      game.scene.getScene("Battle").startGame();
     });
     document.getElementById("againBtn").addEventListener("click", () => location.reload());
   }

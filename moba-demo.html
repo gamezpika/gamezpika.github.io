@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>三路答題攻防（原型）</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; background: #0e1630; font-family: "PingFang TC", "Noto Sans TC", sans-serif; overflow: hidden; }
+  #wrap { position: fixed; inset: 0; display: flex; flex-direction: column; }
+  #game { flex: 1 1 auto; position: relative; min-height: 0; }
+  #game canvas { display: block; width: 100% !important; height: 100% !important; }
+
+  /* 底部答題面板 */
+  #quiz { flex: 0 0 auto; background: rgba(12,20,48,0.96); border-top: 2px solid #2a3a6a;
+    padding: 10px 12px calc(12px + env(safe-area-inset-bottom, 0px)); color: #fff; }
+  #q-text { font-size: 15px; font-weight: 600; text-align: center; min-height: 22px; margin-bottom: 8px; line-height: 1.35; }
+  #q-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .q-btn { background: #fff; color: #1a2240; border: none; border-radius: 10px; padding: 12px 8px;
+    font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .q-btn:active { transform: scale(0.97); }
+  .q-btn.correct { background: #27ae60; color: #fff; }
+  .q-btn.wrong { background: #e74c3c; color: #fff; }
+  #q-hint { text-align: center; font-size: 13px; color: #ffd24a; min-height: 18px; margin-top: 6px; font-weight: 700; }
+
+  /* 選路增援 */
+  #lanepick { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center;
+    gap: 14px; background: rgba(8,12,30,0.55); z-index: 20; }
+  #lanepick.on { display: flex; }
+  #lanepick .lp-title { color: #ffd24a; font-size: 17px; font-weight: 900; text-shadow: 0 1px 4px #000; }
+  .lp-btn { width: 64%; padding: 14px; border: none; border-radius: 12px; font-size: 16px; font-weight: 800;
+    background: linear-gradient(135deg, #4a9fff, #2d6fd6); color: #fff; cursor: pointer; box-shadow: 0 3px 10px rgba(0,0,0,0.4); }
+  .lp-btn:active { transform: scale(0.97); }
+
+  /* 開場說明卡 / 結算 共用 overlay */
+  .ov { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 14px; background: rgba(8,12,30,0.92); z-index: 40; color: #fff; text-align: center; padding: 26px; }
+  .ov h1 { margin: 0; font-size: 24px; font-weight: 900; }
+  .ov .card { background: rgba(255,255,255,0.06); border: 1px solid #2a3a6a; border-radius: 14px; padding: 18px 18px;
+    text-align: left; font-size: 14.5px; line-height: 1.7; max-width: 340px; }
+  .ov .card b { color: #ffd24a; }
+  .ov button { margin-top: 6px; border: none; border-radius: 14px; padding: 13px 36px; font-size: 17px; font-weight: 900;
+    background: linear-gradient(135deg, #ff9a40, #ff5e3a); color: #fff; cursor: pointer; }
+  .ov button:active { transform: scale(0.97); }
+  #result { display: none; }
+  #result.on { display: flex; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="game">
+    <div id="lanepick">
+      <div class="lp-title">答對！派強援去哪一路？</div>
+      <button class="lp-btn" data-lane="0">⬆ 上路</button>
+      <button class="lp-btn" data-lane="1">➡ 中路</button>
+      <button class="lp-btn" data-lane="2">⬇ 下路</button>
+    </div>
+    <div id="intro" class="ov">
+      <h1>⚔️ 三路答題攻防</h1>
+      <div class="card">
+        🔵 你是<b>藍方</b>（左），🔴 電腦是<b>紅方</b>（右）。<br>
+        • 三路會<b>自動出小兵</b>往前推、遇敵就打。<br>
+        • 下方<b>答題</b>：答對 → 選一路<b>派強援</b>（一波強兵）；答錯 → 電腦增援。<br>
+        • 把對面的<b>塔</b>推掉、再推爆<b>水晶</b> = <b>獲勝</b>！<br>
+        <br>📚 <b>讀書 = 戰力</b>：答得又快又準，三路就壓著打。
+      </div>
+      <button id="startBtn">開始對戰</button>
+    </div>
+    <div id="result" class="ov">
+      <h1 id="result-title"></h1>
+      <div id="result-sub" style="font-size:15px;color:#d8c8f0"></div>
+      <button id="againBtn">再玩一次</button>
+    </div>
+  </div>
+  <div id="quiz">
+    <div id="q-text">準備開始…</div>
+    <div id="q-choices"></div>
+    <div id="q-hint"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+<script>
+(function () {
+  // ── 內建題庫（最小原型先 hardcode，之後接真題庫）──
+  const QUESTIONS = [
+    { q: "8 × 7 = ?", choices: ["54", "56", "63", "49"], a: 1 },
+    { q: "「蘋果」的英文是？", choices: ["apple", "banana", "orange", "grape"], a: 0 },
+    { q: "15 + 27 = ?", choices: ["42", "32", "41", "52"], a: 0 },
+    { q: "一年有幾個月？", choices: ["10", "11", "12", "13"], a: 2 },
+    { q: "「天空」的英文是？", choices: ["sea", "sky", "star", "snow"], a: 1 },
+    { q: "72 ÷ 8 = ?", choices: ["8", "7", "9", "6"], a: 2 },
+    { q: "水的化學式是？", choices: ["CO2", "O2", "H2O", "NaCl"], a: 2 },
+    { q: "「謝謝」的英文是？", choices: ["sorry", "hello", "please", "thanks"], a: 3 },
+  ];
+
+  const LANE_LABEL = ["上路", "中路", "下路"];
+  let game, scene;
+
+  class Battle extends Phaser.Scene {
+    constructor() { super("Battle"); }
+
+    create() {
+      const W = this.scale.width, H = this.scale.height;
+      this.W = W; this.H = H;
+      this.running = false;          // intro 期間不跑
+      this.over = false;
+      this.minions = [];
+      this.laneY = [H * 0.26, H * 0.5, H * 0.74];
+      this.BLUE_X = W * 0.10;        // 藍方水晶 x
+      this.RED_X = W * 0.90;         // 紅方水晶 x
+
+      // 背景三路
+      const g = this.add.graphics();
+      g.fillStyle(0x12203f, 1).fillRect(0, 0, W, H);
+      this.laneY.forEach(y => {
+        g.lineStyle(34, 0x1b2c54, 1).beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.strokePath();
+        g.lineStyle(2, 0x2a3f74, 0.8).beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.strokePath();
+      });
+
+      // 水晶（基地）
+      this.blue = { hp: 100, max: 100, side: "blue", x: this.BLUE_X, y: H * 0.5 };
+      this.red  = { hp: 100, max: 100, side: "red",  x: this.RED_X, y: H * 0.5 };
+      this.blueCrystal = this.add.star(this.BLUE_X, H * 0.5, 6, 12, 24, 0x4a9fff).setDepth(5);
+      this.redCrystal  = this.add.star(this.RED_X, H * 0.5, 6, 12, 24, 0xff5e5e).setDepth(5);
+
+      // 塔：每方每路一座（在己方半場該路）
+      this.towers = [];
+      this.laneY.forEach((y, lane) => {
+        this.towers.push(this._mkTower(W * 0.30, y, "blue", lane));
+        this.towers.push(this._mkTower(W * 0.70, y, "red", lane));
+      });
+
+      // 水晶血條
+      this.blueBar = this.add.graphics().setDepth(6);
+      this.redBar = this.add.graphics().setDepth(6);
+      this._drawBars();
+
+      // DOM
+      this._bindDOM();
+
+      // 基礎兵流（雙方每 3.8s 三路各出 1 小兵）— running 才出
+      this.time.addEvent({ delay: 3800, loop: true, callback: () => {
+        if (!this.running || this.over) return;
+        for (let l = 0; l < 3; l++) { this._spawn("blue", l, false); this._spawn("red", l, false); }
+      }});
+
+      // AI：每 6s 隨機補一路（模擬對手答題增援）
+      this.time.addEvent({ delay: 6000, loop: true, callback: () => {
+        if (!this.running || this.over) return;
+        this._wave("red", Phaser.Math.Between(0, 2));
+      }});
+    }
+
+    _mkTower(x, y, side, lane) {
+      const col = side === "blue" ? 0x3f7fd0 : 0xd05f5f;
+      const r = this.add.rectangle(x, y, 22, 30, col).setStrokeStyle(2, 0xffffff, 0.5).setDepth(4);
+      return { x, y, side, lane, hp: 60, max: 60, range: 70, atk: 8, cd: 0, obj: r, alive: true };
+    }
+
+    _spawn(side, lane, strong) {
+      const x = side === "blue" ? this.BLUE_X + 16 : this.RED_X - 16;
+      const y = this.laneY[lane];
+      const col = side === "blue" ? 0x6fc0ff : 0xff8a8a;
+      const rad = strong ? 9 : 6;
+      const obj = this.add.circle(x, y, rad, col).setDepth(7);
+      if (strong) obj.setStrokeStyle(2, 0xffd24a);
+      this.minions.push({
+        side, lane, x, y, obj,
+        hp: strong ? 26 : 12, max: strong ? 26 : 12,
+        atk: strong ? 6 : 3, speed: strong ? 42 : 34, range: 18, cd: 0,
+        dir: side === "blue" ? 1 : -1,
+      });
+    }
+
+    _wave(side, lane) {
+      const n = 4;
+      for (let i = 0; i < n; i++) {
+        this.time.delayedCall(i * 130, () => { if (!this.over) this._spawn(side, lane, true); });
+      }
+    }
+
+    update(time, dt) {
+      if (!this.running || this.over) return;
+      const d = dt / 1000;
+
+      // 小兵：找同路最近敵人/敵塔，射程內停下打，否則前進
+      for (const m of this.minions) {
+        if (m.dead) continue;
+        m.cd -= dt;
+        const target = this._nearestEnemy(m);
+        if (target && Math.abs(target.x - m.x) <= m.range + (target.r || 6)) {
+          if (m.cd <= 0) { this._damage(target, m.atk); m.cd = 600; this._flash(m.obj); }
+        } else {
+          m.x += m.dir * m.speed * d;
+          m.obj.x = m.x;
+        }
+      }
+
+      // 塔攻擊射程內敵兵
+      for (const t of this.towers) {
+        if (!t.alive) continue;
+        t.cd -= dt;
+        if (t.cd > 0) continue;
+        const enemy = this.minions.find(m => !m.dead && m.side !== t.side && Math.abs(m.x - t.x) <= t.range && Math.abs(m.y - t.y) < 24);
+        if (enemy) { this._damage(enemy, t.atk); t.cd = 700; this._flash(t.obj); }
+      }
+
+      // 清死亡小兵
+      this.minions = this.minions.filter(m => {
+        if (m.dead) { m.obj.destroy(); return false; }
+        return true;
+      });
+
+      // 勝負
+      if (this.blue.hp <= 0) this._end(false);
+      else if (this.red.hp <= 0) this._end(true);
+    }
+
+    _nearestEnemy(m) {
+      // 同路的敵塔（還活著）或敵兵，取最近（依方向最前面那個）
+      let best = null, bestDist = Infinity;
+      for (const e of this.minions) {
+        if (e.dead || e.side === m.side || e.lane !== m.lane) continue;
+        const dist = (e.x - m.x) * m.dir;
+        if (dist >= -4 && dist < bestDist) { best = e; bestDist = dist; e.r = 6; }
+      }
+      for (const t of this.towers) {
+        if (!t.alive || t.side === m.side || t.lane !== m.lane) continue;
+        const dist = (t.x - m.x) * m.dir;
+        if (dist >= -4 && dist < bestDist) { best = t; bestDist = dist; t.r = 11; }
+      }
+      // 到底線打水晶
+      const crystal = m.side === "blue" ? this.red : this.blue;
+      const cd = (crystal.x - m.x) * m.dir;
+      if (cd >= -4 && cd < bestDist) { best = crystal; crystal.r = 20; }
+      return best;
+    }
+
+    _damage(target, amt) {
+      target.hp -= amt;
+      if (target.obj && target.alive !== undefined) { // tower
+        if (target.hp <= 0) { target.alive = false; target.obj.destroy(); }
+      } else if (target.obj && target.dead !== undefined) { // minion
+        if (target.hp <= 0) target.dead = true;
+      } else { // crystal
+        if (target.hp < 0) target.hp = 0;
+        this._drawBars();
+        this._flash(target === this.blue ? this.blueCrystal : this.redCrystal);
+      }
+    }
+
+    _flash(obj) {
+      if (!obj || !obj.scene) return;
+      this.tweens.add({ targets: obj, alpha: 0.4, duration: 70, yoyo: true });
+    }
+
+    _drawBars() {
+      const bw = this.W * 0.30, h = 8;
+      this.blueBar.clear();
+      this.blueBar.fillStyle(0x000000, 0.5).fillRect(10, 8, bw, h);
+      this.blueBar.fillStyle(0x4a9fff, 1).fillRect(10, 8, bw * Math.max(0, this.blue.hp) / this.blue.max, h);
+      this.redBar.clear();
+      this.redBar.fillStyle(0x000000, 0.5).fillRect(this.W - 10 - bw, 8, bw, h);
+      this.redBar.fillStyle(0xff5e5e, 1).fillRect(this.W - 10 - bw * Math.max(0, this.red.hp) / this.red.max, 8, bw * Math.max(0, this.red.hp) / this.red.max, h);
+    }
+
+    // ── DOM 答題 ──
+    _bindDOM() {
+      this.qText = document.getElementById("q-text");
+      this.qChoices = document.getElementById("q-choices");
+      this.qHint = document.getElementById("q-hint");
+      this.lanepick = document.getElementById("lanepick");
+      this.qIdx = 0; this.locked = false;
+
+      this.lanepick.querySelectorAll(".lp-btn").forEach(b => {
+        b.addEventListener("click", () => {
+          this._wave("blue", parseInt(b.dataset.lane, 10));
+          this.lanepick.classList.remove("on");
+          this._nextQuestion();
+        });
+      });
+    }
+
+    startGame() {
+      this.running = true;
+      this._nextQuestion();
+    }
+
+    _nextQuestion() {
+      if (this.over) return;
+      this.locked = false;
+      const item = QUESTIONS[this.qIdx % QUESTIONS.length];
+      this.qIdx++;
+      this.qText.textContent = item.q;
+      this.qHint.textContent = "";
+      this.qChoices.innerHTML = "";
+      item.choices.forEach((c, i) => {
+        const btn = document.createElement("button");
+        btn.className = "q-btn"; btn.textContent = c;
+        btn.addEventListener("click", () => this._answer(i, item, btn));
+        this.qChoices.appendChild(btn);
+      });
+    }
+
+    _answer(i, item, btn) {
+      if (this.locked) return;
+      this.locked = true;
+      const correct = i === item.a;
+      btn.classList.add(correct ? "correct" : "wrong");
+      if (correct) {
+        this.qHint.textContent = "✓ 答對！選一路派強援";
+        this.lanepick.classList.add("on");   // 選路後 _nextQuestion
+      } else {
+        const right = this.qChoices.children[item.a];
+        if (right) right.classList.add("correct");
+        this.qHint.textContent = "✗ 答錯！電腦趁機增援";
+        this._wave("red", Phaser.Math.Between(0, 2));
+        this.time.delayedCall(1200, () => this._nextQuestion());
+      }
+    }
+
+    _end(win) {
+      if (this.over) return;
+      this.over = true; this.running = false;
+      document.getElementById("result-title").textContent = win ? "🏆 獲勝！" : "💀 戰敗";
+      document.getElementById("result-sub").textContent = win ? "讀書就是戰力，你壓制了全場！" : "再讀熟一點，下次贏回來！";
+      document.getElementById("result").classList.add("on");
+    }
+  }
+
+  function boot() {
+    const host = document.getElementById("game");
+    game = new Phaser.Game({
+      type: Phaser.AUTO,
+      width: host.clientWidth, height: host.clientHeight,
+      parent: "game",
+      backgroundColor: "#0e1630",
+      scale: { mode: Phaser.Scale.RESIZE, autoCenter: Phaser.Scale.CENTER_BOTH },
+      scene: Battle,
+    });
+    window.__moba = game;
+    game.events.once("ready", () => { scene = game.scene.getScene("Battle"); });
+
+    document.getElementById("startBtn").addEventListener("click", () => {
+      document.getElementById("intro").style.display = "none";
+      const s = game.scene.getScene("Battle");
+      s.startGame();
+    });
+    document.getElementById("againBtn").addEventListener("click", () => location.reload());
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
+})();
+</script>
+</body>
+</html>

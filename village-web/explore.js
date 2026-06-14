@@ -96,6 +96,7 @@ class ExploreScene extends Phaser.Scene {
     // 資訊彈窗(DOM)跨 restart 不會被 Phaser 銷毀，防殘留 .open 害看門狗誤判
     const _im = document.getElementById("info-modal");
     if (_im) _im.classList.remove("open");
+    if (this._joyVec) { this._joyVec.x = 0; this._joyVec.y = 0; }   // 換場景清搖桿向量，防殘留持續移動
   }
 
   // backbuffer 是 css × dpr，UI/zoom 計算要用 CSS 尺寸（除以 dpr）
@@ -554,8 +555,9 @@ class ExploreScene extends Phaser.Scene {
     this.input.keyboard.on("keydown-SPACE", () => this._tryInteract());
     this.input.keyboard.on("keydown-ENTER", () => this._tryInteract());
 
-    // 9. 點地圖走過去（取代搖桿/A 按鈕）
+    // 9. 縮放(pinch/滾輪)+觸控；移動改用左下虛擬搖桿
     this._setupTapToMove();
+    this._setupJoystick();
     // ScaleManager 是全域、跨 scene.restart 不重置 → 只綁一次，避免換地圖累積重複 resize handler
     if (!this._resizeBound) { this.scale.on("resize", () => this._onResize()); this._resizeBound = true; }
 
@@ -736,12 +738,8 @@ class ExploreScene extends Phaser.Scene {
   }
 
   _setupTapToMove() {
-    // 玩家點地圖某處，主角就朝那邊走
+    // 移動已改用左下虛擬搖桿（_setupJoystick）；本函式只剩縮放(pinch/滾輪)+觸控計數+自癒看門狗。
     this.moveTarget = null;
-    this.targetMarker = this.add.circle(0, 0, 14 * DPR, 0xffffff, 0.65)
-      .setStrokeStyle(3 * DPR, 0x101010, 0.7)
-      .setDepth(9999)
-      .setVisible(false);
 
     // userZoom：派派手動縮放倍率（最終 zoom = base × userZoom）
     // 一進地圖一律最遠景：起始倍率壓到 cover（剛好蓋滿地圖、不露綠），每張地圖一致
@@ -775,14 +773,8 @@ class ExploreScene extends Phaser.Scene {
       // 雙指真的同時觸控才是 pinch（用自管計數，避免卡住的 pointer2.isDown 害每次點擊都被當縮放→不能走）
       if (this._nDown >= 2 && this.input.pointer2 && this.input.pointer2.isDown) {
         this._beginPinch();
-        return;
       }
-      const wx = pointer.worldX, wy = pointer.worldY;
-      this.moveTarget = { x: wx, y: wy };
-      this.targetMarker.setPosition(wx, wy).setVisible(true);
-      this.tweens.killTweensOf(this.targetMarker);
-      this.tweens.add({ targets: this.targetMarker, alpha: 0, duration: 600,
-                        onComplete: () => { this.targetMarker.setAlpha(0.65).setVisible(false); } });
+      // 點地圖移動已移除（改虛擬搖桿）；單指點擊不再設 moveTarget
     });
 
     // Pinch (手機雙指縮放)
@@ -819,6 +811,41 @@ class ExploreScene extends Phaser.Scene {
     const dy = this.input.pointer1.y - this.input.pointer2.y;
     this._pinchStart = { dist: Math.hypot(dx, dy), zoom: this.userZoom };
     this.moveTarget = null;
+  }
+
+  // 左下虛擬搖桿（DOM #joystick）：拖中央鈕 → 設 this._joyVec 單位方向，update() 當移動輸入。
+  // 用 DOM 而非 Phaser，免疫相機 zoom（Phaser 搖桿會被 zoom 推位/變形，同 _showModal 問題）。
+  // 跨 scene.restart 同一 scene instance → 只綁一次（_joyBound），handler 內 this 仍指當前 scene。
+  _setupJoystick() {
+    if (this._joyBound) return;
+    const base = document.getElementById("joystick");
+    const thumb = document.getElementById("joy-thumb");
+    if (!base || !thumb) return;
+    this._joyBound = true;
+    this._joyVec = this._joyVec || { x: 0, y: 0 };
+    const R = 44, DEAD = 7;   // thumb 最大位移半徑 / 死區（px）
+    let pid = null;
+    const reset = () => { pid = null; this._joyVec.x = 0; this._joyVec.y = 0; thumb.style.transform = "translate(0px,0px)"; };
+    const apply = (cx, cy) => {
+      const r = base.getBoundingClientRect();
+      let dx = cx - (r.left + r.width / 2), dy = cy - (r.top + r.height / 2);
+      const d = Math.hypot(dx, dy) || 0;
+      if (d > R) { dx = dx / d * R; dy = dy / d * R; }
+      thumb.style.transform = "translate(" + dx + "px," + dy + "px)";
+      if (d < DEAD) { this._joyVec.x = 0; this._joyVec.y = 0; }
+      else { const n = Math.hypot(dx, dy) || 1; this._joyVec.x = dx / n; this._joyVec.y = dy / n; }
+    };
+    base.addEventListener("pointerdown", (e) => {
+      pid = e.pointerId; try { base.setPointerCapture(pid); } catch (x) {}
+      apply(e.clientX, e.clientY); e.preventDefault();
+    });
+    base.addEventListener("pointermove", (e) => {
+      if (e.pointerId === pid) { apply(e.clientX, e.clientY); e.preventDefault(); }
+    });
+    const end = (e) => { if (e.pointerId === pid) reset(); };
+    base.addEventListener("pointerup", end);
+    base.addEventListener("pointercancel", end);
+    base.addEventListener("lostpointercapture", end);
   }
 
   // 對話框氣泡：圓角白框 + 下方尖角（指向 NPC），完整台詞自動換行。回傳 container。
@@ -1358,18 +1385,9 @@ class ExploreScene extends Phaser.Scene {
       if (this.cursors.right.isDown || this.wasd.D.isDown) dx += 1;
       if (this.cursors.up.isDown    || this.wasd.W.isDown) dy -= 1;
       if (this.cursors.down.isDown  || this.wasd.S.isDown) dy += 1;
-      // 鍵盤一動立刻取消點擊目標
-      if (dx !== 0 || dy !== 0) this.moveTarget = null;
-      // 點擊移動：朝 moveTarget 直線走，撞牆自然停
-      if (dx === 0 && dy === 0 && this.moveTarget) {
-        const tx = this.moveTarget.x - this.player.x;
-        const ty = this.moveTarget.y - this.player.y;
-        const dist = Math.hypot(tx, ty);
-        if (dist < 10) {
-          this.moveTarget = null;
-        } else {
-          dx = tx / dist; dy = ty / dist;
-        }
+      // 虛擬搖桿（手機）：鍵盤沒輸入時用搖桿方向向量
+      if (dx === 0 && dy === 0 && this._joyVec && (this._joyVec.x || this._joyVec.y)) {
+        dx = this._joyVec.x; dy = this._joyVec.y;
       }
     }
     const len = Math.hypot(dx, dy);

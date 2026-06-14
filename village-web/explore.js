@@ -176,6 +176,7 @@ class ExploreScene extends Phaser.Scene {
     if (!this.textures.exists("quest_mark")) this.load.image("quest_mark", "icons/ic_quest.webp?v=1");
     if (!this.textures.exists("quest_ask")) this.load.image("quest_ask", "icons/ic_quest_q.webp?v=1");
     if (!this.textures.exists("quest_progress")) this.load.image("quest_progress", "icons/ic_quest_progress.webp?v=1");
+    if (!this.textures.exists("quest_glow")) this.load.image("quest_glow", "icons/ic_quest_glow.webp?v=1");   // 符號後方柔和光圈
 
     // NPC sprites（每隻 NPC 可帶自己的 side/down/up；沒給就 fallback 用 hero）
     if (Array.isArray(config.npcs)) {
@@ -478,6 +479,7 @@ class ExploreScene extends Phaser.Scene {
           animKeys: { side: dSide.anim, down: dDown.anim, up: dUp.anim },
           bubble: null,
           questMark: null,
+          questGlow: null,    // 符號後方的脈動光圈（依狀態上色）
           questState: null,   // 'claim'(❗可領)/'avail'(❓可接)/'progress'(灰❗進行中)/null；由 _refreshQuestMarks 依任務狀態設
         };
         // 任務 NPC 的 ❗/❓ 改由 _refreshQuestMarks（地圖建好後 async 算任務狀態）統一掛
@@ -1169,7 +1171,7 @@ class ExploreScene extends Phaser.Scene {
       if (!this.npcs) return;
       const subj = _questSubjectOf(this.mapId);
       if (!subj) {                    // 非學院室內：清掉任何殘留符號
-        for (const npc of this.npcs) { if (npc.questMark) { npc.questMark.destroy(); npc.questMark = null; npc.questState = null; } }
+        for (const npc of this.npcs) { if (npc.questMark) { npc.questMark.destroy(); npc.questMark = null; } if (npc.questGlow) { npc.questGlow.destroy(); npc.questGlow = null; } npc.questState = null; }
         return;
       }
       // academy.json（各 NPC 的任務鏈定義）快取
@@ -1227,16 +1229,30 @@ class ExploreScene extends Phaser.Scene {
         return canClaim ? "claim" : (canAccept ? "avail" : (inProgress ? "progress" : null));
       };
 
+      // 各狀態的光圈顏色：❗亮黃 / ❓金黃 / 🩶灰
+      const GLOW_TINT = { claim: 0xffe14d, avail: 0xffb733, progress: 0xd0d0d0 };
       for (const npc of this.npcs) {
         const id = npc.cfg && npc.cfg.id;
         const state = id ? stateOf(id) : null;
         if (!state) {
           if (npc.questMark) { npc.questMark.destroy(); npc.questMark = null; }
+          if (npc.questGlow) { npc.questGlow.destroy(); npc.questGlow = null; }
           npc.questState = null;
           continue;
         }
         const tex = state === "claim" ? "quest_mark" : state === "avail" ? "quest_ask" : "quest_progress";
-        if (!this.textures.exists(tex)) { if (npc.questMark) { npc.questMark.destroy(); npc.questMark = null; } npc.questState = null; continue; }
+        if (!this.textures.exists(tex)) {
+          if (npc.questMark) { npc.questMark.destroy(); npc.questMark = null; }
+          if (npc.questGlow) { npc.questGlow.destroy(); npc.questGlow = null; }
+          npc.questState = null; continue;
+        }
+        // 光圈墊在符號後面（depth 比符號低一階），缺貼圖就純符號不崩潰
+        if (this.textures.exists("quest_glow")) {
+          if (!npc.questGlow) {
+            npc.questGlow = this.add.image(npc.body.x, npc.body.y, "quest_glow").setDisplaySize(54, 54).setDepth(99998);
+          }
+          npc.questGlow.setTint(GLOW_TINT[state] || 0xffe14d);
+        }
         if (!npc.questMark) {
           npc.questMark = this.add.image(npc.body.x, npc.body.y, tex).setDisplaySize(26, 26).setDepth(99999);
         } else if (npc.questState !== state) {
@@ -1372,10 +1388,19 @@ class ExploreScene extends Phaser.Scene {
     if (!this.modalOpen) for (const npc of this.npcs) this._updateNPC(npc, delta);
     // 任務 NPC 頭頂驚嘆號：跟著 NPC、上下浮動（不受 modalOpen 影響，位置才不會飄）
     const bob = Math.sin(time / 320) * 4;
+    const glowPulse = 1 + Math.sin(time / 360) * 0.10;          // 0.90~1.10 緩慢呼吸
+    const glowAlpha = 0.72 + Math.sin(time / 360) * 0.18;       // 0.54~0.90
     for (const npc of this.npcs) {
       if (!npc.questMark || !npc.body || !npc.sprite || !npc.sprite.active) continue;
-      npc.questMark.x = npc.body.x;
-      npc.questMark.y = npc.sprite.y - npc.sprite.displayHeight - 10 + bob;
+      const mx = npc.body.x, my = npc.sprite.y - npc.sprite.displayHeight - 10 + bob;
+      npc.questMark.x = mx;
+      npc.questMark.y = my;
+      if (npc.questGlow) {
+        npc.questGlow.x = mx;
+        npc.questGlow.y = my;
+        npc.questGlow.setDisplaySize(54 * glowPulse, 54 * glowPulse);   // 光圈脈動
+        npc.questGlow.alpha = glowAlpha;
+      }
     }
     this._updateInteractable();
     this._updatePortals();

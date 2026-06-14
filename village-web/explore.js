@@ -93,6 +93,9 @@ class ExploreScene extends Phaser.Scene {
     this._qBusy = false;
     this._qPending = false;
     this._qRunId = (this._qRunId || 0) + 1;
+    // 資訊彈窗(DOM)跨 restart 不會被 Phaser 銷毀，防殘留 .open 害看門狗誤判
+    const _im = document.getElementById("info-modal");
+    if (_im) _im.classList.remove("open");
   }
 
   // backbuffer 是 css × dpr，UI/zoom 計算要用 CSS 尺寸（除以 dpr）
@@ -820,7 +823,11 @@ class ExploreScene extends Phaser.Scene {
 
   // 對話框氣泡：圓角白框 + 下方尖角（指向 NPC），完整台詞自動換行。回傳 container。
   _makeBubble(x, y, text) {
-    const PAD = 11, MAXW = 230, TAIL = 11, RAD = 13;
+    // MAXW 上限再夾「可視世界寬度的 82%」：泡泡是 world 物件、會跟相機 zoom 放大，
+    // 放大或窄螢幕時 230 仍可能橫跨出畫面 → 依當下視野收斂，確保永不爆出螢幕
+    const z = (this.cameras && this.cameras.main && this.cameras.main.zoom) || 1;
+    const viewW = (this.scale.width / z) * 0.82;
+    const PAD = 11, MAXW = Math.max(140, Math.min(230, Math.floor(viewW))), TAIL = 11, RAD = 13;
     const txt = this.add.text(0, 0, text, {
       fontFamily: '"PingFang TC","Microsoft JhengHei",sans-serif',
       fontSize: "17px", color: "#3a2a14", align: "center", lineSpacing: 3,
@@ -866,7 +873,7 @@ class ExploreScene extends Phaser.Scene {
 
   // 有任何會擋操作的 DOM 面板開著嗎？（含牧場面板：它用 style.display 不是 .open class）
   _anyPanelOpen() {
-    if (document.querySelector("#ca-overlay.open,#ao-overlay.open,#jc-overlay.open,#shop-overlay.open,#eq-overlay.open,#dh-overlay.open,#en-overlay.open")) return true;
+    if (document.querySelector("#ca-overlay.open,#ao-overlay.open,#jc-overlay.open,#shop-overlay.open,#eq-overlay.open,#dh-overlay.open,#en-overlay.open,#info-modal.open")) return true;
     const r = document.getElementById("ranch-overlay");
     return !!(r && r.style.display && r.style.display !== "none");
   }
@@ -894,37 +901,43 @@ class ExploreScene extends Phaser.Scene {
     }
   }
 
+  // 資訊彈窗（open_modal 的 NPC/建築對話，如占卜師）：用 DOM overlay，不用 Phaser。
+  // Phaser 物件會被相機 zoom 放大、手機直式(zoom×1.5)+DPR 下整個框爆出螢幕被左右切掉
+  // （跟「進入」按鈕改 HTML 同因，見 line 559）。DOM 免疫 zoom/DPR、CSS 自動換行、響應式。
+  // 注意：本彈窗開啟時 this.modalContainer 維持 null，看門狗(767/1330)靠 _anyPanelOpen() 認得 #info-modal，
+  // 不會誤判卡死解鎖——改這裡務必同步維護 _anyPanelOpen 的選擇器。
+  _ensureInfoModal() {
+    let ov = document.getElementById("info-modal");
+    if (ov) return ov;
+    const st = document.createElement("style");
+    st.textContent =
+      "#info-modal{position:fixed;inset:0;z-index:30000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:24px;box-sizing:border-box}" +
+      "#info-modal.open{display:flex}" +
+      "#info-modal .im-box{background:#fff8e0;border:4px solid #4a3520;border-radius:16px;max-width:360px;width:100%;padding:24px 22px 20px;box-sizing:border-box;text-align:center;font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;box-shadow:0 10px 34px rgba(0,0,0,.32)}" +
+      "#info-modal .im-title{font-size:26px;font-weight:800;color:#4a3520;margin-bottom:14px;line-height:1.2}" +
+      "#info-modal .im-body{font-size:17px;line-height:1.75;color:#4a3520;white-space:pre-wrap;word-break:break-word;margin-bottom:18px}" +
+      "#info-modal .im-close{background:none;border:none;font-size:19px;font-weight:800;color:#a04020;cursor:pointer;padding:6px 18px;font-family:inherit}";
+    document.head.appendChild(st);
+    ov = document.createElement("div");
+    ov.id = "info-modal";
+    ov.innerHTML = '<div class="im-box"><div class="im-title"></div><div class="im-body"></div><button class="im-close">[ 關閉 ]</button></div>';
+    document.body.appendChild(ov);
+    const close = () => this._closeModal();
+    ov.addEventListener("click", (e) => { if (e.target === ov) close(); });   // 點 backdrop 關閉
+    ov.querySelector(".im-close").addEventListener("click", close);
+    return ov;
+  }
   _showModal(item) {
     this.modalOpen = true;
-    const sw = this.scale.width, sh = this.scale.height;
-    this.modalContainer = this.add.container(sw/2, sh/2).setScrollFactor(0).setDepth(20000);
-    const backdrop = this.add.rectangle(0, 0, sw*3, sh*3, 0x000000, 0.55).setInteractive();
-    const body = this.add.text(0, 0, item.body, {
-      fontFamily: "-apple-system, 'PingFang TC', sans-serif",
-      fontSize: 18 * DPR, color: "#4a3520",
-      // 長台詞自動換行。useAdvancedWrap 必開：Phaser 預設只在「空格」斷行，
-      // 中文整句沒空格會被當一個超長單字直接爆框（派派 6/12 寶箱對話實證）
-      wordWrap: { width: 320 * DPR, useAdvancedWrap: true },
-      align: "center", lineSpacing: 6 * DPR,
-    }).setOrigin(0.5);
-    // 框高隨內文長度自適應；短台詞維持原本 200 高不變
-    const boxH = Math.max(200 * DPR, body.height + 150 * DPR);
-    const box = this.add.rectangle(0, 0, 360 * DPR, boxH, 0xfff8e0).setStrokeStyle(5 * DPR, 0x4a3520);
-    const title = this.add.text(0, -boxH / 2 + 45 * DPR, item.label, {
-      fontFamily: "-apple-system, 'PingFang TC', sans-serif",
-      fontSize: 30 * DPR, color: "#4a3520", fontStyle: "bold",
-    }).setOrigin(0.5);
-    const closeBtn = this.add.text(0, boxH / 2 - 40 * DPR, "[ 關閉 ]", {
-      fontFamily: "-apple-system, 'PingFang TC', sans-serif",
-      fontSize: 20 * DPR, color: "#a04020", fontStyle: "bold",
-    }).setOrigin(0.5).setInteractive();
-    const closeFn = () => {
-      if (this.modalContainer) { this.modalContainer.destroy(); this.modalContainer = null; }
-      this.modalOpen = false;
-    };
-    closeBtn.on("pointerdown", closeFn);
-    backdrop.on("pointerdown", closeFn);
-    this.modalContainer.add([backdrop, box, title, body, closeBtn]);
+    const ov = this._ensureInfoModal();
+    ov.querySelector(".im-title").textContent = item.label || "";
+    ov.querySelector(".im-body").textContent = item.body || "";
+    ov.classList.add("open");
+  }
+  _closeModal() {
+    const ov = document.getElementById("info-modal");
+    if (ov) ov.classList.remove("open");
+    this.modalOpen = false;
   }
 
   _addFountainParticles(anchorX, anchorY) {

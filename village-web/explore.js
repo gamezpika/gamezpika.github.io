@@ -1169,31 +1169,28 @@ class ExploreScene extends Phaser.Scene {
 
   // 任務 NPC 頭頂 ❗/❓：依任務狀態算（主線走後端 API、支線/無 token 走本機進度），❗可領獎優先於 ❓可接
   async _refreshQuestMarks() {
-    if (this._qBusy) { this._qPending = true; this._qDbg = "BLOCKED(busy)"; return; }   // 重入：標記待跑，finally 補一次
+    if (this._qBusy) { this._qPending = true; return; }   // 重入：標記待跑，finally 補一次
     this._qBusy = true;
     const runMapId = this.mapId, runId = (this._qRunId = (this._qRunId || 0) + 1);
-    this._qDbg = "run#" + runId + " enter";
     // 過期判定只看 runId(被新 run/restart 取代) + mapId(換圖)；不可查 scene.isActive()，
     // 因為本函式從 _buildScene(資產載入 callback)呼叫時場景常還在 CREATING(未 RUNNING)，
     // isActive 會誤判過期→bail→符號永遠不建立(切場景符號消失的真因，?dbg 實測 act:false)。
     const stale = () => runId !== this._qRunId || this.mapId !== runMapId || !this.scene;
     try {
-      if (!this.npcs) { this._qDbg = "ret:no-npcs"; return; }
+      if (!this.npcs) return;
       const subj = _questSubjectOf(this.mapId);
       if (!subj) {                    // 非學院室內：清掉任何殘留符號
-        this._qDbg = "ret:no-subj(" + this.mapId + ")";
         for (const npc of this.npcs) { if (npc.questMark) { npc.questMark.destroy(); npc.questMark = null; } if (npc.questGlow) { npc.questGlow.destroy(); npc.questGlow = null; } npc.questState = null; }
         return;
       }
-      this._qDbg = "run#" + runId + " subj:" + subj;
       // academy.json（各 NPC 的任務鏈定義）快取
       let acad = (this._questAcad || {})[subj];
       if (!acad) {
         try { acad = await (await fetch(subj + "_academy.json?v=1")).json(); }
-        catch (e) { this._qDbg = "ret:json-fail"; return; }
+        catch (e) { return; }
         this._questAcad = this._questAcad || {}; this._questAcad[subj] = acad;
       }
-      if (stale()) { this._qDbg = "ret:stale-A run#" + runId + " cur#" + this._qRunId + " m:" + this.mapId + "/" + runMapId + " act:" + (this.scene && this.scene.isActive()); return; }
+      if (stale()) return;   // await 後可能已切地圖/重啟
       const npcsDef = (acad && acad.npcs) || {};
 
       // 主線狀態：有 token 才向後端拿（後端才是權威）。有 token 但 API 失敗→狀態不可信，主線不顯示（不 fallback 成錯誤的可接）
@@ -1208,8 +1205,7 @@ class ExploreScene extends Phaser.Scene {
           (d.quests || []).forEach((q) => { mainAPI[q.seq] = q; });
         } catch (e) { mainAPI = null; }
       }
-      if (stale()) { this._qDbg = "ret:stale-B run#" + runId + " cur#" + this._qRunId + " m:" + this.mapId + "/" + runMapId + " act:" + (this.scene && this.scene.isActive()); return; }
-      this._qDbg = "run#" + runId + " tok:" + (token ? "Y" : "N") + " api:" + (mainAPI ? Object.keys(mainAPI).length : "null");
+      if (stale()) return;
       const lsProg = (chain) => {
         try { return Math.max(0, parseInt(localStorage.getItem("village_" + subj + "_" + chain) || "0", 10) || 0); }
         catch (e) { return 0; }
@@ -1244,12 +1240,9 @@ class ExploreScene extends Phaser.Scene {
 
       // 各狀態的光圈顏色：❗亮黃 / ❓金黃 / 🩶灰
       const GLOW_TINT = { claim: 0xffe14d, avail: 0xffb733, progress: 0xd0d0d0 };
-      let _dbgN = 0, _dbgNoId = 0, _dbgDef = 0;
       for (const npc of this.npcs) {
         const id = npc.cfg && npc.cfg.id;
-        if (!id) _dbgNoId++; else if (npcsDef[id]) _dbgDef++;
         const state = id ? stateOf(id) : null;
-        if (state) _dbgN++;
         if (!state) {
           if (npc.questMark) { npc.questMark.destroy(); npc.questMark = null; }
           if (npc.questGlow) { npc.questGlow.destroy(); npc.questGlow = null; }
@@ -1276,7 +1269,6 @@ class ExploreScene extends Phaser.Scene {
         }
         npc.questState = state;
       }
-      this._qDbg = "OK run#" + runId + " def:" + _dbgDef + "/noId:" + _dbgNoId + " state>0:" + _dbgN + " glowTex:" + this.textures.exists("quest_glow");
     } finally {
       // 只有「最新的 run」(runId 仍是 _qRunId)才清 busy/補跑；被 restart 作廢的舊 run resume 後
       // 不可把新場景 in-flight run 的 _qBusy 誤清掉（Codex P2：否則 observer 觸發的並跑會誤殺新 run）
@@ -1321,9 +1313,7 @@ class ExploreScene extends Phaser.Scene {
         "\nplayer:" + !!this.player + " target:" + !!this.moveTarget +
         "\npd:" + this._pdCount + " p1:" + this.input.pointer1.isDown + " p2:" + p2 + " nDown:" + this._nDown +
         "\nopenOv:" + (ov ? ov.id : "-") + " fade:" + !!(f && f.classList.contains("show")) +
-        "\ninputEnabled:" + this.input.enabled +
-        "\nQ:" + (this._qDbg || "-") + " npcs:" + (this.npcs ? this.npcs.length : "?") +
-        " marks:" + (this.npcs ? this.npcs.filter((n) => n.questMark).length : "?");
+        "\ninputEnabled:" + this.input.enabled;
     }
     if (!this.player) return;  // scene loading
     // 自癒看門狗：pointerdown 版自癒要「點擊有進到引擎」才會跑——

@@ -92,6 +92,7 @@
         r.onMessage("friends", function (m) { friendsData = m; renderFriends(); });
         r.onMessage("me", function () {}); r.onMessage("wallet", function () {}); // 社交改純禮物、不涉金錢；保留 no-op 免 colyseus 警告
         r.onMessage("notice", function (n) { var t = noticeMsg(n); if (t) addChat("sys", t); if (n.kind === "gift_got") showGiftPop(n.gift, n.from); });
+        r.onMessage("emote", function (m) { showEmote(m.uid, m.e); }); // 表情動作：頭頂冒表情
         // 玩家造型以 server 實際 outfit 為準（default＝主角樣子）；不再強制亂配造型
         buildSocialUI();
         // 連線途中 desiredMap 又變了（快速換圖期間 connect 被 connecting 擋掉，沒換房）→ 立刻切到正確地圖
@@ -120,6 +121,7 @@
       '<div id="mp-log" style="max-height:22vh;overflow-y:auto;font-size:13px;line-height:1.5;color:#fff;text-shadow:0 1px 2px #000;margin-bottom:4px"></div>' +
       '<div style="display:flex;gap:5px;align-items:center">' +
         '<button id="mp-friendbtn" title="好友" style="border:none;border-radius:9px;padding:7px 9px;background:linear-gradient(135deg,#6a5cff,#4a3fd6);color:#fff;font-weight:800;font-size:14px;white-space:nowrap">👥</button>' +
+        '<button id="mp-emotebtn" title="表情" style="border:none;border-radius:9px;padding:7px 8px;background:#3a4a7a;color:#fff;font-size:15px;white-space:nowrap">😄</button>' +
         '<input id="mp-in" type="text" name="mpchat" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false" enterkeyhint="send" maxlength="120" placeholder="跟村莊裡的人說話…" style="flex:1;min-width:0;padding:7px 9px;border:none;border-radius:9px;font-size:14px">' +
         '<button id="mp-send" style="border:none;border-radius:9px;padding:7px 12px;background:#4a9fff;color:#fff;font-weight:700">送</button>' +
       '</div>';
@@ -262,12 +264,31 @@
     setTimeout(function () { pop.style.transform = "translate(-50%,-160%) scale(1)"; pop.style.opacity = "0"; }, 1100);
     setTimeout(function () { if (pop.parentNode) pop.parentNode.removeChild(pop); giftPops--; }, 1700);
   }
+  // ── 表情動作 emote：點按鈕→送 id；收到→那個玩家頭頂冒表情、飄起來淡出 ──
+  var EMOTES = [
+    { id: "smile", e: "😄" }, { id: "like", e: "👍" }, { id: "heart", e: "❤️" }, { id: "wow", e: "😮" },
+    { id: "cry", e: "😢" }, { id: "party", e: "🎉" }, { id: "wave", e: "👋" }, { id: "cool", e: "😎" },
+  ];
+  function emoteOf(id) { for (var i = 0; i < EMOTES.length; i++) if (EMOTES[i].id === id) return EMOTES[i].e; return ""; }
+  function showEmote(uid, id) {
+    var e = emoteOf(id); if (!e) return;
+    var scene = curScene; if (!scene || !scene.add || !scene.tweens) return;
+    var spr = null;
+    if (uid === myUid) spr = scene.playerSprite;
+    else { for (var k in remotes) if (remotes[k].uid === uid) { spr = remotes[k].spr; break; } }
+    if (!spr || !spr.scene) return;
+    var headY = spr.y - (spr.displayHeight || 60) - 4; // 頭頂上方
+    var t = scene.add.text(spr.x, headY, e, { fontSize: "30px" }).setOrigin(0.5, 1).setDepth(spr.y + 100);
+    scene.tweens.add({ targets: t, y: headY - 42, alpha: 0, duration: 1400, ease: "Cubic.easeOut", onComplete: function () { t.destroy(); } });
+  }
   function buildSocialUI() {
     if (el("mp-fpanel")) return;
     // 好友 / 金幣已併入聊天室：👥 按鈕在聊天輸入列、金幣顯示在好友面板裡（不再浮在大地圖外面）
     var fb = el("mp-friendbtn");
     // pointerdown：在 blur 收回聊天列前就觸發，避免按鈕被移走點不到
     if (fb) fb.addEventListener("pointerdown", function () { if (room) room.send("friendList"); var fp = el("mp-fpanel"); if (fp) fp.style.display = "flex"; });
+    var eb = el("mp-emotebtn");
+    if (eb) eb.addEventListener("pointerdown", function () { var m = el("mp-emote"); if (m) m.style.display = "flex"; });
     // 好友面板
     var fp = document.createElement("div"); fp.id = "mp-fpanel"; fp.style.cssText = panelCss();
     fp.innerHTML = '<h3 style="margin:6px 0">👥 好友</h3><div id="mp-fincoming" style="width:min(360px,90vw)"></div><div id="mp-flist" style="width:min(360px,90vw);display:flex;flex-direction:column;gap:6px"></div><button id="mp-fclose" style="' + closeCss() + '">關閉</button>';
@@ -291,6 +312,18 @@
     el("mp-gift-x").addEventListener("click", closeGiftPicker);
     Array.prototype.forEach.call(gp.querySelectorAll(".mp-gift-pick"), function (btn) {
       btn.addEventListener("click", function () { if (room && giftTarget) room.send("sendGift", { to: giftTarget.uid, gift: btn.getAttribute("data-id") }); closeGiftPicker(); });
+    });
+    // 表情選擇器（送自己頭頂的 emote）
+    var ep = document.createElement("div"); ep.id = "mp-emote";
+    ep.style.cssText = "position:fixed;left:50%;bottom:78px;transform:translateX(-50%);z-index:9650;display:none;flex-direction:column;gap:8px;background:#1a2348;border:1px solid #3a4a7a;border-radius:14px;padding:12px;font-family:sans-serif;color:#fff;text-align:center;width:min(280px,84vw)";
+    var egrid = '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">';
+    EMOTES.forEach(function (m) { egrid += '<button class="mp-emote-pick" data-id="' + m.id + '" style="border:none;border-radius:10px;padding:6px 0;background:rgba(255,255,255,.1);font-size:26px;cursor:pointer">' + m.e + '</button>'; });
+    egrid += '</div><button id="mp-emote-x" style="' + actCss() + 'background:#444;padding:6px 16px">取消</button>';
+    ep.innerHTML = egrid;
+    document.body.appendChild(ep);
+    el("mp-emote-x").addEventListener("click", function () { ep.style.display = "none"; });
+    Array.prototype.forEach.call(ep.querySelectorAll(".mp-emote-pick"), function (btn) {
+      btn.addEventListener("click", function () { if (room) try { room.send("emote", { e: btn.getAttribute("data-id") }); } catch (e) {} ep.style.display = "none"; });
     });
   }
   function openGiftPicker(t) { giftTarget = t; var n = el("mp-gift-name"), m = el("mp-gift"); if (!n || !m) return; n.textContent = "送禮物給 " + t.name; m.style.display = "flex"; }
@@ -346,7 +379,7 @@
       if (menuOpen !== mpHidden) {
         mpHidden = menuOpen;
         var box = el("mp-chat"); if (box) box.style.visibility = menuOpen ? "hidden" : "";
-        if (menuOpen) { closePMenu(); closeGiftPicker(); } // 開 demo 面板就關掉暫時彈窗，免疊上去
+        if (menuOpen) { closePMenu(); closeGiftPicker(); var ep = el("mp-emote"); if (ep) ep.style.display = "none"; } // 開 demo 面板就關掉暫時彈窗，免疊上去
       }
       if (!room || !room.state) return;
       var now = performance.now();

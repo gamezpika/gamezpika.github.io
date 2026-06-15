@@ -105,7 +105,8 @@
       '<div id="mp-log" style="max-height:22vh;overflow-y:auto;font-size:13px;line-height:1.5;color:#fff;text-shadow:0 1px 2px #000;margin-bottom:4px"></div>' +
       '<div style="display:flex;gap:5px"><input id="mp-in" maxlength="120" placeholder="跟村莊裡的人說話…" style="flex:1;min-width:0;padding:7px 9px;border:none;border-radius:9px;font-size:14px"><button id="mp-send" style="border:none;border-radius:9px;padding:7px 12px;background:#4a9fff;color:#fff;font-weight:700">送</button></div>';
     // 上移到搖桿(左下 116px 高)上方，不擋住移動搖桿
-    box.style.cssText = "position:fixed;left:8px;bottom:150px;width:min(320px,66vw);z-index:9000;font-family:sans-serif;background:rgba(8,12,30,.35);border-radius:10px;padding:6px";
+    // 收合狀態：下移到畫面最底，並偏右避開左下移動搖桿(left20~136)
+    box.style.cssText = "position:fixed;left:146px;right:8px;bottom:14px;z-index:9000;font-family:sans-serif;background:rgba(8,12,30,.35);border-radius:10px;padding:6px";
     document.body.appendChild(box);
     var input = el("mp-in");
     function send() { var t = (input.value || "").trim(); if (!t || !room) return; try { room.send("chat", { text: t, channel: "world" }); } catch (e) {} input.value = ""; }
@@ -138,8 +139,8 @@
       if (log) { log.style.maxHeight = "none"; log.style.flex = "1"; }
       if (window.scrollY) window.scrollTo(0, 0); // 擋 iOS 自動把頁面捲上去
     } else {
-      box.style.top = "auto"; box.style.height = "auto"; box.style.bottom = "150px";
-      box.style.right = "auto"; box.style.left = "8px"; box.style.width = "min(320px,66vw)";
+      box.style.top = "auto"; box.style.height = "auto"; box.style.bottom = "14px";
+      box.style.left = "146px"; box.style.right = "8px"; box.style.width = "auto"; // 底部偏右、避開搖桿
       box.style.background = "rgba(8,12,30,.35)";
       if (log) { log.style.maxHeight = "22vh"; log.style.flex = ""; }
     }

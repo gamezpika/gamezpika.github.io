@@ -2498,7 +2498,7 @@
       box.querySelectorAll(".dh-cert-th").forEach((im) => im.addEventListener("error", function () { this.outerHTML = `<div style="font-size:28px;line-height:1.1">${this.getAttribute("data-emo") || "🏅"}</div>`; }));
       box.querySelectorAll(".dh-cert").forEach((c) => c.addEventListener("click", () => {
         const k = c.dataset.k, rec = owned[k], meta = DH_CERTS.find((m) => m.key === k);
-        if (rec) dhShowEduCert(rec, meta);
+        if (rec) dhShowEduCert(rec);
         else dhBubble(ov, "「" + (meta ? meta.name : "") + "」還沒拿到，去集滿對應的圖鑑卡吧！");
       }));
     }
@@ -2536,11 +2536,14 @@
   // 顯示 EDU 真證書（A 方案）：直接開 EDU 公開驗證頁（頁內證書圖是 EDU 同源 <img>，
   // 避開 iOS Safari 跨域 <img> 載不出的雷；驗證頁本就是手機掃 QR 看的，含金框真圖+QR+✅為真）。
   // 必須在 click 手勢內同步呼叫 window.open，iOS 才不會當 popup 擋掉。
-  function dhShowEduCert(rec, meta) {
+  function dhShowEduCert(rec) {
     const tok = encodeURIComponent(rec.verification_token || "");
     const pageUrl = DEMO_API + "/cert/" + tok;
-    const w = window.open(pageUrl, "_blank", "noopener");
-    if (!w) location.href = pageUrl; // 彈窗被擋（部分 in-app 瀏覽器）→直接導頁
+    // 不傳 "noopener" feature：iOS Safari 帶它時即使分頁開成功也回傳 null，
+    // 會誤觸下面 fallback 把當前 demo 頁導走。改成成功後手動斷 opener。
+    const w = window.open(pageUrl, "_blank");
+    if (w) w.opener = null;            // 斷開引用，防新頁反向操控 demo
+    else location.href = pageUrl;      // 真的被擋（部分 in-app 瀏覽器）→直接導頁
   }
   function openDormHub(onClose) {
     onCloseCb = onClose || null;
@@ -2550,7 +2553,6 @@
     ov.classList.add("open");
   }
   function dhClose() {
-    const cm = document.getElementById("dh-cert-modal"); if (cm) cm.remove(); // 關 hub 一併清證書 modal
     const ov = document.getElementById("dh-overlay");
     if (ov) ov.classList.remove("open");
     release();

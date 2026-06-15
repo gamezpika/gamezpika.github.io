@@ -205,14 +205,14 @@
     update() {
       if (!this.running || this.over) return;
       // clamp + 勝負
-      let blueWin = false, redWin = false;
-      for (const lane of this.lanes) {
-        if (lane.prog >= 1) { lane.prog = 1; blueWin = true; }
-        if (lane.prog <= 0) { lane.prog = 0; redWin = true; }
+      let blueWin = false, redWin = false, winLane = 1;
+      for (let l = 0; l < 3; l++) {
+        if (this.lanes[l].prog >= 1) { this.lanes[l].prog = 1; blueWin = true; winLane = l; }
+        if (this.lanes[l].prog <= 0) { this.lanes[l].prog = 0; redWin = true; winLane = l; }
       }
       this._updatePositions();
-      if (blueWin) this._end(true);
-      else if (redWin) this._end(false);
+      if (blueWin) this._triggerWin(true, winLane);
+      else if (redWin) this._triggerWin(false, winLane);
     }
 
     _bindDOM() {
@@ -253,9 +253,41 @@
       this.time.delayedCall(correct ? 450 : 900, () => this._nextQuestion());
     }
 
-    _end(win) {
+    // 打贏施招動畫：贏方英雄放大發光 → 能量波飛向對面基地 → 爆炸+震動 → 結算
+    _triggerWin(win, lane) {
       if (this.over) return;
       this.over = true; this.running = false;
+      const hero = win ? this.heroes[lane].blue : this.heroes[lane].red;
+      const path = this.lanePaths[lane];
+      const targetBase = win ? path[path.length - 1] : path[0];   // 贏方推爆的對面基地端點（紅=TR、藍=BL）
+      const col = win ? 0x4a9fff : 0xff5e5e;
+      if (hero) {
+        this.tweens.add({ targets: hero, scaleX: hero.scaleX * 1.6, scaleY: hero.scaleY * 1.6, duration: 240, yoyo: true, repeat: 1 });
+        const glow = this.add.circle(hero.x, hero.y, 26, 0xffd24a, 0.55).setDepth(99997);
+        this.tweens.add({ targets: glow, scale: 2.2, alpha: 0, duration: 520, onComplete: () => glow.destroy() });
+      }
+      const sx = hero ? hero.x : targetBase.x, sy = hero ? hero.y : targetBase.y;
+      const bolt = this.add.circle(sx, sy, 13, 0xffd24a, 0.95).setStrokeStyle(3, 0xffffff, 0.8).setDepth(99997);
+      this.tweens.add({
+        targets: bolt, x: targetBase.x, y: targetBase.y, duration: 460, ease: "Quad.easeIn",
+        onComplete: () => { bolt.destroy(); this._explode(targetBase, col); this.cameras.main.shake(360, 0.013); },
+      });
+      setTimeout(() => this._end(win), 1500);
+    }
+
+    _explode(base, col) {
+      const flash = this.add.circle(base.x, base.y, 12, 0xffffff, 0.95).setDepth(99998);
+      this.tweens.add({ targets: flash, scale: 7, alpha: 0, duration: 520, onComplete: () => flash.destroy() });
+      for (let i = 0; i < 14; i++) {
+        const ang = (i / 14) * Math.PI * 2, dist = this.S * (0.10 + Math.random() * 0.08);
+        const pc = this.add.circle(base.x, base.y, 4 + Math.random() * 4, col, 1).setDepth(99998);
+        this.tweens.add({ targets: pc, x: base.x + Math.cos(ang) * dist, y: base.y + Math.sin(ang) * dist, alpha: 0, scale: 0.3, duration: 560 + Math.random() * 200, ease: "Quad.easeOut", onComplete: () => pc.destroy() });
+      }
+    }
+
+    _end(win) {
+      if (this._ended) return;
+      this._ended = true; this.over = true; this.running = false;
       document.getElementById("result-title").textContent = win ? "🏆 藍隊獲勝！" : "💀 紅隊獲勝";
       document.getElementById("result-sub").textContent = win ? "讀書就是戰力，你們三路壓制了對面！" : "再讀熟一點，下次贏回來！";
       document.getElementById("result").classList.add("on");

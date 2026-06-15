@@ -2507,7 +2507,11 @@
     }
     if (dhCerts === null) {
       const t = demoToken(); let cs = [];
-      if (t) { try { const d = await fetch(DEMO_API + "/api/certs/me", { headers: { Authorization: "Bearer " + t } }).then((r) => r.json()); cs = (d && d.certificates) || []; } catch (e) {} }
+      if (t) {
+        // demo 展示：先一鍵全發 12 張收藏證書(冪等)，再列出 → 證書牆直接是滿的
+        try { await fetch(DEMO_API + "/api/demo/grant-all-certs", { method: "POST", headers: { Authorization: "Bearer " + t } }); } catch (e) {}
+        try { const d = await fetch(DEMO_API + "/api/certs/me", { headers: { Authorization: "Bearer " + t } }).then((r) => r.json()); cs = (d && d.certificates) || []; } catch (e) {}
+      }
       if (seq !== dhLoadSeq) return; dhCerts = cs;
     }
   }
@@ -2520,30 +2524,23 @@
     { key: "cert_english", name: "英文大師", emoji: "🔤" }, { key: "cert_science", name: "自然大師", emoji: "🔬" },
     { key: "cert_social", name: "社會大師", emoji: "🌍" }, { key: "cert_grand", name: "圖鑑大師", emoji: "👑" },
   ];
-  let dhCertUrl = null, dhCertSeq = 0;
-  function dhRevokeCertUrl() { if (dhCertUrl) { try { URL.revokeObjectURL(dhCertUrl); } catch (e) {} dhCertUrl = null; } }
-  // 顯示 EDU 真證書：/full.png 需 Bearer，img 不能帶 header → fetch blob→objectURL→img；附 QR 公開驗證頁連結
-  async function dhShowEduCert(rec, meta) {
-    const seq = ++dhCertSeq; // 世代守衛：載入途中又點別張/關閉 → 舊請求作廢、不覆蓋、不漏 blob
-    const t = demoToken();
+  // 顯示 EDU 真證書：用「公開 by-token」圖端點(免登入、HMAC token 不可偽造)直接 <img src>
+  // → 跨域顯示圖片不需 CORS、不必 fetch/blob/Bearer（後端 docstring 就是設計給 <img> 用的）
+  function dhShowEduCert(rec, meta) {
+    const tok = encodeURIComponent(rec.verification_token || "");
+    const imgUrl = DEMO_API + "/api/certs/by-token/" + tok + "/full.png";
+    const verify = DEMO_API + "/cert/" + tok;
+    const nm = aoEsc(meta ? meta.name : "證書");
     let m = document.getElementById("dh-cert-modal");
-    if (!m) { m = el("div"); m.id = "dh-cert-modal"; m.style.cssText = "position:fixed;inset:0;z-index:7200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;background:rgba(0,0,0,.62)"; document.body.appendChild(m); m.addEventListener("click", (e) => { if (e.target === m) { dhRevokeCertUrl(); m.remove(); } }); }
+    if (!m) { m = el("div"); m.id = "dh-cert-modal"; m.style.cssText = "position:fixed;inset:0;z-index:7200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;background:rgba(0,0,0,.62)"; document.body.appendChild(m); m.addEventListener("click", (e) => { if (e.target === m) m.remove(); }); }
     m.style.display = "flex";
-    m.innerHTML = `<div style="color:#fff;font-size:14px">載入「${aoEsc(meta ? meta.name : "證書")}」證書中…</div>`;
-    let url = null;
-    if (t) { try { const r = await fetch(DEMO_API + "/api/certs/" + encodeURIComponent(rec.cert_key) + "/full.png", { headers: { Authorization: "Bearer " + t } }); if (r.ok) url = URL.createObjectURL(await r.blob()); } catch (e) {} }
-    // 過期(被新點擊取代)或 modal 已關 → 釋放本次 url、不覆蓋新內容
-    if (seq !== dhCertSeq || !document.getElementById("dh-cert-modal")) { if (url) { try { URL.revokeObjectURL(url); } catch (e) {} } return; }
-    dhRevokeCertUrl(); // 釋放前一張已顯示的 blob
-    dhCertUrl = url;
-    const verify = DEMO_API + "/cert/" + encodeURIComponent(rec.verification_token || "");
-    const btns = `<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
-        <a href="${verify}" target="_blank" rel="noopener" style="background:#4a9fff;color:#fff;text-decoration:none;border-radius:12px;padding:9px 18px;font-weight:800">🔍 驗證</a>
-        <button id="dh-cert-ok" style="border:none;border-radius:12px;padding:9px 22px;background:#c9a227;color:#fff;font-weight:800;cursor:pointer">關閉</button></div>`;
-    m.innerHTML = (url
-      ? `<img src="${url}" alt="${aoEsc(meta ? meta.name : "證書")}" style="max-width:min(440px,92vw);max-height:70vh;border-radius:12px;box-shadow:0 14px 44px rgba(0,0,0,.5)">`
-      : `<div style="background:#fff;border-radius:12px;padding:22px 18px;text-align:center;max-width:86vw">😶 證書圖載入失敗<br><span style="font-size:12px;color:#888">可能需要登入或尚未發證</span></div>`) + btns;
-    const ok = m.querySelector("#dh-cert-ok"); if (ok) ok.addEventListener("click", () => { dhRevokeCertUrl(); m.remove(); });
+    m.innerHTML = `<img id="dh-cert-img" src="${imgUrl}" alt="${nm}" style="max-width:min(440px,92vw);max-height:70vh;border-radius:12px;box-shadow:0 14px 44px rgba(0,0,0,.5);background:#fff">` +
+      `<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">` +
+        `<a href="${verify}" target="_blank" rel="noopener" style="background:#4a9fff;color:#fff;text-decoration:none;border-radius:12px;padding:9px 18px;font-weight:800">🔍 驗證</a>` +
+        `<button id="dh-cert-ok" style="border:none;border-radius:12px;padding:9px 22px;background:#c9a227;color:#fff;font-weight:800;cursor:pointer">關閉</button></div>`;
+    const img = m.querySelector("#dh-cert-img");
+    if (img) img.addEventListener("error", function () { this.outerHTML = `<div style="background:#fff;border-radius:12px;padding:22px 18px;text-align:center;max-width:86vw">😶 證書圖載入失敗</div>`; });
+    m.querySelector("#dh-cert-ok").addEventListener("click", () => m.remove());
   }
   function openDormHub(onClose) {
     onCloseCb = onClose || null;
@@ -2553,8 +2550,7 @@
     ov.classList.add("open");
   }
   function dhClose() {
-    dhCertSeq++; dhRevokeCertUrl(); // 關 hub 一併清證書 modal/blob，免殘留
-    const cm = document.getElementById("dh-cert-modal"); if (cm) cm.remove();
+    const cm = document.getElementById("dh-cert-modal"); if (cm) cm.remove(); // 關 hub 一併清證書 modal
     const ov = document.getElementById("dh-overlay");
     if (ov) ov.classList.remove("open");
     release();

@@ -2391,7 +2391,7 @@
 
   /* ───────────────────── 個人小屋 hub（學生宿舍：更衣室 / 角色裝備 / 寵物 / 圖鑑，純展示）───────────────────── */
   let dhTab = "outfit";
-  let dhAwards = null, dhExam = null, dhLoadSeq = 0; // 成就/檢定狀態快取（開 hub 抓一次）；dhLoadSeq=世代守衛，重開作廢舊 fetch 寫回
+  let dhAwards = null, dhCerts = null, dhLoadSeq = 0; // 成就(/api/awards)/證書(/api/certs)快取；dhLoadSeq=世代守衛，重開作廢舊 fetch 寫回
   function dhBuildOverlay() {
     let ov = document.getElementById("dh-overlay");
     if (ov) return ov;
@@ -2480,23 +2480,21 @@
            <span style="font-size:22px">${a.kind === "title" ? "🏆" : "📜"}</span>
            <span style="font-weight:800;color:#8a6a1e">${aoEsc(a.label)}</span></div>`).join("") + `</div>`;
     } else if (dhTab === "cert") {
-      // 📜 證書：5 科檢定證書牆（過了亮起、點開看 HTML 證書）
-      dhBubble(ov, "通過檢定考就能拿到證書！");
-      if (dhAwards === null || dhExam === null) { box.innerHTML = `<div class="dh-sub">載入中…</div>`; dhLoadData().then(() => { if (dhTab === "cert") dhRender(ov); }); return; }
-      const smap = {}; ((dhExam && dhExam.subjects) || []).forEach((x) => { smap[x.subject_key] = x; });
-      // 精準判定：award label 含「<科>證照」或「<科>檢定」（避免誤判「<科>教師證」等）
-      const certEarned = (k) => (dhAwards || []).some((a) => new RegExp(SUBJ[k] + "(證照|檢定)").test(a.label || ""));
-      box.innerHTML = `<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:9px">` + Object.keys(SUBJ).map((k) => {
-        const ok = certEarned(k), lv = Math.max(1, Number(smap[k] && smap[k].grade_max) || 1); // 強制數字，防 API 非數字注入
-        return `<div class="dh-cert ${ok ? "on" : "off"}" data-k="${k}" style="border:2px solid ${ok ? "#d4a017" : "#ccc"};border-radius:12px;padding:12px 6px;text-align:center;background:${ok ? "linear-gradient(160deg,#fffceb,#fff1bf)" : "#f1f1f1"};opacity:${ok ? 1 : .55};cursor:pointer">
-            <div style="font-size:30px;line-height:1.1">${ok ? "📜" : "🔒"}</div>
-            <div style="font-weight:800;color:#6a4a12">${SUBJ[k]}證照</div>
-            <div style="font-size:11.5px;color:${ok ? "#b8860b" : "#999"}">${ok ? "LV." + lv + " 已通過" : "尚未通過"}</div></div>`;
-      }).join("") + `</div>`;
+      // 📜 證書：接 EDU 真證書系統（同後端）— 12 張收藏證書，拿到的顯示真合成圖+QR驗證
+      dhBubble(ov, "集滿圖鑑知識卡就能拿到收藏證書！");
+      if (dhCerts === null) { box.innerHTML = `<div class="dh-sub">載入中…</div>`; dhLoadData().then(() => { if (dhTab === "cert") dhRender(ov); }); return; }
+      const owned = {}; (dhCerts || []).forEach((c) => { owned[c.cert_key] = c; });
+      box.innerHTML = `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">` + DH_CERTS.map((meta) => {
+        const ok = !!owned[meta.key];
+        return `<div class="dh-cert ${ok ? "on" : "off"}" data-k="${meta.key}" style="border:2px solid ${ok ? "#d4a017" : "#ccc"};border-radius:12px;padding:11px 4px;text-align:center;background:${ok ? "linear-gradient(160deg,#fffceb,#fff1bf)" : "#f1f1f1"};opacity:${ok ? 1 : .5};cursor:pointer">
+            <div style="font-size:28px;line-height:1.1">${ok ? meta.emoji : "🔒"}</div>
+            <div style="font-weight:800;color:#6a4a12;font-size:12.5px">${meta.name}</div>
+            <div style="font-size:10.5px;color:${ok ? "#b8860b" : "#999"}">${ok ? "已獲得" : "未獲得"}</div></div>`;
+      }).join("") + `</div>` + (demoToken() ? "" : `<div class="jc-empty" style="margin-top:8px">建立角色、集滿圖鑑卡，就能拿到真證書！</div>`);
       box.querySelectorAll(".dh-cert").forEach((c) => c.addEventListener("click", () => {
-        const k = c.dataset.k;
-        if (c.classList.contains("on")) dhShowCert(k, (smap[k] && smap[k].grade_max) || 1);
-        else dhBubble(ov, "「" + SUBJ[k] + "」檢定還沒過，去考試院找笛卡兒挑戰吧！");
+        const k = c.dataset.k, rec = owned[k], meta = DH_CERTS.find((m) => m.key === k);
+        if (rec) dhShowEduCert(rec, meta);
+        else dhBubble(ov, "「" + (meta ? meta.name : "") + "」還沒拿到，去集滿對應的圖鑑卡吧！");
       }));
     }
   }
@@ -2507,34 +2505,47 @@
       let aw = []; try { aw = (typeof caLoadAwards === "function") ? (await caLoadAwards()) : []; } catch (e) {}
       if (seq !== dhLoadSeq) return; dhAwards = aw;
     }
-    if (dhExam === null) {
-      const t = demoToken(); let ex = { subjects: [] };
-      if (t) { try { ex = await fetch(DEMO_API + "/api/exam/center/status", { headers: { Authorization: "Bearer " + t } }).then((r) => r.json()); } catch (e) {} }
-      if (seq !== dhLoadSeq) return; dhExam = ex;
+    if (dhCerts === null) {
+      const t = demoToken(); let cs = [];
+      if (t) { try { const d = await fetch(DEMO_API + "/api/certs/me", { headers: { Authorization: "Bearer " + t } }).then((r) => r.json()); cs = (d && d.certificates) || []; } catch (e) {} }
+      if (seq !== dhLoadSeq) return; dhCerts = cs;
     }
   }
-  // 漂亮 HTML 證書（demo 等級；不做合成圖/QR）
-  function dhShowCert(subjectKey, lv) {
-    lv = Math.max(1, Number(lv) || 1); // 強制數字，防注入
-    const name = (() => { try { return localStorage.getItem("village_player_name") || "小勇者"; } catch (e) { return "小勇者"; } })();
-    const d = new Date(), ds = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  // EDU 12 張收藏證書目錄（對齊後端 cards.py CERTIFICATES）
+  const DH_CERTS = [
+    { key: "cert_pet", name: "寵物收藏家", emoji: "🐾" }, { key: "cert_animal", name: "牧場主人", emoji: "🐔" },
+    { key: "cert_plant", name: "綠手指", emoji: "🥦" }, { key: "cert_food", name: "美食達人", emoji: "🍎" },
+    { key: "cert_exercise", name: "運動健將", emoji: "🏃" }, { key: "cert_habit", name: "習慣養成", emoji: "📅" },
+    { key: "cert_math", name: "數學大師", emoji: "➗" }, { key: "cert_chinese", name: "國語大師", emoji: "📜" },
+    { key: "cert_english", name: "英文大師", emoji: "🔤" }, { key: "cert_science", name: "自然大師", emoji: "🔬" },
+    { key: "cert_social", name: "社會大師", emoji: "🌍" }, { key: "cert_grand", name: "圖鑑大師", emoji: "👑" },
+  ];
+  let dhCertUrl = null;
+  function dhRevokeCertUrl() { if (dhCertUrl) { try { URL.revokeObjectURL(dhCertUrl); } catch (e) {} dhCertUrl = null; } }
+  // 顯示 EDU 真證書：/full.png 需 Bearer，img 不能帶 header → fetch blob→objectURL→img；附 QR 公開驗證頁連結
+  async function dhShowEduCert(rec, meta) {
+    const t = demoToken();
     let m = document.getElementById("dh-cert-modal");
-    if (!m) { m = el("div"); m.id = "dh-cert-modal"; m.style.cssText = "position:fixed;inset:0;z-index:7200;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55)"; document.body.appendChild(m); m.addEventListener("click", (e) => { if (e.target === m) m.remove(); }); }
-    m.innerHTML = `<div style="width:min(360px,86vw);background:linear-gradient(160deg,#fffdf5,#fff6db);border:3px double #c9a227;border-radius:18px;padding:22px 20px;text-align:center;box-shadow:0 14px 44px rgba(0,0,0,.45);font-family:'PingFang TC','Microsoft JhengHei',sans-serif">
-        <div style="font-size:12px;letter-spacing:4px;color:#b8860b">小 智 學 園 · 認 證</div>
-        <div style="font-size:42px;margin:4px 0">🏅</div>
-        <div style="font-size:22px;font-weight:900;color:#6a4a12">${SUBJ[subjectKey]}檢定證書</div>
-        <div style="height:2px;background:linear-gradient(90deg,transparent,#d4a017,transparent);margin:9px auto;width:82%"></div>
-        <div style="font-size:15px;color:#444;line-height:2;margin:8px 0">茲證明 <b style="color:#c0392b;font-size:18px">${aoEsc(name)}</b> 同學<br>通過 <b>${SUBJ[subjectKey]}</b> 學科檢定<br>達 <b style="color:#d4a017">LV.${lv}</b> 等級</div>
-        <div style="font-size:12px;color:#999;margin-top:6px">頒發日期：${ds}　·　考試院 笛卡兒 監考</div>
-        <button id="dh-cert-ok" style="margin-top:16px;border:none;border-radius:12px;padding:9px 26px;background:#c9a227;color:#fff;font-weight:800;cursor:pointer">收下</button>
-      </div>`;
-    m.querySelector("#dh-cert-ok").addEventListener("click", () => m.remove());
+    if (!m) { m = el("div"); m.id = "dh-cert-modal"; m.style.cssText = "position:fixed;inset:0;z-index:7200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;background:rgba(0,0,0,.62)"; document.body.appendChild(m); m.addEventListener("click", (e) => { if (e.target === m) { dhRevokeCertUrl(); m.remove(); } }); }
     m.style.display = "flex";
+    m.innerHTML = `<div style="color:#fff;font-size:14px">載入「${aoEsc(meta ? meta.name : "證書")}」證書中…</div>`;
+    dhRevokeCertUrl();
+    let url = null;
+    if (t) { try { const r = await fetch(DEMO_API + "/api/certs/" + rec.cert_key + "/full.png", { headers: { Authorization: "Bearer " + t } }); if (r.ok) url = URL.createObjectURL(await r.blob()); } catch (e) {} }
+    if (!document.getElementById("dh-cert-modal")) { dhRevokeCertUrl(); return; } // 載入途中已關閉
+    dhCertUrl = url;
+    const verify = DEMO_API + "/cert/" + encodeURIComponent(rec.verification_token || "");
+    const btns = `<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+        <a href="${verify}" target="_blank" rel="noopener" style="background:#4a9fff;color:#fff;text-decoration:none;border-radius:12px;padding:9px 18px;font-weight:800">🔍 驗證</a>
+        <button id="dh-cert-ok" style="border:none;border-radius:12px;padding:9px 22px;background:#c9a227;color:#fff;font-weight:800;cursor:pointer">關閉</button></div>`;
+    m.innerHTML = (url
+      ? `<img src="${url}" alt="${aoEsc(meta ? meta.name : "證書")}" style="max-width:min(440px,92vw);max-height:70vh;border-radius:12px;box-shadow:0 14px 44px rgba(0,0,0,.5)">`
+      : `<div style="background:#fff;border-radius:12px;padding:22px 18px;text-align:center;max-width:86vw">😶 證書圖載入失敗<br><span style="font-size:12px;color:#888">可能需要登入或尚未發證</span></div>`) + btns;
+    const ok = m.querySelector("#dh-cert-ok"); if (ok) ok.addEventListener("click", () => { dhRevokeCertUrl(); m.remove(); });
   }
   function openDormHub(onClose) {
     onCloseCb = onClose || null;
-    dhLoadSeq++; dhAwards = null; dhExam = null; // 重開重抓成就/檢定狀態（世代+1 作廢舊 fetch）
+    dhLoadSeq++; dhAwards = null; dhCerts = null; // 重開重抓成就/證書（世代+1 作廢舊 fetch）
     const ov = dhBuildOverlay();
     dhTab = "outfit"; dhRender(ov);
     ov.classList.add("open");

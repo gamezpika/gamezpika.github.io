@@ -126,14 +126,23 @@
   }
   function placeChat(focused) {
     var box = el("mp-chat"); if (!box) return;
-    var vv = window.visualViewport, kb = vv ? kbHeight() : 0;
-    if (focused && kb > 80) { // 真的有軟鍵盤才釘（桌機/硬體鍵盤 kb≈0 → 維持 150 不蓋搖桿）
+    var vv = window.visualViewport, kb = vv ? kbHeight() : 0, log = el("mp-log");
+    if (focused && kb > 80) { // 真的有軟鍵盤才展開（桌機/硬體鍵盤 kb≈0 → 維持小框不蓋搖桿）
+      // 鍵盤升起：把聊天框展開成「鍵盤上方的半透明聊天面板」，填滿可視區 →
+      // 蓋掉 iOS 鍵盤頂上去後露出的底色一大塊黑，順便變成完整聊天記錄視圖
       box.style.bottom = "auto";
-      box.style.top = Math.max(8, vv.offsetTop + vv.height - (box.offsetHeight || 52) - 8) + "px";
+      box.style.top = (vv.offsetTop + 8) + "px";
+      box.style.height = Math.max(120, vv.height - 16) + "px";
+      box.style.right = "8px"; box.style.width = "auto";
+      box.style.display = "flex"; box.style.flexDirection = "column";
+      box.style.background = "rgba(8,12,30,.6)";
+      if (log) { log.style.maxHeight = "none"; log.style.flex = "1"; }
       if (window.scrollY) window.scrollTo(0, 0); // 擋 iOS 自動把頁面捲上去
     } else {
-      box.style.top = "auto";
-      box.style.bottom = "150px";
+      box.style.top = "auto"; box.style.height = "auto"; box.style.bottom = "150px";
+      box.style.right = "auto"; box.style.width = "min(320px,66vw)";
+      box.style.background = "rgba(8,12,30,.35)";
+      if (log) { log.style.maxHeight = "22vh"; log.style.flex = ""; }
     }
   }
   function bindKeyboardPin() {

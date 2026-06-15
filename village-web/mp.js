@@ -116,31 +116,26 @@
     bindKeyboardPin();
   }
 
-  // ── 手機鍵盤彈出時把聊天框釘在鍵盤正上方（避免黑塊／輸入框被鍵盤蓋住）──
-  // 用 top 對齊 visual viewport 底邊：iOS 的 position:fixed + bottom 在鍵盤升起時不可靠，會把框塞到鍵盤下面看不到。
+  // ── 手機打字時把聊天框展開成「可視區內的半透明聊天面板」，避免 iOS 鍵盤頂上去後露出底色黑塊 ──
+  // 不靠「猜鍵盤高度」(iOS clientHeight 會跟鍵盤一起縮 → 算出 0 永遠不觸發)；
+  // 改用「觸控裝置 + focus」當開關，面板尺寸直接綁 visualViewport(它就是鍵盤上方的可視區)。
   var pinBound = false;
-  function kbHeight() {
-    var vv = window.visualViewport; if (!vv) return 0;
-    var layoutH = document.documentElement.clientHeight || window.innerHeight; // 版面高(iOS 不隨鍵盤縮)
-    return Math.max(0, layoutH - (vv.offsetTop + vv.height)); // 鍵盤高 = 版面底 - 可視底
-  }
+  var isTouch = !!(window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
   function placeChat(focused) {
     var box = el("mp-chat"); if (!box) return;
-    var vv = window.visualViewport, kb = vv ? kbHeight() : 0, log = el("mp-log");
-    if (focused && kb > 80) { // 真的有軟鍵盤才展開（桌機/硬體鍵盤 kb≈0 → 維持小框不蓋搖桿）
-      // 鍵盤升起：把聊天框展開成「鍵盤上方的半透明聊天面板」，填滿可視區 →
-      // 蓋掉 iOS 鍵盤頂上去後露出的底色一大塊黑，順便變成完整聊天記錄視圖
+    var vv = window.visualViewport, log = el("mp-log");
+    if (focused && vv && isTouch) { // 觸控裝置打字 → 展開面板填滿可視區（桌機 isTouch=false → 維持小框）
       box.style.bottom = "auto";
       box.style.top = (vv.offsetTop + 8) + "px";
-      box.style.height = Math.max(120, vv.height - 16) + "px";
-      box.style.right = "8px"; box.style.width = "auto";
+      box.style.height = Math.max(120, vv.height - 16) + "px"; // vv.height = 鍵盤上方可視高
+      box.style.left = "8px"; box.style.right = "8px"; box.style.width = "auto";
       box.style.display = "flex"; box.style.flexDirection = "column";
       box.style.background = "rgba(8,12,30,.6)";
       if (log) { log.style.maxHeight = "none"; log.style.flex = "1"; }
       if (window.scrollY) window.scrollTo(0, 0); // 擋 iOS 自動把頁面捲上去
     } else {
       box.style.top = "auto"; box.style.height = "auto"; box.style.bottom = "150px";
-      box.style.right = "auto"; box.style.width = "min(320px,66vw)";
+      box.style.right = "auto"; box.style.left = "8px"; box.style.width = "min(320px,66vw)";
       box.style.background = "rgba(8,12,30,.35)";
       if (log) { log.style.maxHeight = "22vh"; log.style.flex = ""; }
     }

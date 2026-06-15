@@ -120,7 +120,7 @@
       '<div id="mp-log" style="max-height:22vh;overflow-y:auto;font-size:13px;line-height:1.5;color:#fff;text-shadow:0 1px 2px #000;margin-bottom:4px"></div>' +
       '<div style="display:flex;gap:5px;align-items:center">' +
         '<button id="mp-friendbtn" title="好友" style="border:none;border-radius:9px;padding:7px 9px;background:linear-gradient(135deg,#6a5cff,#4a3fd6);color:#fff;font-weight:800;font-size:14px;white-space:nowrap">👥</button>' +
-        '<input id="mp-in" maxlength="120" placeholder="跟村莊裡的人說話…" style="flex:1;min-width:0;padding:7px 9px;border:none;border-radius:9px;font-size:14px">' +
+        '<input id="mp-in" type="text" name="mpchat" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false" enterkeyhint="send" maxlength="120" placeholder="跟村莊裡的人說話…" style="flex:1;min-width:0;padding:7px 9px;border:none;border-radius:9px;font-size:14px">' +
         '<button id="mp-send" style="border:none;border-radius:9px;padding:7px 12px;background:#4a9fff;color:#fff;font-weight:700">送</button>' +
       '</div>';
     // 上移到搖桿(左下 116px 高)上方，不擋住移動搖桿
@@ -148,20 +148,20 @@
   function placeChat(focused) {
     var box = el("mp-chat"); if (!box) return;
     var vv = window.visualViewport, log = el("mp-log");
-    if (focused && vv && isTouch) { // 觸控裝置打字 → 展開面板填滿可視區（桌機 isTouch=false → 維持小框）
-      box.style.bottom = "auto";
-      box.style.top = (vv.offsetTop + 8) + "px";
-      box.style.height = Math.max(120, vv.height - 16) + "px"; // vv.height = 鍵盤上方可視高
+    if (focused && vv && isTouch) {
+      // 打字時：整列釘在鍵盤正上方(緊貼可視底)、實心底色像聊天列——不開大面板、不讓遊戲變暗(參考線上遊戲)
       box.style.left = "8px"; box.style.right = "8px"; box.style.width = "auto";
-      box.style.display = "flex"; box.style.flexDirection = "column";
-      box.style.background = "rgba(8,12,30,.6)";
-      if (log) { log.style.maxHeight = "none"; log.style.flex = "1"; }
+      box.style.bottom = "auto"; box.style.height = "auto";
+      box.style.background = "rgba(20,26,46,.94)";
+      if (log) { log.style.maxHeight = "26vh"; }
+      var h = box.offsetHeight || 96;
+      box.style.top = Math.max(6, vv.offsetTop + vv.height - h - 4) + "px"; // 底邊貼齊可視底＝鍵盤頂
       if (window.scrollY) window.scrollTo(0, 0); // 擋 iOS 自動把頁面捲上去
     } else {
       box.style.top = "auto"; box.style.height = "auto"; box.style.bottom = "14px";
       box.style.left = "146px"; box.style.right = "8px"; box.style.width = "auto"; // 底部偏右、避開搖桿
       box.style.background = "rgba(8,12,30,.35)";
-      if (log) { log.style.maxHeight = "22vh"; log.style.flex = ""; }
+      if (log) { log.style.maxHeight = "22vh"; }
     }
   }
   function bindKeyboardPin() {

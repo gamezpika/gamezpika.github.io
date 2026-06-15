@@ -11,37 +11,44 @@
   var myUid = "mp" + Math.floor((Date.now() + performance.now()) % 1e9);
   var myName = (localStorage.getItem("village_player_name") || "玩家") + myUid.slice(-3);
 
-  var room = null, connecting = false, remotes = {}, lastSend = 0, curScene = null, mpClient = null;
+  var room = null, connecting = false, remotes = {}, lastSend = 0, curScene = null, mpClient = null, mySkin = "default";
   function el(id) { return document.getElementById(id); }
 
-  // ── 裝扮造型：server outfit id → demo 走路圖 sheet id；default 用 hero ──
-  var OUTFIT_SHEET = { knight: "m_knight", wizard: "m_wizard_kid", elf: "f_elf", santa: "m_santa", superhero: "m_superhero" };
+  // ── 裝扮造型：用 demo 自己的走路圖（與本地玩家同命名規則），各遠端玩家各自載自己真實的造型 ──
   var outfitReady = {}, outfitLoading = {};
   function frameDimsOf(scene, key) { var t = scene.textures.get(key); var f = t.get(0); return { w: f.width, h: f.height, n: t.frameTotal - 1 }; }
+  // 本地玩家目前造型 id（對齊 explore.js 的 walkOutfitCurrent）
+  function localSkin() { try { return (typeof walkOutfitCurrent === "function" && walkOutfitCurrent().id) || "default"; } catch (e) { return "default"; } }
+  // 造型 id → 3 方向圖檔（對齊 explore.js：男生預設 player3/1/2、女生預設 walk_f_default、其餘 walk_<id>）
+  function skinSheets(id) {
+    if (!id || id === "default" || id === "default_m") return { side: "player3.webp", down: "player1.webp", up: "player2.webp" };
+    if (id === "default_f") return { side: "walk_f_default_side.webp", down: "walk_f_default_down.webp", up: "walk_f_default_up.webp" };
+    return { side: "walk_" + id + "_side.webp", down: "walk_" + id + "_down.webp", up: "walk_" + id + "_up.webp" };
+  }
 
-  // 動態載入某造型的 3 方向走路圖 + 建動畫（造型 sheet 與 hero 同 frame 規格）。回 anim 前綴(ready) 或 null。
-  function ensureOutfitAnims(scene, outfitId) {
-    var sheet = OUTFIT_SHEET[outfitId]; if (!sheet) return null; // default → hero
-    var prefix = "mp_" + sheet;
-    if (outfitReady[sheet]) return prefix;
-    if (scene.anims.exists(prefix + "_walk")) { outfitReady[sheet] = true; return prefix; } // 換地圖後 anims 仍在
-    if (outfitLoading[sheet]) return null;
+  // 動態載入某造型的 3 方向走路圖 + 建動畫（所有造型與 config player 同 frame 規格，借 hero dims）。回 anim 前綴(ready) 或 null。
+  function ensureOutfitAnims(scene, skinId) {
+    var id = (skinId || "default");
+    var prefix = "mp_o_" + id.replace(/[^a-zA-Z0-9_]/g, "");
+    if (outfitReady[id]) return prefix;
+    if (scene.anims.exists(prefix + "_walk")) { outfitReady[id] = true; return prefix; } // 換地圖後 anims 仍在
+    if (outfitLoading[id]) return null;
     if (!scene.textures.exists("hero") || !scene.textures.exists("hero_down") || !scene.textures.exists("hero_up")) return null;
-    var base = scene.assetBase || "";
+    var base = scene.assetBase || "", f = skinSheets(id);
     var d = { side: frameDimsOf(scene, "hero"), down: frameDimsOf(scene, "hero_down"), up: frameDimsOf(scene, "hero_up") };
-    outfitLoading[sheet] = true;
-    if (!scene.textures.exists(prefix + "_side")) scene.load.spritesheet(prefix + "_side", base + "walk_" + sheet + "_side.webp", { frameWidth: d.side.w, frameHeight: d.side.h });
-    if (!scene.textures.exists(prefix + "_down")) scene.load.spritesheet(prefix + "_down", base + "walk_" + sheet + "_down.webp", { frameWidth: d.down.w, frameHeight: d.down.h });
-    if (!scene.textures.exists(prefix + "_up")) scene.load.spritesheet(prefix + "_up", base + "walk_" + sheet + "_up.webp", { frameWidth: d.up.w, frameHeight: d.up.h });
+    outfitLoading[id] = true;
+    if (!scene.textures.exists(prefix + "_side")) scene.load.spritesheet(prefix + "_side", base + f.side + "?v=4", { frameWidth: d.side.w, frameHeight: d.side.h });
+    if (!scene.textures.exists(prefix + "_down")) scene.load.spritesheet(prefix + "_down", base + f.down + "?v=4", { frameWidth: d.down.w, frameHeight: d.down.h });
+    if (!scene.textures.exists(prefix + "_up")) scene.load.spritesheet(prefix + "_up", base + f.up + "?v=4", { frameWidth: d.up.w, frameHeight: d.up.h });
     scene.load.once("complete", function () {
       try {
         if (!scene.anims.exists(prefix + "_walk")) scene.anims.create({ key: prefix + "_walk", frames: scene.anims.generateFrameNumbers(prefix + "_side", { start: 0, end: d.side.n - 1 }), frameRate: 12, repeat: -1 });
         if (!scene.anims.exists(prefix + "_walk_down")) scene.anims.create({ key: prefix + "_walk_down", frames: scene.anims.generateFrameNumbers(prefix + "_down", { start: 0, end: d.down.n - 1 }), frameRate: 14, repeat: -1 });
         if (!scene.anims.exists(prefix + "_walk_up")) scene.anims.create({ key: prefix + "_walk_up", frames: scene.anims.generateFrameNumbers(prefix + "_up", { start: 0, end: d.up.n - 1 }), frameRate: 14, repeat: -1 });
         if (!scene.anims.exists(prefix + "_idle")) scene.anims.create({ key: prefix + "_idle", frames: [{ key: prefix + "_down", frame: 0 }], frameRate: 1 });
-        outfitReady[sheet] = true;
+        outfitReady[id] = true;
       } catch (e) {}
-      outfitLoading[sheet] = false;
+      outfitLoading[id] = false;
     });
     scene.load.start();
     return null;
@@ -51,7 +58,8 @@
     if (room || connecting || typeof Colyseus === "undefined") return;
     connecting = true;
     mpClient = mpClient || new Colyseus.Client(EP);
-    mpClient.joinOrCreate("world", { uid: myUid, name: myName, outfit: "default" })
+    mySkin = localSkin();
+    mpClient.joinOrCreate("world", { uid: myUid, name: myName, outfit: "default", skin: mySkin })
       .then(function (r) {
         room = r; connecting = false;
         buildChat();
@@ -98,30 +106,36 @@
     bindKeyboardPin();
   }
 
-  // ── 手機鍵盤彈出時把聊天框釘在鍵盤正上方、鎖住頁面捲動（避免露出底色一大塊黑）──
+  // ── 手機鍵盤彈出時把聊天框釘在鍵盤正上方（避免黑塊／輸入框被鍵盤蓋住）──
+  // 用 top 對齊 visual viewport 底邊：iOS 的 position:fixed + bottom 在鍵盤升起時不可靠，會把框塞到鍵盤下面看不到。
   var pinBound = false;
+  function kbHeight() {
+    var vv = window.visualViewport; if (!vv) return 0;
+    var layoutH = document.documentElement.clientHeight || window.innerHeight; // 版面高(iOS 不隨鍵盤縮)
+    return Math.max(0, layoutH - (vv.offsetTop + vv.height)); // 鍵盤高 = 版面底 - 可視底
+  }
+  function placeChat(focused) {
+    var box = el("mp-chat"); if (!box) return;
+    var vv = window.visualViewport, kb = vv ? kbHeight() : 0;
+    if (focused && kb > 80) { // 真的有軟鍵盤才釘（桌機/硬體鍵盤 kb≈0 → 維持 150 不蓋搖桿）
+      box.style.bottom = "auto";
+      box.style.top = Math.max(8, vv.offsetTop + vv.height - box.offsetHeight - 8) + "px";
+      if (window.scrollY) window.scrollTo(0, 0); // 擋 iOS 自動把頁面捲上去
+    } else {
+      box.style.top = "auto";
+      box.style.bottom = "150px";
+    }
+  }
   function bindKeyboardPin() {
     if (pinBound || !window.visualViewport) return; pinBound = true;
-    var vv = window.visualViewport;
-    function reflow() {
-      var box = el("mp-chat"); if (!box) return;
-      var gap = Math.max(0, window.innerHeight - vv.height - vv.offsetTop); // 軟鍵盤高度
-      // gap>80 才是真的軟鍵盤（桌機/硬體鍵盤 gap≈0 → 不釘，維持 150 避免蓋住搖桿）
-      if (document.activeElement === el("mp-in") && gap > 80) {
-        box.style.bottom = (gap + 8) + "px";
-        if (window.scrollY) window.scrollTo(0, 0); // 擋 iOS 自動把頁面捲上去（黑塊元凶）
-      } else {
-        box.style.bottom = "150px";
-      }
-    }
-    vv.addEventListener("resize", reflow);
-    vv.addEventListener("scroll", reflow);
+    function reflow() { placeChat(document.activeElement === el("mp-in")); }
+    window.visualViewport.addEventListener("resize", reflow);
+    window.visualViewport.addEventListener("scroll", reflow);
   }
   function pinChat(on) {
-    var box = el("mp-chat"); if (!box || !window.visualViewport) return;
-    var vv = window.visualViewport, gap = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-    if (!on || gap <= 80) { box.style.bottom = "150px"; return; } // 桌機/硬體鍵盤 gap≈0 → 不釘
-    box.style.bottom = (gap + 8) + "px"; window.scrollTo(0, 0);
+    placeChat(on);
+    // 鍵盤升降有動畫(~300ms)，補幾次重排確保最後落在鍵盤正上方
+    if (on) { [120, 280, 450].forEach(function (t) { setTimeout(function () { placeChat(document.activeElement === el("mp-in")); }, t); }); }
   }
   function addChat(cls, text) {
     var log = el("mp-log"); if (!log) return;
@@ -147,7 +161,7 @@
       fontFamily: "sans-serif", fontSize: "15px", color: "#ffffff",
       stroke: "#1a2240", strokeThickness: 4,
     }).setOrigin(0.5, 1);
-    var r = { spr: spr, label: label, x: p.x, y: p.y, tx: p.x, ty: p.y, dir: p.dir, moving: false, name: p.name, outfit: p.outfit, uid: p.uid };
+    var r = { spr: spr, label: label, x: p.x, y: p.y, tx: p.x, ty: p.y, dir: p.dir, moving: false, name: p.name, skin: p.skin || "default", uid: p.uid };
     spr.setInteractive({ useHandCursor: true }); // 點玩家 → 加好友 / 送金幣
     spr.on("pointerdown", function () { openPMenu(r); });
     return r;
@@ -163,7 +177,7 @@
     r.label.x = r.x; r.label.y = r.y - 56;
     r.label.setDepth(r.y + 1);
     var scene = r.spr.scene; if (!scene) return;
-    var prefix = ensureOutfitAnims(scene, r.outfit) || "hero"; // 造型 ready 用造型 anims，否則 hero
+    var prefix = ensureOutfitAnims(scene, r.skin) || "hero"; // 造型 ready 用該玩家真實造型 anims，否則暫用 hero
     var suffix = r.moving ? (r.dir === "up" ? "_walk_up" : (r.dir === "down" ? "_walk_down" : "_walk")) : "_idle";
     var key = prefix + suffix;
     var cur = r.spr.anims.currentAnim;
@@ -238,7 +252,7 @@
     coins: function () { return myCoins; },
     _send: function (t, d) { if (room) try { room.send(t, d); } catch (e) {} },
     connected: function () { return !!room; },
-    remoteInfo: function () { return Object.keys(remotes).map(function (k) { var r = remotes[k]; return { outfit: r.outfit, anim: r.spr.anims.currentAnim && r.spr.anims.currentAnim.key }; }); },
+    remoteInfo: function () { return Object.keys(remotes).map(function (k) { var r = remotes[k]; return { skin: r.skin, anim: r.spr.anims.currentAnim && r.spr.anims.currentAnim.key }; }); },
     // explore.js create() 末尾呼叫：換地圖(scene.restart)會重跑 → 重置遠端 sprite
     onSceneCreate: function (scene) {
       curScene = scene;
@@ -253,13 +267,16 @@
       var now = performance.now();
       var dir = Math.abs(dx) > Math.abs(dy) ? "side" : (dy > 0 ? "down" : "up");
       if (now - lastSend > 80) { try { room.send("move", { x: x, y: y, dir: dir, moving: !!moving }); } catch (e) {} lastSend = now; }
+      // 本地玩家在 demo 內換了衣服 → 即時廣播，讓別人看到我真實造型
+      var nowSkin = localSkin();
+      if (nowSkin !== mySkin) { mySkin = nowSkin; try { room.send("setSkin", { id: nowSkin }); } catch (e) {} }
       var seen = {};
       room.state.players.forEach(function (p, key) {
         if (key === room.sessionId) return; // 跳過自己
         seen[key] = 1;
         var r = remotes[key];
         if (!r) { r = createRemote(scene, p); remotes[key] = r; }
-        r.tx = p.x; r.ty = p.y; r.dir = p.dir; r.moving = !!p.moving; r.name = p.name; r.outfit = p.outfit;
+        r.tx = p.x; r.ty = p.y; r.dir = p.dir; r.moving = !!p.moving; r.name = p.name; r.skin = p.skin || "default";
         if (r.label.text !== p.name) r.label.setText(p.name);
       });
       Object.keys(remotes).forEach(function (key) {

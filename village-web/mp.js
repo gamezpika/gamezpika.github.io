@@ -129,6 +129,9 @@
     document.body.appendChild(box);
     var input = el("mp-in");
     function send() { var t = (input.value || "").trim(); if (!t || !room) return; try { room.send("chat", { text: t, channel: "world" }); } catch (e) {} input.value = ""; }
+    // 行動裝置：用 pointerdown 在「按下當下」就送 + preventDefault 不讓輸入框失焦
+    //（否則 blur→聊天列收回→按鈕瞬間移走→放開時點到空白，沒送出）。click 後備：input 已清空→重複呼叫無作用
+    el("mp-send").addEventListener("pointerdown", function (e) { e.preventDefault(); send(); });
     el("mp-send").addEventListener("click", send);
     // 注音/拼音「確認候選字」的 Enter 不能當送出，否則送半成品 ㄅ 狂撞 rate limit。
     // isComposing/keyCode229 擋多數；再用 compositionend 時間戳擋「補送」那顆(部分瀏覽器 compositionend 後又來一個 keydown Enter，此時 isComposing 已 false)。
@@ -263,7 +266,8 @@
     if (el("mp-fpanel")) return;
     // 好友 / 金幣已併入聊天室：👥 按鈕在聊天輸入列、金幣顯示在好友面板裡（不再浮在大地圖外面）
     var fb = el("mp-friendbtn");
-    if (fb) fb.addEventListener("click", function () { if (room) room.send("friendList"); el("mp-fpanel").style.display = "flex"; });
+    // pointerdown：在 blur 收回聊天列前就觸發，避免按鈕被移走點不到
+    if (fb) fb.addEventListener("pointerdown", function () { if (room) room.send("friendList"); var fp = el("mp-fpanel"); if (fp) fp.style.display = "flex"; });
     // 好友面板
     var fp = document.createElement("div"); fp.id = "mp-fpanel"; fp.style.cssText = panelCss();
     fp.innerHTML = '<h3 style="margin:6px 0">👥 好友</h3><div id="mp-fincoming" style="width:min(360px,90vw)"></div><div id="mp-flist" style="width:min(360px,90vw);display:flex;flex-direction:column;gap:6px"></div><button id="mp-fclose" style="' + closeCss() + '">關閉</button>';

@@ -12,7 +12,9 @@
   var myName = (localStorage.getItem("village_player_name") || "玩家") + myUid.slice(-3);
 
   var room = null, connecting = false, remotes = {}, lastSend = 0, curScene = null, mpClient = null, mySkin = "default", lastSkinCheck = 0;
-  var desiredMap = "village", joinedMap = null; // 依地圖分房：換地圖要換 colyseus 房間
+  var desiredMap = "village", joinedMap = null, connSeq = 0; // 依地圖分房；connSeq=連線世代(換房/重連作廢舊房回呼)
+  // 地圖 id canonical（與 server sanitizeMap 同規則）→ filterBy 分房 key 與房內一致
+  function mapKey(id) { return (String(id || "").replace(/[^a-z0-9_]/gi, "").slice(0, 40)) || "village"; }
   function el(id) { return document.getElementById(id); }
 
   // ── 裝扮造型：用 demo 自己的走路圖（與本地玩家同命名規則），各遠端玩家各自載自己真實的造型 ──
@@ -68,18 +70,19 @@
   function connect() {
     if (room || connecting || typeof Colyseus === "undefined") return;
     connecting = true;
-    var joiningMap = desiredMap; // 記住這次要連哪張地圖的房
+    var seq = ++connSeq;                 // 這次連線的世代（換房/重連用來作廢舊房回呼）
+    var joiningMap = mapKey(desiredMap); // canonical：filterBy 分房 key 與房內一致
     mpClient = mpClient || new Colyseus.Client(EP);
     mySkin = localSkin();
     mpClient.joinOrCreate("world", { uid: myUid, name: myName, outfit: "default", skin: mySkin, map: joiningMap })
       .then(function (r) {
-        // 連線途中又換地圖了 → 丟棄這房、連正確的
-        if (joiningMap !== desiredMap) { try { r.removeAllListeners(); r.leave(); } catch (e) {} room = null; connecting = false; connect(); return; }
+        if (seq !== connSeq) { try { r.removeAllListeners(); r.leave(); } catch (e) {} return; } // 已被更新的連線取代→丟棄
         room = r; joinedMap = joiningMap; connecting = false;
         buildChat();
-        // 斷線重置：清回 null + 清遠端 sprite + 退避重連（否則 connect() 被永久擋住、畫面卡斷線前）
+        // 斷線重置：清回 null + 清遠端 sprite + 退避重連（世代守衛：舊房離開不重連）
         r.onLeave(function () {
-          room = null; connecting = false;
+          if (seq !== connSeq) return;   // 舊世代的房離開（換房造成）→ 忽略，不自動重連
+          room = null; connecting = false; joinedMap = null;
           Object.keys(remotes).forEach(function (k) { destroyRemote(remotes[k]); delete remotes[k]; });
           setTimeout(connect, 2000);
         });
@@ -92,8 +95,21 @@
         r.onMessage("notice", function (n) { var t = noticeMsg(n); if (t) addChat("sys", t); });
         // 玩家造型以 server 實際 outfit 為準（default＝主角樣子）；不再強制亂配造型
         buildSocialUI();
+        // 連線途中 desiredMap 又變了（快速換圖期間 connect 被 connecting 擋掉，沒換房）→ 立刻切到正確地圖
+        if (joinedMap !== mapKey(desiredMap)) gotoDesired();
       })
-      .catch(function () { connecting = false; });
+      .catch(function () { if (seq === connSeq) connecting = false; });
+  }
+
+  // 確保連到目前的 desiredMap：已連別張地圖就換房（換房+連線都走這裡，避免邏輯分叉）
+  function gotoDesired() {
+    if (room && joinedMap !== mapKey(desiredMap)) {
+      var old = room; room = null; connecting = false; joinedMap = null;
+      connSeq++;                                     // 世代+1：立即作廢舊房 onLeave（不自動重連）
+      try { old.removeAllListeners(); } catch (e) {} // 清 listener（記憶體）；正確性靠世代守衛
+      try { old.leave(); } catch (e) {}
+    }
+    connect();
   }
 
   // ── 村莊內聊天 UI（接 server 安全聊天：髒話/個資過濾、頻道）──
@@ -281,17 +297,11 @@
     // explore.js create() 末尾呼叫：換地圖(scene.restart)會重跑 → 重置遠端 sprite
     onSceneCreate: function (scene) {
       curScene = scene;
-      desiredMap = scene.mapId || "village";
+      desiredMap = mapKey(scene.mapId);
       Object.keys(remotes).forEach(function (k) { destroyRemote(remotes[k]); }); // 換地圖先清舊遠端，免殘影
       remotes = {};
       outfitLoading = {}; outfitFailed = {}; // 換地圖清旗標：舊 scene loader 的 complete 不一定 fire，避免造型永久卡 loading
-      if (room && joinedMap !== desiredMap) {
-        // 換地圖 → 離開舊地圖房、連新地圖房（不同地圖看不到彼此/不互相聊天）
-        var old = room; room = null; connecting = false;
-        try { old.removeAllListeners(); } catch (e) {} // 拔掉舊房 onLeave，避免它自動重連干擾
-        try { old.leave(); } catch (e) {}
-      }
-      connect();
+      gotoDesired(); // 換地圖 → 連/換到新地圖房（不同地圖看不到彼此/不互相聊天）
     },
     // explore.js update() 末尾呼叫：送自己位置 + 渲染其他人
     onUpdate: function (scene, x, y, dx, dy, moving) {

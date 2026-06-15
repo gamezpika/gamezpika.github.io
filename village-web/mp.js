@@ -12,6 +12,7 @@
   var myName = (localStorage.getItem("village_player_name") || "玩家") + myUid.slice(-3);
 
   var room = null, connecting = false, remotes = {}, lastSend = 0, curScene = null, mpClient = null, mySkin = "default", lastSkinCheck = 0;
+  var desiredMap = "village", joinedMap = null; // 依地圖分房：換地圖要換 colyseus 房間
   function el(id) { return document.getElementById(id); }
 
   // ── 裝扮造型：用 demo 自己的走路圖（與本地玩家同命名規則），各遠端玩家各自載自己真實的造型 ──
@@ -67,11 +68,14 @@
   function connect() {
     if (room || connecting || typeof Colyseus === "undefined") return;
     connecting = true;
+    var joiningMap = desiredMap; // 記住這次要連哪張地圖的房
     mpClient = mpClient || new Colyseus.Client(EP);
     mySkin = localSkin();
-    mpClient.joinOrCreate("world", { uid: myUid, name: myName, outfit: "default", skin: mySkin })
+    mpClient.joinOrCreate("world", { uid: myUid, name: myName, outfit: "default", skin: mySkin, map: joiningMap })
       .then(function (r) {
-        room = r; connecting = false;
+        // 連線途中又換地圖了 → 丟棄這房、連正確的
+        if (joiningMap !== desiredMap) { try { r.removeAllListeners(); r.leave(); } catch (e) {} room = null; connecting = false; connect(); return; }
+        room = r; joinedMap = joiningMap; connecting = false;
         buildChat();
         // 斷線重置：清回 null + 清遠端 sprite + 退避重連（否則 connect() 被永久擋住、畫面卡斷線前）
         r.onLeave(function () {
@@ -276,9 +280,16 @@
     // explore.js create() 末尾呼叫：換地圖(scene.restart)會重跑 → 重置遠端 sprite
     onSceneCreate: function (scene) {
       curScene = scene;
+      desiredMap = scene.mapId || "village";
       Object.keys(remotes).forEach(function (k) { destroyRemote(remotes[k]); }); // 換地圖先清舊遠端，免殘影
       remotes = {};
       outfitLoading = {}; outfitFailed = {}; // 換地圖清旗標：舊 scene loader 的 complete 不一定 fire，避免造型永久卡 loading
+      if (room && joinedMap !== desiredMap) {
+        // 換地圖 → 離開舊地圖房、連新地圖房（不同地圖看不到彼此/不互相聊天）
+        var old = room; room = null; connecting = false;
+        try { old.removeAllListeners(); } catch (e) {} // 拔掉舊房 onLeave，避免它自動重連干擾
+        try { old.leave(); } catch (e) {}
+      }
       connect();
     },
     // explore.js update() 末尾呼叫：送自己位置 + 渲染其他人

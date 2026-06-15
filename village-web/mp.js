@@ -6,6 +6,8 @@
   if (new URLSearchParams(location.search).get("mp") !== "1") return; // feature flag：預設關＝單機 demo 不變
 
   var EP = "wss://colyseus-production-34e9.up.railway.app";
+  // 入口顯示開關（派派要先隱藏對戰+排行待核對；改 true 即可開回來）
+  var SHOW_DUEL = false, SHOW_BOARD = false;
   var myUid = "mp" + Math.floor((Date.now() + performance.now()) % 1e9);
   var myName = (localStorage.getItem("village_player_name") || "玩家") + myUid.slice(-3);
 
@@ -141,12 +143,14 @@
   var duel = null, duelMyId = null, duelAnswered = false, duelLastRound = -1, duelLastPhase = "", duelRAF = false;
   function el(id) { return document.getElementById(id); }
   function buildDuelUI() {
-    if (el("mpd-btn")) return;
-    var btn = document.createElement("button");
-    btn.id = "mpd-btn"; btn.textContent = "⚔️ 對戰";
-    btn.style.cssText = "position:fixed;right:10px;top:10px;z-index:9000;border:none;border-radius:12px;padding:11px 16px;font-size:15px;font-weight:800;background:linear-gradient(135deg,#ff9a40,#ff5e3a);color:#fff;font-family:sans-serif";
-    btn.addEventListener("click", startDuel);
-    document.body.appendChild(btn);
+    if (el("mpd")) return;
+    if (SHOW_DUEL) { // 派派要先隱藏對戰入口待核對
+      var btn = document.createElement("button");
+      btn.id = "mpd-btn"; btn.textContent = "⚔️ 對戰";
+      btn.style.cssText = "position:fixed;right:10px;top:10px;z-index:9000;border:none;border-radius:12px;padding:11px 16px;font-size:15px;font-weight:800;background:linear-gradient(135deg,#ff9a40,#ff5e3a);color:#fff;font-family:sans-serif";
+      btn.addEventListener("click", startDuel);
+      document.body.appendChild(btn);
+    }
 
     var ov = document.createElement("div");
     ov.id = "mpd"; ov.style.cssText = "position:fixed;inset:0;background:rgba(8,12,30,.96);z-index:9500;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center;color:#fff;font-family:sans-serif";
@@ -231,10 +235,10 @@
   function buildSocialUI() {
     if (el("mp-friendbtn")) return;
     var coins = document.createElement("div"); coins.id = "mp-coins"; coins.textContent = "🪙 …";
-    coins.style.cssText = "position:fixed;right:10px;top:58px;z-index:9000;color:#ffd24a;font-weight:800;font-family:sans-serif;background:rgba(8,12,30,.5);padding:5px 9px;border-radius:9px";
+    coins.style.cssText = "position:fixed;right:10px;top:" + (SHOW_DUEL ? 58 : 10) + "px;z-index:9000;color:#ffd24a;font-weight:800;font-family:sans-serif;background:rgba(8,12,30,.5);padding:5px 9px;border-radius:9px";
     document.body.appendChild(coins);
-    btn("mp-friendbtn", "👥 好友", 96, "linear-gradient(135deg,#6a5cff,#4a3fd6)").addEventListener("click", function () { if (room) room.send("friendList"); el("mp-fpanel").style.display = "flex"; });
-    btn("mp-boardbtn", "🏆 排行", 140, "linear-gradient(135deg,#3a4a8a,#2a3568)").addEventListener("click", function () { if (room) room.send("leaderboard"); el("mp-bpanel").style.display = "flex"; });
+    btn("mp-friendbtn", "👥 好友", SHOW_DUEL ? 96 : 52, "linear-gradient(135deg,#6a5cff,#4a3fd6)").addEventListener("click", function () { if (room) room.send("friendList"); el("mp-fpanel").style.display = "flex"; });
+    if (SHOW_BOARD) btn("mp-boardbtn", "🏆 排行", 140, "linear-gradient(135deg,#3a4a8a,#2a3568)").addEventListener("click", function () { if (room) room.send("leaderboard"); el("mp-bpanel").style.display = "flex"; });
     // 好友面板
     var fp = document.createElement("div"); fp.id = "mp-fpanel"; fp.style.cssText = panelCss();
     fp.innerHTML = '<h3 style="margin:6px 0">👥 好友</h3><div id="mp-fincoming" style="width:min(360px,90vw)"></div><div id="mp-flist" style="width:min(360px,90vw);display:flex;flex-direction:column;gap:6px"></div><button id="mp-fclose" style="' + closeCss() + '">關閉</button>';

@@ -2528,22 +2528,19 @@
     { key: "cert_english", name: "英文大師", emoji: "🔤" }, { key: "cert_science", name: "自然大師", emoji: "🔬" },
     { key: "cert_social", name: "社會大師", emoji: "🌍" }, { key: "cert_grand", name: "圖鑑大師", emoji: "👑" },
   ];
-  // 顯示 EDU 真證書：用「公開 by-token」圖端點(免登入、HMAC token 不可偽造)直接 <img src>
-  // → 跨域顯示圖片不需 CORS、不必 fetch/blob/Bearer（後端 docstring 就是設計給 <img> 用的）
+  // 顯示 EDU 真證書：嵌 EDU 公開驗證頁 /cert/<token> 的 iframe。
+  // 頁面內的證書圖是「EDU 同源」<img>→ 避開 iOS Safari 跨域 <img> 載入失敗；這頁本來就是給手機掃 QR 驗證用。
   function dhShowEduCert(rec, meta) {
     const tok = encodeURIComponent(rec.verification_token || "");
-    const imgUrl = DEMO_API + "/api/certs/by-token/" + tok + "/full.png";
-    const verify = DEMO_API + "/cert/" + tok;
+    const pageUrl = DEMO_API + "/cert/" + tok;
     const nm = aoEsc(meta ? meta.name : "證書");
     let m = document.getElementById("dh-cert-modal");
-    if (!m) { m = el("div"); m.id = "dh-cert-modal"; m.style.cssText = "position:fixed;inset:0;z-index:7200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;background:rgba(0,0,0,.62)"; document.body.appendChild(m); m.addEventListener("click", (e) => { if (e.target === m) m.remove(); }); }
+    if (!m) { m = el("div"); m.id = "dh-cert-modal"; m.style.cssText = "position:fixed;inset:0;z-index:7200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px;background:rgba(0,0,0,.72)"; document.body.appendChild(m); m.addEventListener("click", (e) => { if (e.target === m) m.remove(); }); }
     m.style.display = "flex";
-    m.innerHTML = `<img id="dh-cert-img" src="${imgUrl}" alt="${nm}" style="max-width:min(440px,92vw);max-height:70vh;border-radius:12px;box-shadow:0 14px 44px rgba(0,0,0,.5);background:#fff">` +
+    m.innerHTML = `<iframe src="${pageUrl}" title="${nm}" style="width:min(440px,94vw);height:76vh;border:none;border-radius:14px;background:#1a0a2e;box-shadow:0 14px 44px rgba(0,0,0,.55)"></iframe>` +
       `<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">` +
-        `<a href="${verify}" target="_blank" rel="noopener" style="background:#4a9fff;color:#fff;text-decoration:none;border-radius:12px;padding:9px 18px;font-weight:800">🔍 驗證</a>` +
+        `<a href="${pageUrl}" target="_blank" rel="noopener" style="background:#4a9fff;color:#fff;text-decoration:none;border-radius:12px;padding:9px 18px;font-weight:800">↗ 開新分頁</a>` +
         `<button id="dh-cert-ok" style="border:none;border-radius:12px;padding:9px 22px;background:#c9a227;color:#fff;font-weight:800;cursor:pointer">關閉</button></div>`;
-    const img = m.querySelector("#dh-cert-img");
-    if (img) img.addEventListener("error", function () { this.outerHTML = `<div style="background:#fff;border-radius:12px;padding:22px 18px;text-align:center;max-width:86vw">😶 證書圖載入失敗</div>`; });
     m.querySelector("#dh-cert-ok").addEventListener("click", () => m.remove());
   }
   function openDormHub(onClose) {

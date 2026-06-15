@@ -192,7 +192,13 @@
     var key = prefix + suffix;
     var cur = r.spr.anims.currentAnim;
     if (scene.anims.exists(key) && (!cur || cur.key !== key)) r.spr.play(key);
-    if (suffix === "_walk") r.spr.setFlipX((r.tx - r.spr.x) < -0.5); // 朝移動方向
+    if (suffix === "_walk") { // 朝移動方向翻轉（對齊本地玩家：讀 side.facing，村莊 side 圖朝左）
+      var sideCfg = (scene.config && scene.config.player && scene.config.player.sprites && scene.config.player.sprites.side) || {};
+      var forwardRight = (sideCfg.facing || "right") === "right";
+      var delta = r.tx - r.spr.x;
+      if (delta > 0.5) r.spr.setFlipX(!forwardRight);      // 往右
+      else if (delta < -0.5) r.spr.setFlipX(forwardRight); // 往左
+    }
   }
 
   // ── 社交：好友 / 互送金幣，接雲端 world room 社交 handler（PK/排行已移除，用 EDU 既有的）──

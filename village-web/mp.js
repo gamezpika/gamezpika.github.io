@@ -230,7 +230,7 @@
   }
 
   // ── 社交：好友 / 互送純展示小禮物（無金錢）──
-  var friendsData = { friends: [], incoming: [], outgoing: [] }, pmTarget = null, giftTarget = null;
+  var friendsData = { friends: [], incoming: [], outgoing: [] }, pmTarget = null, giftTarget = null, mpHidden = false;
   // 小禮物清單（UI emoji；之後想換精緻小圖再說）
   var GIFTS = [
     { id: "flower", e: "🌸", n: "花" }, { id: "cake", e: "🎂", n: "蛋糕" }, { id: "heart", e: "❤️", n: "愛心" },
@@ -246,7 +246,10 @@
     return "";
   }
   // 收到禮物 → 畫面中央小彈跳動畫
-  function showGiftPop(giftId, from) {
+  var giftPops = 0;
+  function showGiftPop(giftId) {
+    if (giftPops >= 3) return; // 同時最多 3 個，避免被狂送洗版堆積 DOM
+    giftPops++;
     var g = giftOf(giftId);
     var pop = document.createElement("div");
     pop.textContent = g.e;
@@ -254,7 +257,7 @@
     document.body.appendChild(pop);
     requestAnimationFrame(function () { pop.style.transform = "translate(-50%,-50%) scale(1)"; });
     setTimeout(function () { pop.style.transform = "translate(-50%,-160%) scale(1)"; pop.style.opacity = "0"; }, 1100);
-    setTimeout(function () { if (pop.parentNode) pop.parentNode.removeChild(pop); }, 1700);
+    setTimeout(function () { if (pop.parentNode) pop.parentNode.removeChild(pop); giftPops--; }, 1700);
   }
   function buildSocialUI() {
     if (el("mp-fpanel")) return;
@@ -334,9 +337,13 @@
     // explore.js update() 末尾呼叫：送自己位置 + 渲染其他人
     onUpdate: function (scene, x, y, dx, dy, moving) {
       curScene = scene;
-      // 聊天室(含好友)只在大地圖顯示：開任何 demo 選單/裝備/商店面板就隱藏，不蓋住它們
-      var box = el("mp-chat");
-      if (box) box.style.visibility = (scene._anyPanelOpen && scene._anyPanelOpen()) ? "hidden" : "";
+      // 聊天室(含好友)只在大地圖顯示：開任何 demo 選單/裝備/商店面板就隱藏（變化時才寫 DOM）
+      var menuOpen = (typeof scene._anyPanelOpen === "function") && scene._anyPanelOpen();
+      if (menuOpen !== mpHidden) {
+        mpHidden = menuOpen;
+        var box = el("mp-chat"); if (box) box.style.visibility = menuOpen ? "hidden" : "";
+        if (menuOpen) { closePMenu(); closeGiftPicker(); } // 開 demo 面板就關掉暫時彈窗，免疊上去
+      }
       if (!room || !room.state) return;
       var now = performance.now();
       var dir = Math.abs(dx) > Math.abs(dy) ? "side" : (dy > 0 ? "down" : "up");

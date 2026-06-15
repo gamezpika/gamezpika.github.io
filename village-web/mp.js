@@ -55,6 +55,12 @@
       .then(function (r) {
         room = r; connecting = false;
         buildChat();
+        // 斷線重置：清回 null + 清遠端 sprite + 退避重連（否則 connect() 被永久擋住、畫面卡斷線前）
+        r.onLeave(function () {
+          room = null; connecting = false;
+          Object.keys(remotes).forEach(function (k) { destroyRemote(remotes[k]); delete remotes[k]; });
+          setTimeout(connect, 2000);
+        });
         r.onMessage("chat", function (m) { addChat(m.uid === myUid ? "me" : "", (m.channel === "near" ? "[附近]" : "") + m.name + "：" + m.text + (m.masked ? "（已過濾）" : "")); });
         r.onMessage("system", function (m) { addChat("sys", m.text); });
         r.onMessage("chat_blocked", function (m) { addChat("blk", blockMsg(m.reason)); });
@@ -82,8 +88,11 @@
     var input = el("mp-in");
     function send() { var t = (input.value || "").trim(); if (!t || !room) return; try { room.send("chat", { text: t, channel: "world" }); } catch (e) {} input.value = ""; }
     el("mp-send").addEventListener("click", send);
-    // isComposing：注音/拼音輸入法按 Enter 是「確認候選字」不是送出，別把半成品 ㄅ 送出去（會狂撞 rate limit）
-    input.addEventListener("keydown", function (e) { e.stopPropagation(); if (e.key === "Enter" && !e.isComposing && e.keyCode !== 229) send(); }); // 擋住 Phaser 鍵盤
+    // 注音/拼音「確認候選字」的 Enter 不能當送出，否則送半成品 ㄅ 狂撞 rate limit。
+    // isComposing/keyCode229 擋多數；再用 compositionend 時間戳擋「補送」那顆(部分瀏覽器 compositionend 後又來一個 keydown Enter，此時 isComposing 已 false)。
+    var lastCompEnd = 0;
+    input.addEventListener("compositionend", function () { lastCompEnd = performance.now(); });
+    input.addEventListener("keydown", function (e) { e.stopPropagation(); if (e.key === "Enter" && !e.isComposing && e.keyCode !== 229 && (performance.now() - lastCompEnd) > 250) send(); }); // 擋住 Phaser 鍵盤
     input.addEventListener("focus", function () { if (curScene && curScene.input && curScene.input.keyboard) curScene.input.keyboard.enabled = false; pinChat(true); });
     input.addEventListener("blur", function () { if (curScene && curScene.input && curScene.input.keyboard) curScene.input.keyboard.enabled = true; pinChat(false); });
     bindKeyboardPin();
@@ -96,8 +105,9 @@
     var vv = window.visualViewport;
     function reflow() {
       var box = el("mp-chat"); if (!box) return;
-      if (document.activeElement === el("mp-in")) {
-        var gap = Math.max(0, window.innerHeight - vv.height - vv.offsetTop); // 鍵盤高度
+      var gap = Math.max(0, window.innerHeight - vv.height - vv.offsetTop); // 軟鍵盤高度
+      // gap>80 才是真的軟鍵盤（桌機/硬體鍵盤 gap≈0 → 不釘，維持 150 避免蓋住搖桿）
+      if (document.activeElement === el("mp-in") && gap > 80) {
         box.style.bottom = (gap + 8) + "px";
         if (window.scrollY) window.scrollTo(0, 0); // 擋 iOS 自動把頁面捲上去（黑塊元凶）
       } else {
@@ -109,8 +119,8 @@
   }
   function pinChat(on) {
     var box = el("mp-chat"); if (!box || !window.visualViewport) return;
-    if (!on) { box.style.bottom = "150px"; return; }
     var vv = window.visualViewport, gap = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+    if (!on || gap <= 80) { box.style.bottom = "150px"; return; } // 桌機/硬體鍵盤 gap≈0 → 不釘
     box.style.bottom = (gap + 8) + "px"; window.scrollTo(0, 0);
   }
   function addChat(cls, text) {
@@ -129,8 +139,8 @@
 
   // 建一個遠端玩家的 sprite（重用主角 hero 走路動畫）+ 名牌
   function createRemote(scene, p) {
-    // 比例對齊本地玩家（每張地圖的 player.scale 不同，別寫死）
-    var psc = (scene.playerSprite && scene.playerSprite.scale) || 0.66;
+    // 比例對齊本地玩家（每張地圖的 player.scale 不同，別寫死）；確認 sprite 還活著才採用
+    var psc = (scene.playerSprite && scene.playerSprite.scene && scene.playerSprite.scaleX) || 0.66;
     var spr = scene.add.sprite(p.x, p.y, "hero", 0).setOrigin(0.5, 1).setScale(psc);
     if (scene.anims.exists("hero_idle")) spr.play("hero_idle");
     var label = scene.add.text(p.x, p.y - 60, p.name || "玩家", {
@@ -198,8 +208,8 @@
   function closeCss() { return "border:none;border-radius:14px;padding:11px 28px;font-weight:800;background:#444;color:#fff;margin-top:8px"; }
   function actCss() { return "border:none;border-radius:9px;padding:9px 16px;font-weight:700;background:#4a9fff;color:#fff;font-size:14px;"; }
   function rowCss() { return "display:flex;gap:8px;align-items:center;justify-content:space-between;width:min(360px,90vw);background:rgba(255,255,255,.07);border-radius:9px;padding:7px 11px"; }
-  function openPMenu(r) { pmTarget = r; el("mp-pmn").textContent = r.name; el("mp-pmenu").style.display = "flex"; }
-  function closePMenu() { el("mp-pmenu").style.display = "none"; pmTarget = null; }
+  function openPMenu(r) { var n = el("mp-pmn"), m = el("mp-pmenu"); if (!n || !m) return; pmTarget = r; n.textContent = r.name; m.style.display = "flex"; }
+  function closePMenu() { var m = el("mp-pmenu"); if (m) m.style.display = "none"; pmTarget = null; }
   function esc(s) { var d = document.createElement("div"); d.textContent = s == null ? "" : String(s); return d.innerHTML; }
   function renderFriends() {
     var inc = el("mp-fincoming"); if (!inc) return; inc.innerHTML = "";
@@ -232,6 +242,7 @@
     // explore.js create() 末尾呼叫：換地圖(scene.restart)會重跑 → 重置遠端 sprite
     onSceneCreate: function (scene) {
       curScene = scene;
+      Object.keys(remotes).forEach(function (k) { destroyRemote(remotes[k]); }); // 換地圖先清舊遠端，免殘影
       remotes = {};
       connect();
     },

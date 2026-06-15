@@ -2391,7 +2391,7 @@
 
   /* ───────────────────── 個人小屋 hub（學生宿舍：更衣室 / 角色裝備 / 寵物 / 圖鑑，純展示）───────────────────── */
   let dhTab = "outfit";
-  let dhAwards = null, dhCerts = null, dhLoadSeq = 0; // 成就(/api/awards)/證書(/api/certs)快取；dhLoadSeq=世代守衛，重開作廢舊 fetch 寫回
+  let dhAwards = null, dhCerts = null, dhLoadSeq = 0, dhLoadPromise = null; // 快取+世代守衛+in-flight 鎖(避免重複 grant/fetch)
   function dhBuildOverlay() {
     let ov = document.getElementById("dh-overlay");
     if (ov) return ov;
@@ -2499,21 +2499,25 @@
     }
   }
   // 載入成就/檢定狀態（一次抓，之後快取；reuse caLoadAwards）
-  async function dhLoadData() {
-    const seq = dhLoadSeq; // 這次載入的世代；重開 hub 會 ++，舊 fetch 完成不寫回
-    if (dhAwards === null) {
-      let aw = []; try { aw = (typeof caLoadAwards === "function") ? (await caLoadAwards()) : []; } catch (e) {}
-      if (seq !== dhLoadSeq) return; dhAwards = aw;
-    }
-    if (dhCerts === null) {
-      const t = demoToken(); let cs = [];
-      if (t) {
-        // demo 展示：先一鍵全發 12 張收藏證書(冪等)，再列出 → 證書牆直接是滿的
-        try { await fetch(DEMO_API + "/api/demo/grant-all-certs", { method: "POST", headers: { Authorization: "Bearer " + t } }); } catch (e) {}
-        try { const d = await fetch(DEMO_API + "/api/certs/me", { headers: { Authorization: "Bearer " + t } }).then((r) => r.json()); cs = (d && d.certificates) || []; } catch (e) {}
+  function dhLoadData() {
+    if (dhLoadPromise) return dhLoadPromise; // in-flight 共用同一個 promise，避免重複 grant/fetch
+    dhLoadPromise = (async () => {
+      const seq = dhLoadSeq; // 這次載入的世代；重開 hub 會 ++，舊 fetch 完成不寫回
+      if (dhAwards === null) {
+        let aw = []; try { aw = (typeof caLoadAwards === "function") ? (await caLoadAwards()) : []; } catch (e) {}
+        if (seq !== dhLoadSeq) return; dhAwards = aw;
       }
-      if (seq !== dhLoadSeq) return; dhCerts = cs;
-    }
+      if (dhCerts === null) {
+        const t = demoToken(); let cs = [];
+        if (t) {
+          // demo 展示：先一鍵全發 12 張收藏證書(冪等)，再列出 → 證書牆直接是滿的
+          try { await fetch(DEMO_API + "/api/demo/grant-all-certs", { method: "POST", headers: { Authorization: "Bearer " + t } }); } catch (e) {}
+          try { const d = await fetch(DEMO_API + "/api/certs/me", { headers: { Authorization: "Bearer " + t } }).then((r) => r.json()); cs = (d && d.certificates) || []; } catch (e) {}
+        }
+        if (seq !== dhLoadSeq) return; dhCerts = cs;
+      }
+    })().finally(() => { dhLoadPromise = null; });
+    return dhLoadPromise;
   }
   // EDU 12 張收藏證書目錄（對齊後端 cards.py CERTIFICATES）
   const DH_CERTS = [

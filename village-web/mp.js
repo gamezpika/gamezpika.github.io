@@ -119,7 +119,11 @@
     box.id = "mp-chat";
     box.innerHTML =
       '<div id="mp-log" style="max-height:22vh;overflow-y:auto;font-size:13px;line-height:1.5;color:#fff;text-shadow:0 1px 2px #000;margin-bottom:4px"></div>' +
-      '<div style="display:flex;gap:5px"><input id="mp-in" maxlength="120" placeholder="跟村莊裡的人說話…" style="flex:1;min-width:0;padding:7px 9px;border:none;border-radius:9px;font-size:14px"><button id="mp-send" style="border:none;border-radius:9px;padding:7px 12px;background:#4a9fff;color:#fff;font-weight:700">送</button></div>';
+      '<div style="display:flex;gap:5px;align-items:center">' +
+        '<button id="mp-friendbtn" title="好友" style="border:none;border-radius:9px;padding:7px 9px;background:linear-gradient(135deg,#6a5cff,#4a3fd6);color:#fff;font-weight:800;font-size:14px;white-space:nowrap">👥</button>' +
+        '<input id="mp-in" maxlength="120" placeholder="跟村莊裡的人說話…" style="flex:1;min-width:0;padding:7px 9px;border:none;border-radius:9px;font-size:14px">' +
+        '<button id="mp-send" style="border:none;border-radius:9px;padding:7px 12px;background:#4a9fff;color:#fff;font-weight:700">送</button>' +
+      '</div>';
     // 上移到搖桿(左下 116px 高)上方，不擋住移動搖桿
     // 收合狀態：下移到畫面最底，並偏右避開左下移動搖桿(left20~136)
     box.style.cssText = "position:fixed;left:146px;right:8px;bottom:14px;z-index:9000;font-family:sans-serif;background:rgba(8,12,30,.35);border-radius:10px;padding:6px";
@@ -237,18 +241,13 @@
     return "";
   }
   function buildSocialUI() {
-    if (el("mp-friendbtn")) return;
-    var coins = document.createElement("div"); coins.id = "mp-coins"; coins.textContent = "🪙 …";
-    // 下移到「🎒 裝備」按鈕(top:14 right:14)下方，避免重疊
-    coins.style.cssText = "position:fixed;right:10px;top:60px;z-index:9000;color:#ffd24a;font-weight:800;font-family:sans-serif;background:rgba(8,12,30,.5);padding:5px 9px;border-radius:9px";
-    document.body.appendChild(coins);
-    var fb = document.createElement("button"); fb.id = "mp-friendbtn"; fb.textContent = "👥 好友";
-    fb.style.cssText = "position:fixed;right:10px;top:98px;z-index:9000;border:none;border-radius:12px;padding:9px 13px;font-size:13px;font-weight:800;color:#fff;font-family:sans-serif;background:linear-gradient(135deg,#6a5cff,#4a3fd6)";
-    fb.addEventListener("click", function () { if (room) room.send("friendList"); el("mp-fpanel").style.display = "flex"; });
-    document.body.appendChild(fb);
-    // 好友面板
+    if (el("mp-fpanel")) return;
+    // 好友 / 金幣已併入聊天室：👥 按鈕在聊天輸入列、金幣顯示在好友面板裡（不再浮在大地圖外面）
+    var fb = el("mp-friendbtn");
+    if (fb) fb.addEventListener("click", function () { if (room) room.send("friendList"); el("mp-fpanel").style.display = "flex"; });
+    // 好友面板（含金幣餘額）
     var fp = document.createElement("div"); fp.id = "mp-fpanel"; fp.style.cssText = panelCss();
-    fp.innerHTML = '<h3 style="margin:6px 0">👥 好友</h3><div id="mp-fincoming" style="width:min(360px,90vw)"></div><div id="mp-flist" style="width:min(360px,90vw);display:flex;flex-direction:column;gap:6px"></div><button id="mp-fclose" style="' + closeCss() + '">關閉</button>';
+    fp.innerHTML = '<h3 style="margin:6px 0">👥 好友　<span id="mp-coins" style="color:#ffd24a;font-size:15px">🪙 …</span></h3><div id="mp-fincoming" style="width:min(360px,90vw)"></div><div id="mp-flist" style="width:min(360px,90vw);display:flex;flex-direction:column;gap:6px"></div><button id="mp-fclose" style="' + closeCss() + '">關閉</button>';
     document.body.appendChild(fp); el("mp-fclose").addEventListener("click", function () { fp.style.display = "none"; });
     // 點玩家彈出選單
     var pm = document.createElement("div"); pm.id = "mp-pmenu";
@@ -306,6 +305,9 @@
     // explore.js update() 末尾呼叫：送自己位置 + 渲染其他人
     onUpdate: function (scene, x, y, dx, dy, moving) {
       curScene = scene;
+      // 聊天室(含好友)只在大地圖顯示：開任何 demo 選單/裝備/商店面板就隱藏，不蓋住它們
+      var box = el("mp-chat");
+      if (box) box.style.visibility = (scene._anyPanelOpen && scene._anyPanelOpen()) ? "hidden" : "";
       if (!room || !room.state) return;
       var now = performance.now();
       var dir = Math.abs(dx) > Math.abs(dy) ? "side" : (dy > 0 ? "down" : "up");

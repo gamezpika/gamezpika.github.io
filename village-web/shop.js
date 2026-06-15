@@ -2533,23 +2533,14 @@
     { key: "cert_english", name: "英文大師", emoji: "🔤" }, { key: "cert_science", name: "自然大師", emoji: "🔬" },
     { key: "cert_social", name: "社會大師", emoji: "🌍" }, { key: "cert_grand", name: "圖鑑大師", emoji: "👑" },
   ];
-  // 顯示 EDU 真證書：公開 by-token 圖直接 <img>（後端 inline 已不送 Content-Disposition→iOS 跨域 img 可渲染）
-  // onerror 保險：圖載不出來就給「開驗證頁」連結（iframe 在 iOS 被 ITP 擋，改連結）
+  // 顯示 EDU 真證書（A 方案）：直接開 EDU 公開驗證頁（頁內證書圖是 EDU 同源 <img>，
+  // 避開 iOS Safari 跨域 <img> 載不出的雷；驗證頁本就是手機掃 QR 看的，含金框真圖+QR+✅為真）。
+  // 必須在 click 手勢內同步呼叫 window.open，iOS 才不會當 popup 擋掉。
   function dhShowEduCert(rec, meta) {
     const tok = encodeURIComponent(rec.verification_token || "");
-    const imgUrl = DEMO_API + "/api/certs/by-token/" + tok + "/full.png";
     const pageUrl = DEMO_API + "/cert/" + tok;
-    const nm = aoEsc(meta ? meta.name : "證書");
-    let m = document.getElementById("dh-cert-modal");
-    if (!m) { m = el("div"); m.id = "dh-cert-modal"; m.style.cssText = "position:fixed;inset:0;z-index:7200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:14px;background:rgba(0,0,0,.7)"; document.body.appendChild(m); m.addEventListener("click", (e) => { if (e.target === m) m.remove(); }); }
-    m.style.display = "flex";
-    m.innerHTML = `<img id="dh-cert-img" src="${imgUrl}" alt="${nm}" style="max-width:min(440px,92vw);max-height:72vh;border-radius:12px;box-shadow:0 14px 44px rgba(0,0,0,.5);background:#fff">` +
-      `<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">` +
-        `<a href="${pageUrl}" target="_blank" rel="noopener" style="background:#4a9fff;color:#fff;text-decoration:none;border-radius:12px;padding:9px 18px;font-weight:800">🔍 驗證</a>` +
-        `<button id="dh-cert-ok" style="border:none;border-radius:12px;padding:9px 22px;background:#c9a227;color:#fff;font-weight:800;cursor:pointer">關閉</button></div>`;
-    const img = m.querySelector("#dh-cert-img");
-    if (img) img.addEventListener("error", function () { this.outerHTML = `<div style="background:#fff;border-radius:12px;padding:22px 18px;text-align:center;max-width:86vw">😶 圖載入失敗，<a href="${pageUrl}" target="_blank" rel="noopener" style="color:#4a9fff;font-weight:800">點此查看證書</a></div>`; });
-    m.querySelector("#dh-cert-ok").addEventListener("click", () => m.remove());
+    const w = window.open(pageUrl, "_blank", "noopener");
+    if (!w) location.href = pageUrl; // 彈窗被擋（部分 in-app 瀏覽器）→直接導頁
   }
   function openDormHub(onClose) {
     onCloseCb = onClose || null;

@@ -2520,19 +2520,21 @@
     { key: "cert_english", name: "英文大師", emoji: "🔤" }, { key: "cert_science", name: "自然大師", emoji: "🔬" },
     { key: "cert_social", name: "社會大師", emoji: "🌍" }, { key: "cert_grand", name: "圖鑑大師", emoji: "👑" },
   ];
-  let dhCertUrl = null;
+  let dhCertUrl = null, dhCertSeq = 0;
   function dhRevokeCertUrl() { if (dhCertUrl) { try { URL.revokeObjectURL(dhCertUrl); } catch (e) {} dhCertUrl = null; } }
   // 顯示 EDU 真證書：/full.png 需 Bearer，img 不能帶 header → fetch blob→objectURL→img；附 QR 公開驗證頁連結
   async function dhShowEduCert(rec, meta) {
+    const seq = ++dhCertSeq; // 世代守衛：載入途中又點別張/關閉 → 舊請求作廢、不覆蓋、不漏 blob
     const t = demoToken();
     let m = document.getElementById("dh-cert-modal");
     if (!m) { m = el("div"); m.id = "dh-cert-modal"; m.style.cssText = "position:fixed;inset:0;z-index:7200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;background:rgba(0,0,0,.62)"; document.body.appendChild(m); m.addEventListener("click", (e) => { if (e.target === m) { dhRevokeCertUrl(); m.remove(); } }); }
     m.style.display = "flex";
     m.innerHTML = `<div style="color:#fff;font-size:14px">載入「${aoEsc(meta ? meta.name : "證書")}」證書中…</div>`;
-    dhRevokeCertUrl();
     let url = null;
-    if (t) { try { const r = await fetch(DEMO_API + "/api/certs/" + rec.cert_key + "/full.png", { headers: { Authorization: "Bearer " + t } }); if (r.ok) url = URL.createObjectURL(await r.blob()); } catch (e) {} }
-    if (!document.getElementById("dh-cert-modal")) { dhRevokeCertUrl(); return; } // 載入途中已關閉
+    if (t) { try { const r = await fetch(DEMO_API + "/api/certs/" + encodeURIComponent(rec.cert_key) + "/full.png", { headers: { Authorization: "Bearer " + t } }); if (r.ok) url = URL.createObjectURL(await r.blob()); } catch (e) {} }
+    // 過期(被新點擊取代)或 modal 已關 → 釋放本次 url、不覆蓋新內容
+    if (seq !== dhCertSeq || !document.getElementById("dh-cert-modal")) { if (url) { try { URL.revokeObjectURL(url); } catch (e) {} } return; }
+    dhRevokeCertUrl(); // 釋放前一張已顯示的 blob
     dhCertUrl = url;
     const verify = DEMO_API + "/cert/" + encodeURIComponent(rec.verification_token || "");
     const btns = `<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
@@ -2551,6 +2553,8 @@
     ov.classList.add("open");
   }
   function dhClose() {
+    dhCertSeq++; dhRevokeCertUrl(); // 關 hub 一併清證書 modal/blob，免殘留
+    const cm = document.getElementById("dh-cert-modal"); if (cm) cm.remove();
     const ov = document.getElementById("dh-overlay");
     if (ov) ov.classList.remove("open");
     release();

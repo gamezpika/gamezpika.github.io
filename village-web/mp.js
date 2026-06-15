@@ -11,14 +11,20 @@
   var myUid = "mp" + Math.floor((Date.now() + performance.now()) % 1e9);
   var myName = (localStorage.getItem("village_player_name") || "玩家") + myUid.slice(-3);
 
-  var room = null, connecting = false, remotes = {}, lastSend = 0, curScene = null, mpClient = null, mySkin = "default";
+  var room = null, connecting = false, remotes = {}, lastSend = 0, curScene = null, mpClient = null, mySkin = "default", lastSkinCheck = 0;
   function el(id) { return document.getElementById(id); }
 
   // ── 裝扮造型：用 demo 自己的走路圖（與本地玩家同命名規則），各遠端玩家各自載自己真實的造型 ──
-  var outfitReady = {}, outfitLoading = {};
+  var outfitReady = {}, outfitLoading = {}, outfitFailed = {};
   function frameDimsOf(scene, key) { var t = scene.textures.get(key); var f = t.get(0); return { w: f.width, h: f.height, n: t.frameTotal - 1 }; }
+  // 白名單：只認 demo 真實 outfit id（含預設），未知一律回 default，避免去載不存在的圖造成 404/loader 壓力
+  function validSkin(id) {
+    if (!id || id === "default" || id === "default_f" || id === "default_m") return id || "default";
+    try { if (typeof WALK_OUTFIT_IDS !== "undefined" && WALK_OUTFIT_IDS.indexOf(id) >= 0) return id; } catch (e) {}
+    return "default";
+  }
   // 本地玩家目前造型 id（對齊 explore.js 的 walkOutfitCurrent）
-  function localSkin() { try { return (typeof walkOutfitCurrent === "function" && walkOutfitCurrent().id) || "default"; } catch (e) { return "default"; } }
+  function localSkin() { try { return validSkin((typeof walkOutfitCurrent === "function" && walkOutfitCurrent().id) || "default"); } catch (e) { return "default"; } }
   // 造型 id → 3 方向圖檔（對齊 explore.js：男生預設 player3/1/2、女生預設 walk_f_default、其餘 walk_<id>）
   function skinSheets(id) {
     if (!id || id === "default" || id === "default_m") return { side: "player3.webp", down: "player1.webp", up: "player2.webp" };
@@ -28,11 +34,11 @@
 
   // 動態載入某造型的 3 方向走路圖 + 建動畫（所有造型與 config player 同 frame 規格，借 hero dims）。回 anim 前綴(ready) 或 null。
   function ensureOutfitAnims(scene, skinId) {
-    var id = (skinId || "default");
+    var id = validSkin(skinId);
     var prefix = "mp_o_" + id.replace(/[^a-zA-Z0-9_]/g, "");
     if (outfitReady[id]) return prefix;
     if (scene.anims.exists(prefix + "_walk")) { outfitReady[id] = true; return prefix; } // 換地圖後 anims 仍在
-    if (outfitLoading[id]) return null;
+    if (outfitFailed[id] || outfitLoading[id]) return null; // 載失敗過就別每幀重打 loader
     if (!scene.textures.exists("hero") || !scene.textures.exists("hero_down") || !scene.textures.exists("hero_up")) return null;
     var base = scene.assetBase || "", f = skinSheets(id);
     var d = { side: frameDimsOf(scene, "hero"), down: frameDimsOf(scene, "hero_down"), up: frameDimsOf(scene, "hero_up") };
@@ -41,13 +47,17 @@
     if (!scene.textures.exists(prefix + "_down")) scene.load.spritesheet(prefix + "_down", base + f.down + "?v=4", { frameWidth: d.down.w, frameHeight: d.down.h });
     if (!scene.textures.exists(prefix + "_up")) scene.load.spritesheet(prefix + "_up", base + f.up + "?v=4", { frameWidth: d.up.w, frameHeight: d.up.h });
     scene.load.once("complete", function () {
+      // 三張圖任一 404 → 標記 failed 退回 default，別每幀重試
+      if (!scene.textures.exists(prefix + "_side") || !scene.textures.exists(prefix + "_down") || !scene.textures.exists(prefix + "_up")) {
+        outfitFailed[id] = true; outfitLoading[id] = false; return;
+      }
       try {
         if (!scene.anims.exists(prefix + "_walk")) scene.anims.create({ key: prefix + "_walk", frames: scene.anims.generateFrameNumbers(prefix + "_side", { start: 0, end: d.side.n - 1 }), frameRate: 12, repeat: -1 });
         if (!scene.anims.exists(prefix + "_walk_down")) scene.anims.create({ key: prefix + "_walk_down", frames: scene.anims.generateFrameNumbers(prefix + "_down", { start: 0, end: d.down.n - 1 }), frameRate: 14, repeat: -1 });
         if (!scene.anims.exists(prefix + "_walk_up")) scene.anims.create({ key: prefix + "_walk_up", frames: scene.anims.generateFrameNumbers(prefix + "_up", { start: 0, end: d.up.n - 1 }), frameRate: 14, repeat: -1 });
         if (!scene.anims.exists(prefix + "_idle")) scene.anims.create({ key: prefix + "_idle", frames: [{ key: prefix + "_down", frame: 0 }], frameRate: 1 });
         outfitReady[id] = true;
-      } catch (e) {}
+      } catch (e) { outfitFailed[id] = true; }
       outfitLoading[id] = false;
     });
     scene.load.start();
@@ -119,7 +129,7 @@
     var vv = window.visualViewport, kb = vv ? kbHeight() : 0;
     if (focused && kb > 80) { // 真的有軟鍵盤才釘（桌機/硬體鍵盤 kb≈0 → 維持 150 不蓋搖桿）
       box.style.bottom = "auto";
-      box.style.top = Math.max(8, vv.offsetTop + vv.height - box.offsetHeight - 8) + "px";
+      box.style.top = Math.max(8, vv.offsetTop + vv.height - (box.offsetHeight || 52) - 8) + "px";
       if (window.scrollY) window.scrollTo(0, 0); // 擋 iOS 自動把頁面捲上去
     } else {
       box.style.top = "auto";
@@ -258,6 +268,7 @@
       curScene = scene;
       Object.keys(remotes).forEach(function (k) { destroyRemote(remotes[k]); }); // 換地圖先清舊遠端，免殘影
       remotes = {};
+      outfitLoading = {}; outfitFailed = {}; // 換地圖清旗標：舊 scene loader 的 complete 不一定 fire，避免造型永久卡 loading
       connect();
     },
     // explore.js update() 末尾呼叫：送自己位置 + 渲染其他人
@@ -267,9 +278,12 @@
       var now = performance.now();
       var dir = Math.abs(dx) > Math.abs(dy) ? "side" : (dy > 0 ? "down" : "up");
       if (now - lastSend > 80) { try { room.send("move", { x: x, y: y, dir: dir, moving: !!moving }); } catch (e) {} lastSend = now; }
-      // 本地玩家在 demo 內換了衣服 → 即時廣播，讓別人看到我真實造型
-      var nowSkin = localSkin();
-      if (nowSkin !== mySkin) { mySkin = nowSkin; try { room.send("setSkin", { id: nowSkin }); } catch (e) {} }
+      // 本地玩家在 demo 內換了衣服 → 即時廣播；節流 500ms，不用每幀讀 localStorage/JSON.parse
+      if (now - lastSkinCheck > 500) {
+        lastSkinCheck = now;
+        var nowSkin = localSkin();
+        if (nowSkin !== mySkin) { mySkin = nowSkin; try { room.send("setSkin", { id: nowSkin }); } catch (e) {} }
+      }
       var seen = {};
       room.state.players.forEach(function (p, key) {
         if (key === room.sessionId) return; // 跳過自己

@@ -270,16 +270,22 @@
     { id: "cry", e: "😢" }, { id: "party", e: "🎉" }, { id: "wave", e: "👋" }, { id: "cool", e: "😎" },
   ];
   function emoteOf(id) { for (var i = 0; i < EMOTES.length; i++) if (EMOTES[i].id === id) return EMOTES[i].e; return ""; }
+  var emoteCount = 0;
   function showEmote(uid, id) {
-    var e = emoteOf(id); if (!e) return;
-    var scene = curScene; if (!scene || !scene.add || !scene.tweens) return;
+    var e = emoteOf(id); if (!e || emoteCount >= 30) return; // 上限 30 防被灌爆堆 text
+    var scene = curScene;
+    if (!scene || !scene.add || !scene.tweens || !scene.sys || !scene.sys.isActive()) return; // scene 生命週期防呆
     var spr = null;
     if (uid === myUid) spr = scene.playerSprite;
     else { for (var k in remotes) if (remotes[k].uid === uid) { spr = remotes[k].spr; break; } }
-    if (!spr || !spr.scene) return;
+    if (!spr || !spr.scene || !spr.active) return;
     var headY = spr.y - (spr.displayHeight || 60) - 4; // 頭頂上方
-    var t = scene.add.text(spr.x, headY, e, { fontSize: "30px" }).setOrigin(0.5, 1).setDepth(spr.y + 100);
-    scene.tweens.add({ targets: t, y: headY - 42, alpha: 0, duration: 1400, ease: "Cubic.easeOut", onComplete: function () { t.destroy(); } });
+    var t = null;
+    try {
+      t = scene.add.text(spr.x, headY, e, { fontSize: "30px" }).setOrigin(0.5, 1).setDepth(spr.y + 100);
+      emoteCount++;
+      scene.tweens.add({ targets: t, y: headY - 42, alpha: 0, duration: 1400, ease: "Cubic.easeOut", onComplete: function () { t.destroy(); emoteCount--; } });
+    } catch (err) { if (t) { try { t.destroy(); } catch (e2) {} emoteCount--; } }
   }
   function buildSocialUI() {
     if (el("mp-fpanel")) return;
@@ -288,7 +294,8 @@
     // pointerdown：在 blur 收回聊天列前就觸發，避免按鈕被移走點不到
     if (fb) fb.addEventListener("pointerdown", function () { if (room) room.send("friendList"); var fp = el("mp-fpanel"); if (fp) fp.style.display = "flex"; });
     var eb = el("mp-emotebtn");
-    if (eb) eb.addEventListener("pointerdown", function () { var m = el("mp-emote"); if (m) m.style.display = "flex"; });
+    // 開表情前先 blur 關鍵盤(避免選擇器被鍵盤蓋)；pointerdown 在 blur 收列前就觸發
+    if (eb) eb.addEventListener("pointerdown", function (ev) { ev.preventDefault(); var inp = el("mp-in"); if (inp) inp.blur(); var m = el("mp-emote"); if (m) m.style.display = "flex"; });
     // 好友面板
     var fp = document.createElement("div"); fp.id = "mp-fpanel"; fp.style.cssText = panelCss();
     fp.innerHTML = '<h3 style="margin:6px 0">👥 好友</h3><div id="mp-fincoming" style="width:min(360px,90vw)"></div><div id="mp-flist" style="width:min(360px,90vw);display:flex;flex-direction:column;gap:6px"></div><button id="mp-fclose" style="' + closeCss() + '">關閉</button>';

@@ -2486,11 +2486,16 @@
       const owned = {}; (dhCerts || []).forEach((c) => { owned[c.cert_key] = c; });
       box.innerHTML = `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">` + DH_CERTS.map((meta) => {
         const ok = !!owned[meta.key];
-        return `<div class="dh-cert ${ok ? "on" : "off"}" data-k="${meta.key}" style="border:2px solid ${ok ? "#d4a017" : "#ccc"};border-radius:12px;padding:11px 4px;text-align:center;background:${ok ? "linear-gradient(160deg,#fffceb,#fff1bf)" : "#f1f1f1"};opacity:${ok ? 1 : .5};cursor:pointer">
-            <div style="font-size:28px;line-height:1.1">${ok ? meta.emoji : "🔒"}</div>
-            <div style="font-weight:800;color:#6a4a12;font-size:12.5px">${meta.name}</div>
+        // 已獲得→顯示證書設計縮圖(本機小圖,~10KB,不靠後端即時渲染/不跨域)；載不出退回 emoji。未獲得→🔒
+        const icon = ok
+          ? `<img class="dh-cert-th" data-emo="${meta.emoji}" src="cert-thumb/${meta.key.replace("cert_", "")}.webp?v=1" alt="" style="width:auto;height:56px;max-width:100%;object-fit:contain;border-radius:4px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.15)">`
+          : `<div style="font-size:28px;line-height:1.1">🔒</div>`;
+        return `<div class="dh-cert ${ok ? "on" : "off"}" data-k="${meta.key}" style="border:2px solid ${ok ? "#d4a017" : "#ccc"};border-radius:12px;padding:9px 4px;text-align:center;background:${ok ? "linear-gradient(160deg,#fffceb,#fff1bf)" : "#f1f1f1"};opacity:${ok ? 1 : .5};cursor:pointer">
+            <div style="height:56px;display:flex;align-items:center;justify-content:center">${icon}</div>
+            <div style="font-weight:800;color:#6a4a12;font-size:12.5px;margin-top:3px">${meta.name}</div>
             <div style="font-size:10.5px;color:${ok ? "#b8860b" : "#999"}">${ok ? "已獲得" : "未獲得"}</div></div>`;
       }).join("") + `</div>` + (demoToken() ? "" : `<div class="jc-empty" style="margin-top:8px">建立角色、集滿圖鑑卡，就能拿到真證書！</div>`);
+      box.querySelectorAll(".dh-cert-th").forEach((im) => im.addEventListener("error", function () { this.outerHTML = `<div style="font-size:28px;line-height:1.1">${this.getAttribute("data-emo") || "🏅"}</div>`; }));
       box.querySelectorAll(".dh-cert").forEach((c) => c.addEventListener("click", () => {
         const k = c.dataset.k, rec = owned[k], meta = DH_CERTS.find((m) => m.key === k);
         if (rec) dhShowEduCert(rec, meta);

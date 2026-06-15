@@ -90,9 +90,8 @@
         r.onMessage("system", function (m) { addChat("sys", m.text); });
         r.onMessage("chat_blocked", function (m) { addChat("blk", blockMsg(m.reason)); });
         r.onMessage("friends", function (m) { friendsData = m; renderFriends(); });
-        r.onMessage("wallet", function (m) { myCoins = m.coins; var c = el("mp-coins"); if (c) c.textContent = "🪙 " + m.coins; });
-        r.onMessage("me", function (m) { myCoins = m.coins; var c = el("mp-coins"); if (c) c.textContent = "🪙 " + m.coins; });
-        r.onMessage("notice", function (n) { var t = noticeMsg(n); if (t) addChat("sys", t); });
+        r.onMessage("me", function () {}); r.onMessage("wallet", function () {}); // 社交改純禮物、不涉金錢；保留 no-op 免 colyseus 警告
+        r.onMessage("notice", function (n) { var t = noticeMsg(n); if (t) addChat("sys", t); if (n.kind === "gift_got") showGiftPop(n.gift, n.from); });
         // 玩家造型以 server 實際 outfit 為準（default＝主角樣子）；不再強制亂配造型
         buildSocialUI();
         // 連線途中 desiredMap 又變了（快速換圖期間 connect 被 connecting 擋掉，沒換房）→ 立刻切到正確地圖
@@ -201,7 +200,7 @@
       stroke: "#1a2240", strokeThickness: 4,
     }).setOrigin(0.5, 1);
     var r = { spr: spr, label: label, x: p.x, y: p.y, tx: p.x, ty: p.y, dir: p.dir, moving: false, name: p.name, skin: p.skin || "default", uid: p.uid };
-    spr.setInteractive({ useHandCursor: true }); // 點玩家 → 加好友 / 送金幣
+    spr.setInteractive({ useHandCursor: true }); // 點玩家 → 加好友 / 送禮物
     spr.on("pointerdown", function () { openPMenu(r); });
     return r;
   }
@@ -230,34 +229,65 @@
     }
   }
 
-  // ── 社交：好友 / 互送金幣，接雲端 world room 社交 handler（PK/排行已移除，用 EDU 既有的）──
-  var friendsData = { friends: [], incoming: [], outgoing: [] }, myCoins = 0, pmTarget = null;
+  // ── 社交：好友 / 互送純展示小禮物（無金錢）──
+  var friendsData = { friends: [], incoming: [], outgoing: [] }, pmTarget = null, giftTarget = null;
+  // 小禮物清單（UI emoji；之後想換精緻小圖再說）
+  var GIFTS = [
+    { id: "flower", e: "🌸", n: "花" }, { id: "cake", e: "🎂", n: "蛋糕" }, { id: "heart", e: "❤️", n: "愛心" },
+    { id: "star", e: "⭐", n: "星星" }, { id: "candy", e: "🍬", n: "糖果" }, { id: "box", e: "🎁", n: "禮物" },
+  ];
+  function giftOf(id) { for (var i = 0; i < GIFTS.length; i++) if (GIFTS[i].id === id) return GIFTS[i]; return GIFTS[5]; }
   function noticeMsg(n) {
     if (n.kind === "friend_sent") return "👥 已送出好友邀請";
     if (n.kind === "friend_added") return "🎉 你們成為好友了！";
-    if (n.kind === "gift_sent") return "🎁 已送出 " + n.amount + " 金幣";
-    if (n.kind === "gift_got") return "🎁 " + n.from + " 送你 " + n.amount + " 金幣！";
-    if (n.kind === "gift_failed") return n.reason === "not_friend" ? "要先成為好友才能送金幣" : (n.reason === "no_coins" ? "金幣不夠" : "送金幣失敗");
+    if (n.kind === "gift_sent") return "🎁 已送出禮物 " + giftOf(n.gift).e;
+    if (n.kind === "gift_got") { var g = giftOf(n.gift); return "🎁 " + n.from + " 送你" + g.n + " " + g.e + "！"; }
+    if (n.kind === "gift_failed") return n.reason === "not_friend" ? "要先成為好友才能送禮物" : (n.reason === "rate" ? "送太快了，慢一點" : "送禮物失敗");
     return "";
+  }
+  // 收到禮物 → 畫面中央小彈跳動畫
+  function showGiftPop(giftId, from) {
+    var g = giftOf(giftId);
+    var pop = document.createElement("div");
+    pop.textContent = g.e;
+    pop.style.cssText = "position:fixed;left:50%;top:42%;transform:translate(-50%,-50%) scale(.3);z-index:9700;font-size:88px;pointer-events:none;transition:transform .4s cubic-bezier(.2,1.4,.4,1),opacity .5s;filter:drop-shadow(0 4px 10px rgba(0,0,0,.4))";
+    document.body.appendChild(pop);
+    requestAnimationFrame(function () { pop.style.transform = "translate(-50%,-50%) scale(1)"; });
+    setTimeout(function () { pop.style.transform = "translate(-50%,-160%) scale(1)"; pop.style.opacity = "0"; }, 1100);
+    setTimeout(function () { if (pop.parentNode) pop.parentNode.removeChild(pop); }, 1700);
   }
   function buildSocialUI() {
     if (el("mp-fpanel")) return;
     // 好友 / 金幣已併入聊天室：👥 按鈕在聊天輸入列、金幣顯示在好友面板裡（不再浮在大地圖外面）
     var fb = el("mp-friendbtn");
     if (fb) fb.addEventListener("click", function () { if (room) room.send("friendList"); el("mp-fpanel").style.display = "flex"; });
-    // 好友面板（含金幣餘額）
+    // 好友面板
     var fp = document.createElement("div"); fp.id = "mp-fpanel"; fp.style.cssText = panelCss();
-    fp.innerHTML = '<h3 style="margin:6px 0">👥 好友　<span id="mp-coins" style="color:#ffd24a;font-size:15px">🪙 …</span></h3><div id="mp-fincoming" style="width:min(360px,90vw)"></div><div id="mp-flist" style="width:min(360px,90vw);display:flex;flex-direction:column;gap:6px"></div><button id="mp-fclose" style="' + closeCss() + '">關閉</button>';
+    fp.innerHTML = '<h3 style="margin:6px 0">👥 好友</h3><div id="mp-fincoming" style="width:min(360px,90vw)"></div><div id="mp-flist" style="width:min(360px,90vw);display:flex;flex-direction:column;gap:6px"></div><button id="mp-fclose" style="' + closeCss() + '">關閉</button>';
     document.body.appendChild(fp); el("mp-fclose").addEventListener("click", function () { fp.style.display = "none"; });
     // 點玩家彈出選單
     var pm = document.createElement("div"); pm.id = "mp-pmenu";
     pm.style.cssText = "position:fixed;left:50%;top:42%;transform:translateX(-50%);z-index:9600;display:none;flex-direction:column;gap:8px;background:#1a2348;border:1px solid #3a4a7a;border-radius:12px;padding:14px;font-family:sans-serif;color:#fff;text-align:center";
-    pm.innerHTML = '<div id="mp-pmn" style="font-weight:800"></div><button id="mp-pm-friend" style="' + actCss() + '">👥 加好友</button><button id="mp-pm-gift" style="' + actCss() + '">🎁 送金幣</button><button id="mp-pm-x" style="' + actCss() + 'background:#444">取消</button>';
+    pm.innerHTML = '<div id="mp-pmn" style="font-weight:800"></div><button id="mp-pm-friend" style="' + actCss() + '">👥 加好友</button><button id="mp-pm-gift" style="' + actCss() + '">🎁 送禮物</button><button id="mp-pm-x" style="' + actCss() + 'background:#444">取消</button>';
     document.body.appendChild(pm);
     el("mp-pm-friend").addEventListener("click", function () { if (room && pmTarget) room.send("friendRequest", { to: pmTarget.uid }); closePMenu(); });
-    el("mp-pm-gift").addEventListener("click", function () { if (room && pmTarget) { var a = prompt("送多少金幣給 " + pmTarget.name + "？（需先成為好友）", "10"); if (a) room.send("giftCoins", { to: pmTarget.uid, amount: parseInt(a, 10) || 0 }); } closePMenu(); });
+    el("mp-pm-gift").addEventListener("click", function () { var t = pmTarget; closePMenu(); if (t) openGiftPicker(t); });
     el("mp-pm-x").addEventListener("click", closePMenu);
+    // 送禮物選擇器
+    var gp = document.createElement("div"); gp.id = "mp-gift";
+    gp.style.cssText = "position:fixed;left:50%;top:42%;transform:translate(-50%,-50%);z-index:9650;display:none;flex-direction:column;gap:10px;background:#1a2348;border:1px solid #3a4a7a;border-radius:14px;padding:16px;font-family:sans-serif;color:#fff;text-align:center;width:min(300px,84vw)";
+    var grid = '<div id="mp-gift-name" style="font-weight:800;margin-bottom:2px"></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">';
+    GIFTS.forEach(function (g) { grid += '<button class="mp-gift-pick" data-id="' + g.id + '" style="border:none;border-radius:10px;padding:8px 0;background:rgba(255,255,255,.1);color:#fff;font-size:13px;cursor:pointer"><div style="font-size:30px;line-height:1.1">' + g.e + '</div>' + g.n + '</button>'; });
+    grid += '</div><button id="mp-gift-x" style="' + actCss() + 'background:#444">取消</button>';
+    gp.innerHTML = grid;
+    document.body.appendChild(gp);
+    el("mp-gift-x").addEventListener("click", closeGiftPicker);
+    Array.prototype.forEach.call(gp.querySelectorAll(".mp-gift-pick"), function (btn) {
+      btn.addEventListener("click", function () { if (room && giftTarget) room.send("sendGift", { to: giftTarget.uid, gift: btn.getAttribute("data-id") }); closeGiftPicker(); });
+    });
   }
+  function openGiftPicker(t) { giftTarget = t; var n = el("mp-gift-name"), m = el("mp-gift"); if (!n || !m) return; n.textContent = "送禮物給 " + t.name; m.style.display = "flex"; }
+  function closeGiftPicker() { var m = el("mp-gift"); if (m) m.style.display = "none"; giftTarget = null; }
   function panelCss() { return "position:fixed;inset:0;background:rgba(8,12,30,.96);z-index:9550;display:none;flex-direction:column;align-items:center;justify-content:flex-start;gap:10px;padding:24px;color:#fff;font-family:sans-serif;overflow-y:auto"; }
   function closeCss() { return "border:none;border-radius:14px;padding:11px 28px;font-weight:800;background:#444;color:#fff;margin-top:8px"; }
   function actCss() { return "border:none;border-radius:9px;padding:9px 16px;font-weight:700;background:#4a9fff;color:#fff;font-size:14px;"; }
@@ -279,8 +309,8 @@
     (friendsData.friends || []).forEach(function (f) {
       var row = document.createElement("div"); row.style.cssText = rowCss();
       row.innerHTML = "<div>" + (f.online ? "🟢 " : "⚪ ") + esc(f.name) + "</div>";
-      var g = document.createElement("button"); g.textContent = "🎁送金幣"; g.style.cssText = actCss();
-      g.addEventListener("click", function () { var a = prompt("送多少金幣給 " + f.name + "？", "10"); if (a && room) room.send("giftCoins", { to: f.uid, amount: parseInt(a, 10) || 0 }); });
+      var g = document.createElement("button"); g.textContent = "🎁送禮物"; g.style.cssText = actCss();
+      g.addEventListener("click", function () { openGiftPicker(f); });
       row.appendChild(g); box.appendChild(row);
     });
   }
@@ -289,7 +319,6 @@
     count: function () { return Object.keys(remotes).length; },
     friendsCount: function () { return (friendsData.friends || []).length; },
     uid: function () { return myUid; },
-    coins: function () { return myCoins; },
     _send: function (t, d) { if (room) try { room.send(t, d); } catch (e) {} },
     connected: function () { return !!room; },
     remoteInfo: function () { return Object.keys(remotes).map(function (k) { var r = remotes[k]; return { skin: r.skin, anim: r.spr.anims.currentAnim && r.spr.anims.currentAnim.key }; }); },

@@ -2391,7 +2391,7 @@
 
   /* ───────────────────── 個人小屋 hub（學生宿舍：更衣室 / 角色裝備 / 寵物 / 圖鑑，純展示）───────────────────── */
   let dhTab = "outfit";
-  let dhAwards = null, dhExam = null; // 成就/檢定狀態快取（開 hub 抓一次）
+  let dhAwards = null, dhExam = null, dhLoadSeq = 0; // 成就/檢定狀態快取（開 hub 抓一次）；dhLoadSeq=世代守衛，重開作廢舊 fetch 寫回
   function dhBuildOverlay() {
     let ov = document.getElementById("dh-overlay");
     if (ov) return ov;
@@ -2484,12 +2484,10 @@
       dhBubble(ov, "通過檢定考就能拿到證書！");
       if (dhAwards === null || dhExam === null) { box.innerHTML = `<div class="dh-sub">載入中…</div>`; dhLoadData().then(() => { if (dhTab === "cert") dhRender(ov); }); return; }
       const smap = {}; ((dhExam && dhExam.subjects) || []).forEach((x) => { smap[x.subject_key] = x; });
-      const certEarned = (k) => {
-        if ((dhAwards || []).some((a) => (a.label || "").indexOf(SUBJ[k]) >= 0 && /證/.test(a.label || ""))) return true;
-        const x = smap[k]; return !!(x && (x.grade_max || 1) > 1);
-      };
+      // 精準判定：award label 含「<科>證照」或「<科>檢定」（避免誤判「<科>教師證」等）
+      const certEarned = (k) => (dhAwards || []).some((a) => new RegExp(SUBJ[k] + "(證照|檢定)").test(a.label || ""));
       box.innerHTML = `<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:9px">` + Object.keys(SUBJ).map((k) => {
-        const ok = certEarned(k), lv = (smap[k] && smap[k].grade_max) || 1;
+        const ok = certEarned(k), lv = Math.max(1, Number(smap[k] && smap[k].grade_max) || 1); // 強制數字，防 API 非數字注入
         return `<div class="dh-cert ${ok ? "on" : "off"}" data-k="${k}" style="border:2px solid ${ok ? "#d4a017" : "#ccc"};border-radius:12px;padding:12px 6px;text-align:center;background:${ok ? "linear-gradient(160deg,#fffceb,#fff1bf)" : "#f1f1f1"};opacity:${ok ? 1 : .55};cursor:pointer">
             <div style="font-size:30px;line-height:1.1">${ok ? "📜" : "🔒"}</div>
             <div style="font-weight:800;color:#6a4a12">${SUBJ[k]}證照</div>
@@ -2504,15 +2502,20 @@
   }
   // 載入成就/檢定狀態（一次抓，之後快取；reuse caLoadAwards）
   async function dhLoadData() {
-    if (dhAwards === null) { try { dhAwards = (typeof caLoadAwards === "function") ? (await caLoadAwards()) : []; } catch (e) { dhAwards = []; } }
+    const seq = dhLoadSeq; // 這次載入的世代；重開 hub 會 ++，舊 fetch 完成不寫回
+    if (dhAwards === null) {
+      let aw = []; try { aw = (typeof caLoadAwards === "function") ? (await caLoadAwards()) : []; } catch (e) {}
+      if (seq !== dhLoadSeq) return; dhAwards = aw;
+    }
     if (dhExam === null) {
-      const t = demoToken();
-      if (!t) dhExam = { subjects: [] };
-      else { try { dhExam = await fetch(DEMO_API + "/api/exam/center/status", { headers: { Authorization: "Bearer " + t } }).then((r) => r.json()); } catch (e) { dhExam = { subjects: [] }; } }
+      const t = demoToken(); let ex = { subjects: [] };
+      if (t) { try { ex = await fetch(DEMO_API + "/api/exam/center/status", { headers: { Authorization: "Bearer " + t } }).then((r) => r.json()); } catch (e) {} }
+      if (seq !== dhLoadSeq) return; dhExam = ex;
     }
   }
   // 漂亮 HTML 證書（demo 等級；不做合成圖/QR）
   function dhShowCert(subjectKey, lv) {
+    lv = Math.max(1, Number(lv) || 1); // 強制數字，防注入
     const name = (() => { try { return localStorage.getItem("village_player_name") || "小勇者"; } catch (e) { return "小勇者"; } })();
     const d = new Date(), ds = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
     let m = document.getElementById("dh-cert-modal");
@@ -2531,7 +2534,7 @@
   }
   function openDormHub(onClose) {
     onCloseCb = onClose || null;
-    dhAwards = null; dhExam = null; // 重開重抓成就/檢定狀態
+    dhLoadSeq++; dhAwards = null; dhExam = null; // 重開重抓成就/檢定狀態（世代+1 作廢舊 fetch）
     const ov = dhBuildOverlay();
     dhTab = "outfit"; dhRender(ov);
     ov.classList.add("open");

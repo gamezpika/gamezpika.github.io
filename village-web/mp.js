@@ -16,9 +16,7 @@
 
   // ── 裝扮造型：server outfit id → demo 走路圖 sheet id；default 用 hero ──
   var OUTFIT_SHEET = { knight: "m_knight", wizard: "m_wizard_kid", elf: "f_elf", santa: "m_santa", superhero: "m_superhero" };
-  var PICK = ["knight", "wizard", "elf"]; // 100 金幣買得起的，給每位玩家自動穿（展示用）
   var outfitReady = {}, outfitLoading = {};
-  function hashStr(s) { var h = 0, i; for (i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return Math.abs(h); }
   function frameDimsOf(scene, key) { var t = scene.textures.get(key); var f = t.get(0); return { w: f.width, h: f.height, n: t.frameTotal - 1 }; }
 
   // 動態載入某造型的 3 方向走路圖 + 建動畫（造型 sheet 與 hero 同 frame 規格）。回 anim 前綴(ready) 或 null。
@@ -64,10 +62,7 @@
         r.onMessage("wallet", function (m) { myCoins = m.coins; var c = el("mp-coins"); if (c) c.textContent = "🪙 " + m.coins; });
         r.onMessage("me", function (m) { myCoins = m.coins; var c = el("mp-coins"); if (c) c.textContent = "🪙 " + m.coins; });
         r.onMessage("notice", function (n) { var t = noticeMsg(n); if (t) addChat("sys", t); });
-        // 展示：每位玩家自動穿一件造型（買→穿，別人就看得到不同衣服）
-        var myOutfit = PICK[hashStr(myUid) % PICK.length];
-        try { r.send("buyOutfit", { id: myOutfit }); } catch (e) {}
-        setTimeout(function () { try { r.send("setOutfit", { id: myOutfit }); } catch (e) {} }, 500);
+        // 玩家造型以 server 實際 outfit 為準（default＝主角樣子）；不再強制亂配造型
         buildSocialUI();
       })
       .catch(function () { connecting = false; });
@@ -87,9 +82,36 @@
     var input = el("mp-in");
     function send() { var t = (input.value || "").trim(); if (!t || !room) return; try { room.send("chat", { text: t, channel: "world" }); } catch (e) {} input.value = ""; }
     el("mp-send").addEventListener("click", send);
-    input.addEventListener("keydown", function (e) { e.stopPropagation(); if (e.key === "Enter") send(); }); // 擋住 Phaser 鍵盤
-    input.addEventListener("focus", function () { if (curScene && curScene.input && curScene.input.keyboard) curScene.input.keyboard.enabled = false; });
-    input.addEventListener("blur", function () { if (curScene && curScene.input && curScene.input.keyboard) curScene.input.keyboard.enabled = true; });
+    // isComposing：注音/拼音輸入法按 Enter 是「確認候選字」不是送出，別把半成品 ㄅ 送出去（會狂撞 rate limit）
+    input.addEventListener("keydown", function (e) { e.stopPropagation(); if (e.key === "Enter" && !e.isComposing && e.keyCode !== 229) send(); }); // 擋住 Phaser 鍵盤
+    input.addEventListener("focus", function () { if (curScene && curScene.input && curScene.input.keyboard) curScene.input.keyboard.enabled = false; pinChat(true); });
+    input.addEventListener("blur", function () { if (curScene && curScene.input && curScene.input.keyboard) curScene.input.keyboard.enabled = true; pinChat(false); });
+    bindKeyboardPin();
+  }
+
+  // ── 手機鍵盤彈出時把聊天框釘在鍵盤正上方、鎖住頁面捲動（避免露出底色一大塊黑）──
+  var pinBound = false;
+  function bindKeyboardPin() {
+    if (pinBound || !window.visualViewport) return; pinBound = true;
+    var vv = window.visualViewport;
+    function reflow() {
+      var box = el("mp-chat"); if (!box) return;
+      if (document.activeElement === el("mp-in")) {
+        var gap = Math.max(0, window.innerHeight - vv.height - vv.offsetTop); // 鍵盤高度
+        box.style.bottom = (gap + 8) + "px";
+        if (window.scrollY) window.scrollTo(0, 0); // 擋 iOS 自動把頁面捲上去（黑塊元凶）
+      } else {
+        box.style.bottom = "150px";
+      }
+    }
+    vv.addEventListener("resize", reflow);
+    vv.addEventListener("scroll", reflow);
+  }
+  function pinChat(on) {
+    var box = el("mp-chat"); if (!box || !window.visualViewport) return;
+    if (!on) { box.style.bottom = "150px"; return; }
+    var vv = window.visualViewport, gap = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+    box.style.bottom = (gap + 8) + "px"; window.scrollTo(0, 0);
   }
   function addChat(cls, text) {
     var log = el("mp-log"); if (!log) return;
@@ -107,7 +129,9 @@
 
   // 建一個遠端玩家的 sprite（重用主角 hero 走路動畫）+ 名牌
   function createRemote(scene, p) {
-    var spr = scene.add.sprite(p.x, p.y, "hero", 0).setOrigin(0.5, 1).setScale(0.6);
+    // 比例對齊本地玩家（每張地圖的 player.scale 不同，別寫死）
+    var psc = (scene.playerSprite && scene.playerSprite.scale) || 0.66;
+    var spr = scene.add.sprite(p.x, p.y, "hero", 0).setOrigin(0.5, 1).setScale(psc);
     if (scene.anims.exists("hero_idle")) spr.play("hero_idle");
     var label = scene.add.text(p.x, p.y - 60, p.name || "玩家", {
       fontFamily: "sans-serif", fontSize: "15px", color: "#ffffff",

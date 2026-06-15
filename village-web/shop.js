@@ -2391,6 +2391,7 @@
 
   /* ───────────────────── 個人小屋 hub（學生宿舍：更衣室 / 角色裝備 / 寵物 / 圖鑑，純展示）───────────────────── */
   let dhTab = "outfit";
+  let dhAwards = null, dhExam = null; // 成就/檢定狀態快取（開 hub 抓一次）
   function dhBuildOverlay() {
     let ov = document.getElementById("dh-overlay");
     if (ov) return ov;
@@ -2404,11 +2405,13 @@
           <div class="dh-owner"><img class="ui-ic" src="icons/ic_home.webp?v=1" alt=""> 你的小屋</div>
         </div>
         <div class="dh-rightcol">
-          <div class="jc-tabs dh-tabs">
-            <button class="jc-tab" data-tab="outfit">更衣室</button>
-            <button class="jc-tab" data-tab="gear">角色裝備</button>
-            <button class="jc-tab" data-tab="pet">寵物</button>
-            <button class="jc-tab" data-tab="book">圖鑑</button>
+          <div class="jc-tabs dh-tabs" style="overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none">
+            <button class="jc-tab" data-tab="outfit" style="flex:0 0 auto;white-space:nowrap">更衣室</button>
+            <button class="jc-tab" data-tab="gear" style="flex:0 0 auto;white-space:nowrap">角色裝備</button>
+            <button class="jc-tab" data-tab="pet" style="flex:0 0 auto;white-space:nowrap">寵物</button>
+            <button class="jc-tab" data-tab="book" style="flex:0 0 auto;white-space:nowrap">圖鑑</button>
+            <button class="jc-tab" data-tab="ach" style="flex:0 0 auto;white-space:nowrap">成就</button>
+            <button class="jc-tab" data-tab="cert" style="flex:0 0 auto;white-space:nowrap">證書</button>
           </div>
           <div class="jc-content dh-content"></div>
           <div class="dh-bubble"></div>
@@ -2467,10 +2470,68 @@
       const sect = (label, items) => `<div class="dh-sub">${label}</div><div class="dh-grid">` +
         items.map((it) => dhCard({ img: it.img, name: it.name, ro: true })).join("") + `</div>`;
       box.innerHTML = sect("造型", EQUIP.body.items) + sect("帽子", EQUIP.hat.items) + sect("寵物", EQUIP.pet.items);
+    } else if (dhTab === "ach") {
+      // 🏅 成就：讀後端 /api/awards（主線終獎稱號/證照）
+      dhBubble(ov, "你達成的成就都在這！");
+      if (dhAwards === null) { box.innerHTML = `<div class="dh-sub">載入中…</div>`; dhLoadData().then(() => { if (dhTab === "ach") dhRender(ov); }); return; }
+      if (!dhAwards.length) { box.innerHTML = `<div class="jc-empty">${demoToken() ? "還沒有成就，完成學院主線任務就會解鎖！" : "建立角色、闖學院後，成就會出現在這裡！"}</div>`; return; }
+      box.innerHTML = `<div style="display:flex;flex-direction:column;gap:8px">` + dhAwards.map((a) =>
+        `<div style="display:flex;align-items:center;gap:10px;background:#fff4d6;border:1px solid #e6c873;border-radius:12px;padding:10px 12px">
+           <span style="font-size:22px">${a.kind === "title" ? "🏆" : "📜"}</span>
+           <span style="font-weight:800;color:#8a6a1e">${aoEsc(a.label)}</span></div>`).join("") + `</div>`;
+    } else if (dhTab === "cert") {
+      // 📜 證書：5 科檢定證書牆（過了亮起、點開看 HTML 證書）
+      dhBubble(ov, "通過檢定考就能拿到證書！");
+      if (dhAwards === null || dhExam === null) { box.innerHTML = `<div class="dh-sub">載入中…</div>`; dhLoadData().then(() => { if (dhTab === "cert") dhRender(ov); }); return; }
+      const smap = {}; ((dhExam && dhExam.subjects) || []).forEach((x) => { smap[x.subject_key] = x; });
+      const certEarned = (k) => {
+        if ((dhAwards || []).some((a) => (a.label || "").indexOf(SUBJ[k]) >= 0 && /證/.test(a.label || ""))) return true;
+        const x = smap[k]; return !!(x && (x.grade_max || 1) > 1);
+      };
+      box.innerHTML = `<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:9px">` + Object.keys(SUBJ).map((k) => {
+        const ok = certEarned(k), lv = (smap[k] && smap[k].grade_max) || 1;
+        return `<div class="dh-cert ${ok ? "on" : "off"}" data-k="${k}" style="border:2px solid ${ok ? "#d4a017" : "#ccc"};border-radius:12px;padding:12px 6px;text-align:center;background:${ok ? "linear-gradient(160deg,#fffceb,#fff1bf)" : "#f1f1f1"};opacity:${ok ? 1 : .55};cursor:pointer">
+            <div style="font-size:30px;line-height:1.1">${ok ? "📜" : "🔒"}</div>
+            <div style="font-weight:800;color:#6a4a12">${SUBJ[k]}證照</div>
+            <div style="font-size:11.5px;color:${ok ? "#b8860b" : "#999"}">${ok ? "LV." + lv + " 已通過" : "尚未通過"}</div></div>`;
+      }).join("") + `</div>`;
+      box.querySelectorAll(".dh-cert").forEach((c) => c.addEventListener("click", () => {
+        const k = c.dataset.k;
+        if (c.classList.contains("on")) dhShowCert(k, (smap[k] && smap[k].grade_max) || 1);
+        else dhBubble(ov, "「" + SUBJ[k] + "」檢定還沒過，去考試院找笛卡兒挑戰吧！");
+      }));
     }
+  }
+  // 載入成就/檢定狀態（一次抓，之後快取；reuse caLoadAwards）
+  async function dhLoadData() {
+    if (dhAwards === null) { try { dhAwards = (typeof caLoadAwards === "function") ? (await caLoadAwards()) : []; } catch (e) { dhAwards = []; } }
+    if (dhExam === null) {
+      const t = demoToken();
+      if (!t) dhExam = { subjects: [] };
+      else { try { dhExam = await fetch(DEMO_API + "/api/exam/center/status", { headers: { Authorization: "Bearer " + t } }).then((r) => r.json()); } catch (e) { dhExam = { subjects: [] }; } }
+    }
+  }
+  // 漂亮 HTML 證書（demo 等級；不做合成圖/QR）
+  function dhShowCert(subjectKey, lv) {
+    const name = (() => { try { return localStorage.getItem("village_player_name") || "小勇者"; } catch (e) { return "小勇者"; } })();
+    const d = new Date(), ds = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    let m = document.getElementById("dh-cert-modal");
+    if (!m) { m = el("div"); m.id = "dh-cert-modal"; m.style.cssText = "position:fixed;inset:0;z-index:7200;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55)"; document.body.appendChild(m); m.addEventListener("click", (e) => { if (e.target === m) m.remove(); }); }
+    m.innerHTML = `<div style="width:min(360px,86vw);background:linear-gradient(160deg,#fffdf5,#fff6db);border:3px double #c9a227;border-radius:18px;padding:22px 20px;text-align:center;box-shadow:0 14px 44px rgba(0,0,0,.45);font-family:'PingFang TC','Microsoft JhengHei',sans-serif">
+        <div style="font-size:12px;letter-spacing:4px;color:#b8860b">小 智 學 園 · 認 證</div>
+        <div style="font-size:42px;margin:4px 0">🏅</div>
+        <div style="font-size:22px;font-weight:900;color:#6a4a12">${SUBJ[subjectKey]}檢定證書</div>
+        <div style="height:2px;background:linear-gradient(90deg,transparent,#d4a017,transparent);margin:9px auto;width:82%"></div>
+        <div style="font-size:15px;color:#444;line-height:2;margin:8px 0">茲證明 <b style="color:#c0392b;font-size:18px">${aoEsc(name)}</b> 同學<br>通過 <b>${SUBJ[subjectKey]}</b> 學科檢定<br>達 <b style="color:#d4a017">LV.${lv}</b> 等級</div>
+        <div style="font-size:12px;color:#999;margin-top:6px">頒發日期：${ds}　·　考試院 笛卡兒 監考</div>
+        <button id="dh-cert-ok" style="margin-top:16px;border:none;border-radius:12px;padding:9px 26px;background:#c9a227;color:#fff;font-weight:800;cursor:pointer">收下</button>
+      </div>`;
+    m.querySelector("#dh-cert-ok").addEventListener("click", () => m.remove());
+    m.style.display = "flex";
   }
   function openDormHub(onClose) {
     onCloseCb = onClose || null;
+    dhAwards = null; dhExam = null; // 重開重抓成就/檢定狀態
     const ov = dhBuildOverlay();
     dhTab = "outfit"; dhRender(ov);
     ov.classList.add("open");

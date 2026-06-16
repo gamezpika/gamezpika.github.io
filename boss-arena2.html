@@ -1198,7 +1198,7 @@ function playerName() {
     try {
         const qn = new URLSearchParams(location.search).get("name");
         if (qn && qn.trim()) return qn.trim().slice(0, 12);
-        const vn = localStorage.getItem("village_name");
+        const vn = localStorage.getItem("village_name") || localStorage.getItem("village_player_name");
         if (vn && vn.trim()) return vn.trim().slice(0, 12);
     } catch (e) {}
     return "派派";
@@ -1681,7 +1681,14 @@ function towerFailed() {
 }
 
 (async function init() {
-    const urlTheme = new URLSearchParams(location.search).get("theme");
+    // in-game(從女巫/地圖進來)：立刻藏設定面板 + 顯示「準備戰場中」，不閃跳選職業/場景畫面
+    const _qp0 = new URLSearchParams(location.search);
+    if (_qp0.get("tower") === "1" || _qp0.get("subject")) {
+        const ss = document.getElementById("screen-setup"); if (ss) ss.style.display = "none";
+        showSetupSpinner();
+    }
+
+    const urlTheme = _qp0.get("theme");
     const savedTheme = (() => { try { return localStorage.getItem("eduarena_demo_theme"); } catch (e) { return null; } })();
     applyTheme(urlTheme || savedTheme || "sandstone");
 

@@ -636,6 +636,7 @@ class ExploreScene extends Phaser.Scene {
     const fade = document.getElementById("map-fade");
     if (fade) this.time.delayedCall(30, () => fade.classList.remove("show"));
 
+    window.__scene = this;   // 測試/除錯用場景鉤子（叫車面板等）
     // 12. 給 DOM 面板用的場景切換鉤子（英文學院魔法陣：面板按鈕進場 / 淨化後重載本層）
     window.__exploreGoMap = (mapId, spawn) => {
       if (fade) fade.classList.add("show");
@@ -670,11 +671,49 @@ class ExploreScene extends Phaser.Scene {
   _enterNearShop() {
     if (this.modalOpen || !this._nearShop) return;
     if (this._nearShop.type === "open_modal") { this._hideEnter(); this._showModal(this._nearShop); return; }
+    if (this._nearShop.shop_id === "taxi") { this.modalOpen = true; this._hideEnter(); this._openTaxi(() => { this.modalOpen = false; }); return; }
     if (!window.openShop) return;
     const id = this._nearShop.shop_id;
     this.modalOpen = true;
     this._hideEnter();
     window.openShop(id, () => { this.modalOpen = false; });
+  }
+
+  // 🐴 馬車快遞：走近會跑的馬車 → 列 8 大據點 → 選了複用 portal 轉場傳送
+  _openTaxi(onClose) {
+    const DESTS = [
+      { id: "village", name: "村莊" }, { id: "academy", name: "五大學院" },
+      { id: "campus", name: "學園生活區" }, { id: "shopping", name: "商店街" },
+      { id: "competitive", name: "競技場" }, { id: "playground", name: "遊樂場" },
+      { id: "dock", name: "學園碼頭" }, { id: "island", name: "海島" },
+    ];
+    const cur = this.mapId;
+    let m = document.getElementById("taxi-overlay"); if (m) m.remove();
+    m = document.createElement("div"); m.id = "taxi-overlay"; m.className = "open";
+    m.style.cssText = "position:fixed;inset:0;z-index:7000;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.55);font-family:sans-serif";
+    let html = "<div style='background:#fff6e2;border:5px solid #8a5a2b;border-radius:20px;max-width:360px;width:100%;padding:16px;box-shadow:0 14px 40px rgba(0,0,0,.5)'>";
+    html += "<div style='font-weight:900;font-size:19px;color:#7a4715;text-align:center'>馬車快遞</div>";
+    html += "<div style='font-size:13px;color:#9a7038;text-align:center;margin:2px 0 12px'>要去哪裡？跳上馬車馬上到！</div>";
+    html += "<div style='display:grid;grid-template-columns:1fr 1fr;gap:8px'>";
+    DESTS.forEach((d) => {
+      const here = d.id === cur;
+      html += "<button class='taxi-dest' data-map='" + d.id + "'" + (here ? " disabled" : "") +
+        " style='border:none;border-radius:12px;padding:13px 8px;font-size:14px;font-weight:800;background:" +
+        (here ? "#e8ddc4" : "#b5712f") + ";color:" + (here ? "#a89878" : "#fff7e6") + "'>" +
+        d.name + (here ? "（在這）" : "") + "</button>";
+    });
+    html += "</div><button id='taxi-close' style='margin-top:12px;width:100%;border:none;border-radius:12px;padding:10px;background:#bbb;color:#fff;font-weight:800'>關閉</button></div>";
+    m.innerHTML = html;
+    document.body.appendChild(m);
+    const close = () => { if (m.parentNode) m.remove(); if (onClose) onClose(); };
+    m.addEventListener("pointerdown", (e) => { if (e.target === m) close(); });
+    m.querySelector("#taxi-close").addEventListener("click", close);
+    m.querySelectorAll(".taxi-dest").forEach((b) => b.addEventListener("click", () => {
+      const map = b.getAttribute("data-map");
+      if (map === cur) return;
+      if (m.parentNode) m.remove(); if (onClose) onClose();
+      this._enterPortal({ target_map: map });   // 複用 portal 轉場(淡出+scene.restart+逾時自救)
+    }));
   }
 
   _showPortalBtn(label) {
@@ -906,7 +945,7 @@ class ExploreScene extends Phaser.Scene {
 
   // 有任何會擋操作的 DOM 面板開著嗎？（含牧場面板：它用 style.display 不是 .open class）
   _anyPanelOpen() {
-    if (document.querySelector("#ca-overlay.open,#ao-overlay.open,#jc-overlay.open,#shop-overlay.open,#eq-overlay.open,#dh-overlay.open,#en-overlay.open,#info-modal.open")) return true;
+    if (document.querySelector("#ca-overlay.open,#ao-overlay.open,#jc-overlay.open,#shop-overlay.open,#eq-overlay.open,#dh-overlay.open,#en-overlay.open,#info-modal.open,#taxi-overlay.open")) return true;
     const r = document.getElementById("ranch-overlay");
     return !!(r && r.style.display && r.style.display !== "none");
   }
@@ -927,6 +966,10 @@ class ExploreScene extends Phaser.Scene {
     if (!item) return;
     if (item.type === "open_modal") this._showModal(item);
     else if (item.type === "fountain_splash") this._fountainSplash(item.cx, item.cy - 100);
+    else if (item.type === "open_shop" && item.shop_id === "taxi") {
+      this.modalOpen = true; this._hideEnter();
+      this._openTaxi(() => { this.modalOpen = false; });
+    }
     else if (item.type === "open_shop" && window.openShop) {
       this.modalOpen = true;
       this._hideEnter();

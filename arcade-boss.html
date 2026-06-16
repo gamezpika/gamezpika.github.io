@@ -94,7 +94,8 @@ body { background: #120827; }
 <script src="arcade/boss/bopomofo.js?v=1"></script>
 <script src="arcade/boss/boss-phaser.js?v=4"></script>
 <script>
-// 啟動：?subject=math&tier=1（地圖怪物 NPC 跳轉帶入）；返回回禁忌森林深處原機台前
+// 啟動：?subject=math&tier=1（地圖怪物 NPC 跳轉帶入）；返回回原機台前
+// 鎮魔塔模式：?tower=1&subject=X&floor=N&waves=W → 分波串接多場 boss session、無限爬塔、過層存檔
 (function () {
     const qp = new URLSearchParams(location.search);
     const SUBJECTS = ["math", "chinese", "english", "science", "social"];
@@ -102,18 +103,131 @@ body { background: #120827; }
     const tier = Math.max(1, Math.min(3, parseInt(qp.get("tier") || "1", 10) || 1));
     const backMap = /^[a-z0-9_]+$/.test(qp.get("map") || "") ? qp.get("map") : "forest_deep";
 
+    // ── 鎮魔塔分波 ──
+    const TOWER = qp.get("tower") === "1";
+    const towerFloor = Math.max(1, parseInt(qp.get("floor") || "1", 10) || 1);
+    const towerWaveCount = Math.max(1, Math.min(5, parseInt(qp.get("waves") || "1", 10) || 1));
+    const towerWavesFor = (f) => Math.max(1, Math.min(5, 1 + Math.floor((f - 1) / 2)));   // 與 shop.js towerWaves 同步
+    const towerFloorTier = (f) => Math.min(1 + Math.floor((f - 1) / 3), 3);               // 與 shop.js towerTierOf 同步
+    const waveTier = (idx) => {  // 最後一波＝該層魔王(floorTier)、前面是小兵(floorTier-1，最低1)
+        const ft = towerFloorTier(towerFloor);
+        return (idx >= towerWaveCount - 1) ? ft : Math.max(1, ft - 1);
+    };
+    const SUBJ_LABEL = { math: "數學", chinese: "國語", english: "英語", science: "自然", social: "社會" };
+    let towerWaveIdx = 0;   // 0-based 目前波次
+    let towerCoins = 0;     // 本層累積金幣
+
     window.__bossExit = function () {
         const bs = qp.get("back_spawn") || "";
         location.href = "village-web/index.html?map=" + backMap
             + (/^0\.\d+,0\.\d+$/.test(bs) ? "&spawn=" + bs : "");
     };
 
+    function towerSplash(text, sub) {
+        let s = document.getElementById("tower-splash");
+        if (!s) {
+            s = document.createElement("div");
+            s.id = "tower-splash";
+            s.style.cssText = "position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;"
+                + "justify-content:center;text-align:center;gap:10px;color:#fff;"
+                + "background:radial-gradient(ellipse at 50% 40%,#3a1a5e 0%,#120827 75%);";
+            s.innerHTML = '<div id="tower-splash-t" style="font-size:30px;font-weight:900"></div>'
+                + '<div id="tower-splash-s" style="font-size:16px;color:#d8c8f0"></div>';
+            document.body.appendChild(s);
+        }
+        s.querySelector("#tower-splash-t").textContent = text;
+        s.querySelector("#tower-splash-s").textContent = sub || "";
+        s.style.display = "flex";
+    }
+    function hideTowerSplash() { const s = document.getElementById("tower-splash"); if (s) s.style.display = "none"; }
+
+    function startTowerWave() {
+        towerSplash("第 " + towerFloor + " 層",
+            "第 " + (towerWaveIdx + 1) + " / " + towerWaveCount + " 波　" + (SUBJ_LABEL[subject] || "") + "魔物來襲！");
+        setTimeout(function () { hideTowerSplash(); window.bossIsland.start(subject, waveTier(towerWaveIdx)); }, 1100);
+    }
+
+    // 自訂結算雙鈕（隱藏預設 back 鈕）
+    function towerResultBtns(html) {
+        const old = document.getElementById("boss-result-back"); if (old) old.style.display = "none";
+        let box = document.getElementById("tower-result-btns");
+        if (!box) {
+            box = document.createElement("div"); box.id = "tower-result-btns";
+            box.style.cssText = "display:flex;flex-direction:column;gap:10px;margin-top:14px;width:min(86vw,320px)";
+            document.querySelector("#screen-boss-result .boss-result-content").appendChild(box);
+        }
+        box.innerHTML = html; return box;
+    }
+    function towerFloorCleared() {
+        const nf = towerFloor + 1;
+        try { localStorage.setItem("tower_floor_" + subject, String(nf)); } catch (e) {}
+        const t = document.getElementById("boss-result-title");
+        const sub = document.getElementById("boss-result-sub");
+        const coins = document.getElementById("boss-result-coins");
+        if (t) t.textContent = "🏆 通過第 " + towerFloor + " 層！";
+        if (sub) sub.textContent = (SUBJ_LABEL[subject] || "") + "之塔　下一關：第 " + nf + " 層";
+        if (coins) coins.textContent = "🪙 本層共獲得 +" + towerCoins + " 金幣";
+        const box = towerResultBtns(
+            '<button class="btn-primary" id="tw-next" style="margin:0">挑戰第 ' + nf + ' 層</button>'
+          + '<button class="btn-primary" id="tw-back" style="margin:0;background:linear-gradient(135deg,#9b8bbf,#6f5e9c)">回鎮魔塔</button>');
+        box.querySelector("#tw-next").addEventListener("click", function () {
+            const bs = qp.get("back_spawn") || "";
+            let q = "?tower=1&subject=" + encodeURIComponent(subject) + "&floor=" + nf + "&waves=" + towerWavesFor(nf) + "&map=" + backMap;
+            if (/^0\.\d+,0\.\d+$/.test(bs)) q += "&back_spawn=" + bs;
+            location.href = "arcade-boss.html" + q;
+        });
+        box.querySelector("#tw-back").addEventListener("click", function () { window.__bossExit(); });
+    }
+    function towerResultEnded(victory) {
+        const sub = document.getElementById("boss-result-sub");
+        const coins = document.getElementById("boss-result-coins");
+        if (victory === false && sub) sub.textContent = "止步於第 " + towerFloor + " 層 · 第 " + (towerWaveIdx + 1) + " 波　再接再厲！";
+        if (coins && towerCoins > 0) coins.textContent = "🪙 本層獲得 +" + towerCoins + " 金幣";
+        const box = towerResultBtns(
+            (victory === false ? '<button class="btn-primary" id="tw-retry" style="margin:0">重試第 ' + towerFloor + ' 層</button>' : '')
+          + '<button class="btn-primary" id="tw-back" style="margin:0;background:linear-gradient(135deg,#9b8bbf,#6f5e9c)">回鎮魔塔</button>');
+        const rt = box.querySelector("#tw-retry"); if (rt) rt.addEventListener("click", function () { location.reload(); });
+        box.querySelector("#tw-back").addEventListener("click", function () { window.__bossExit(); });
+    }
+
+    if (TOWER) {
+        // 攔 boss session/end 取勝負 + 金幣（給串波判斷）
+        const _api = window.eduApi;
+        window.eduApi = async function (path, opts) {
+            const r = await _api(path, opts);
+            if (typeof path === "string" && path.indexOf("/api/boss/session/end") === 0) {
+                try { const d = await r.clone().json(); window.__towerLastEnd = { victory: !!d.victory, coins: d.coins_earned || 0 }; }
+                catch (e) { window.__towerLastEnd = null; }
+            }
+            return r;
+        };
+        // 包 showScreen：boss-result 時依勝負 → 下一波 / 過層 / 失敗
+        const _show = window.eduApp.showScreen;
+        window.eduApp.showScreen = function (id) {
+            if (id === "boss-result") {
+                const end = window.__towerLastEnd; window.__towerLastEnd = null;
+                const victory = end ? end.victory : null;
+                if (end) towerCoins += end.coins;
+                if (victory === true && towerWaveIdx + 1 < towerWaveCount) {
+                    towerWaveIdx++; startTowerWave();   // 還有下一波 → 不結算、直接續打（splash 立即蓋畫面）
+                    return;
+                }
+                const ret = _show.call(window.eduApp, "boss-result");
+                if (victory === true) towerFloorCleared();
+                else towerResultEnded(victory);   // false=失敗、null=session/end 失敗無法判定 → 結束本層
+                return ret;
+            }
+            return _show.call(window.eduApp, id);
+        };
+    }
+
     function boot() {
         if (!window.bossIsland || typeof Phaser === "undefined") {
             document.getElementById("boss-phaser-loadtext").textContent = "引擎沒載到，請重新整理";
             return;
         }
-        window.bossIsland.start(subject, tier);
+        if (TOWER) startTowerWave();
+        else window.bossIsland.start(subject, tier);
     }
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", boot);

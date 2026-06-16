@@ -949,7 +949,7 @@ class ExploreScene extends Phaser.Scene {
 
   // 有任何會擋操作的 DOM 面板開著嗎？（含牧場面板：它用 style.display 不是 .open class）
   _anyPanelOpen() {
-    if (document.querySelector("#ca-overlay.open,#ao-overlay.open,#jc-overlay.open,#shop-overlay.open,#eq-overlay.open,#dh-overlay.open,#en-overlay.open,#info-modal.open,#taxi-overlay.open")) return true;
+    if (document.querySelector("#ca-overlay.open,#ao-overlay.open,#jc-overlay.open,#shop-overlay.open,#eq-overlay.open,#dh-overlay.open,#en-overlay.open,#info-modal.open,#taxi-overlay.open,#tower-overlay.open")) return true;
     const r = document.getElementById("ranch-overlay");
     return !!(r && r.style.display && r.style.display !== "none");
   }

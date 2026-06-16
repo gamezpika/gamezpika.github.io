@@ -88,9 +88,9 @@
           "y_max": 0.39755077582621423
         },
         "interaction": {
-          "type": "open_modal",
-          "label": "占卜師",
-          "body": "水晶球中映出了魔王的影子……勇者啊，待時機成熟，我便為你開啟挑戰之門。",
+          "type": "open_shop",
+          "shop_id": "tower",
+          "label": "挑戰鎮魔塔",
           "radius": 160
         },
         "path": [],

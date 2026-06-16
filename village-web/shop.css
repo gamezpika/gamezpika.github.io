@@ -668,3 +668,34 @@
 .qt-stamp { text-align: center; font-size: 19px; font-weight: 900; margin: 12px 0 0; min-height: 26px; }
 .qt-next { display: block; width: 100%; max-width: 340px; margin: 12px auto 0; border: none; border-radius: 14px; padding: 13px; font-size: 18px; font-weight: 900; color: #fff; background: linear-gradient(135deg, #f5a623, #f08438); box-shadow: 0 3px 0 #b06a14; cursor: pointer; font-family: inherit; }
 .qt-next:active { transform: translateY(2px); box-shadow: 0 1px 0 #b06a14; }
+
+/* ── 鎮魔塔面板（占卜師女巫 → 分科爬塔）── */
+#tower-overlay {
+  position: fixed; inset: 0; z-index: 5000; display: none;
+  background: rgba(20, 14, 8, 0.55); backdrop-filter: blur(2px);
+  font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+#tower-overlay.open { display: flex; align-items: center; justify-content: center; }
+#tower-overlay .ao-principal { padding-top: 56px; box-sizing: border-box; }
+#tower-overlay .ao-principal-img { max-height: 80%; }
+.tower-list { display: flex; flex-direction: column; gap: 10px; padding: 2px; }
+.tower-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  background: #fffaf0; border: 3px solid #b58edb; border-radius: 14px;
+  padding: 11px 14px; box-shadow: 0 2px 0 #b58edb;
+}
+.tower-row-info { min-width: 0; text-align: left; }
+.tower-row-name { font-size: 17px; font-weight: 900; color: #4a2d6b; }
+.tower-row-sub { font-size: 13px; color: #7a6a55; margin-top: 2px; }
+.tower-row-sub b { color: #7b4bc8; font-size: 15px; }
+.tower-go {
+  flex: 0 0 auto; white-space: nowrap; border: none; border-radius: 12px;
+  padding: 10px 22px; font-size: 15px; font-weight: 900; cursor: pointer; color: #fff;
+  background: linear-gradient(135deg, #a86fe0, #7b4bc8); box-shadow: 0 2px 0 #5e37a0;
+}
+.tower-go:active { transform: translateY(1px); box-shadow: 0 1px 0 #5e37a0; }
+@media (max-width: 640px) {
+  #tower-overlay .ao-principal { padding-top: 4px; }
+  #tower-overlay .ao-principal-img { max-height: 26vh; }
+}

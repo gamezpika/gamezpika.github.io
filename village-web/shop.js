@@ -242,6 +242,7 @@
       location.href = "../arcade-pvp.html" + q;
       return;
     }
+    if (shopId === "tower") { openTower(onClose); return; }
     if (shopId === "job_center") { openJobCenter(onClose); return; }
     if (shopId === "academy_office") { openAcademyOffice(onClose); return; }
     if (shopId === "dorm") { openDormHub(onClose); return; }
@@ -1444,6 +1445,84 @@
   }
   window.openChineseAcademy = openChineseAcademy;
   window.openNpcQuest = openNpcQuest;
+
+  /* ───────────────────── 鎮魔塔（占卜師女巫 → 分科無限爬塔）─────────────────────
+   * 玩法：選一科 → 爬塔，一層一層往上闖、無限延伸。
+   * 越爬波次越多、魔物越強（公式與 arcade-boss.html 同步）。
+   * 每波是一場真實 boss session（伺服器發題、給真金幣），前端只記「爬到第幾層」。*/
+  function towerWaves(floor) { return Math.min(1 + Math.floor((floor - 1) / 2), 5); }  // 1,1,2,2,3,3,4,4,5,5,…(封頂 5)
+  function towerTierOf(floor) { return Math.min(1 + Math.floor((floor - 1) / 3), 3); } // 1-3層 t1、4-6 t2、7+ t3
+  function towerFloorOf(subj) { try { return Math.max(1, parseInt(localStorage.getItem("tower_floor_" + subj) || "1", 10) || 1); } catch (e) { return 1; } }
+  const TOWER_SUBJS = ["chinese", "math", "english", "science", "social"];
+  const TOWER_TIER_TXT = ["", "小怪群", "精英群", "魔王級"];
+
+  function towerBuildOverlay() {
+    let ov = document.getElementById("tower-overlay");
+    if (ov) return ov;
+    ov = el("div"); ov.id = "tower-overlay";
+    ov.innerHTML = `
+      <div class="shop-panel ao-panel tower-panel">
+        <div class="shop-title">🗼 鎮魔塔</div>
+        <button class="shop-close" aria-label="關閉">×</button>
+        <div class="ao-principal">
+          <div class="ao-bubble">勇者啊，挑戰之門已開。選一科登塔吧——越往上，魔物越多、越強。擊敗牠們，金幣便是你的獎賞。</div>
+          <img class="ao-principal-img" src="tower_diviner_front.webp?v=1" alt="占卜師" draggable="false">
+          <div class="ao-owner">🔮 占卜師</div>
+        </div>
+        <div class="ao-right"><div class="jc-content ao-content tower-content"></div></div>
+      </div>`;
+    document.body.appendChild(ov);
+    ov.querySelector(".shop-close").addEventListener("click", towerClose);
+    ov.addEventListener("click", (e) => { if (e.target === ov) towerClose(); });
+    return ov;
+  }
+  function towerClose() {
+    const ov = document.getElementById("tower-overlay");
+    if (ov) ov.classList.remove("open");
+    release();
+  }
+  function towerBackSpawn() {
+    try {
+      const sc = window.game.scene.scenes.find((s) => s.player && s.WORLD_W);
+      if (sc) return (sc.player.x / sc.WORLD_W).toFixed(4) + "," + (sc.player.y / sc.WORLD_H).toFixed(4);
+    } catch (e) {}
+    return "";
+  }
+  function towerLaunch(subj) {
+    const floor = towerFloorOf(subj);
+    const waves = towerWaves(floor);
+    const bs = towerBackSpawn();
+    let q = "?tower=1&subject=" + encodeURIComponent(subj) + "&floor=" + floor + "&waves=" + waves + "&map=tower";
+    if (/^0\.\d+,0\.\d+$/.test(bs)) q += "&back_spawn=" + bs;
+    location.href = "../arcade-boss.html" + q;
+  }
+  function towerRender(ov) {
+    const box = ov.querySelector(".tower-content");
+    const rows = TOWER_SUBJS.map((s) => {
+      const floor = towerFloorOf(s);
+      const waves = towerWaves(floor);
+      const tier = towerTierOf(floor);
+      return `<div class="tower-row">
+        <div class="tower-row-info">
+          <div class="tower-row-name">${esc(SUBJ[s])}之塔</div>
+          <div class="tower-row-sub">第 <b>${floor}</b> 層 · ${waves} 波 ${TOWER_TIER_TXT[tier]}</div>
+        </div>
+        <button class="tower-go" data-subj="${s}">挑戰</button>
+      </div>`;
+    }).join("");
+    box.innerHTML = `<div class="tower-list">${rows}</div>`;
+    box.querySelectorAll(".tower-go").forEach((b) => {
+      b.addEventListener("click", () => towerLaunch(b.dataset.subj));
+    });
+  }
+  async function openTower(onClose) {
+    onCloseCb = onClose || null;
+    const ov = towerBuildOverlay();
+    try { await ensureDemoPlayer(); } catch (e) {}
+    towerRender(ov);
+    ov.classList.add("open");
+  }
+  window.openTower = openTower;
 
   /* ───────────────────── 英文學院 · 魔法陣（樣板：入口 + 第一層）───────────────────── */
   // 入魔師長資料（魔法陣每層一位；第 5 層為魔王汀其假扮院長）

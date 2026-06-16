@@ -159,16 +159,16 @@ class ExploreScene extends Phaser.Scene {
         if (!this.textures.exists(b.sprite.image)) {
           // 有 frame_width = spritesheet 動畫（噴泉），否則靜態圖
           if (b.sprite.frame_width && b.sprite.frame_height) {
-            this.load.spritesheet(b.sprite.image, this.assetBase + b.sprite.image + "?v=12",
+            this.load.spritesheet(b.sprite.image, this.assetBase + b.sprite.image + "?v=13",
               { frameWidth: b.sprite.frame_width, frameHeight: b.sprite.frame_height });
           } else {
-            this.load.image(b.sprite.image, this.assetBase + b.sprite.image + "?v=12");
+            this.load.image(b.sprite.image, this.assetBase + b.sprite.image + "?v=13");
           }
         }
       }
       // 清醒立繪（狀態切換）也先載好，避免淨化後重載閃一下
       if (b.purified && b.purified.sprite_image && !this.textures.exists(b.purified.sprite_image)) {
-        this.load.image(b.purified.sprite_image, this.assetBase + b.purified.sprite_image + "?v=12");
+        this.load.image(b.purified.sprite_image, this.assetBase + b.purified.sprite_image + "?v=13");
       }
     });
     // Player sprites（3 方向，所有地圖共用同一個玩家 → 用固定 key、已載就跳過）

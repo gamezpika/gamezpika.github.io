@@ -3818,7 +3818,7 @@
         },
         "sprite": {
           "image": "bus_stop.webp",
-          "scale": 0.11,
+          "scale": 0.1199,
           "anchor_x": 0.5,
           "anchor_y": 1
         },

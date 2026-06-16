@@ -15,7 +15,7 @@ function _qParam(name) {
 const QUEST_DEMO_API = "https://eduarena-tutoring-production.up.railway.app";
 // 學院室內地圖 → 科目；只有這些地圖的 NPC（且 id 在該科 academy.json）才掛符號
 function _questSubjectOf(mapId) {
-  const m = /^(chinese|math|science|social)_interior$/.exec(mapId || "");
+  const m = /^(chinese|math|science|social|english)_interior$/.exec(mapId || "");
   return m ? m[1] : null;
 }
 
@@ -272,6 +272,7 @@ class ExploreScene extends Phaser.Scene {
 
     // 2. Buildings：sprite + collision + interaction
     this.interactables = [];
+    this._questDeans = [];   // 任務發放院長(建築型，如英文學院莎士比亞)，供任務符號系統掛 ❗❓
     this.obstacles = this.physics.add.staticGroup();
     (config.buildings || []).forEach(b => {
       // 狀態切換（英文學院入魔↔清醒）：state_key 存在且 localStorage 已標記 → 換清醒立繪/互動
@@ -326,6 +327,10 @@ class ExploreScene extends Phaser.Scene {
         spr.setDepth(anchor.y);
         // render_depth：覆寫排序深度。平鋪地面(翻土田)用低值永遠在玩家下；柵欄後排用低值永遠在玩家後
         if (typeof b.render_depth === "number") spr.setDepth(b.render_depth);
+        // 任務發放院長(建築型，如英文學院莎士比亞)：記下立繪頂端座標，供任務符號掛 ❗❓
+        if (b.quest_chain) {
+          this._questDeans.push({ subj: b.quest_chain, x: anchor.x, y: anchor.y - spr.displayHeight - 6, questMark: null, questGlow: null, questState: null });
+        }
         // 噴泉自動加連續粒子水流（fountain_splash 互動類型，加強動感）
         if (b.interaction && b.interaction.type === "fountain_splash") {
           this._addFountainParticles(anchor.x, anchor.y);
@@ -1309,6 +1314,40 @@ class ExploreScene extends Phaser.Scene {
           npc.questMark.setTexture(tex).setDisplaySize(26, 26);
         }
         npc.questState = state;
+      }
+      // 英文學院：莎士比亞是「建築入口」非 NPC、academy.json 也無 npcs；改用英文主線(mainAPI)
+      // 的綜合狀態（可領>可接>進行中），把符號掛到院長建築上方，與其他院長一致
+      let deanState = null;
+      if (this._questDeans && this._questDeans.length) {
+        if (mainAPI) {
+          let claim = false, avail = false, prog = false;
+          Object.keys(mainAPI).forEach((k) => {
+            const aq = mainAPI[k];
+            if (aq.status === "active" && aq.can_claim) claim = true;
+            else if (aq.status === "active") prog = true;
+            else if (aq.status === "available") avail = true;
+          });
+          deanState = claim ? "claim" : avail ? "avail" : prog ? "progress" : null;
+        } else if (!token) {
+          deanState = "avail";   // 無 token fallback：先顯示❓可接引導玩家點進去(點了會自動補身分)，與其他四科一致
+        }
+        // 有 token 但 API 失敗：狀態不可信，不顯示（同四科主線）
+      }
+      for (const d of (this._questDeans || [])) {
+        if (!deanState) {
+          if (d.questMark) { d.questMark.destroy(); d.questMark = null; }
+          if (d.questGlow) { d.questGlow.destroy(); d.questGlow = null; }
+          d.questState = null; continue;
+        }
+        const dtex = deanState === "claim" ? "quest_mark" : deanState === "avail" ? "quest_ask" : "quest_progress";
+        if (!this.textures.exists(dtex)) continue;
+        if (this.textures.exists("quest_glow")) {
+          if (!d.questGlow) d.questGlow = this.add.image(d.x, d.y, "quest_glow").setDisplaySize(60, 60).setDepth(99998);
+          d.questGlow.setTint(GLOW_TINT[deanState] || 0xffe14d);
+        }
+        if (!d.questMark) d.questMark = this.add.image(d.x, d.y, dtex).setDisplaySize(30, 30).setDepth(99999);
+        else if (d.questState !== deanState) d.questMark.setTexture(dtex).setDisplaySize(30, 30);
+        d.questState = deanState;
       }
     } finally {
       // 只有「最新的 run」(runId 仍是 _qRunId)才清 busy/補跑；被 restart 作廢的舊 run resume 後

@@ -67,6 +67,7 @@
         "id": "shakespeare_dean",
         "name": "莎士比亞院長",
         "category": "npc",
+        "quest_chain": "english",
         "sprite": {
           "image": "shakespeare_front.webp",
           "scale": 0.12,

@@ -1860,3 +1860,9 @@ body[data-theme="ice"] .grid-wall-front { fill: rgba(110, 134, 156, 0.96); }
     justify-content: center;
 }
 .arena-back:active { transform: scale(0.95); }
+
+/* 主角丟出的能量球（藍）— 反向重用 boss-proj 飛行動畫 */
+.boss-proj.hero-ball {
+    background: radial-gradient(circle, #ffffff 0%, #9fe6ff 30%, #36a8ff 60%, #1060c0 100%);
+    box-shadow: 0 0 26px rgba(60,170,255,0.95), 0 0 50px rgba(40,120,255,0.6);
+}

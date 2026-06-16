@@ -190,7 +190,7 @@
                         <div class="hero-floating-hp-fill" id="hero-floating-hp-fill" style="width: 100%"></div>
                         <div class="hp-num-overlay" id="hero-hp-overlay">300/300</div>
                     </div>
-                    <img src="assets/images/arena/hero_iso_sword.png?v=1" class="fighter-hero-img" id="fighter-hero" alt="hero">
+                    <img src="assets/images/arena/throw/boy_0.webp?v=1" class="fighter-hero-img" id="fighter-hero" alt="hero">
                 </div>
                 <div class="fighter-boss" id="fighter-boss-wrap">
                     <div class="boss-floating-hp" id="boss-floating-hp" data-hp-level="high">
@@ -632,37 +632,50 @@ async function attackBoss() {
     const dmg = Math.floor(baseDmg * mult);
     state.bossHP = Math.max(0, state.bossHP - dmg);
 
-    // B. 武器專屬攻擊動畫（依當前武器套對應 keyframes）
-    const attackClass = `attacking-${state.weapon}`;
-    heroWrap.classList.add(attackClass);
-    const attackDur = state.weapon === "pencil" ? 500 : (state.weapon === "staff" ? 750 : 700);
-    setTimeout(() => heroWrap.classList.remove(attackClass), attackDur);
+    // 丟球分幀動畫：播 6 幀，出手幀(HERO_RELEASE_FRAME)放出能量球飛向魔王
+    const frames = HERO_THROW[heroGender] || HERO_THROW.boy;
+    const FT = 75;   // 每幀 ms
+    let ballThrown = false;
+    for (let i = 0; i < frames.length; i++) {
+        hero.src = frames[i];
+        if (i === HERO_RELEASE_FRAME && !ballThrown) { spawnHeroBall(); ballThrown = true; }
+        await sleep(FT);
+    }
 
-    // 照 DEMO：武器專屬軌跡（從主角往魔王劃過去）
-    spawnWeaponTrail();
-
-    // 衝刺中段（接觸時）觸發特效
-    await sleep(state.weapon === "pencil" ? 220 : 320);
+    // 球飛行 → 命中魔王（接現有 boss hit 流程）
+    await sleep(140);
     bossWrap.classList.add("hit");
-    // 切到 tier 的 hit sprite
     if (state.bossData && state.bossData.hit_sprite) {
         boss.src = `assets/images/${state.bossData.hit_sprite}?v=3`;
     }
     popDamage(boss, "-" + dmg, false);
-    spawnHitFX(boss, state.weapon);
-    spawnBigImpact(state.weapon);  // P4 武器專屬大畫面（CSS）
-    spawnHeroVfx(playerSetup.jobKey);  // 派派 5/24：24 職業專屬 VFX (Codex)
-    stage.classList.add("impact", "zoom-impact");  // P3 命中 zoom-in + slow-mo
+    spawnHitFX(boss, "staff");        // 現有命中閃光特效
+    spawnBigImpact("staff");          // 現有大畫面衝擊特效
+    stage.classList.add("impact", "zoom-impact");
     setTimeout(() => stage.classList.remove("impact", "zoom-impact"), 500);
     if (navigator.vibrate) navigator.vibrate(40);
     updateBars();
 
-    await sleep(400);
+    await sleep(360);
     bossWrap.classList.remove("hit");
-    // 還原成 idle
     if (state.bossHP > 0 && state.bossData) {
         boss.src = `assets/images/${state.bossData.sprite}?v=3`;
     }
+    hero.src = frames[0];   // 回 idle(預備幀)
+}
+
+// 主角丟出的能量球：反向重用 boss-proj 球(hero → 魔王)
+function spawnHeroBall() {
+    const pos = computeAttackPositions();
+    const tierLevel = parseInt((playerSetup.tier || "t1").replace("t", ""), 10) || 1;
+    const proj = document.createElement("div");
+    proj.className = `boss-proj hero-ball tier-${tierLevel}`;
+    proj.style.left = pos.hx + "px";
+    proj.style.top  = pos.hy + "px";
+    proj.style.setProperty("--tx", (pos.bx - pos.hx) + "px");
+    proj.style.setProperty("--ty", (pos.by - pos.hy) + "px");
+    stage.appendChild(proj);
+    setTimeout(() => proj.remove(), 700);
 }
 
 // 武器軌跡：從 hero 中心 → boss 中心劃過去
@@ -1094,14 +1107,18 @@ function endGame(outcome) {
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-// 派派 5/23：武器列拿掉，職業 = 主角造型 + 對應武器
-// state.weapon 仍存在（決定動畫/特效），但由職業自動推算
-state.weapon = "sword";
+// 丟球分幀：男/女學生各 6 幀（配現有投射物球）；?hero=girl 切女生
+let heroGender = "boy";
+const HERO_THROW = {
+    boy:  [0, 1, 2, 3, 4, 5].map(i => `assets/images/arena/throw/boy_${i}.webp?v=1`),
+    girl: [0, 1, 2, 3, 4, 5].map(i => `assets/images/arena/throw/girl_${i}.webp?v=1`),
+};
+const HERO_RELEASE_FRAME = 3;   // 出手幀（放球）
+state.weapon = "throw";
 
 function setHeroSpriteFromJob(job) {
-    // 照 DEMO：學生(預設)造型 = hero_iso_sword + 劍攻擊動畫（原方向不翻、不改）
-    hero.src = "assets/images/arena/hero_iso_sword.png?v=1";
-    state.weapon = "sword";
+    // 學生丟球版：idle = 丟球第 1 幀（預備、無武器）
+    hero.src = HERO_THROW[heroGender][0];
 }
 
 // 保留 switchWeapon 給示範技能/未來用
@@ -1270,10 +1287,8 @@ async function startArena() {
         `${deriveBossFramePath(tierData.attack_sprite, "release")}?v=3`,
         `boss/v2/${playerSetup.subject}/${tierKey}/vfx.webp?v=3`,
     ].filter(Boolean);
-    // 派派 5/24：預載目前職業的 hero VFX 圖（避免第一次攻擊載入延遲）
-    if (playerSetup.jobKey) {
-        framesToPreload.push(`hero_vfx/${playerSetup.jobKey}.webp?v=2`);
-    }
+    // 預載主角丟球 6 幀（避免第一次出招卡頓）
+    for (let i = 0; i < 6; i++) framesToPreload.push(`arena/throw/${heroGender}_${i}.webp?v=1`);
 
     // setup 畫面顯示「準備戰場中…」spinner，等所有圖載完才切戰場
     showSetupSpinner();
@@ -1474,6 +1489,7 @@ function applyTheme(theme) {
 
     // 原型：URL 帶 ?subject 直接進戰鬥（小男孩、學生、站原地），跳過設定面板
     const qp = new URLSearchParams(location.search);
+    heroGender = qp.get("hero") === "girl" ? "girl" : "boy";   // ?hero=girl 切女生
     const urlSubj = qp.get("subject");
     if (urlSubj && SUBJECTS_DATA[urlSubj]) {
         playerSetup.subject = urlSubj;

@@ -363,16 +363,10 @@
           "radius": 135
         },
         "sprite": {
-          "image": "bus_stop_sway.webp",
-          "scale": 0.17,
+          "image": "bus_stop.webp",
+          "scale": 0.11,
           "anchor_x": 0.5,
-          "anchor_y": 1,
-          "frame_width": 576,
-          "frame_height": 894,
-          "grid_cols": 8,
-          "grid_rows": 1,
-          "frames": 8,
-          "frame_rate": 7
+          "anchor_y": 1
         },
         "path": [],
         "center": {

@@ -2659,7 +2659,49 @@
         }
       }
     ],
-    "npcs": [],
+    "npcs": [
+      {
+        "id": "carriage_taxi",
+        "name": "馬車快遞",
+        "greeting": "要搭車嗎？跳上來馬上到！",
+        "spawn": {
+          "x": 0.5,
+          "y": 0.15
+        },
+        "speed": 80,
+        "patrol": [
+          {
+            "x": 0.5,
+            "y": 0.15
+          },
+          {
+            "x": 0.5,
+            "y": 0.27
+          }
+        ],
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "taxi",
+          "label": "叫車馬車",
+          "radius": 145
+        },
+        "sprite": {
+          "scale": 0.26,
+          "sprites": {
+            "side": {
+              "image": "carriage_walk.webp",
+              "facing": "left",
+              "frame_width": 586,
+              "frame_height": 258,
+              "frames": 6,
+              "grid_cols": 6,
+              "grid_rows": 1,
+              "frame_rate": 6
+            }
+          }
+        }
+      }
+    ],
     "objects": [],
     "portal_color": "#7fd8f0"
   }

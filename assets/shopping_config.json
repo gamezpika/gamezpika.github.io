@@ -3700,6 +3700,59 @@
           "body": "你好！",
           "radius": 110
         }
+      },
+      {
+        "id": "carriage_taxi",
+        "name": "馬車快遞",
+        "greeting": "要搭車嗎？跳上來馬上到！",
+        "spawn": {
+          "x": 0.6994168058810044,
+          "y": 0.69328677406798
+        },
+        "speed": 80,
+        "patrol": [
+          {
+            "x": 0.6994168058810044,
+            "y": 0.69328677406798
+          },
+          {
+            "x": 0.791753,
+            "y": 0.76667
+          },
+          {
+            "x": 0.90956,
+            "y": 0.868406
+          },
+          {
+            "x": 0.839512,
+            "y": 0.761667
+          },
+          {
+            "x": 0.745054,
+            "y": 0.666602
+          }
+        ],
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "taxi",
+          "label": "叫車馬車",
+          "radius": 145
+        },
+        "sprite": {
+          "scale": 0.26,
+          "sprites": {
+            "side": {
+              "image": "carriage_walk.webp",
+              "facing": "left",
+              "frame_width": 586,
+              "frame_height": 258,
+              "frames": 6,
+              "grid_cols": 6,
+              "grid_rows": 1,
+              "frame_rate": 6
+            }
+          }
+        }
       }
     ],
     "objects": []

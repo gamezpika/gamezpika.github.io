@@ -687,6 +687,8 @@ class ExploreScene extends Phaser.Scene {
       { id: "competitive", name: "競技場" }, { id: "playground", name: "遊樂場" },
       { id: "dock", name: "學園碼頭" }, { id: "island", name: "海島" },
     ];
+    if (this._taxiOpen) return;   // 防重複開（Codex #2）
+    this._taxiOpen = true;
     const cur = this.mapId;
     let m = document.getElementById("taxi-overlay"); if (m) m.remove();
     m = document.createElement("div"); m.id = "taxi-overlay"; m.className = "open";
@@ -705,12 +707,13 @@ class ExploreScene extends Phaser.Scene {
     html += "</div><button id='taxi-close' style='margin-top:12px;width:100%;border:none;border-radius:12px;padding:10px;background:#bbb;color:#fff;font-weight:800'>關閉</button></div>";
     m.innerHTML = html;
     document.body.appendChild(m);
-    const close = () => { if (m.parentNode) m.remove(); if (onClose) onClose(); };
+    const close = () => { this._taxiOpen = false; if (m.parentNode) m.remove(); if (onClose) onClose(); };
     m.addEventListener("pointerdown", (e) => { if (e.target === m) close(); });
     m.querySelector("#taxi-close").addEventListener("click", close);
     m.querySelectorAll(".taxi-dest").forEach((b) => b.addEventListener("click", () => {
       const map = b.getAttribute("data-map");
       if (map === cur) return;
+      this._taxiOpen = false;
       if (m.parentNode) m.remove(); if (onClose) onClose();
       this._enterPortal({ target_map: map });   // 複用 portal 轉場(淡出+scene.restart+逾時自救)
     }));
@@ -1249,6 +1252,7 @@ class ExploreScene extends Phaser.Scene {
     if (trig && !suppressed && !this.modalOpen && !this._transitioning) {
       this._suppress = mkSuppress(nearest);
       if (nearest.type === "open_modal") this._showModal(nearest);
+      else if (nearest.shop_id === "taxi") { this.modalOpen = true; this._openTaxi(() => { this.modalOpen = false; }); }
       else if (window.openShop) {
         this.modalOpen = true;
         window.openShop(nearest.shop_id, () => { this.modalOpen = false; });

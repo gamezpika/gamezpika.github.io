@@ -433,7 +433,7 @@ async function handleAnswer(idx, btn) {
             });
             d = await r.json();
         } catch (e) { d = null; }
-        if (!d || d.error) { state.busy = false; return endGame(state.heroHP <= 0 ? "dead" : "win"); }
+        if (!d || d.error) { state.busy = false; return arenaExit(); }   // 答題連線失敗 → 返回，絕不誤判勝負/推進塔
 
         if (d.correct) {
             btn.classList.add("correct");
@@ -1697,7 +1697,8 @@ function towerFailed() {
     const urlSubj = qp.get("subject");
     if (urlSubj && SUBJECTS_DATA[urlSubj]) {
         playerSetup.subject = urlSubj;
-        const t = qp.get("tier");
+        let t = qp.get("tier");
+        if (/^[123]$/.test(t)) t = "t" + t;   // 兼容 bossfight 入口傳的 numeric tier(1/2/3)
         playerSetup.tier = ["t1", "t2", "t3"].includes(t) ? t : "t3";
         playerSetup.jobKey = null;
         playerSetup.name = "派派";

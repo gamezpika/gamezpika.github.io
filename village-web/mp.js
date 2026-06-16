@@ -8,7 +8,11 @@
   if (new URLSearchParams(location.search).get("mp") !== "1") return; // feature flag：預設關＝單機 demo 不變
 
   var EP = "wss://colyseus-production-34e9.up.railway.app";
+  var API = EP.replace(/^wss:/, "https:"); // 家長控管/罐頭句等 HTTP 端點
   var myUid = "mp" + Math.floor((Date.now() + performance.now()) % 1e9);
+  var myParental = { chatEnabled: true, mode: "free", allowWhisper: true }; // 本地角色的家長控管設定（連線後拉一次）
+  var quickPhrases = null; // 罐頭安全句快取 [{id,text}]
+  var PARENT_PIN = "1234";  // demo 家長 PIN（擋小孩亂改；正式版改真家長 token，見 onAuth 整合波）
   var myName = (localStorage.getItem("village_player_name") || "玩家") + myUid.slice(-3);
 
   var room = null, connecting = false, remotes = {}, lastSend = 0, curScene = null, mpClient = null, mySkin = "default", lastSkinCheck = 0;
@@ -119,7 +123,9 @@
     box.id = "mp-chat";
     box.innerHTML =
       '<div id="mp-log" style="max-height:22vh;overflow-y:auto;font-size:13px;line-height:1.5;color:#fff;text-shadow:0 1px 2px #000;margin-bottom:4px"></div>' +
+      '<div id="mp-canned" style="display:none;flex-wrap:wrap;gap:5px;margin-bottom:5px"></div>' +
       '<div style="display:flex;gap:5px;align-items:center">' +
+        '<button id="mp-parentbtn" title="家長控管" style="border:none;border-radius:9px;padding:7px 8px;background:#2e6d52;color:#fff;font-size:15px;white-space:nowrap">👪</button>' +
         '<button id="mp-friendbtn" title="好友" style="border:none;border-radius:9px;padding:7px 9px;background:linear-gradient(135deg,#6a5cff,#4a3fd6);color:#fff;font-weight:800;font-size:14px;white-space:nowrap">👥</button>' +
         '<button id="mp-emotebtn" title="表情" style="border:none;border-radius:9px;padding:7px 8px;background:#3a4a7a;color:#fff;font-size:15px;white-space:nowrap">😄</button>' +
         '<input id="mp-in" type="text" name="mpchat" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false" enterkeyhint="send" maxlength="120" placeholder="跟村莊裡的人說話…" style="flex:1;min-width:0;padding:7px 9px;border:none;border-radius:9px;font-size:14px">' +
@@ -143,6 +149,8 @@
     input.addEventListener("focus", function () { if (curScene && curScene.input && curScene.input.keyboard) curScene.input.keyboard.enabled = false; pinChat(true); });
     input.addEventListener("blur", function () { if (curScene && curScene.input && curScene.input.keyboard) curScene.input.keyboard.enabled = true; pinChat(false); });
     bindKeyboardPin();
+    el("mp-parentbtn").addEventListener("click", openParental);
+    loadParental(); // 拉本地角色的家長設定 → 套用罐頭/聊天模式
   }
 
   // ── 手機打字時把聊天框展開成「可視區內的半透明聊天面板」，避免 iOS 鍵盤頂上去後露出底色黑塊 ──
@@ -362,6 +370,124 @@
     });
   }
 
+  // ───────── 👪 家長控管（demo：PIN 進入，自管本地角色的聊天安全設定）─────────
+  var parentalUnlocked = false;   // 一個 session 解鎖一次
+  var parentalHistory = [];
+  function loadParental() {
+    fetch(API + "/api/self/parental/" + encodeURIComponent(myUid))
+      .then(function (r) { return r.json(); })
+      .then(function (d) { if (d && d.settings) myParental = d.settings; if (d && Array.isArray(d.history)) parentalHistory = d.history; applyChatMode(); })
+      .catch(function () { applyChatMode(); });
+  }
+  function fetchParentalFull() {
+    fetch(API + "/api/self/parental/" + encodeURIComponent(myUid))
+      .then(function (r) { return r.json(); })
+      .then(function (d) { if (d && d.settings) myParental = d.settings; if (d && Array.isArray(d.history)) parentalHistory = d.history; applyChatMode(); renderParental(); })
+      .catch(function () {});
+  }
+  function saveParental(patch) {
+    Object.keys(patch).forEach(function (k) { myParental[k] = patch[k]; });
+    applyChatMode(); renderParental();
+    fetch(API + "/api/self/parental/" + encodeURIComponent(myUid), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { if (d && d.settings) { myParental = d.settings; applyChatMode(); renderParental(); } })
+      .catch(function () { fetchParentalFull(); }); // 存檔失敗→拉回伺服器真實狀態，不留「假的已改」UI 誤導家長（Codex #2）
+  }
+  function renderCanned() {
+    var box = el("mp-canned"); if (!box) return;
+    if (!quickPhrases) {
+      box.innerHTML = "<span style='color:#fff;opacity:.7;font-size:12px'>載入安全句…</span>";
+      fetch(API + "/api/quick-phrases").then(function (r) { return r.json(); })
+        .then(function (d) { quickPhrases = Array.isArray(d) ? d : []; var b = el("mp-canned"); if (b && b.style.display !== "none") renderCanned(); })
+        .catch(function () { quickPhrases = []; });
+      return;
+    }
+    box.innerHTML = "";
+    quickPhrases.forEach(function (p) {
+      var b = document.createElement("button");
+      b.textContent = p.text;
+      b.style.cssText = "border:none;border-radius:14px;padding:6px 11px;background:#4a9fff;color:#fff;font-size:13px;font-weight:700";
+      b.addEventListener("pointerdown", function (e) { e.preventDefault(); if (room) try { room.send("quick", { id: p.id, channel: "world" }); } catch (er) {} });
+      box.appendChild(b);
+    });
+  }
+  // 依家長設定切換聊天輸入：關閉→鎖輸入框；只能安全句→換罐頭列；自由→正常輸入
+  function applyChatMode() {
+    var inp = el("mp-in"), snd = el("mp-send"), canned = el("mp-canned");
+    if (!inp || !snd || !canned) return;
+    if (!myParental.chatEnabled) {
+      inp.value = ""; inp.disabled = true; inp.placeholder = "🔒 家長已關閉聊天"; inp.style.display = ""; snd.style.display = ""; snd.disabled = true; canned.style.display = "none";
+    } else if (myParental.mode === "canned") {
+      inp.style.display = "none"; snd.style.display = "none"; canned.style.display = "flex"; renderCanned();
+    } else {
+      inp.disabled = false; snd.disabled = false; inp.placeholder = "跟村莊裡的人說話…"; inp.style.display = ""; snd.style.display = ""; canned.style.display = "none";
+    }
+  }
+  function closeParental() { var m = el("mp-parent"); if (m) m.remove(); }
+  function openParental() {
+    if (el("mp-parent")) return;
+    var m = document.createElement("div"); m.id = "mp-parent";
+    m.style.cssText = "position:fixed;inset:0;z-index:9500;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.55);font-family:sans-serif";
+    m.addEventListener("pointerdown", function (e) { if (e.target === m) closeParental(); });
+    document.body.appendChild(m);
+    renderParental();
+    if (parentalUnlocked) fetchParentalFull(); // 解鎖才拉最新 settings + 監看歷史
+  }
+  function renderParental() {
+    var m = el("mp-parent"); if (!m) return;
+    if (!parentalUnlocked) {
+      m.innerHTML = "<div style='background:#fff;border-radius:16px;max-width:320px;width:100%;padding:18px 16px 14px'>"
+        + "<div style='font-weight:800;font-size:17px;color:#2e6d52;margin-bottom:6px'>👪 家長控管</div>"
+        + "<div style='font-size:13px;color:#555;margin-bottom:10px'>請輸入家長密碼（demo 密碼：1234）</div>"
+        + "<input id='mp-pin' type='tel' inputmode='numeric' maxlength='8' placeholder='••••' style='width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccc;border-radius:9px;font-size:18px;text-align:center;letter-spacing:6px'>"
+        + "<div id='mp-pinerr' style='color:#e44;font-size:12px;height:16px;margin-top:4px'></div>"
+        + "<div style='display:flex;gap:8px;margin-top:6px'><button id='mp-pinok' style='flex:1;border:none;border-radius:10px;padding:10px;background:#2e6d52;color:#fff;font-weight:800'>進入</button>"
+        + "<button id='mp-pincancel' style='border:none;border-radius:10px;padding:10px 16px;background:#bbb;color:#fff;font-weight:800'>關閉</button></div></div>";
+      var pin = el("mp-pin");
+      function tryPin() { if ((pin.value || "").trim() === PARENT_PIN) { parentalUnlocked = true; renderParental(); fetchParentalFull(); } else { el("mp-pinerr").textContent = "密碼不對"; } }
+      el("mp-pinok").addEventListener("click", tryPin);
+      pin.addEventListener("keydown", function (e) { e.stopPropagation(); if (e.key === "Enter") tryPin(); });
+      el("mp-pincancel").addEventListener("click", closeParental);
+      try { pin.focus(); } catch (e) {}
+      return;
+    }
+    function seg(label, hint, k, opts, cur) {
+      var h = "<div style='margin-bottom:12px'><div style='font-weight:700;font-size:14px;color:#333'>" + label + "</div>";
+      if (hint) h += "<div style='font-size:11.5px;color:#888;margin:1px 0 5px'>" + hint + "</div>";
+      h += "<div style='display:flex;gap:7px'>";
+      opts.forEach(function (o) {
+        var on = o.v === cur;
+        h += "<button class='mp-seg' data-k='" + k + "' data-v='" + o.v + "' style='flex:1;border:2px solid " + (on ? "#2e6d52" : "#ddd") + ";border-radius:10px;padding:8px 4px;background:" + (on ? "#e6f3ec" : "#fafafa") + ";color:" + (on ? "#2e6d52" : "#666") + ";font-weight:800;font-size:13px'>" + o.t + "</button>";
+      });
+      return h + "</div></div>";
+    }
+    var html = "<div style='background:#fff;border-radius:16px;max-width:340px;width:100%;max-height:82vh;overflow-y:auto;padding:16px 16px 14px'>";
+    html += "<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:12px'><div style='font-weight:800;font-size:17px;color:#2e6d52'>👪 家長控管</div><button id='mp-pclose' style='border:none;background:#eee;border-radius:8px;padding:5px 10px;font-weight:800;color:#666'>✕</button></div>";
+    html += seg("聊天功能", "關閉後孩子不能發、也收不到訊息", "chatEnabled", [{ v: true, t: "開啟" }, { v: false, t: "關閉" }], myParental.chatEnabled);
+    html += seg("聊天方式", "「只能安全句」＝孩子只能挑預設好的句子，不能自由打字", "mode", [{ v: "free", t: "自由打字" }, { v: "canned", t: "只能安全句" }], myParental.mode);
+    html += seg("悄悄話", "是否允許孩子跟人私下悄悄話", "allowWhisper", [{ v: true, t: "允許" }, { v: false, t: "禁止" }], myParental.allowWhisper);
+    html += "<div style='font-weight:700;font-size:14px;color:#333;margin:6px 0 4px'>👀 最近聊天紀錄</div>";
+    html += "<div id='mp-phist' style='background:#f5f5f5;border-radius:9px;padding:8px;max-height:140px;overflow-y:auto;font-size:12.5px;color:#444'></div>";
+    html += "<div style='font-size:10.5px;color:#aaa;margin-top:8px;line-height:1.4'>※ demo 展示版：設定存伺服器記憶體、重啟會還原；正式版會綁定真實家長帳號與孩子。</div></div>";
+    m.innerHTML = html;
+    var hist = el("mp-phist");
+    if (!parentalHistory.length) hist.textContent = "（還沒有聊天紀錄）";
+    else parentalHistory.slice(-30).forEach(function (h) {
+      var row = document.createElement("div"); row.style.cssText = "padding:3px 0;border-bottom:1px solid #e8e8e8";
+      var t = ""; try { var dt = new Date(h.ts); t = ("0" + dt.getHours()).slice(-2) + ":" + ("0" + dt.getMinutes()).slice(-2); } catch (e) {}
+      row.textContent = (t ? "[" + t + "] " : "") + (h.text || "");
+      hist.appendChild(row);
+    });
+    el("mp-pclose").addEventListener("click", closeParental);
+    Array.prototype.forEach.call(m.querySelectorAll(".mp-seg"), function (b) {
+      b.addEventListener("click", function () {
+        var k = b.getAttribute("data-k"), v = b.getAttribute("data-v");
+        if (v === "true") v = true; else if (v === "false") v = false;
+        var patch = {}; patch[k] = v; saveParental(patch);
+      });
+    });
+  }
+
   window.__mp = {
     count: function () { return Object.keys(remotes).length; },
     friendsCount: function () { return (friendsData.friends || []).length; },
@@ -386,7 +512,7 @@
       if (menuOpen !== mpHidden) {
         mpHidden = menuOpen;
         var box = el("mp-chat"); if (box) box.style.visibility = menuOpen ? "hidden" : "";
-        if (menuOpen) { closePMenu(); closeGiftPicker(); var ep = el("mp-emote"); if (ep) ep.style.display = "none"; } // 開 demo 面板就關掉暫時彈窗，免疊上去
+        if (menuOpen) { closePMenu(); closeGiftPicker(); closeParental(); var ep = el("mp-emote"); if (ep) ep.style.display = "none"; } // 開 demo 面板就關掉暫時彈窗，免疊上去
       }
       if (!room || !room.state) return;
       var now = performance.now();

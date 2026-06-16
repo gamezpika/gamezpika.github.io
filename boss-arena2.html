@@ -190,7 +190,7 @@
                         <div class="hero-floating-hp-fill" id="hero-floating-hp-fill" style="width: 100%"></div>
                         <div class="hp-num-overlay" id="hero-hp-overlay">300/300</div>
                     </div>
-                    <img src="assets/images/arena/hero_student.webp?v=1" class="fighter-hero-img" id="fighter-hero" alt="hero">
+                    <img src="assets/images/arena/hero_iso_sword.png?v=1" class="fighter-hero-img" id="fighter-hero" alt="hero">
                 </div>
                 <div class="fighter-boss" id="fighter-boss-wrap">
                     <div class="boss-floating-hp" id="boss-floating-hp" data-hp-level="high">
@@ -638,7 +638,8 @@ async function attackBoss() {
     const attackDur = state.weapon === "pencil" ? 500 : (state.weapon === "staff" ? 750 : 700);
     setTimeout(() => heroWrap.classList.remove(attackClass), attackDur);
 
-    // 原型：飛行物先不做，只保留出招動作 + 命中現有衝擊特效（spawnBigImpact/hitFX）
+    // 照 DEMO：武器專屬軌跡（從主角往魔王劃過去）
+    spawnWeaponTrail();
 
     // 衝刺中段（接觸時）觸發特效
     await sleep(state.weapon === "pencil" ? 220 : 320);
@@ -1098,9 +1099,9 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 state.weapon = "sword";
 
 function setHeroSpriteFromJob(job) {
-    // 原型：用學生(預設)造型(白T卡其褲、無武器)，攻擊用通用 staff 風魔法特效
-    hero.src = "assets/images/arena/hero_student.webp?v=1";
-    state.weapon = "staff";
+    // 照 DEMO：學生(預設)造型 = hero_iso_sword + 劍攻擊動畫（原方向不翻、不改）
+    hero.src = "assets/images/arena/hero_iso_sword.png?v=1";
+    state.weapon = "sword";
 }
 
 // 保留 switchWeapon 給示範技能/未來用

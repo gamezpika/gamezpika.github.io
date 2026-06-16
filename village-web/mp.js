@@ -125,9 +125,9 @@
       '<div id="mp-log" style="max-height:22vh;overflow-y:auto;font-size:13px;line-height:1.5;color:#fff;text-shadow:0 1px 2px #000;margin-bottom:4px"></div>' +
       '<div id="mp-canned" style="display:none;flex-wrap:wrap;gap:5px;margin-bottom:5px"></div>' +
       '<div style="display:flex;gap:5px;align-items:center">' +
-        '<button id="mp-parentbtn" title="家長控管" style="border:none;border-radius:9px;padding:7px 8px;background:#2e6d52;color:#fff;font-size:15px;white-space:nowrap">👪</button>' +
-        '<button id="mp-friendbtn" title="好友" style="border:none;border-radius:9px;padding:7px 9px;background:linear-gradient(135deg,#6a5cff,#4a3fd6);color:#fff;font-weight:800;font-size:14px;white-space:nowrap">👥</button>' +
-        '<button id="mp-emotebtn" title="表情" style="border:none;border-radius:9px;padding:7px 8px;background:#3a4a7a;color:#fff;font-size:15px;white-space:nowrap">😄</button>' +
+        '<button id="mp-parentbtn" title="家長控管" style="border:none;border-radius:9px;padding:7px 9px;background:#2e6d52;color:#fff;font-weight:700;font-size:13px;white-space:nowrap">家長</button>' +
+        '<button id="mp-friendbtn" title="好友" style="border:none;border-radius:9px;padding:7px 9px;background:linear-gradient(135deg,#6a5cff,#4a3fd6);color:#fff;font-weight:700;font-size:13px;white-space:nowrap">好友</button>' +
+        '<button id="mp-emotebtn" title="表情" style="border:none;border-radius:9px;padding:7px 9px;background:#3a4a7a;color:#fff;font-weight:700;font-size:13px;white-space:nowrap">表情</button>' +
         '<input id="mp-in" type="text" name="mpchat" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false" enterkeyhint="send" maxlength="120" placeholder="跟村莊裡的人說話…" style="flex:1;min-width:0;padding:7px 9px;border:none;border-radius:9px;font-size:14px">' +
         '<button id="mp-send" style="border:none;border-radius:9px;padding:7px 12px;background:#4a9fff;color:#fff;font-weight:700">送</button>' +
       '</div>';
@@ -370,7 +370,7 @@
     });
   }
 
-  // ───────── 👪 家長控管（demo：PIN 進入，自管本地角色的聊天安全設定）─────────
+  // ───────── 家長控管（demo：PIN 進入，自管本地角色的聊天安全設定）─────────
   var parentalUnlocked = false;   // 一個 session 解鎖一次
   var parentalHistory = [];
   function loadParental() {
@@ -416,7 +416,7 @@
     var inp = el("mp-in"), snd = el("mp-send"), canned = el("mp-canned");
     if (!inp || !snd || !canned) return;
     if (!myParental.chatEnabled) {
-      inp.value = ""; inp.disabled = true; inp.placeholder = "🔒 家長已關閉聊天"; inp.style.display = ""; snd.style.display = ""; snd.disabled = true; canned.style.display = "none";
+      inp.value = ""; inp.disabled = true; inp.placeholder = "家長已關閉聊天"; inp.style.display = ""; snd.style.display = ""; snd.disabled = true; canned.style.display = "none";
     } else if (myParental.mode === "canned") {
       inp.style.display = "none"; snd.style.display = "none"; canned.style.display = "flex"; renderCanned();
     } else {
@@ -437,7 +437,7 @@
     var m = el("mp-parent"); if (!m) return;
     if (!parentalUnlocked) {
       m.innerHTML = "<div style='background:#fff;border-radius:16px;max-width:320px;width:100%;padding:18px 16px 14px'>"
-        + "<div style='font-weight:800;font-size:17px;color:#2e6d52;margin-bottom:6px'>👪 家長控管</div>"
+        + "<div style='font-weight:800;font-size:17px;color:#2e6d52;margin-bottom:6px'>家長控管</div>"
         + "<div style='font-size:13px;color:#555;margin-bottom:10px'>請輸入家長密碼（demo 密碼：1234）</div>"
         + "<input id='mp-pin' type='tel' inputmode='numeric' maxlength='8' placeholder='••••' style='width:100%;box-sizing:border-box;padding:10px;border:1px solid #ccc;border-radius:9px;font-size:18px;text-align:center;letter-spacing:6px'>"
         + "<div id='mp-pinerr' style='color:#e44;font-size:12px;height:16px;margin-top:4px'></div>"
@@ -462,11 +462,11 @@
       return h + "</div></div>";
     }
     var html = "<div style='background:#fff;border-radius:16px;max-width:340px;width:100%;max-height:82vh;overflow-y:auto;padding:16px 16px 14px'>";
-    html += "<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:12px'><div style='font-weight:800;font-size:17px;color:#2e6d52'>👪 家長控管</div><button id='mp-pclose' style='border:none;background:#eee;border-radius:8px;padding:5px 10px;font-weight:800;color:#666'>✕</button></div>";
+    html += "<div style='display:flex;justify-content:space-between;align-items:center;margin-bottom:12px'><div style='font-weight:800;font-size:17px;color:#2e6d52'>家長控管</div><button id='mp-pclose' style='border:none;background:#eee;border-radius:8px;padding:5px 10px;font-weight:800;color:#666'>✕</button></div>";
     html += seg("聊天功能", "關閉後孩子不能發、也收不到訊息", "chatEnabled", [{ v: true, t: "開啟" }, { v: false, t: "關閉" }], myParental.chatEnabled);
     html += seg("聊天方式", "「只能安全句」＝孩子只能挑預設好的句子，不能自由打字", "mode", [{ v: "free", t: "自由打字" }, { v: "canned", t: "只能安全句" }], myParental.mode);
     html += seg("悄悄話", "是否允許孩子跟人私下悄悄話", "allowWhisper", [{ v: true, t: "允許" }, { v: false, t: "禁止" }], myParental.allowWhisper);
-    html += "<div style='font-weight:700;font-size:14px;color:#333;margin:6px 0 4px'>👀 最近聊天紀錄</div>";
+    html += "<div style='font-weight:700;font-size:14px;color:#333;margin:6px 0 4px'>最近聊天紀錄</div>";
     html += "<div id='mp-phist' style='background:#f5f5f5;border-radius:9px;padding:8px;max-height:140px;overflow-y:auto;font-size:12.5px;color:#444'></div>";
     html += "<div style='font-size:10.5px;color:#aaa;margin-top:8px;line-height:1.4'>※ demo 展示版：設定存伺服器記憶體、重啟會還原；正式版會綁定真實家長帳號與孩子。</div></div>";
     m.innerHTML = html;

@@ -160,7 +160,11 @@ body { background: #120827; }
     }
     function towerFloorCleared() {
         const nf = towerFloor + 1;
-        try { localStorage.setItem("tower_floor_" + subject, String(nf)); } catch (e) {}
+        // 用 Math.max 防進度倒退（舊 floor URL/分頁通關不該蓋掉更高樓層）
+        try {
+            const cur = parseInt(localStorage.getItem("tower_floor_" + subject) || "1", 10) || 1;
+            localStorage.setItem("tower_floor_" + subject, String(Math.max(cur, nf)));
+        } catch (e) {}
         const t = document.getElementById("boss-result-title");
         const sub = document.getElementById("boss-result-sub");
         const coins = document.getElementById("boss-result-coins");
@@ -196,8 +200,12 @@ body { background: #120827; }
         window.eduApi = async function (path, opts) {
             const r = await _api(path, opts);
             if (typeof path === "string" && path.indexOf("/api/boss/session/end") === 0) {
-                try { const d = await r.clone().json(); window.__towerLastEnd = { victory: !!d.victory, coins: d.coins_earned || 0 }; }
-                catch (e) { window.__towerLastEnd = null; }
+                // 只在後端明確回勝負(無 error 且 victory 是 boolean)才採信；end 失敗/未知 → null(當結束本層、不誤判戰敗)
+                try {
+                    const d = await r.clone().json();
+                    window.__towerLastEnd = (!d.error && typeof d.victory === "boolean")
+                        ? { victory: d.victory, coins: d.coins_earned || 0 } : null;
+                } catch (e) { window.__towerLastEnd = null; }
             }
             return r;
         };

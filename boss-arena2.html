@@ -12,8 +12,10 @@
 
     <title>魔王戰 · EduArena Demo</title>
     <link rel="stylesheet" href="static/css/demo.css?v=4">
-    <link rel="stylesheet" href="static/css/boss-arena.css?v=63">
+    <link rel="stylesheet" href="static/css/boss-arena.css?v=64">
     <script src="static/js/combat-engine.js?v=1"></script>
+    <script src="arcade/shim.js?v=3"></script>  <!-- 接真後端：eduApi + demo token -->
+    <script src="arcade/boss/bopomofo.js?v=1"></script>
 </head>
 <body>
 
@@ -71,7 +73,7 @@
 
         <div id="screen-arena" style="display: none">
 
-            <button class="arena-back" onclick="location.href='index.html'" title="返回首頁">←</button>
+            <button class="arena-back" onclick="arenaExit()" title="返回">←</button>
 
             <!-- 上方主角 HUD（5/25 派派 A 方案：左上角 chip + 名字膠囊，菇勇者風）-->
             <div class="arena-hud arena-hud-slim arena-hud-chip">
@@ -302,6 +304,9 @@ const state = {
     qIdx: 0,
     busy: false,
     finished: false,
+    backend: false,     // true=接真後端 session（伺服器判題/真金幣），false=樣本題 client 判
+    sessionId: null,
+    _q: null,           // 目前題目物件
 };
 
 const $ = (id) => document.getElementById(id);
@@ -383,12 +388,18 @@ function updateGridHighlight() {
 
 function loadQuestion() {
     const q = QUESTIONS[state.qIdx % QUESTIONS.length];
-    $("arena-question").textContent = q.q;
+    state._q = q;
+    // 後端題：display/prompt/choices；樣本題：q/options
+    const text = state.backend ? [q.display, q.prompt].filter(Boolean).join("　") : q.q;
+    const choices = state.backend ? (q.choices || []) : q.options;
+    $("arena-question").textContent = text || "";
     const btns = document.querySelectorAll(".opt-btn");
     btns.forEach((btn, i) => {
-        btn.textContent = "ABCD"[i] + ". " + q.options[i];
+        const has = choices[i] != null && choices[i] !== "";
+        btn.textContent = has ? "ABCD"[i] + ". " + choices[i] : "";
         btn.className = "opt-btn";
-        btn.disabled = false;
+        btn.disabled = !has;
+        btn.style.visibility = has ? "" : "hidden";
         btn.onclick = () => handleAnswer(i, btn);
     });
 }
@@ -408,29 +419,52 @@ function popDamage(targetEl, text, miss) {
 async function handleAnswer(idx, btn) {
     if (state.busy || state.finished) return;
     state.busy = true;
-    const q = QUESTIONS[state.qIdx % QUESTIONS.length];
+    const q = state._q || QUESTIONS[state.qIdx % QUESTIONS.length];
     document.querySelectorAll(".opt-btn").forEach(b => b.disabled = true);
 
-    if (idx === q.ans) {
-        btn.classList.add("correct");
-        state.combo++;
-        showComboIfDue();
-        await attackBoss();   // 原型：站原地、一律攻擊（移動先不做）
-    } else {
-        btn.classList.add("wrong");
-        document.querySelectorAll(".opt-btn")[q.ans].classList.add("correct");
-        state.combo = 0;
-        await getHitByBoss();
+    if (state.backend && state.sessionId) {
+        // ── 真後端：伺服器判對錯 + 回傳傷害/HP ──
+        const choiceText = (q.choices || [])[idx];
+        let d = null;
+        try {
+            const r = await window.eduApi("/api/boss/session/answer", {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ session_id: state.sessionId, question_id: q.id, answer: String(choiceText) }),
+            });
+            d = await r.json();
+        } catch (e) { d = null; }
+        if (!d || d.error) { state.busy = false; return endGame(state.heroHP <= 0 ? "dead" : "win"); }
+
+        if (d.correct) {
+            btn.classList.add("correct");
+            state.combo++; showComboIfDue();
+            await attackBoss(d.damage, d.enemy_hp);
+        } else {
+            btn.classList.add("wrong");
+            const ci = (q.choices || []).findIndex(c => String(c) === String(d.correct_answer));
+            if (ci >= 0) { const cb = document.querySelectorAll(".opt-btn")[ci]; if (cb) cb.classList.add("correct"); }
+            state.combo = 0;
+            await getHitByBoss(d.damage, d.player_hp);
+        }
+        if (d.done || state.bossHP <= 0 || state.heroHP <= 0) return endGame();   // 後端決定真勝負
+        await sleep(500);
+        state.qIdx++; state.busy = false; loadQuestion();
+        return;
     }
 
-    if (state.bossHP <= 0)             return endGame("win");
-    if (state.heroHP <= 0)             return endGame("dead");
-    if (state.heroPos.x < 0 || state.heroPos.y < 0) return endGame("retreat");
-
+    // ── 樣本 fallback：client 判 ──
+    if (idx === q.ans) {
+        btn.classList.add("correct"); state.combo++; showComboIfDue();
+        await attackBoss();
+    } else {
+        btn.classList.add("wrong");
+        const cb = document.querySelectorAll(".opt-btn")[q.ans]; if (cb) cb.classList.add("correct");
+        state.combo = 0; await getHitByBoss();
+    }
+    if (state.bossHP <= 0) return endGame("win");
+    if (state.heroHP <= 0) return endGame("dead");
     await sleep(700);
-    state.qIdx++;
-    state.busy = false;
-    loadQuestion();
+    state.qIdx++; state.busy = false; loadQuestion();
 }
 
 // D. Combo 大字提示
@@ -626,11 +660,17 @@ async function moveBackward() {
     await sleep(550);
 }
 
-async function attackBoss() {
-    const mult = getComboMultiplier();
-    const baseDmg = 80 + Math.floor(Math.random() * 41);  // 80-120 (派派 5/25 ABC)
-    const dmg = Math.floor(baseDmg * mult);
-    state.bossHP = Math.max(0, state.bossHP - dmg);
+async function attackBoss(serverDmg, newBossHp) {
+    // 後端模式：傷害/新 HP 由伺服器給；樣本模式：client 隨機算
+    let dmg;
+    if (typeof newBossHp === "number") {
+        dmg = (serverDmg != null) ? serverDmg : Math.max(0, state.bossHP - newBossHp);
+        state.bossHP = Math.max(0, newBossHp);
+    } else {
+        const mult = getComboMultiplier();
+        dmg = Math.floor((80 + Math.floor(Math.random() * 41)) * mult);
+        state.bossHP = Math.max(0, state.bossHP - dmg);
+    }
 
     // 丟球分幀動畫：播 6 幀，出手幀(HERO_RELEASE_FRAME)放出能量球飛向魔王
     const frames = HERO_THROW[heroGender] || HERO_THROW.boy;
@@ -730,7 +770,7 @@ function swapBossSprite(spritePath, fallback) {
     };
 }
 
-async function getHitByBoss() {
+async function getHitByBoss(serverDmg, newHeroHp) {
     // tier 等級 (t1/t2/t3 → 1/2/3)
     const tierLevel = parseInt((playerSetup.tier || "t1").replace("t", ""), 10) || 1;
 
@@ -760,9 +800,15 @@ async function getHitByBoss() {
     // 飛行時間 0.5s
     await sleep(500);
 
-    // 命中：扣血 + shake + vignette + damage popup
-    const dmg = 80 + Math.floor(Math.random() * 41);  // 80-120 (派派 5/25 ABC) - 無 tier 加成統一
-    state.heroHP = Math.max(0, state.heroHP - dmg);
+    // 命中：扣血 + shake + vignette + damage popup（後端模式用伺服器傷害/HP）
+    let dmg;
+    if (typeof newHeroHp === "number") {
+        dmg = (serverDmg != null) ? serverDmg : Math.max(0, state.heroHP - newHeroHp);
+        state.heroHP = Math.max(0, newHeroHp);
+    } else {
+        dmg = 80 + Math.floor(Math.random() * 41);
+        state.heroHP = Math.max(0, state.heroHP - dmg);
+    }
     heroWrap.classList.add("hit");
     stage.classList.add("shake", "player-hit");
     popDamage(hero, "-" + dmg, true);
@@ -1058,10 +1104,38 @@ function showToast(text) {
     setTimeout(() => t.remove(), 1200);
 }
 
-function endGame(outcome) {
+async function endGame(outcome) {
+    if (state.finished) return;
     state.finished = true;
     let emoji, title, titleClass, sub;
     let overlayDelay = 600;
+    let coinsLine = "", coinsEarned = 0;
+
+    // 後端模式：結束 session 拿真金幣 + 真勝負
+    if (state.backend && state.sessionId) {
+        try {
+            const r = await window.eduApi("/api/boss/session/end", {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ session_id: state.sessionId }),
+            });
+            const d = await r.json();
+            state.sessionId = null;
+            if (d && !d.error) {
+                if (typeof d.victory === "boolean") outcome = d.victory ? "win" : "dead";
+                if (d.coins_earned != null) { coinsEarned = d.coins_earned; coinsLine = `　🪙 +${d.coins_earned} 金幣`; }
+            }
+        } catch (e) {}
+    }
+    if (!outcome) outcome = state.bossHP <= 0 ? "win" : "dead";
+
+    // 鎮魔塔：累積金幣；中間波勝利 → 不結算、直接下一波
+    if (TOWER.active) {
+        TOWER.coins += coinsEarned;
+        if (outcome === "win" && TOWER.waveIdx + 1 < TOWER.waveCount) {
+            TOWER.waveIdx++;
+            return nextTowerWave();
+        }
+    }
 
     if (outcome === "win") {
         // H. 勝利 cinematic（拿掉光柱、拿掉 combo 顯示）
@@ -1093,14 +1167,21 @@ function endGame(outcome) {
         sub = "魔王還剩 HP " + state.bossHP;
         overlayDelay = 1200;
     }
+    // 鎮魔塔：演完 win/lose 視覺後用塔專屬結算（過層/失敗雙鈕）
+    if (TOWER.active) {
+        setTimeout(() => { outcome === "win" ? towerFloorCleared() : towerFailed(); }, overlayDelay);
+        return;
+    }
     setTimeout(() => {
+        const fromMap = /^[a-z0-9_]+$/.test(new URLSearchParams(location.search).get("map") || "");
         const overlay = document.createElement("div");
         overlay.className = "arena-overlay";
         overlay.innerHTML =
             `<div class="overlay-emoji">${emoji}</div>
              <div class="overlay-title ${titleClass}">${title}</div>
-             <div class="overlay-sub">${sub}</div>
-             <button class="overlay-btn" onclick="location.reload()">再戰一次</button>`;
+             <div class="overlay-sub">${sub}${coinsLine}</div>
+             <button class="overlay-btn" onclick="location.reload()">再戰一次</button>`
+            + (fromMap ? `<button class="overlay-btn" style="margin-left:8px;background:linear-gradient(135deg,#9b8bbf,#6f5e9c)" onclick="arenaExit()">回地圖</button>` : '');
         stage.appendChild(overlay);
     }, overlayDelay);
 }
@@ -1314,6 +1395,28 @@ async function startArena() {
     const job = JOBS_DATA.find(j => j.key === playerSetup.jobKey);
     setHeroSpriteFromJob(job);
 
+    // ── 接真後端 session（真題/伺服器判/真金幣/HP）；失敗則用上面的樣本題(client 判) ──
+    state.backend = false; state.sessionId = null;
+    showSetupSpinner();
+    try {
+        const r = await window.eduApi("/api/boss/session/start", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ subject: playerSetup.subject, tier: parseInt(tierKey.replace("t", ""), 10) || 1 }),
+        });
+        const d = await r.json();
+        if (d && !d.error && !d.detail && d.session_id && Array.isArray(d.questions) && d.questions.length) {
+            state.backend = true;
+            state.sessionId = d.session_id;
+            QUESTIONS = d.questions;
+            state.qIdx = 0;
+            state.bossMaxHP = d.enemy_max_hp ?? d.enemy_hp ?? d.boss_hp ?? state.bossMaxHP;
+            state.bossHP    = d.enemy_hp ?? d.boss_hp ?? state.bossHP;
+            state.heroMaxHP = d.player_max_hp ?? d.player_hp ?? state.heroMaxHP;
+            state.heroHP    = d.player_hp ?? state.heroHP;
+        }
+    } catch (e) { /* 後端失敗 → 用樣本題 fallback */ }
+    hideSetupSpinner();
+
     // localStorage 存
     try {
         localStorage.setItem("eduarena_demo_setup", JSON.stringify(playerSetup));
@@ -1480,6 +1583,87 @@ function applyTheme(theme) {
     try { localStorage.setItem("eduarena_demo_theme", theme); } catch (e) {}
 }
 
+// ───────── 鎮魔塔分波模式（移植自 arcade-boss，適配 boss-arena2 的 startArena/endGame 流程）─────────
+const TOWER = { active: false, floor: 1, waveCount: 1, waveIdx: 0, subject: "math", coins: 0, backMap: "tower", backSpawn: "" };
+function towerWavesFor(f) { return Math.max(1, Math.min(5, 1 + Math.floor((f - 1) / 2))); }   // 與 shop.js 同步
+function towerFloorTier(f) { return Math.min(1 + Math.floor((f - 1) / 3), 3); }
+function waveTierKey(idx) {  // 最後一波=該層魔王(floorTier)、前面是小兵(floorTier-1 最低1)
+    const ft = towerFloorTier(TOWER.floor);
+    const t = (idx >= TOWER.waveCount - 1) ? ft : Math.max(1, ft - 1);
+    return "t" + t;
+}
+function towerSplash(text, sub) {
+    let s = document.getElementById("tower-splash");
+    if (!s) {
+        s = document.createElement("div");
+        s.id = "tower-splash";
+        s.style.cssText = "position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;"
+            + "justify-content:center;text-align:center;gap:10px;color:#fff;"
+            + "background:radial-gradient(ellipse at 50% 40%,#3a1a5e 0%,#120827 75%);";
+        s.innerHTML = '<div id="tw-splash-t" style="font-size:30px;font-weight:900"></div>'
+            + '<div id="tw-splash-s" style="font-size:16px;color:#d8c8f0"></div>';
+        document.body.appendChild(s);
+    }
+    s.querySelector("#tw-splash-t").textContent = text;
+    s.querySelector("#tw-splash-s").textContent = sub || "";
+    s.style.display = "flex";
+}
+function hideTowerSplash() { const s = document.getElementById("tower-splash"); if (s) s.style.display = "none"; }
+function towerExit() {
+    const bs = TOWER.backSpawn;
+    location.href = "village-web/index.html?map=" + TOWER.backMap + (/^0\.\d+,0\.\d+$/.test(bs) ? "&spawn=" + bs : "");
+}
+// 返回：從地圖(?map)進來的回該地圖原位；獨立測試回標準頁
+function arenaExit() {
+    const qp = new URLSearchParams(location.search);
+    const map = /^[a-z0-9_]+$/.test(qp.get("map") || "") ? qp.get("map") : "";
+    const bs = qp.get("back_spawn") || "";
+    if (map) location.href = "village-web/index.html?map=" + map + (/^0\.\d+,0\.\d+$/.test(bs) ? "&spawn=" + bs : "");
+    else location.href = "index.html";
+}
+window.arenaExit = arenaExit;
+async function nextTowerWave() {
+    towerSplash("第 " + TOWER.floor + " 層", "第 " + (TOWER.waveIdx + 1) + " / " + TOWER.waveCount + " 波　魔物來襲！");
+    bossWrap.classList.remove("defeated", "hit", "charging");
+    heroWrap.classList.remove("victory", "hit", "entering");
+    stage.querySelectorAll(".arena-overlay,.lose-vignette,.stage-mega-flash").forEach(e => e.remove());
+    state.finished = false; state.qIdx = 0; state.combo = 0; state.busy = false;
+    playerSetup.tier = waveTierKey(TOWER.waveIdx);
+    await startArena();
+    hideTowerSplash();
+}
+function towerOverlay(emoji, title, sub, btns) {
+    setTimeout(() => {
+        const ov = document.createElement("div");
+        ov.className = "arena-overlay";
+        ov.innerHTML = `<div class="overlay-emoji">${emoji}</div><div class="overlay-title">${title}</div><div class="overlay-sub">${sub}</div>`;
+        btns.forEach(b => {
+            const el = document.createElement("button");
+            el.className = "overlay-btn"; el.textContent = b.label; el.style.margin = "6px";
+            el.onclick = b.action; ov.appendChild(el);
+        });
+        stage.appendChild(ov);
+    }, 100);
+}
+function towerFloorCleared() {
+    const nf = TOWER.floor + 1;
+    try { const cur = parseInt(localStorage.getItem("tower_floor_" + TOWER.subject) || "1", 10) || 1; localStorage.setItem("tower_floor_" + TOWER.subject, String(Math.max(cur, nf))); } catch (e) {}
+    towerOverlay("🏆", "通過第 " + TOWER.floor + " 層！", "本層共獲得 🪙 " + TOWER.coins + " 金幣", [
+        { label: "挑戰第 " + nf + " 層", action: () => {
+            const bs = TOWER.backSpawn;
+            let q = "?tower=1&subject=" + encodeURIComponent(TOWER.subject) + "&floor=" + nf + "&waves=" + towerWavesFor(nf) + "&map=" + TOWER.backMap + (/^0\.\d+,0\.\d+$/.test(bs) ? "&back_spawn=" + bs : "");
+            location.href = "boss-arena2.html" + q;
+        } },
+        { label: "回鎮魔塔", action: towerExit },
+    ]);
+}
+function towerFailed() {
+    towerOverlay("💀", "止步於第 " + TOWER.floor + " 層", (TOWER.coins > 0 ? "本層獲得 🪙 " + TOWER.coins + " 金幣　" : "") + "再接再厲！", [
+        { label: "重試第 " + TOWER.floor + " 層", action: () => location.reload() },
+        { label: "回鎮魔塔", action: towerExit },
+    ]);
+}
+
 (async function init() {
     const urlTheme = new URLSearchParams(location.search).get("theme");
     const savedTheme = (() => { try { return localStorage.getItem("eduarena_demo_theme"); } catch (e) { return null; } })();
@@ -1489,7 +1673,27 @@ function applyTheme(theme) {
 
     // 原型：URL 帶 ?subject 直接進戰鬥（小男孩、學生、站原地），跳過設定面板
     const qp = new URLSearchParams(location.search);
-    heroGender = qp.get("hero") === "girl" ? "girl" : "boy";   // ?hero=girl 切女生
+    // 角色性別：?hero= 覆蓋優先，否則讀 onboarding 建角的 village_gender（跟玩家角色連動）
+    const _urlHero = qp.get("hero");
+    if (_urlHero === "girl" || _urlHero === "boy") heroGender = _urlHero;
+    else { try { heroGender = localStorage.getItem("village_gender") === "female" ? "girl" : "boy"; } catch (e) { heroGender = "boy"; } }
+
+    // 鎮魔塔分波模式：?tower=1&subject&floor&waves&map&back_spawn
+    if (qp.get("tower") === "1") {
+        TOWER.active = true;
+        TOWER.subject = SUBJECTS_DATA[qp.get("subject")] ? qp.get("subject") : "math";
+        TOWER.floor = Math.max(1, parseInt(qp.get("floor") || "1", 10) || 1);
+        TOWER.waveCount = Math.max(1, Math.min(5, parseInt(qp.get("waves") || "1", 10) || 1));
+        TOWER.waveIdx = 0; TOWER.coins = 0;
+        TOWER.backMap = /^[a-z0-9_]+$/.test(qp.get("map") || "") ? qp.get("map") : "tower";
+        TOWER.backSpawn = qp.get("back_spawn") || "";
+        playerSetup.subject = TOWER.subject;
+        playerSetup.tier = waveTierKey(0);
+        playerSetup.jobKey = null; playerSetup.name = "派派";
+        await startArena();
+        return;
+    }
+
     const urlSubj = qp.get("subject");
     if (urlSubj && SUBJECTS_DATA[urlSubj]) {
         playerSetup.subject = urlSubj;

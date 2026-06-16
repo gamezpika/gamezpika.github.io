@@ -229,7 +229,7 @@
           q += "&back_spawn=" + (sc.player.x / sc.WORLD_W).toFixed(4) + "," + (sc.player.y / sc.WORLD_H).toFixed(4);
         }
       } catch (e) {}
-      location.href = "../arcade-boss.html" + q;
+      location.href = "../boss-arena2.html" + q;   // 新魔王戰（等距格子+丟球）
       return;
     }
     // 競技場裁判（pptx v8 P66）：玩家開設遊戲房間 PK → 跳獨立 PK 頁（正式版三模式整包）
@@ -1494,7 +1494,7 @@
     const bs = towerBackSpawn();
     let q = "?tower=1&subject=" + encodeURIComponent(subj) + "&floor=" + floor + "&waves=" + waves + "&map=tower";
     if (/^0\.\d+,0\.\d+$/.test(bs)) q += "&back_spawn=" + bs;
-    location.href = "../arcade-boss.html" + q;
+    location.href = "../boss-arena2.html" + q;   // 新魔王戰（等距格子+丟球）
   }
   function towerRender(ov) {
     const box = ov.querySelector(".tower-content");

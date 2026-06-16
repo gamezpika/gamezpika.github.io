@@ -1193,6 +1193,16 @@ let heroGender = "boy";
 let playerGrade = 2;   // 玩家年級（讀 village_grade，顯示用；後端題目年級綁 demo child 帳號）
 const GRADE_CN = ["", "一", "二", "三", "四", "五", "六"];
 function gradeLabel(g) { return (GRADE_CN[g] || g) + "年級"; }
+// 玩家名字：?name= 覆蓋優先，否則讀 village_name（onboarding 建角存的），預設派派
+function playerName() {
+    try {
+        const qn = new URLSearchParams(location.search).get("name");
+        if (qn && qn.trim()) return qn.trim().slice(0, 12);
+        const vn = localStorage.getItem("village_name");
+        if (vn && vn.trim()) return vn.trim().slice(0, 12);
+    } catch (e) {}
+    return "派派";
+}
 const HERO_THROW = {
     boy:  [0, 1, 2, 3, 4, 5].map(i => `assets/images/arena/throw/boy_${i}.webp?v=1`),
     girl: [0, 1, 2, 3, 4, 5].map(i => `assets/images/arena/throw/girl_${i}.webp?v=1`),
@@ -1341,7 +1351,8 @@ function hideSetupSpinner() {
 }
 
 async function startArena() {
-    playerSetup.name = document.getElementById("setup-name").value.trim() || "派派";
+    // 名字已由呼叫端設定（in-game=playerName()綁定；standalone=setup-start 按鈕讀輸入）
+    if (!playerSetup.name) playerSetup.name = "派派";
 
     // 套用題庫
     const subj = SUBJECTS_DATA[playerSetup.subject];
@@ -1698,7 +1709,7 @@ function towerFailed() {
         TOWER.backSpawn = qp.get("back_spawn") || "";
         playerSetup.subject = TOWER.subject;
         playerSetup.tier = waveTierKey(0);
-        playerSetup.jobKey = null; playerSetup.name = "派派";
+        playerSetup.jobKey = null; playerSetup.name = playerName();
         await startArena();
         return;
     }
@@ -1710,7 +1721,7 @@ function towerFailed() {
         if (/^[123]$/.test(t)) t = "t" + t;   // 兼容 bossfight 入口傳的 numeric tier(1/2/3)
         playerSetup.tier = ["t1", "t2", "t3"].includes(t) ? t : "t3";
         playerSetup.jobKey = null;
-        playerSetup.name = "派派";
+        playerSetup.name = playerName();
         await startArena();
         return;
     }
@@ -1722,7 +1733,10 @@ function towerFailed() {
     // 套上恢復的職業
     const savedJob = JOBS_DATA.find(j => j.key === playerSetup.jobKey);
     selectJob(savedJob);
-    document.getElementById("setup-start").onclick = startArena;
+    document.getElementById("setup-start").onclick = () => {
+        playerSetup.name = document.getElementById("setup-name").value.trim() || playerName();
+        startArena();
+    };
     // 主題按鈕綁定
     document.querySelectorAll("#setup-theme .theme-btn").forEach(b => {
         b.onclick = () => applyTheme(b.dataset.theme);

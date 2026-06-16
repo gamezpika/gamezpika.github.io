@@ -829,7 +829,7 @@
       const quests = lines.reduce((acc, l) => acc.concat(l.quests || []), []);
       return `<div class="ca-navgroup">
         <div class="ca-navhd"><img src="${aoEsc(n.img)}?v=1" draggable="false"><span class="ca-navnm">${aoEsc(n.name)}</span><i class="ca-navti">${aoEsc(n.title || "")}</i></div>
-        ${quests.map((q) => `<div class="ca-navq"><span class="ca-navq-ic">${aoEsc(q.icon || "📜")}</span><span class="ca-navq-t">${aoEsc(q.title)}</span><span class="ca-navq-r">🎁 ${aoEsc(q.reward)}</span></div>`).join("")}
+        ${quests.map((q) => `<div class="ca-navq"><div class="ca-navq-top"><span class="ca-navq-ic">${aoEsc(q.icon || "📜")}</span><span class="ca-navq-t">${aoEsc(q.title)}</span></div><div class="ca-navq-r">🎁 ${aoEsc(q.reward)}</div></div>`).join("")}
         <div class="ca-navgo">→ 去找路上的「${aoEsc(n.name)}」接取</div>
       </div>`;
     };
@@ -862,7 +862,7 @@
               + (lbl ? ` <button class="jc-act ca-fulfill" data-key="${aoEsc(aq.key)}">${lbl}</button>` : "");
           }
           else right = `<span class="ca-navq-st" style="opacity:.45">🔒</span>`;
-          rows += `<div class="ca-navq"><span class="ca-navq-ic">${stt === "locked" ? "🔒" : aoEsc(q.icon || "📜")}</span><span class="ca-navq-t">${aoEsc(q.title)}</span><span class="ca-navq-r">🎁 ${aoEsc(q.reward)}</span>${right}</div>`;
+          rows += `<div class="ca-navq"><div class="ca-navq-top"><span class="ca-navq-ic">${stt === "locked" ? "🔒" : aoEsc(q.icon || "📜")}</span><span class="ca-navq-t">${aoEsc(q.title)}</span>${right}</div><div class="ca-navq-r">🎁 ${aoEsc(q.reward)}</div></div>`;
         });
       });
       return `<div class="ca-navgroup"><div class="ca-navhd"><img src="${aoEsc(n.img)}?v=1" draggable="false"><span class="ca-navnm">${aoEsc(n.name)}</span><i class="ca-navti">${aoEsc(n.title || "")}</i></div>${rows}</div>`;
@@ -1578,7 +1578,7 @@
           ? `${kindWord(aq.reward_kind)}「${aoEsc(aq.reward_label)}」${aq.reward_coins ? "＋" + aq.reward_coins + " 金幣" : ""}`
           : (aq.reward_coins ? aq.reward_coins + " 金幣" : "—");
         if (aq.reward2_label) gift += `＋${kindWord(aq.reward2_kind)}「${aoEsc(aq.reward2_label)}」`;
-        rows += `<div class="ca-navq"><span class="ca-navq-ic">${stt === "locked" ? "🔒" : "📜"}</span><span class="ca-navq-t">${aoEsc(aq.title)}</span><span class="ca-navq-r">🎁 ${gift}</span>${right}</div>`;
+        rows += `<div class="ca-navq"><div class="ca-navq-top"><span class="ca-navq-ic">${stt === "locked" ? "🔒" : "📜"}</span><span class="ca-navq-t">${aoEsc(aq.title)}</span>${right}</div><div class="ca-navq-r">🎁 ${gift}</div></div>`;
       });
       box.innerHTML = `<div class="ca-navgroup">${rows}</div>`;
       // 對白泡泡＝目前進行中（沒有就下一個可接取）那關的任務內文

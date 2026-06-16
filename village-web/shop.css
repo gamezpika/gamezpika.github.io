@@ -419,10 +419,15 @@
 .ca-navhd img { width: 36px; height: 36px; object-fit: contain; border-radius: 50%; background: #fff3da; border: 1px solid #e3c089; flex-shrink: 0; }
 .ca-navnm { font-size: 15px; font-weight: 900; color: #5a3a18; }
 .ca-navti { font-size: 11px; color: #a07a3a; font-weight: 700; }
-.ca-navq { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: #6a4a22; padding: 3px 0; }
+/* 任務列：兩行排版——第一行(圖標+任務名+狀態/按鈕)、第二行(獎勵縮排)，避免擠成竖排 */
+.ca-navq { display: flex; flex-direction: column; gap: 3px; font-size: 12.5px; color: #6a4a22; padding: 6px 0; border-bottom: 1px solid #f2e6cc; }
+.ca-navq:last-child { border-bottom: none; }
+.ca-navq-top { display: flex; align-items: center; gap: 6px; }
 .ca-navq-ic { flex-shrink: 0; }
 .ca-navq-t { flex: 1; min-width: 0; font-weight: 700; }
-.ca-navq-r { color: #b06a1f; font-weight: 700; white-space: nowrap; }
+.ca-navq-r { color: #b06a1f; font-weight: 700; font-size: 11.5px; padding-left: 22px; }
+.ca-navq-st { flex-shrink: 0; white-space: nowrap; }
+.ca-navq-top .jc-act { flex-shrink: 0; white-space: nowrap; }
 .ca-navgo { margin-top: 6px; font-size: 12px; font-weight: 800; color: #2b9b5a; }
 /* 典籍收藏（slide14 掉落物品純展示） */
 .ca-books { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 6px; }

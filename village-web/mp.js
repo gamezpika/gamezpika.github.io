@@ -119,10 +119,18 @@
   // ── 村莊內聊天 UI（接 server 安全聊天：髒話/個資過濾、頻道）──
   function buildChat() {
     if (el("mp-chat")) return;
+    // ① 常駐「聊天」收合鈕：平時只這一顆小鈕，不擋畫面；點了才展開完整聊天面板
+    var tog = document.createElement("button");
+    tog.id = "mp-toggle";
+    tog.textContent = "聊天";
+    tog.style.cssText = "position:fixed;right:12px;bottom:128px;z-index:9000;border:none;border-radius:22px;padding:10px 20px;background:#2e6d52;color:#fff;font-weight:800;font-size:15px;box-shadow:0 3px 10px rgba(0,0,0,.35);font-family:sans-serif";
+    document.body.appendChild(tog);
+    // ② 完整聊天面板：初始隱藏，點鈕展開；右上「收起」收回成一顆鈕
     var box = document.createElement("div");
     box.id = "mp-chat";
     box.innerHTML =
-      '<div id="mp-log" style="max-height:22vh;overflow-y:auto;font-size:13px;line-height:1.5;color:#fff;text-shadow:0 1px 2px #000;margin-bottom:4px"></div>' +
+      '<div style="display:flex;justify-content:flex-end;margin-bottom:4px"><button id="mp-collapse" style="border:none;background:rgba(255,255,255,.22);color:#fff;border-radius:8px;padding:4px 12px;font-weight:800;font-size:13px">收起 ▾</button></div>' +
+      '<div id="mp-log" style="max-height:20vh;overflow-y:auto;font-size:13px;line-height:1.5;color:#fff;text-shadow:0 1px 2px #000;margin-bottom:4px"></div>' +
       '<div id="mp-canned" style="display:none;flex-wrap:wrap;gap:5px;margin-bottom:5px"></div>' +
       '<div style="display:flex;gap:5px;align-items:center;margin-bottom:5px">' +
         '<button id="mp-parentbtn" title="家長控管" style="border:none;border-radius:9px;padding:7px 9px;background:#2e6d52;color:#fff;font-weight:700;font-size:13px;white-space:nowrap">家長</button>' +
@@ -133,9 +141,11 @@
         '<input id="mp-in" type="text" name="mpchat" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false" enterkeyhint="send" maxlength="120" placeholder="跟村莊裡的人說話…" style="flex:1;min-width:0;padding:8px 10px;border:none;border-radius:9px;font-size:14px">' +
         '<button id="mp-send" style="border:none;border-radius:9px;padding:8px 16px;background:#4a9fff;color:#fff;font-weight:700;white-space:nowrap">送</button>' +
       '</div>';
-    // 收合狀態：全寬 + 上移到「左下搖桿(約 116px 高)上方」，輸入框可整條全寬又不蓋搖桿
-    box.style.cssText = "position:fixed;left:8px;right:8px;bottom:132px;z-index:9000;font-family:sans-serif;background:rgba(8,12,30,.42);border-radius:10px;padding:6px";
+    // 展開態：全寬貼底（主動聊天時才出現，可暫時蓋住搖桿；收起就回到一顆鈕）
+    box.style.cssText = "position:fixed;left:8px;right:8px;bottom:14px;z-index:9000;font-family:sans-serif;background:rgba(8,12,30,.62);border-radius:12px;padding:8px;display:none";
     document.body.appendChild(box);
+    tog.addEventListener("click", openChatPanel);
+    el("mp-collapse").addEventListener("click", closeChatPanel);
     var input = el("mp-in");
     function send() { var t = (input.value || "").trim(); if (!t || !room) return; try { room.send("chat", { text: t, channel: "world" }); } catch (e) {} input.value = ""; }
     // 行動裝置：用 pointerdown 在「按下當下」就送 + preventDefault 不讓輸入框失焦
@@ -152,6 +162,18 @@
     bindKeyboardPin();
     el("mp-parentbtn").addEventListener("click", openParental);
     loadParental(); // 拉本地角色的家長設定 → 套用罐頭/聊天模式
+  }
+
+  // 點「聊天」鈕展開完整面板 / 點「收起」收回成一顆鈕
+  function openChatPanel() {
+    var box = el("mp-chat"); if (box) box.style.display = "block";
+    var tog = el("mp-toggle"); if (tog) tog.style.display = "none";
+    placeChat(false); // 套用展開收合位置（全寬貼底）
+  }
+  function closeChatPanel() {
+    var inp = el("mp-in"); if (inp) inp.blur();
+    var box = el("mp-chat"); if (box) box.style.display = "none";
+    var tog = el("mp-toggle"); if (tog) tog.style.display = "";
   }
 
   // ── 手機打字時把聊天框展開成「可視區內的半透明聊天面板」，避免 iOS 鍵盤頂上去後露出底色黑塊 ──
@@ -172,10 +194,10 @@
       box.style.top = Math.max(6, vv.offsetTop + vv.height - h - 4) + "px"; // 底邊貼齊可視底＝鍵盤頂
       if (window.scrollY) window.scrollTo(0, 0); // 擋 iOS 自動把頁面捲上去
     } else {
-      box.style.top = "auto"; box.style.height = "auto"; box.style.bottom = "132px";
-      box.style.left = "8px"; box.style.right = "8px"; box.style.width = "auto"; // 全寬、上移到搖桿上方
-      box.style.background = "rgba(8,12,30,.42)";
-      if (log) { log.style.maxHeight = "14vh"; }
+      box.style.top = "auto"; box.style.height = "auto"; box.style.bottom = "14px";
+      box.style.left = "8px"; box.style.right = "8px"; box.style.width = "auto"; // 展開態：全寬貼底
+      box.style.background = "rgba(8,12,30,.62)";
+      if (log) { log.style.maxHeight = "20vh"; }
     }
   }
   function bindKeyboardPin() {
@@ -513,6 +535,7 @@
       if (menuOpen !== mpHidden) {
         mpHidden = menuOpen;
         var box = el("mp-chat"); if (box) box.style.visibility = menuOpen ? "hidden" : "";
+        var tog = el("mp-toggle"); if (tog) tog.style.visibility = menuOpen ? "hidden" : ""; // 收合鈕也跟著藏
         if (menuOpen) { closePMenu(); closeGiftPicker(); closeParental(); var ep = el("mp-emote"); if (ep) ep.style.display = "none"; } // 開 demo 面板就關掉暫時彈窗，免疊上去
       }
       if (!room || !room.state) return;

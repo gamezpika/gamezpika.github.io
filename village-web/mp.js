@@ -124,12 +124,14 @@
     box.innerHTML =
       '<div id="mp-log" style="max-height:22vh;overflow-y:auto;font-size:13px;line-height:1.5;color:#fff;text-shadow:0 1px 2px #000;margin-bottom:4px"></div>' +
       '<div id="mp-canned" style="display:none;flex-wrap:wrap;gap:5px;margin-bottom:5px"></div>' +
-      '<div style="display:flex;gap:5px;align-items:center">' +
+      '<div style="display:flex;gap:5px;align-items:center;margin-bottom:5px">' +
         '<button id="mp-parentbtn" title="家長控管" style="border:none;border-radius:9px;padding:7px 9px;background:#2e6d52;color:#fff;font-weight:700;font-size:13px;white-space:nowrap">家長</button>' +
         '<button id="mp-friendbtn" title="好友" style="border:none;border-radius:9px;padding:7px 9px;background:linear-gradient(135deg,#6a5cff,#4a3fd6);color:#fff;font-weight:700;font-size:13px;white-space:nowrap">好友</button>' +
         '<button id="mp-emotebtn" title="表情" style="border:none;border-radius:9px;padding:7px 9px;background:#3a4a7a;color:#fff;font-weight:700;font-size:13px;white-space:nowrap">表情</button>' +
-        '<input id="mp-in" type="text" name="mpchat" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false" enterkeyhint="send" maxlength="120" placeholder="跟村莊裡的人說話…" style="flex:1;min-width:0;padding:7px 9px;border:none;border-radius:9px;font-size:14px">' +
-        '<button id="mp-send" style="border:none;border-radius:9px;padding:7px 12px;background:#4a9fff;color:#fff;font-weight:700">送</button>' +
+      '</div>' +
+      '<div style="display:flex;gap:5px;align-items:center">' +
+        '<input id="mp-in" type="text" name="mpchat" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false" enterkeyhint="send" maxlength="120" placeholder="跟村莊裡的人說話…" style="flex:1;min-width:0;padding:8px 10px;border:none;border-radius:9px;font-size:14px">' +
+        '<button id="mp-send" style="border:none;border-radius:9px;padding:8px 16px;background:#4a9fff;color:#fff;font-weight:700;white-space:nowrap">送</button>' +
       '</div>';
     // 上移到搖桿(左下 116px 高)上方，不擋住移動搖桿
     // 收合狀態：下移到畫面最底，並偏右避開左下移動搖桿(left20~136)

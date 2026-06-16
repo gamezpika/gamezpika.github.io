@@ -5,3 +5,23 @@ README.md
 .DS_Store
 Dockerfile
 .dockerignore
+
+# 不需 web serve 的，從 build image 排除（減小 image、加快部署）
+village-godot/
+bot/
+scripts/
+*.py
+*.sh
+arena-gen/
+fdeep-gen/
+**/walk-gen/
+**/.imagegen/
+**/_tmp_grass/
+**/tmp_imagegen/
+*_raw.png
+*_raw.webp
+*-preview.png
+*-preview.gif
+*-concept.png
+*_review.md
+codex_*

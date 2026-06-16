@@ -2215,6 +2215,25 @@ function renderSpriteMarkers() {
             mf.appendChild(el);
         }
     }
+
+    // Portals — 傳送門畫成可拖的圈(標「→去哪」)，只調位置(拖改 anchor)
+    (mapConfig.portals || []).forEach(pt => {
+        if (!pt.anchor) return;
+        const el = document.createElement('div');
+        el.className = 'placed-sprite portal-marker';
+        el.style.cssText = 'width:58px;height:58px;border-radius:50%;border:3px dashed #46c8ff;'
+            + 'background:rgba(70,200,255,.22);display:flex;align-items:center;justify-content:center;transform:translate(-50%,-50%)';
+        if (isReference) { el.classList.add('reference'); el.style.opacity = '0.5'; el.style.pointerEvents = 'none'; el.style.zIndex = 5; }
+        el.style.left = (pt.anchor.x * w) + 'px';
+        el.style.top  = (pt.anchor.y * h) + 'px';
+        const lbl = document.createElement('div');
+        lbl.style.cssText = 'font-size:10px;color:#fff;font-weight:800;text-shadow:0 1px 2px #000;text-align:center;line-height:1.15;pointer-events:none';
+        lbl.textContent = '→' + (pt.target_map || pt.label || '?');
+        el.appendChild(lbl);
+        el.dataset.pid = pt.id;
+        if (!isReference) attachSpriteDrag(el, pt, w, h, false);
+        mf.appendChild(el);
+    });
 }
 
 function makeAnchorDot() {

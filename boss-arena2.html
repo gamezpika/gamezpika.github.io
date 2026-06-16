@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1a0f08">
+    <meta name="description" content="EduArena 技術 Demo — 瑪莉的鍊金工房風等距 2.5D 魔王戰場（答對攻擊、答錯扣血）">
+
+    <meta property="og:title" content="EduArena 等距魔王戰 Demo">
+    <meta property="og:description" content="瑪莉的鍊金工房風 — 答對攻擊魔王，答錯主角扣血">
+    <meta property="og:type" content="website">
+
+    <title>魔王戰 · EduArena Demo</title>
+    <link rel="stylesheet" href="static/css/demo.css?v=4">
+    <link rel="stylesheet" href="static/css/boss-arena.css?v=63">
+    <script src="static/js/combat-engine.js?v=1"></script>
+</head>
+<body>
+
+<div class="iphone-frame">
+    <div class="iphone-island" aria-hidden="true"></div>
+    <div class="iphone-home" aria-hidden="true"></div>
+
+    <div class="iphone-screen">
+
+        <!-- 開場設定面板 -->
+        <div class="setup-modal" id="screen-setup">
+            <div class="setup-title">⚔ 冒險者設定 ⚔</div>
+            <div class="setup-sub">真實 EduArena 資料 · 24 職業 · 5 科 · 數十題真題庫樣本</div>
+
+            <div class="setup-section">
+                <h3>👤 玩家名稱</h3>
+                <input class="setup-input" type="text" id="setup-name" value="派派" maxlength="10">
+            </div>
+
+            <div class="setup-section">
+                <h3>📚 選擇科目（決定魔王）</h3>
+                <div class="subject-grid" id="setup-subjects">
+                    <!-- 5 科 button JS render -->
+                </div>
+            </div>
+
+            <div class="setup-section">
+                <h3>👹 魔王難度（3 個 tier）</h3>
+                <div class="subject-grid" id="setup-tiers">
+                    <!-- 3 tier button JS render -->
+                </div>
+            </div>
+
+            <div class="setup-section">
+                <h3>🎓 選擇職業（24 個，影響武器 + HP）</h3>
+                <div class="job-grid" id="setup-jobs">
+                    <!-- 24 職業 JS render -->
+                </div>
+                <div class="job-preview" id="job-preview">點選職業看詳細</div>
+            </div>
+
+            <div class="setup-section">
+                <h3>🧱 戰場棋盤主題</h3>
+                <div class="theme-picker" id="setup-theme">
+                    <button class="theme-btn" data-theme="sandstone">🏜 砂岩</button>
+                    <button class="theme-btn" data-theme="rocky">🪨 圓石</button>
+                    <button class="theme-btn" data-theme="marble">⬜ 白雲石</button>
+                    <button class="theme-btn" data-theme="volcanic">🌋 火山</button>
+                    <button class="theme-btn" data-theme="ice">❄ 冰原</button>
+                </div>
+            </div>
+
+            <button class="setup-start" id="setup-start">開始挑戰魔王 →</button>
+        </div>
+
+        <div id="screen-arena" style="display: none">
+
+            <button class="arena-back" onclick="location.href='index.html'" title="返回首頁">←</button>
+
+            <!-- 上方主角 HUD（5/25 派派 A 方案：左上角 chip + 名字膠囊，菇勇者風）-->
+            <div class="arena-hud arena-hud-slim arena-hud-chip">
+                <div class="hero-card">
+                    <div class="hero-portrait">
+                        <img src="assets/images/arena/hero.png" alt="hero">
+                    </div>
+                    <div class="hero-lv-chip">五年級</div>
+                    <div class="hero-name-chip" id="hero-name-display">派派</div>
+                </div>
+                <!-- 隱藏節點供舊 JS 寫，避免 undefined -->
+                <span id="hero-hp-num" style="display:none"></span>
+                <span id="hero-hp-fill" style="display:none"></span>
+                <span id="hero-mp-num" style="display:none"></span>
+                <span id="hero-mp-fill" style="display:none"></span>
+                <span id="info-subject-name" style="display:none"></span>
+                <span id="combat-status" style="display:none"></span>
+            </div>
+
+            <!-- 戰場 -->
+            <div class="arena-stage" id="arena-stage">
+                <div class="torch-glow left"></div>
+                <div class="torch-glow right"></div>
+
+                <!-- 魔王 HP 條（派派 5/24 恢復：absolute 疊在上方空白區，不佔 layout）-->
+                <!-- 5/25 派派 A 方案：boss HP 飄頭頂，舊 boss-hud-overlay 拿掉 -->
+                <span id="boss-name-display" style="display:none"></span>
+
+                <!-- 武器切換列（派派 5/23 砍 fist + pencil 留 4） -->
+                <div class="weapon-bar" id="weapon-bar">
+                    <button class="weapon-btn" data-weapon="sword"    title="短劍">⚔️</button>
+                    <button class="weapon-btn" data-weapon="book"     title="魔法書">📕</button>
+                    <button class="weapon-btn" data-weapon="staff"    title="法杖">🪄</button>
+                    <button class="weapon-btn" data-weapon="gauntlet" title="拳套">🥊</button>
+                </div>
+
+                <!-- 5×5 SVG 真等距菱形（對稱 col↘ + row↗）— 1.4× 放大 + FFT 風 3D 立方體（外圍 10 格見側壁）+ 5 種主題 pattern -->
+                <svg class="grid-svg" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <!-- rocky：圓形石頭顆粒 -->
+                    <pattern id="pat-rocky" patternUnits="userSpaceOnUse" width="4" height="3">
+                      <rect width="4" height="3" fill="#7a7268" />
+                      <circle cx="1.0" cy="1.0" r="0.65" fill="#5a5248" opacity="0.85" />
+                      <circle cx="2.7" cy="1.8" r="0.45" fill="#8e8678" opacity="0.8" />
+                      <circle cx="3.5" cy="0.5" r="0.35" fill="#5e5648" opacity="0.7" />
+                      <circle cx="0.4" cy="2.5" r="0.55" fill="#46403a" opacity="0.85" />
+                      <circle cx="2.0" cy="2.7" r="0.25" fill="#9a9288" opacity="0.5" />
+                    </pattern>
+                    <!-- marble：白底細紋 -->
+                    <pattern id="pat-marble" patternUnits="userSpaceOnUse" width="8" height="8">
+                      <rect width="8" height="8" fill="#e2e4e8" />
+                      <path d="M 0 2 Q 4 4 8 1" stroke="rgba(155,160,180,0.45)" stroke-width="0.25" fill="none" />
+                      <path d="M 0 5.5 Q 3 5 8 7" stroke="rgba(170,175,195,0.4)" stroke-width="0.22" fill="none" />
+                      <path d="M 2 0 Q 3 4 5 8" stroke="rgba(180,185,200,0.3)" stroke-width="0.18" fill="none" />
+                    </pattern>
+                    <!-- volcanic：黑岩 + 紅熔岩裂縫 -->
+                    <pattern id="pat-volcanic" patternUnits="userSpaceOnUse" width="5" height="4">
+                      <rect width="5" height="4" fill="#221412" />
+                      <path d="M 0 0.6 L 2 1.2 L 0.5 1.8" stroke="#c84628" stroke-width="0.16" fill="none" />
+                      <path d="M 2.8 0 L 3.8 1.6 L 5 0.8" stroke="#ff6428" stroke-width="0.2" fill="none" />
+                      <path d="M 1.4 2.8 L 3 3.4 L 4.5 2.5" stroke="#e83a18" stroke-width="0.17" fill="none" />
+                      <circle cx="3" cy="2.0" r="0.18" fill="#ffaa48" opacity="0.9" />
+                    </pattern>
+                    <!-- ice：冰藍 + 亮點 -->
+                    <pattern id="pat-ice" patternUnits="userSpaceOnUse" width="4" height="4">
+                      <rect width="4" height="4" fill="#d8e4ee" />
+                      <circle cx="1.0" cy="1.0" r="0.18" fill="rgba(255,255,255,0.95)" />
+                      <circle cx="2.7" cy="2.5" r="0.22" fill="rgba(255,255,255,0.9)" />
+                      <circle cx="3.5" cy="0.7" r="0.14" fill="rgba(220,240,255,0.95)" />
+                      <path d="M 0.5 3 L 1 3.5 M 0.75 3 L 0.75 3.5" stroke="rgba(180,210,230,0.6)" stroke-width="0.12" />
+                    </pattern>
+                  </defs>
+                  <!-- 側壁先畫（painter algo：背景層）— 派派 5/24 整體下移 18% -->
+                  <!-- 右側壁 (x=4 那 5 格) -->
+                  <polygon class="grid-wall-right" data-x="4" data-y="0" points="50.0,85.5 58.4,82.0 58.4,87.0 50.0,90.5" />
+                  <polygon class="grid-wall-right" data-x="4" data-y="1" points="58.4,82.0 66.8,78.5 66.8,83.5 58.4,87.0" />
+                  <polygon class="grid-wall-right" data-x="4" data-y="2" points="66.8,78.5 75.2,75.0 75.2,80.0 66.8,83.5" />
+                  <polygon class="grid-wall-right" data-x="4" data-y="3" points="75.2,75.0 83.6,71.5 83.6,76.5 75.2,80.0" />
+                  <polygon class="grid-wall-right" data-x="4" data-y="4" points="83.6,71.5 92.0,68.0 92.0,73.0 83.6,76.5" />
+                  <!-- 前左壁 (y=0 那 5 格) -->
+                  <polygon class="grid-wall-front" data-x="0" data-y="0" points="8.0,68.0 16.4,71.5 16.4,76.5 8.0,73.0" />
+                  <polygon class="grid-wall-front" data-x="1" data-y="0" points="16.4,71.5 24.8,75.0 24.8,80.0 16.4,76.5" />
+                  <polygon class="grid-wall-front" data-x="2" data-y="0" points="24.8,75.0 33.2,78.5 33.2,83.5 24.8,80.0" />
+                  <polygon class="grid-wall-front" data-x="3" data-y="0" points="33.2,78.5 41.6,82.0 41.6,87.0 33.2,83.5" />
+                  <polygon class="grid-wall-front" data-x="4" data-y="0" points="41.6,82.0 50.0,85.5 50.0,90.5 41.6,87.0" />
+                  <!-- 25 個頂面 -->
+                  <polygon class="grid-tile" data-x="0" data-y="0" points="8.0,68.0 16.4,71.5 24.8,68.0 16.4,64.5" />
+                  <polygon class="grid-tile" data-x="1" data-y="0" points="16.4,71.5 24.8,75.0 33.2,71.5 24.8,68.0" />
+                  <polygon class="grid-tile" data-x="2" data-y="0" points="24.8,75.0 33.2,78.5 41.6,75.0 33.2,71.5" />
+                  <polygon class="grid-tile" data-x="3" data-y="0" points="33.2,78.5 41.6,82.0 50.0,78.5 41.6,75.0" />
+                  <polygon class="grid-tile" data-x="4" data-y="0" points="41.6,82.0 50.0,85.5 58.4,82.0 50.0,78.5" />
+                  <polygon class="grid-tile" data-x="0" data-y="1" points="16.4,64.5 24.8,68.0 33.2,64.5 24.8,61.0" />
+                  <polygon class="grid-tile" data-x="1" data-y="1" points="24.8,68.0 33.2,71.5 41.6,68.0 33.2,64.5" />
+                  <polygon class="grid-tile" data-x="2" data-y="1" points="33.2,71.5 41.6,75.0 50.0,71.5 41.6,68.0" />
+                  <polygon class="grid-tile" data-x="3" data-y="1" points="41.6,75.0 50.0,78.5 58.4,75.0 50.0,71.5" />
+                  <polygon class="grid-tile" data-x="4" data-y="1" points="50.0,78.5 58.4,82.0 66.8,78.5 58.4,75.0" />
+                  <polygon class="grid-tile" data-x="0" data-y="2" points="24.8,61.0 33.2,64.5 41.6,61.0 33.2,57.5" />
+                  <polygon class="grid-tile" data-x="1" data-y="2" points="33.2,64.5 41.6,68.0 50.0,64.5 41.6,61.0" />
+                  <polygon class="grid-tile" data-x="2" data-y="2" points="41.6,68.0 50.0,71.5 58.4,68.0 50.0,64.5" />
+                  <polygon class="grid-tile" data-x="3" data-y="2" points="50.0,71.5 58.4,75.0 66.8,71.5 58.4,68.0" />
+                  <polygon class="grid-tile" data-x="4" data-y="2" points="58.4,75.0 66.8,78.5 75.2,75.0 66.8,71.5" />
+                  <polygon class="grid-tile" data-x="0" data-y="3" points="33.2,57.5 41.6,61.0 50.0,57.5 41.6,54.0" />
+                  <polygon class="grid-tile" data-x="1" data-y="3" points="41.6,61.0 50.0,64.5 58.4,61.0 50.0,57.5" />
+                  <polygon class="grid-tile" data-x="2" data-y="3" points="50.0,64.5 58.4,68.0 66.8,64.5 58.4,61.0" />
+                  <polygon class="grid-tile" data-x="3" data-y="3" points="58.4,68.0 66.8,71.5 75.2,68.0 66.8,64.5" />
+                  <polygon class="grid-tile" data-x="4" data-y="3" points="66.8,71.5 75.2,75.0 83.6,71.5 75.2,68.0" />
+                  <polygon class="grid-tile" data-x="0" data-y="4" points="41.6,54.0 50.0,57.5 58.4,54.0 50.0,50.5" />
+                  <polygon class="grid-tile" data-x="1" data-y="4" points="50.0,57.5 58.4,61.0 66.8,57.5 58.4,54.0" />
+                  <polygon class="grid-tile" data-x="2" data-y="4" points="58.4,61.0 66.8,64.5 75.2,61.0 66.8,57.5" />
+                  <polygon class="grid-tile" data-x="3" data-y="4" points="66.8,64.5 75.2,68.0 83.6,64.5 75.2,61.0" />
+                  <polygon class="grid-tile" data-x="4" data-y="4" points="75.2,68.0 83.6,71.5 92.0,68.0 83.6,64.5" />
+                </svg>
+
+                <div class="fighter-hero" id="fighter-hero-wrap" data-x="2" data-y="2">
+                    <div class="hero-floating-hp" id="hero-floating-hp" data-hp-level="high">
+                        <div class="hero-floating-hp-fill" id="hero-floating-hp-fill" style="width: 100%"></div>
+                        <div class="hp-num-overlay" id="hero-hp-overlay">300/300</div>
+                    </div>
+                    <img src="assets/images/arena/hero_iso.png?v=3" class="fighter-hero-img" id="fighter-hero" alt="hero">
+                </div>
+                <div class="fighter-boss" id="fighter-boss-wrap">
+                    <div class="boss-floating-hp" id="boss-floating-hp" data-hp-level="high">
+                        <div class="boss-name-mini" id="boss-name-mini">★ 終極魔王 ★</div>
+                        <div class="boss-floating-hp-bar">
+                            <div class="boss-floating-hp-fill" id="boss-hp-fill" style="width: 100%"></div>
+                            <div class="hp-num-overlay" id="boss-hp-overlay">1000/1000</div>
+                        </div>
+                    </div>
+                    <img src="assets/images/arena/boss_iso.png?v=3" class="fighter-boss-img" id="fighter-boss" alt="boss">
+                </div>
+            </div>
+
+            <!-- 題目卡 -->
+            <div class="arena-question" id="arena-question">準備迎戰...</div>
+
+            <!-- 4 選項 -->
+            <div class="arena-options" id="arena-options">
+                <button class="opt-btn" data-i="0">--</button>
+                <button class="opt-btn" data-i="1">--</button>
+                <button class="opt-btn" data-i="2">--</button>
+                <button class="opt-btn" data-i="3">--</button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+// ===== 真實 EduArena 資料（從 JSON 載入） =====
+let SUBJECTS_DATA = null;   // 5 科 + 題庫
+let JOBS_DATA = [];         // 24 職業 list
+let QUESTIONS = [];         // 當前 session 用題庫
+
+const SUBJECT_META = {
+    math:    { emoji: "📐", label: "數學" },
+    chinese: { emoji: "📕", label: "國語" },
+    english: { emoji: "🔤", label: "英文" },
+    science: { emoji: "🔬", label: "自然" },
+    social:  { emoji: "🌏", label: "社會" },
+};
+
+// 職業 → 武器對應規則（24 職業基於 attr_key + 個別覆蓋）
+const JOB_WEAPON_OVERRIDE = {
+    "math_detective": "book",      // 數學偵探用放大鏡
+    "writer": "book",              // 文字大師用故事書
+    "translator": "book",          // 翻譯員用辭典
+    "inventor": "gauntlet",        // 發明家用工具箱
+    "explorer": "sword",           // 探險家用劍
+    "flight_attendant": "staff",   // 空服員 (魔法環遊)
+    "doctor": "book",              // 醫生用聽診器/書
+    "engineer": "gauntlet",        // 工程師用扳手
+    "athlete": "gauntlet",         // 運動員用拳套
+    "artist": "staff",             // 藝術家用畫筆 (魔法)
+    "musician": "staff",           // 音樂家用音波
+    "astronaut": "staff",          // 太空人用 (魔法感)
+    "chef": "gauntlet",            // 廚師用菜刀/拳套
+    "archaeologist": "sword",      // 考古學家
+    "biologist": "book",
+    "historian": "book",
+    "ai_engineer": "gauntlet",
+    "filmmaker": "staff",
+    "lawyer": "book",
+    "psychologist": "staff",
+    "designer": "staff",
+};
+function pickWeaponByJob(job) {
+    if (!job) return "sword";
+    if (JOB_WEAPON_OVERRIDE[job.key]) return JOB_WEAPON_OVERRIDE[job.key];
+    // fallback 依 attr_key
+    const map = { math: "book", chinese_int: "book", english_int: "staff", science_int: "gauntlet", social_int: "sword" };
+    return map[job.attr_key] || "sword";
+}
+
+/* P0 Grid Data Structure 升級成 5×5（派派 5/23）
+   主角 (x,y) 2D，魔王固定 (4,4) 右上角
+   攻擊範圍 = Chebyshev ≤ 1 */
+const GRID = { cols: 5, rows: 5 };
+const BOSS_POS = { x: 2, y: 4 };
+// 嘍囉位置預留（demo 暫不啟用）
+const ENEMY_SLOTS_RESERVED = [
+    { x: 4, y: 3 },  // 魔王正下方
+    { x: 3, y: 4 },  // 魔王正左方
+    { x: 3, y: 3 },  // 魔王左下對角
+    { x: 2, y: 4 },  // 魔王左 2 格
+];
+function chebyshev(a, b) {
+    return Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
+}
+function inAttackRange(pos) {
+    return chebyshev(pos, BOSS_POS) <= 1 && !(pos.x === BOSS_POS.x && pos.y === BOSS_POS.y);
+}
+
+/* 玩家設定（從 setup 面板填入） */
+const playerSetup = {
+    name: "派派",
+    subject: "math",
+    tier: "t3",       // 預設挑戰終極
+    jobKey: null,
+};
+
+const state = {
+    heroHP: 300, heroMaxHP: 300,
+    heroMP: 50,  heroMaxMP: 50,
+    bossHP: 1000, bossMaxHP: 1000,
+    heroPos: { x: 2, y: 2 },   // 起始中央格 (派派 5/23：對齊參考圖玩家站中央)
+    combo: 0,
+    qIdx: 0,
+    busy: false,
+    finished: false,
+};
+
+const $ = (id) => document.getElementById(id);
+const stage = $("arena-stage");
+const hero  = $("fighter-hero");
+const heroWrap = $("fighter-hero-wrap");
+const boss  = $("fighter-boss");
+const bossWrap = $("fighter-boss-wrap");
+
+function hpLevel(pct) {
+    if (pct > 0.7) return "high";
+    if (pct > 0.4) return "mid";
+    if (pct > 0.2) return "low";
+    if (pct > 0.1) return "critical";
+    return "dying";
+}
+function updateBars() {
+    $("hero-hp-num").textContent = `${state.heroHP} / ${state.heroMaxHP}`;
+    $("hero-hp-fill").style.width = (state.heroHP / state.heroMaxHP * 100) + "%";
+    // 5/25 派派 ABC：主角頭頂條 — 數字 + 漸變顏色
+    const heroPct = state.heroHP / state.heroMaxHP;
+    const floatHp = $("hero-floating-hp-fill");
+    if (floatHp) floatHp.style.width = (heroPct * 100) + "%";
+    const heroFloatBox = $("hero-floating-hp");
+    if (heroFloatBox) heroFloatBox.dataset.hpLevel = hpLevel(heroPct);
+    const heroOver = $("hero-hp-overlay");
+    if (heroOver) heroOver.textContent = `${state.heroHP}/${state.heroMaxHP}`;
+    // 魔王頭頂條 — 數字 + 漸變顏色
+    const bossPct = state.bossHP / state.bossMaxHP;
+    $("boss-hp-fill").style.width = (bossPct * 100) + "%";
+    const bossFloatBox = $("boss-floating-hp");
+    if (bossFloatBox) bossFloatBox.dataset.hpLevel = hpLevel(bossPct);
+    const bossOver = $("boss-hp-overlay");
+    if (bossOver) bossOver.textContent = `${state.bossHP}/${state.bossMaxHP}`;
+    $("hero-mp-num").textContent = `${state.heroMP} / ${state.heroMaxMP}`;
+    $("hero-mp-fill").style.width = (state.heroMP / state.heroMaxMP * 100) + "%";
+}
+
+function updateGridHighlight() {
+    heroWrap.dataset.x = state.heroPos.x;
+    heroWrap.dataset.y = state.heroPos.y;
+
+    // 5×5 grid 動態高亮（清所有 class → 重算）
+    document.querySelectorAll(".grid-tile").forEach(el => {
+        el.classList.remove("hero-pos", "move-range", "attack-range", "boss-pos");
+        const cx = parseInt(el.dataset.x, 10);
+        const cy = parseInt(el.dataset.y, 10);
+
+        // boss 格
+        if (cx === BOSS_POS.x && cy === BOSS_POS.y) {
+            el.classList.add("boss-pos");
+            return;
+        }
+
+        // 攻擊範圍 = boss 周圍 Chebyshev = 1
+        const distBoss = Math.max(Math.abs(cx - BOSS_POS.x), Math.abs(cy - BOSS_POS.y));
+        if (distBoss === 1) el.classList.add("attack-range");
+
+        // 移動範圍 = hero 周圍 Chebyshev = 1（之後可依技能調 range）
+        const distHero = Math.max(Math.abs(cx - state.heroPos.x), Math.abs(cy - state.heroPos.y));
+        if (distHero === 1) el.classList.add("move-range");
+
+        // hero 當前格
+        if (cx === state.heroPos.x && cy === state.heroPos.y) el.classList.add("hero-pos");
+    });
+
+    // 戰況 pill（合進主角卡的單行版）
+    const statusPanel = $("combat-status");
+    const dist = chebyshev(state.heroPos, BOSS_POS);
+
+    if (inAttackRange(state.heroPos)) {
+        statusPanel.classList.add("in-range");
+        statusPanel.textContent = "⚔ 攻擊範圍！";
+    } else {
+        statusPanel.classList.remove("in-range");
+        statusPanel.textContent = `📍 距離 ${dist} 格`;
+    }
+}
+
+function loadQuestion() {
+    const q = QUESTIONS[state.qIdx % QUESTIONS.length];
+    $("arena-question").textContent = q.q;
+    const btns = document.querySelectorAll(".opt-btn");
+    btns.forEach((btn, i) => {
+        btn.textContent = "ABCD"[i] + ". " + q.options[i];
+        btn.className = "opt-btn";
+        btn.disabled = false;
+        btn.onclick = () => handleAnswer(i, btn);
+    });
+}
+
+function popDamage(targetEl, text, miss) {
+    const rect = targetEl.getBoundingClientRect();
+    const stageRect = stage.getBoundingClientRect();
+    const pop = document.createElement("div");
+    pop.className = "dmg-pop" + (miss ? " miss" : "");
+    pop.textContent = text;
+    pop.style.left = (rect.left - stageRect.left + rect.width / 2) + "px";
+    pop.style.top  = (rect.top  - stageRect.top  + 10) + "px";
+    stage.appendChild(pop);
+    setTimeout(() => pop.remove(), 1000);
+}
+
+async function handleAnswer(idx, btn) {
+    if (state.busy || state.finished) return;
+    state.busy = true;
+    const q = QUESTIONS[state.qIdx % QUESTIONS.length];
+    document.querySelectorAll(".opt-btn").forEach(b => b.disabled = true);
+
+    if (idx === q.ans) {
+        btn.classList.add("correct");
+        state.combo++;
+        showComboIfDue();
+        await attackBoss();   // 原型：站原地、一律攻擊（移動先不做）
+    } else {
+        btn.classList.add("wrong");
+        document.querySelectorAll(".opt-btn")[q.ans].classList.add("correct");
+        state.combo = 0;
+        await getHitByBoss();
+    }
+
+    if (state.bossHP <= 0)             return endGame("win");
+    if (state.heroHP <= 0)             return endGame("dead");
+    if (state.heroPos.x < 0 || state.heroPos.y < 0) return endGame("retreat");
+
+    await sleep(700);
+    state.qIdx++;
+    state.busy = false;
+    loadQuestion();
+}
+
+// D. Combo 大字提示
+function showComboIfDue() {
+    let text, tier;
+    if (state.combo === 3)       { text = "COMBO ×3!"; tier = "tier-1"; }
+    else if (state.combo === 5)  { text = "COMBO ×5!!"; tier = "tier-2"; }
+    else if (state.combo === 10) { text = "COMBO ×10!!!"; tier = "tier-3"; }
+    else if (state.combo > 10 && state.combo % 5 === 0) { text = `COMBO ×${state.combo}!!!`; tier = "tier-3"; }
+    else return;
+    const pop = document.createElement("div");
+    pop.className = "combo-pop " + tier;
+    pop.textContent = text;
+    stage.appendChild(pop);
+    setTimeout(() => pop.remove(), 1200);
+}
+
+// D. 連擊傷害倍率
+function getComboMultiplier() {
+    if (state.combo >= 10) return 3.0;
+    if (state.combo >= 5)  return 2.0;
+    if (state.combo >= 3)  return 1.5;
+    return 1.0;
+}
+
+// C. 命中閃光 + 6 粒子（在 target sprite 中心放）
+// ===== 24 職業專屬 VFX（派派 5/24，Codex 生圖）=====
+// 每個 job 對應 1 個 motion；少數職業有特殊 motion 強化主題
+const JOB_VFX_MOTION = {
+    translator: "vortex",
+    programmer: "vortex",
+    ai_engineer: "vortex",
+    space_captain: "beam",
+    president: "drop",
+    poet: "drop",
+    reporter: "drop",
+    michelin_chef: "drop",
+    chef: "sweep",
+    athlete: "sweep",
+    // 其他 14 個職業預設都用 expand（中央放射爆破）
+};
+
+function spawnHeroVfx(jobKey) {
+    if (!jobKey) return;
+    const motion = JOB_VFX_MOTION[jobKey] || "expand";
+    const url = `assets/images/hero_vfx/${jobKey}.webp?v=2`;
+
+    // 在魔王身上爆 (boss 中心)
+    const bossRect = boss.getBoundingClientRect();
+    const stageRect = stage.getBoundingClientRect();
+    const cx = bossRect.left - stageRect.left + bossRect.width / 2;
+    const cy = bossRect.top  - stageRect.top  + bossRect.height * 0.45;
+
+    const img = document.createElement("img");
+    img.className = `boss-vfx motion-${motion} hero-vfx`;
+    img.onerror = () => { img.remove(); };  // 圖沒生好直接消失（spawnBigImpact CSS 還在）
+    img.src = url;
+    img.style.left = cx + "px";
+    img.style.top  = cy + "px";
+    img.style.width = "320px";
+    img.style.height = "320px";
+    stage.appendChild(img);
+    setTimeout(() => img.remove(), 900);
+}
+
+// P4 武器專屬大畫面（4 武器各一套華麗 VFX）
+function spawnBigImpact(weaponKey) {
+    const rect = boss.getBoundingClientRect();
+    const stageRect = stage.getBoundingClientRect();
+    const cx = rect.left - stageRect.left + rect.width / 2;
+    const cy = rect.top  - stageRect.top  + rect.height * 0.5;
+
+    const wrap = document.createElement("div");
+    wrap.className = `big-impact big-impact-${weaponKey}`;
+    wrap.style.left = cx + "px";
+    wrap.style.top  = cy + "px";
+
+    if (weaponKey === "sword") {
+        // 8 道交叉劍光（X 字 + 星形）
+        for (let i = 0; i < 8; i++) {
+            const ray = document.createElement("div");
+            ray.className = "sword-ray";
+            ray.style.transform = `translate(-50%, -50%) rotate(${i * 45}deg)`;
+            ray.style.animationDelay = `${i * 20}ms`;
+            wrap.appendChild(ray);
+        }
+    } else if (weaponKey === "book") {
+        // 法陣（旋轉圓 + 8 道符文）
+        const circle = document.createElement("div");
+        circle.className = "book-circle";
+        wrap.appendChild(circle);
+        const runes = ["✦", "✧", "★", "☆", "✦", "✧", "★", "☆"];
+        for (let i = 0; i < 8; i++) {
+            const r = document.createElement("div");
+            r.className = "book-rune";
+            r.textContent = runes[i];
+            r.style.transform = `translate(-50%, -50%) rotate(${i * 45}deg) translateY(-60px)`;
+            r.style.animationDelay = `${i * 50}ms`;
+            wrap.appendChild(r);
+        }
+    } else if (weaponKey === "staff") {
+        // 12 個光點環繞 boss 匯聚 + 爆炸
+        for (let i = 0; i < 12; i++) {
+            const orb = document.createElement("div");
+            orb.className = "staff-orb";
+            const angle = (i / 12) * Math.PI * 2;
+            const radius = 90;
+            orb.style.setProperty("--sx", Math.cos(angle) * radius + "px");
+            orb.style.setProperty("--sy", Math.sin(angle) * radius + "px");
+            orb.style.animationDelay = `${i * 30}ms`;
+            wrap.appendChild(orb);
+        }
+    } else if (weaponKey === "gauntlet") {
+        // 大拳印 ✊ + 3 環衝擊波
+        const fist = document.createElement("div");
+        fist.className = "gauntlet-fist";
+        fist.textContent = "✊";
+        wrap.appendChild(fist);
+        for (let i = 0; i < 3; i++) {
+            const ring = document.createElement("div");
+            ring.className = "gauntlet-ring";
+            ring.style.animationDelay = `${i * 100}ms`;
+            wrap.appendChild(ring);
+        }
+    }
+
+    stage.appendChild(wrap);
+    setTimeout(() => wrap.remove(), 900);
+}
+
+function spawnHitFX(targetEl, weaponKey) {
+    const rect = targetEl.getBoundingClientRect();
+    const stageRect = stage.getBoundingClientRect();
+    const cx = rect.left - stageRect.left + rect.width / 2;
+    const cy = rect.top  - stageRect.top  + rect.height / 2;
+
+    // 中央閃光（武器專屬色彩 / 形狀）
+    const flash = document.createElement("div");
+    flash.className = "hit-flash" + (weaponKey ? ` weapon-${weaponKey}` : "");
+    flash.style.left = cx + "px";
+    flash.style.top  = cy + "px";
+    stage.appendChild(flash);
+    setTimeout(() => flash.remove(), 700);
+
+    // 6 粒子四散
+    for (let i = 0; i < 6; i++) {
+        const angle = (i / 6) * Math.PI * 2 + Math.random() * 0.3;
+        const dist = 50 + Math.random() * 30;
+        const midDist = dist * 0.5;
+        const p = document.createElement("div");
+        p.className = "hit-particle";
+        p.style.left = cx + "px";
+        p.style.top  = cy + "px";
+        p.style.setProperty("--px", Math.cos(angle) * dist + "px");
+        p.style.setProperty("--py", Math.sin(angle) * dist + "px");
+        p.style.setProperty("--px-mid", Math.cos(angle) * midDist + "px");
+        p.style.setProperty("--py-mid", Math.sin(angle) * midDist + "px");
+        stage.appendChild(p);
+        setTimeout(() => p.remove(), 850);
+    }
+}
+
+async function moveForward() {
+    // 4×4：朝魔王方向走 1 格（誰偏差大優先走那軸）
+    const dx = BOSS_POS.x - state.heroPos.x;
+    const dy = BOSS_POS.y - state.heroPos.y;
+    if (Math.abs(dx) >= Math.abs(dy) && dx !== 0) {
+        state.heroPos.x += Math.sign(dx);
+    } else if (dy !== 0) {
+        state.heroPos.y += Math.sign(dy);
+    }
+    showToast("⬆ 前進！" + (inAttackRange(state.heroPos) ? " 進入攻擊範圍！" : ""));
+    updateGridHighlight();
+    await sleep(550);
+}
+
+async function moveBackward() {
+    // 4×4：往反 boss 方向走 1 格（誰差距小優先退那軸）
+    const dx = BOSS_POS.x - state.heroPos.x;
+    const dy = BOSS_POS.y - state.heroPos.y;
+    if (Math.abs(dx) <= Math.abs(dy) && dx !== 0) {
+        state.heroPos.x -= Math.sign(dx);
+    } else if (dy !== 0) {
+        state.heroPos.y -= Math.sign(dy);
+    } else {
+        // 不在魔王同列同行（dx=dy=0 不可能因為魔王在 (3,3)），保險用 -x
+        state.heroPos.x -= 1;
+    }
+    if (state.heroPos.x >= 0 && state.heroPos.y >= 0) {
+        showToast("⬇ 被打退...");
+        updateGridHighlight();
+    }
+    await sleep(550);
+}
+
+async function attackBoss() {
+    const mult = getComboMultiplier();
+    const baseDmg = 80 + Math.floor(Math.random() * 41);  // 80-120 (派派 5/25 ABC)
+    const dmg = Math.floor(baseDmg * mult);
+    state.bossHP = Math.max(0, state.bossHP - dmg);
+
+    // B. 武器專屬攻擊動畫（依當前武器套對應 keyframes）
+    const attackClass = `attacking-${state.weapon}`;
+    heroWrap.classList.add(attackClass);
+    const attackDur = state.weapon === "pencil" ? 500 : (state.weapon === "staff" ? 750 : 700);
+    setTimeout(() => heroWrap.classList.remove(attackClass), attackDur);
+
+    // 原型：飛行物先不做，只保留出招動作 + 命中現有衝擊特效（spawnBigImpact/hitFX）
+
+    // 衝刺中段（接觸時）觸發特效
+    await sleep(state.weapon === "pencil" ? 220 : 320);
+    bossWrap.classList.add("hit");
+    // 切到 tier 的 hit sprite
+    if (state.bossData && state.bossData.hit_sprite) {
+        boss.src = `assets/images/${state.bossData.hit_sprite}?v=3`;
+    }
+    popDamage(boss, "-" + dmg, false);
+    spawnHitFX(boss, state.weapon);
+    spawnBigImpact(state.weapon);  // P4 武器專屬大畫面（CSS）
+    spawnHeroVfx(playerSetup.jobKey);  // 派派 5/24：24 職業專屬 VFX (Codex)
+    stage.classList.add("impact", "zoom-impact");  // P3 命中 zoom-in + slow-mo
+    setTimeout(() => stage.classList.remove("impact", "zoom-impact"), 500);
+    if (navigator.vibrate) navigator.vibrate(40);
+    updateBars();
+
+    await sleep(400);
+    bossWrap.classList.remove("hit");
+    // 還原成 idle
+    if (state.bossHP > 0 && state.bossData) {
+        boss.src = `assets/images/${state.bossData.sprite}?v=3`;
+    }
+}
+
+// 武器軌跡：從 hero 中心 → boss 中心劃過去
+function spawnWeaponTrail() {
+    if (state.weapon === "fist") return;  // 拳頭不畫軌跡
+    const heroRect = hero.getBoundingClientRect();
+    const bossRect = boss.getBoundingClientRect();
+    const stageRect = stage.getBoundingClientRect();
+    const hx = heroRect.left - stageRect.left + heroRect.width / 2;
+    const hy = heroRect.top  - stageRect.top  + heroRect.height * 0.45;
+    const bx = bossRect.left - stageRect.left + bossRect.width / 2;
+    const by = bossRect.top  - stageRect.top  + bossRect.height * 0.55;
+    const midX = (hx + bx) / 2;
+    const midY = (hy + by) / 2;
+
+    const trail = document.createElement("div");
+    trail.className = `weapon-trail trail-${state.weapon}`;
+
+    if (state.weapon === "sword" || state.weapon === "pencil") {
+        // 直/弧線：從 hero 拉到 boss
+        const dx = bx - hx, dy = by - hy;
+        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+        const len = Math.sqrt(dx*dx + dy*dy);
+        trail.style.left = hx + "px";
+        trail.style.top  = hy + "px";
+        trail.style.width = len + "px";
+        trail.style.transform = `rotate(${angle}deg)`;
+    } else {
+        // 圓波：放魔王中心
+        trail.style.left = bx + "px";
+        trail.style.top  = by + "px";
+        trail.style.transform = "translate(-50%, -50%)";
+    }
+    stage.appendChild(trail);
+    setTimeout(() => trail.remove(), 700);
+}
+
+// 從 attack sprite 路徑推 charge/release 同 tier 路徑
+function deriveBossFramePath(attackSprite, phase) {
+    if (!attackSprite) return null;
+    // e.g. "boss/v2/math/t1/attack.webp" → "boss/v2/math/t1/charge.webp"
+    return attackSprite.replace(/\/attack\.(png|webp)$/, `/${phase}.webp`);
+}
+
+// 嘗試切換 boss sprite；圖不存在會在 img.onerror 回退
+function swapBossSprite(spritePath, fallback) {
+    if (!spritePath) return;
+    boss.src = `assets/images/${spritePath}?v=3`;
+    boss.onerror = () => {
+        boss.onerror = null;
+        if (fallback) boss.src = `assets/images/${fallback}?v=3`;
+    };
+}
+
+async function getHitByBoss() {
+    // tier 等級 (t1/t2/t3 → 1/2/3)
+    const tierLevel = parseInt((playerSetup.tier || "t1").replace("t", ""), 10) || 1;
+
+    const attackSp = state.bossData && state.bossData.attack_sprite;
+    const chargeSp = deriveBossFramePath(attackSp, "charge");
+    const releaseSp = deriveBossFramePath(attackSp, "release");
+
+    // B2 蓄力前搖 0.45s（魔王發光、scale 變大 + 切 charge.png）
+    bossWrap.classList.add("charging");
+    swapBossSprite(chargeSp, attackSp);  // charge 圖；不存在 fallback attack
+    await sleep(450);
+    bossWrap.classList.remove("charging");
+
+    // B1 切到 attack sprite (peak attack pose) — 維持 0.45s 讓肉眼看得到
+    if (attackSp) {
+        boss.src = `assets/images/${attackSp}?v=3`;
+    }
+
+    await sleep(50);
+
+    // B3 投射物：boss → hero，tier 越高越多
+    spawnBossProjectile(tierLevel);
+
+    // 0.4s 後切到 release（follow-through 跟進姿勢）
+    setTimeout(() => swapBossSprite(releaseSp, attackSp), 400);
+
+    // 飛行時間 0.5s
+    await sleep(500);
+
+    // 命中：扣血 + shake + vignette + damage popup
+    const dmg = 80 + Math.floor(Math.random() * 41);  // 80-120 (派派 5/25 ABC) - 無 tier 加成統一
+    state.heroHP = Math.max(0, state.heroHP - dmg);
+    heroWrap.classList.add("hit");
+    stage.classList.add("shake", "player-hit");
+    popDamage(hero, "-" + dmg, true);
+
+    // B5 tier 3 stage flash + 大震動
+    if (tierLevel >= 3) {
+        const flash = document.createElement("div");
+        flash.className = "stage-mega-flash";
+        stage.appendChild(flash);
+        setTimeout(() => flash.remove(), 350);
+    }
+
+    if (navigator.vibrate) navigator.vibrate(tierLevel >= 3 ? 60 : (tierLevel >= 2 ? 40 : 30));
+    updateBars();
+    await sleep(500);
+
+    heroWrap.classList.remove("hit");
+    stage.classList.remove("shake", "player-hit");
+
+    // B4 切回 idle sprite
+    if (state.bossHP > 0 && state.bossData) {
+        boss.src = `assets/images/${state.bossData.sprite}?v=3`;
+    }
+    // 原型：站原地不後退（移動先不做）
+}
+
+// ===== B3 魔王投射物：15 隻魔王各自的絕招（dispatcher → 8 primitive 組合）=====
+function spawnBossProjectile(tierLevel) {
+    const subjKey = playerSetup.subject;
+    const pos = computeAttackPositions();
+    const key = `${subjKey}-t${tierLevel}`;
+    const handler = BOSS_ATTACKS[key] || ((p, s, t) => pStraightShot(p, s, t, 1));
+    handler(pos, subjKey, tierLevel);
+}
+
+function computeAttackPositions() {
+    const bossRect = boss.getBoundingClientRect();
+    const heroRect = hero.getBoundingClientRect();
+    const stageRect = stage.getBoundingClientRect();
+    return {
+        bx: bossRect.left - stageRect.left + bossRect.width / 2,
+        by: bossRect.top  - stageRect.top  + bossRect.height * 0.5,
+        hx: heroRect.left - stageRect.left + heroRect.width / 2,
+        hy: heroRect.top  - stageRect.top  + heroRect.height * 0.4,
+        stageW: stageRect.width,
+        stageH: stageRect.height,
+    };
+}
+
+// ----- 8 primitive 攻擊動畫 -----
+
+// 1. 直線球（1+ 顆，可微 jitter）
+function pStraightShot(pos, subj, tier, count = 1, jitterSpread = 12) {
+    for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+            const proj = document.createElement("div");
+            proj.className = `boss-proj subj-${subj} tier-${tier}`;
+            proj.style.left = pos.bx + "px";
+            proj.style.top  = pos.by + "px";
+            const jitter = (i - (count - 1) / 2) * jitterSpread;
+            proj.style.setProperty("--tx", (pos.hx - pos.bx + jitter) + "px");
+            proj.style.setProperty("--ty", (pos.hy - pos.by) + "px");
+            stage.appendChild(proj);
+            setTimeout(() => proj.remove(), 700);
+        }, i * 60);
+    }
+}
+
+// 2. 扇形散射
+function pFanSpray(pos, subj, tier, count, spreadDeg = 40) {
+    const dx = pos.hx - pos.bx;
+    const dy = pos.hy - pos.by;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const baseAngle = Math.atan2(dy, dx);
+    const half = (spreadDeg * Math.PI / 180) / 2;
+    for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+            const proj = document.createElement("div");
+            proj.className = `boss-proj subj-${subj} tier-${tier}`;
+            proj.style.left = pos.bx + "px";
+            proj.style.top  = pos.by + "px";
+            const ratio = count === 1 ? 0 : (i / (count - 1) - 0.5) * 2;  // -1 ~ 1
+            const angle = baseAngle + half * ratio;
+            proj.style.setProperty("--tx", Math.cos(angle) * dist + "px");
+            proj.style.setProperty("--ty", Math.sin(angle) * dist + "px");
+            stage.appendChild(proj);
+            setTimeout(() => proj.remove(), 750);
+        }, i * 50);
+    }
+}
+
+// 3. 螺旋齊射（先繞 orbit 點再飛向 hero）
+function pSpiralVolley(pos, subj, tier, count) {
+    for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+            const proj = document.createElement("div");
+            proj.className = `boss-proj subj-${subj} tier-${tier} spiral`;
+            proj.style.left = pos.bx + "px";
+            proj.style.top  = pos.by + "px";
+            const angle = (i / count) * Math.PI * 2;
+            const orbitR = 70 + (i % 3) * 12;
+            proj.style.setProperty("--orbit-x", Math.cos(angle) * orbitR + "px");
+            proj.style.setProperty("--orbit-y", Math.sin(angle) * orbitR + "px");
+            proj.style.setProperty("--tx", (pos.hx - pos.bx) + "px");
+            proj.style.setProperty("--ty", (pos.hy - pos.by) + "px");
+            stage.appendChild(proj);
+            setTimeout(() => proj.remove(), 900);
+        }, i * 45);
+    }
+}
+
+// 4. 從天而降（從 hero 上方掉下來）
+function pRainFromAbove(pos, subj, tier, count) {
+    for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+            const proj = document.createElement("div");
+            proj.className = `boss-proj subj-${subj} tier-${tier}`;
+            const startX = pos.hx + (Math.random() - 0.5) * 200;
+            const startY = -50;
+            proj.style.left = startX + "px";
+            proj.style.top  = startY + "px";
+            proj.style.setProperty("--tx", (pos.hx - startX) + "px");
+            proj.style.setProperty("--ty", (pos.hy - startY) + "px");
+            stage.appendChild(proj);
+            setTimeout(() => proj.remove(), 700);
+        }, i * 70);
+    }
+}
+
+// 5. 雷電鋸齒直線（SVG path，boss → hero）
+function pLightningLine(pos, subj, tier) {
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("class", `boss-lightning subj-${subj} tier-${tier}`);
+    svg.style.position = "absolute";
+    svg.style.left = "0";
+    svg.style.top  = "0";
+    svg.style.width  = pos.stageW + "px";
+    svg.style.height = pos.stageH + "px";
+    svg.style.pointerEvents = "none";
+    svg.style.zIndex = "200";
+
+    const dx = pos.hx - pos.bx;
+    const dy = pos.hy - pos.by;
+    const segs = 7;
+    let d = `M ${pos.bx} ${pos.by}`;
+    for (let i = 1; i < segs; i++) {
+        const t = i / segs;
+        const px = pos.bx + dx * t + (Math.random() - 0.5) * 35;
+        const py = pos.by + dy * t + (Math.random() - 0.5) * 35;
+        d += ` L ${px} ${py}`;
+    }
+    d += ` L ${pos.hx} ${pos.hy}`;
+
+    const path = document.createElementNS(svgNS, "path");
+    path.setAttribute("class", "lightning-path");
+    path.setAttribute("d", d);
+    svg.appendChild(path);
+
+    // 第二條較細的內部閃光
+    const path2 = document.createElementNS(svgNS, "path");
+    path2.setAttribute("class", "lightning-core");
+    path2.setAttribute("d", d);
+    svg.appendChild(path2);
+
+    stage.appendChild(svg);
+    setTimeout(() => svg.remove(), 500);
+}
+
+// 6. 匯聚爆炸（12 小光點向中心匯聚 → 爆出大球）
+function pConvergenceBlast(pos, subj, tier, count = 12) {
+    const cx = pos.hx;
+    const cy = pos.hy - 20;
+    for (let i = 0; i < count; i++) {
+        const orb = document.createElement("div");
+        orb.className = `boss-converge subj-${subj}`;
+        const angle = (i / count) * Math.PI * 2;
+        const r = 110 + (i % 3) * 10;
+        const startX = cx + Math.cos(angle) * r;
+        const startY = cy + Math.sin(angle) * r * 0.7;
+        orb.style.left = startX + "px";
+        orb.style.top  = startY + "px";
+        orb.style.setProperty("--tx", (cx - startX) + "px");
+        orb.style.setProperty("--ty", (cy - startY) + "px");
+        stage.appendChild(orb);
+        setTimeout(() => orb.remove(), 320);
+    }
+    // 匯聚完爆炸大球（500ms 後命中時剛好爆開）
+    setTimeout(() => {
+        const big = document.createElement("div");
+        big.className = `boss-proj subj-${subj} tier-${tier} big-blast`;
+        big.style.left = cx + "px";
+        big.style.top  = cy + "px";
+        big.style.setProperty("--tx", "0px");
+        big.style.setProperty("--ty", "0px");
+        stage.appendChild(big);
+        setTimeout(() => big.remove(), 500);
+    }, 300);
+}
+
+// 7. 環繞主角後爆炸
+function pOrbitBlast(pos, subj, tier, count) {
+    for (let i = 0; i < count; i++) {
+        const orb = document.createElement("div");
+        orb.className = `boss-proj subj-${subj} tier-${tier} orbit`;
+        orb.style.left = pos.hx + "px";
+        orb.style.top  = pos.hy + "px";
+        orb.style.animationDelay = (i / count * 0.15) + "s";
+        orb.style.setProperty("--orbit-start", (i / count * 360) + "deg");
+        stage.appendChild(orb);
+        setTimeout(() => orb.remove(), 950);
+    }
+}
+
+// 8. 大印章從天蓋下（圓盤或星形落到 hero 上）
+function pStampFromSky(pos, subj, tier, shape = "shape-disc") {
+    const stamp = document.createElement("div");
+    stamp.className = `boss-stamp subj-${subj} tier-${tier} ${shape}`;
+    stamp.style.left = pos.hx + "px";
+    stamp.style.top  = pos.hy + "px";
+    stage.appendChild(stamp);
+    setTimeout(() => stamp.remove(), 750);
+}
+
+// ----- 楓之谷風 VFX primitive：直接顯示 vfx.webp 並套用 motion class -----
+function pMapleVfx(pos, subj, tier, motion, opts = {}) {
+    const url = `assets/images/boss/v2/${subj}/t${tier}/vfx.webp?v=3`;
+    const count = opts.count || 1;
+    const stagger = opts.stagger || 0;
+    console.log(`[boss-vfx] ${subj}-t${tier} motion=${motion} count=${count} url=${url}`);
+
+    for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+            const img = document.createElement("img");
+            img.className = `boss-vfx motion-${motion} tier-${tier}`;
+            // onerror 必須在 src 之前綁定，404 才一定攔得到
+            img.onerror = () => {
+                console.warn(`[boss-vfx] onerror fired for ${url} → fallback aura`);
+                img.classList.add("vfx-fallback", `subj-${subj}`);
+                img.removeAttribute("src");
+            };
+            img.onload = () => {
+                console.log(`[boss-vfx] loaded OK: ${url} (${img.naturalWidth}x${img.naturalHeight})`);
+            };
+            img.src = url;
+            // 預設定位：hero 中心；rain motion 從上方隨機 x
+            let x = pos.hx, y = pos.hy;
+            if (opts.at === "boss")    { x = pos.bx; y = pos.by; }
+            if (opts.at === "midpoint"){ x = (pos.bx + pos.hx) / 2; y = (pos.by + pos.hy) / 2; }
+            if (motion === "rain")     { x = pos.hx + (Math.random() - 0.5) * 240; y = -60; }
+            img.style.left = x + "px";
+            img.style.top  = y + "px";
+            if (opts.size) {
+                img.style.width  = opts.size + "px";
+                img.style.height = opts.size + "px";
+            }
+            stage.appendChild(img);
+            setTimeout(() => img.remove(), opts.lifetime || 850);
+        }, i * stagger);
+    }
+}
+
+// ----- 15 隻魔王 楓之谷風絕招 dispatcher -----
+const BOSS_ATTACKS = {
+    // 📐 數學：三角函數彈幕 / 幾何圖形爆裂 / 圓周率黑洞
+    "math-t1":    (p, s, t) => pMapleVfx(p, s, t, "burst",   { count: 5, stagger: 70, size: 200 }),
+    "math-t2":    (p, s, t) => pMapleVfx(p, s, t, "expand",  { size: 340 }),
+    "math-t3":    (p, s, t) => { pMapleVfx(p, s, t, "vortex", { size: 460, lifetime: 1000 }); setTimeout(() => stage.classList.add("color-flash-blue"), 400); setTimeout(() => stage.classList.remove("color-flash-blue"), 700); },
+    // 📕 國語：毛筆掃刷 / 詩詞風暴 / 萬卷天降
+    "chinese-t1": (p, s, t) => pMapleVfx(p, s, t, "sweep",   { size: 380 }),
+    "chinese-t2": (p, s, t) => pMapleVfx(p, s, t, "rain",    { count: 5, stagger: 110, size: 200 }),
+    "chinese-t3": (p, s, t) => { pMapleVfx(p, s, t, "rain", { count: 7, stagger: 90, size: 240 }); setTimeout(() => pMapleVfx(p, s, t, "expand", { size: 380 }), 380); },
+    // 🔤 英文：ABC 連發 / 拼字法陣 / GRAMMAR 雷射
+    "english-t1": (p, s, t) => pMapleVfx(p, s, t, "burst",   { count: 5, stagger: 80, size: 200 }),
+    "english-t2": (p, s, t) => pMapleVfx(p, s, t, "vortex",  { size: 360, lifetime: 900 }),
+    "english-t3": (p, s, t) => { pMapleVfx(p, s, t, "beam",  { size: 520, lifetime: 700 }); setTimeout(() => stage.classList.add("color-flash-purple"), 200); setTimeout(() => stage.classList.remove("color-flash-purple"), 500); },
+    // 🔬 自然：元素彈 / 連鎖閃電 / 元素風暴
+    "science-t1": (p, s, t) => pMapleVfx(p, s, t, "expand",  { size: 220 }),
+    "science-t2": (p, s, t) => pMapleVfx(p, s, t, "sweep",   { size: 420 }),
+    "science-t3": (p, s, t) => { pMapleVfx(p, s, t, "expand", { size: 500, lifetime: 1000 }); setTimeout(() => stage.classList.add("color-flash-green"), 350); setTimeout(() => stage.classList.remove("color-flash-green"), 650); },
+    // 🌏 社會：地圖長矛 / 時空漩渦 / 大陸壓制
+    "social-t1":  (p, s, t) => pMapleVfx(p, s, t, "sweep",   { size: 320 }),
+    "social-t2":  (p, s, t) => pMapleVfx(p, s, t, "vortex",  { size: 380, lifetime: 950 }),
+    "social-t3":  (p, s, t) => { pMapleVfx(p, s, t, "drop",  { size: 460, lifetime: 800 }); setTimeout(() => stage.classList.add("color-flash-gold"), 350); setTimeout(() => stage.classList.remove("color-flash-gold"), 650); },
+};
+
+
+function showToast(text) {
+    const t = document.createElement("div");
+    t.className = "arena-toast";
+    t.textContent = text;
+    stage.appendChild(t);
+    setTimeout(() => t.remove(), 1200);
+}
+
+function endGame(outcome) {
+    state.finished = true;
+    let emoji, title, titleClass, sub;
+    let overlayDelay = 600;
+
+    if (outcome === "win") {
+        // H. 勝利 cinematic（拿掉光柱、拿掉 combo 顯示）
+        bossWrap.classList.add("defeated");
+        // 切到 tier 的 death sprite
+        if (state.bossData && state.bossData.defeat_sprite) {
+            boss.src = `assets/images/${state.bossData.defeat_sprite}?v=3`;
+        }
+        stage.classList.add("slow-mo");
+        heroWrap.classList.remove("attacking");
+        heroWrap.classList.add("victory");
+        emoji = "🎉"; title = "勝利！"; titleClass = "";
+        sub = `擊敗魔王！剩餘 HP：${state.heroHP} · 答對 ${state.qIdx + 1} 題`;
+        overlayDelay = 2200;
+    } else if (outcome === "retreat") {
+        // H. 失敗 cinematic
+        const vig = document.createElement("div");
+        vig.className = "lose-vignette";
+        stage.appendChild(vig);
+        emoji = "🏳"; title = "撤退失敗..."; titleClass = "lose";
+        sub = "被打出戰場！魔王還剩 HP " + state.bossHP;
+        overlayDelay = 1200;
+    } else {
+        // H. 失敗 cinematic
+        const vig = document.createElement("div");
+        vig.className = "lose-vignette";
+        stage.appendChild(vig);
+        emoji = "💀"; title = "失敗..."; titleClass = "lose";
+        sub = "魔王還剩 HP " + state.bossHP;
+        overlayDelay = 1200;
+    }
+    setTimeout(() => {
+        const overlay = document.createElement("div");
+        overlay.className = "arena-overlay";
+        overlay.innerHTML =
+            `<div class="overlay-emoji">${emoji}</div>
+             <div class="overlay-title ${titleClass}">${title}</div>
+             <div class="overlay-sub">${sub}</div>
+             <button class="overlay-btn" onclick="location.reload()">再戰一次</button>`;
+        stage.appendChild(overlay);
+    }, overlayDelay);
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// 派派 5/23：武器列拿掉，職業 = 主角造型 + 對應武器
+// state.weapon 仍存在（決定動畫/特效），但由職業自動推算
+state.weapon = "sword";
+
+function setHeroSpriteFromJob(job) {
+    // 原型：不分職業/武器 → 固定小男孩(之後加小女孩切換)，攻擊用通用 staff 風魔法特效
+    hero.src = "assets/images/arena/hero_boy.webp?v=1";
+    state.weapon = "staff";
+}
+
+// 保留 switchWeapon 給示範技能/未來用
+function switchWeapon(key) {
+    state.weapon = key;
+}
+
+// ===== Setup 流程 =====
+async function loadData() {
+    const [subjResp, jobsResp] = await Promise.all([
+        fetch("assets/data/subjects.json?v=3").then(r => r.json()),
+        fetch("assets/data/jobs.json?v=1").then(r => r.json()),
+    ]);
+    SUBJECTS_DATA = subjResp;
+    JOBS_DATA = jobsResp;
+}
+
+function renderSubjectPicker() {
+    const container = document.getElementById("setup-subjects");
+    container.innerHTML = "";
+    for (const key of ["math","chinese","english","science","social"]) {
+        const meta = SUBJECT_META[key];
+        const btn = document.createElement("button");
+        btn.className = "subject-btn";
+        btn.dataset.subject = key;
+        btn.innerHTML = `<span class="emoji">${meta.emoji}</span><span>${meta.label}</span>`;
+        btn.onclick = () => {
+            playerSetup.subject = key;
+            document.querySelectorAll(".subject-btn[data-subject]").forEach(b => b.classList.toggle("active", b.dataset.subject === key));
+        };
+        if (key === playerSetup.subject) btn.classList.add("active");
+        container.appendChild(btn);
+    }
+}
+
+function renderTierPicker() {
+    const container = document.getElementById("setup-tiers");
+    container.innerHTML = "";
+    const TIERS = [
+        { key: "t1", label: "T1 初級", emoji: "😈", color: "#6fcf3f" },
+        { key: "t2", label: "T2 中級", emoji: "👺", color: "#ffd54d" },
+        { key: "t3", label: "T3 終極", emoji: "👹", color: "#ff5050" },
+    ];
+    TIERS.forEach(t => {
+        const btn = document.createElement("button");
+        btn.className = "subject-btn";
+        btn.dataset.tier = t.key;
+        btn.style.gridColumn = "span 1";
+        btn.innerHTML = `<span class="emoji">${t.emoji}</span><span>${t.label}</span>`;
+        btn.onclick = () => {
+            playerSetup.tier = t.key;
+            document.querySelectorAll(".subject-btn[data-tier]").forEach(b => b.classList.toggle("active", b.dataset.tier === t.key));
+        };
+        if (t.key === playerSetup.tier) btn.classList.add("active");
+        container.appendChild(btn);
+    });
+    // 設成 3 列
+    container.style.gridTemplateColumns = "repeat(3, 1fr)";
+}
+
+function renderJobPicker() {
+    const container = document.getElementById("setup-jobs");
+    container.innerHTML = "";
+    // 預設「不選職業」= 學生
+    const noneBtn = document.createElement("button");
+    noneBtn.className = "job-btn active";
+    noneBtn.dataset.jobKey = "";
+    noneBtn.innerHTML = `<span style="font-size:30px">🎒</span><span>學生<br>(預設)</span><span class="job-tier">Tier 0</span>`;
+    noneBtn.onclick = () => selectJob(null);
+    container.appendChild(noneBtn);
+    JOBS_DATA.forEach(j => {
+        const btn = document.createElement("button");
+        btn.className = "job-btn";
+        btn.dataset.jobKey = j.key;
+        btn.innerHTML = `
+            <img src="assets/images/${j.sprite}" alt="${j.name}" onerror="this.style.display='none'">
+            <span>${j.name}</span>
+            <span class="job-tier">T${j.tier}</span>
+        `;
+        btn.onclick = () => selectJob(j);
+        container.appendChild(btn);
+    });
+}
+
+function selectJob(job) {
+    playerSetup.jobKey = job ? job.key : null;
+    document.querySelectorAll(".job-btn").forEach(b => {
+        b.classList.toggle("active", b.dataset.jobKey === (job ? job.key : ""));
+    });
+    const preview = document.getElementById("job-preview");
+    if (!job) {
+        preview.innerHTML = `<div class="job-name">🎒 學生（預設）</div>HP 300 / 武器：⚔️ 劍`;
+    } else {
+        const w = pickWeaponByJob(job);
+        const wEmoji = { sword: "⚔️", book: "📕", staff: "🪄", gauntlet: "🥊" }[w];
+        const buff = job.tier === 1 ? "T1 入門" : job.tier === 2 ? "T2 進階" : "T3 高階";
+        preview.innerHTML = `<div class="job-name">${job.name}</div>${job.skill_desc || job.description}<br>武器：${wEmoji} ${w} · ${buff}`;
+    }
+}
+
+function applyJobBuff() {
+    // 5/25 派派 ABC：玩家固定 300 HP（無 tier 加成），整數 demo 用
+    state.heroMaxHP = 300; state.heroHP = 300;
+    const job = JOBS_DATA.find(j => j.key === playerSetup.jobKey);
+    if (!job) {
+        state.heroMaxMP = 50;  state.heroMP = 50;
+        return;
+    }
+    const bonus = { 1: [20, 10], 2: [40, 20], 3: [60, 30], 4: [80, 40] }[job.tier] || [0, 0];
+    state.heroMaxMP = 50 + bonus[1];  state.heroMP  = state.heroMaxMP;
+}
+
+// 圖片預載 helper（404 也 resolve 不卡 Promise.all）
+function preloadImage(url) {
+    return new Promise((resolve) => {
+        const im = new Image();
+        im.onload = () => resolve(true);
+        im.onerror = () => resolve(false);
+        im.src = url;
+    });
+}
+function showSetupSpinner() {
+    let sp = document.getElementById("setup-spinner");
+    if (!sp) {
+        sp = document.createElement("div");
+        sp.id = "setup-spinner";
+        sp.className = "setup-spinner";
+        sp.innerHTML = '<div class="setup-spinner-ring"></div><div class="setup-spinner-text">⚔ 準備戰場中...</div>';
+        document.body.appendChild(sp);
+    }
+    sp.style.display = "flex";
+}
+function hideSetupSpinner() {
+    const sp = document.getElementById("setup-spinner");
+    if (sp) sp.style.display = "none";
+}
+
+async function startArena() {
+    playerSetup.name = document.getElementById("setup-name").value.trim() || "派派";
+
+    // 套用題庫
+    const subj = SUBJECTS_DATA[playerSetup.subject];
+    QUESTIONS = subj.questions.slice();
+    for (let i = QUESTIONS.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [QUESTIONS[i], QUESTIONS[j]] = [QUESTIONS[j], QUESTIONS[i]];
+    }
+
+    // 套用 tier 對應的 boss + bg
+    const tierData = subj.tiers[playerSetup.tier];
+    state.bossData = tierData;
+    state.bossMaxHP = tierData.hp;
+    state.bossHP = tierData.hp;
+    boss.src = `assets/images/${tierData.sprite}?v=3`;
+    document.getElementById("boss-name-display").textContent = `★ ${tierData.name} ★`;
+    document.getElementById("boss-name-mini").textContent = `★ ${tierData.name} ★`;
+
+    // 預載連續動作幀 + 楓之谷 VFX 圖 — await 等載入完成（派派 5/24：戰鬥內絕對流暢）
+    const tierKey = playerSetup.tier;  // "t1"/"t2"/"t3"
+    const framesToPreload = [
+        `${tierData.sprite}?v=3`,
+        `${tierData.hit_sprite}?v=3`,
+        `${tierData.attack_sprite}?v=3`,
+        `${tierData.defeat_sprite}?v=3`,
+        `${deriveBossFramePath(tierData.attack_sprite, "charge")}?v=3`,
+        `${deriveBossFramePath(tierData.attack_sprite, "release")}?v=3`,
+        `boss/v2/${playerSetup.subject}/${tierKey}/vfx.webp?v=3`,
+    ].filter(Boolean);
+    // 派派 5/24：預載目前職業的 hero VFX 圖（避免第一次攻擊載入延遲）
+    if (playerSetup.jobKey) {
+        framesToPreload.push(`hero_vfx/${playerSetup.jobKey}.webp?v=2`);
+    }
+
+    // setup 畫面顯示「準備戰場中…」spinner，等所有圖載完才切戰場
+    showSetupSpinner();
+    await Promise.all(framesToPreload.map(p => preloadImage(`assets/images/${p}`)));
+    hideSetupSpinner();
+
+    // 戰場用 tier 的 bg（15 張 boss 各自背景），5×5 棋盤是 CSS overlay 疊在上面
+    stage.style.backgroundImage = `url("assets/images/${tierData.bg}?v=1")`;
+    // 派派 5/24：主角狀態列 (arena-hud) 也套同 bg + 深色 overlay，視覺上下連續
+    const hud = document.querySelector(".arena-hud");
+    if (hud) {
+        hud.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.35)), url("assets/images/${tierData.bg}?v=1")`;
+        hud.style.backgroundSize = "cover";
+        hud.style.backgroundPosition = "center top";
+    }
+
+    // 套用 UI 文字
+    document.getElementById("hero-name-display").textContent = playerSetup.name;
+    document.getElementById("info-subject-name").textContent = `${subj.emoji} ${subj.label}·五年級·${tierData.label}`;
+
+    // 套用職業 buff + 主角造型 sprite + 對應武器動畫
+    applyJobBuff();
+    const job = JOBS_DATA.find(j => j.key === playerSetup.jobKey);
+    setHeroSpriteFromJob(job);
+
+    // localStorage 存
+    try {
+        localStorage.setItem("eduarena_demo_setup", JSON.stringify(playerSetup));
+    } catch (e) { /* ignore */ }
+
+    // 切到戰場
+    document.getElementById("screen-setup").style.display = "none";
+    document.getElementById("screen-arena").style.display = "flex";
+
+    // 開場進場動畫
+    updateBars();
+    updateGridHighlight();
+    heroWrap.classList.add("entering");
+    setTimeout(() => heroWrap.classList.remove("entering"), 1100);
+
+    // 初始化 CombatEngine + 註冊單位 + 綁示範技能按鈕
+    initCombatEngine();
+    registerCombatUnits();
+    bindSkillButtons();
+
+    state.busy = true;
+    loadQuestion();
+    setTimeout(() => { state.busy = false; }, 1100);
+}
+
+// ===== CombatEngine 整合（神餓！）=====
+let engine = null;
+
+function initCombatEngine() {
+    engine = new CombatEngine(stage);
+
+    // 註冊 4 武器 → 4 個 skill（接現有 CSS keyframes + VFX class）
+    engine.registerSkill('sword_basic',    { dashAnim: 'attacking-sword',    impactVfx: 'vfx_sword',    dashMs: 320, impactMs: 500, damageMul: 1.0 });
+    engine.registerSkill('book_basic',     { dashAnim: 'attacking-book',     impactVfx: 'vfx_book',     dashMs: 320, impactMs: 600, damageMul: 1.0 });
+    engine.registerSkill('staff_basic',    { dashAnim: 'attacking-staff',    impactVfx: 'vfx_staff',    dashMs: 320, impactMs: 700, damageMul: 1.0 });
+    engine.registerSkill('gauntlet_basic', { dashAnim: 'attacking-gauntlet', impactVfx: 'vfx_gauntlet', dashMs: 320, impactMs: 500, damageMul: 1.0 });
+
+    // 註冊 5 個示範技能（展示擴展性）
+    engine.registerSkill('quick_slash', {
+        dashAnim: 'attacking-sword', impactVfx: 'vfx_sword',
+        dashMs: 180, impactMs: 300, damageMul: 0.7,
+    });
+    engine.registerSkill('triple_slash', {
+        dashAnim: 'attacking-sword', impactVfx: 'vfx_sword',
+        dashMs: 280, impactMs: 250, damageMul: 1.5,
+        repeats: 3, repeatInterval: 150,
+    });
+    engine.registerSkill('meteor', {
+        dashAnim: 'attacking-staff', impactVfx: 'vfx_meteor',
+        dashMs: 400, impactMs: 900, damageMul: 1.8,
+        screenShake: true, costMp: 15,
+    });
+    engine.registerSkill('heal', {
+        impactVfx: 'vfx_heal',
+        dashMs: 100, impactMs: 700, resetMs: 100,
+        damageMul: 0.6,             // 治療量 = atk × 0.6
+        heal: true, targetSelf: true, costMp: 20,
+        impactAnim: null,           // 不加 hit class
+    });
+    engine.registerSkill('mega_strike', {
+        dashAnim: 'attacking-gauntlet', impactVfx: 'vfx_mega',
+        dashMs: 350, impactMs: 1000, damageMul: 3.0,
+        screenShake: true, costMp: 30,
+    });
+
+    // VFX 庫
+    engine.registerVfx('vfx_sword',    { class: 'hit-flash weapon-sword',    duration: 700, particles: 6, particleClass: 'hit-particle' });
+    engine.registerVfx('vfx_book',     { class: 'hit-flash weapon-book',     duration: 700, particles: 8, particleClass: 'hit-particle' });
+    engine.registerVfx('vfx_staff',    { class: 'hit-flash weapon-staff',    duration: 700, particles: 6, particleClass: 'hit-particle' });
+    engine.registerVfx('vfx_gauntlet', { class: 'hit-flash weapon-gauntlet', duration: 700, particles: 6, particleClass: 'hit-particle' });
+    engine.registerVfx('vfx_meteor',   { class: 'hit-flash vfx-meteor',      duration: 900, particles: 14, particleClass: 'particle-fire' });
+    engine.registerVfx('vfx_heal',     { class: 'hit-flash vfx-heal',        duration: 600, particles: 4, particleClass: 'hit-particle' });
+    engine.registerVfx('vfx_mega',     { class: 'stage-mega-flash',          duration: 700, particles: 20, particleClass: 'particle-fire' });
+
+    // 事件鉤子：同步 UI（HP bar、傷害飄字、結局判定）
+    engine.on('hit_landed', ({ source, target, dmg }) => {
+        popDamage(target.el, '-' + dmg, target.id !== 'boss');
+        if (target.id === 'boss')      state.bossHP = target.hp;
+        else if (target.id === 'hero') state.heroHP = target.hp;
+        updateBars();
+    });
+    engine.on('heal_landed', ({ target, amount }) => {
+        // 綠色飄字
+        const rect = target.el.getBoundingClientRect();
+        const stageRect = stage.getBoundingClientRect();
+        const pop = document.createElement('div');
+        pop.className = 'heal-plus';
+        pop.textContent = '+' + amount;
+        pop.style.left = (rect.left - stageRect.left + rect.width / 2) + 'px';
+        pop.style.top  = (rect.top  - stageRect.top  + 10) + 'px';
+        stage.appendChild(pop);
+        setTimeout(() => pop.remove(), 1000);
+        if (target.id === 'hero') state.heroHP = target.hp;
+        updateBars();
+    });
+    engine.on('skill_blocked', ({ reason }) => {
+        showToast('⚠ 技能無法施放');
+    });
+    engine.on('unit_defeated', ({ unit }) => {
+        if (unit.id === 'boss') {
+            if (state.bossData && state.bossData.defeat_sprite) {
+                boss.src = `assets/images/${state.bossData.defeat_sprite}?v=3`;
+            }
+        }
+    });
+
+    return engine;
+}
+
+// 註冊 hero/boss units（在 startArena 時呼叫，因為 stats 隨職業/tier 變）
+function registerCombatUnits() {
+    if (!engine) initCombatEngine();
+    engine.registerUnit('hero', hero, {
+        hp: state.heroHP, maxHp: state.heroMaxHP,
+        mp: state.heroMP, maxMp: state.heroMaxMP,
+        atk: 50, def: 5,
+    });
+    engine.registerUnit('boss', boss, {
+        hp: state.bossHP, maxHp: state.bossMaxHP,
+        atk: 25, def: 10,
+    });
+}
+
+// 示範技能 button handler
+function bindSkillButtons() {
+    document.querySelectorAll('.skill-btn').forEach(b => {
+        b.onclick = async () => {
+            if (state.busy || state.finished) return;
+            state.busy = true;
+            document.querySelectorAll('.skill-btn').forEach(x => x.disabled = true);
+            const skill = b.dataset.skill;
+            const isHeal = skill === 'heal';
+            // engine 內 targetSelf 已處理，但我們明確傳
+            await engine.executeAction({
+                sourceId: 'hero',
+                targetId: isHeal ? 'hero' : 'boss',
+                skillKey: skill,
+            });
+            document.querySelectorAll('.skill-btn').forEach(x => x.disabled = false);
+            state.busy = false;
+            // 檢查勝負
+            if (state.bossHP <= 0) endGame('win');
+            if (state.heroHP <= 0) endGame('dead');
+        };
+    });
+}
+
+// 載 localStorage 恢復玩家設定（如果有）
+function restoreSetup() {
+    try {
+        const saved = JSON.parse(localStorage.getItem("eduarena_demo_setup") || "{}");
+        if (saved.name)    { playerSetup.name = saved.name; document.getElementById("setup-name").value = saved.name; }
+        if (saved.subject) { playerSetup.subject = saved.subject; }
+        if (saved.jobKey !== undefined) playerSetup.jobKey = saved.jobKey;
+    } catch (e) { /* ignore */ }
+}
+
+// 棋盤主題：URL > localStorage > default
+function applyTheme(theme) {
+    document.body.dataset.theme = theme;
+    document.querySelectorAll("#setup-theme .theme-btn").forEach(b => {
+        b.classList.toggle("active", b.dataset.theme === theme);
+    });
+    try { localStorage.setItem("eduarena_demo_theme", theme); } catch (e) {}
+}
+
+(async function init() {
+    const urlTheme = new URLSearchParams(location.search).get("theme");
+    const savedTheme = (() => { try { return localStorage.getItem("eduarena_demo_theme"); } catch (e) { return null; } })();
+    applyTheme(urlTheme || savedTheme || "sandstone");
+
+    await loadData();
+
+    // 原型：URL 帶 ?subject 直接進戰鬥（小男孩、學生、站原地），跳過設定面板
+    const qp = new URLSearchParams(location.search);
+    const urlSubj = qp.get("subject");
+    if (urlSubj && SUBJECTS_DATA[urlSubj]) {
+        playerSetup.subject = urlSubj;
+        const t = qp.get("tier");
+        playerSetup.tier = ["t1", "t2", "t3"].includes(t) ? t : "t3";
+        playerSetup.jobKey = null;
+        playerSetup.name = "派派";
+        await startArena();
+        return;
+    }
+
+    restoreSetup();
+    renderSubjectPicker();
+    renderJobPicker();
+    renderTierPicker();
+    // 套上恢復的職業
+    const savedJob = JOBS_DATA.find(j => j.key === playerSetup.jobKey);
+    selectJob(savedJob);
+    document.getElementById("setup-start").onclick = startArena;
+    // 主題按鈕綁定
+    document.querySelectorAll("#setup-theme .theme-btn").forEach(b => {
+        b.onclick = () => applyTheme(b.dataset.theme);
+    });
+})();
+</script>
+
+</body>
+</html>

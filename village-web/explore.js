@@ -372,8 +372,10 @@ class ExploreScene extends Phaser.Scene {
       // Interaction
       if (b.interaction) {
         const a = b.anchor;
+        // 觸發中心：有 interaction.anchor（地圖編輯器可獨立拖）就用它，沒有就跟建築錨點
+        const ia = (b.interaction.anchor && typeof b.interaction.anchor.x === "number") ? b.interaction.anchor : a;
         this.interactables.push({
-          cx: this._nx(a.x), cy: this._ny(a.y),
+          cx: this._nx(ia.x), cy: this._ny(ia.y),
           radius: b.interaction.radius || 110,
           type: b.interaction.type,
           label: bLabel,
@@ -387,8 +389,8 @@ class ExploreScene extends Phaser.Scene {
         const _ringable = b.interaction.type === "open_shop" ||
           (b.interaction.type === "open_modal" && (b.interaction.body || b.interaction.title));  // 走近會跳內容的也算（Codex P2）
         if (_ringable && b.door_ring !== false) {
-          const dcx = this._nx(a.x) + (b.door_ring_dx || 0);
-          const dcy = this._ny(a.y) + (b.door_ring_dy || 0);
+          const dcx = this._nx(ia.x) + (b.door_ring_dx || 0);
+          const dcy = this._ny(ia.y) + (b.door_ring_dy || 0);
           const dHex = b.door_ring_color || config.portal_color || "#ffc46e";
           const dm6 = /^#?([0-9a-fA-F]{6})$/.exec(String(dHex).trim());
           const dcol = dm6 ? parseInt(dm6[1], 16) : 0xffc46e;

@@ -3783,8 +3783,8 @@
         "id": "bus_stop",
         "name": "公車站牌",
         "anchor": {
-          "x": 0.36,
-          "y": 0.7
+          "x": 0.5454286323026338,
+          "y": 0.5175678525670703
         },
         "interaction": {
           "type": "open_shop",
@@ -3794,16 +3794,25 @@
         },
         "sprite": {
           "image": "bus_stop_sway.webp",
-          "scale": 0.17,
+          "scale": 0.15,
           "anchor_x": 0.5,
-          "anchor_y": 1.0,
+          "anchor_y": 1,
           "frame_width": 576,
           "frame_height": 894,
           "grid_cols": 8,
           "grid_rows": 1,
           "frames": 8,
           "frame_rate": 7
-        }
+        },
+        "path": [],
+        "center": {
+          "x": 0.5454286323026338,
+          "y": 0.5175678525670703
+        },
+        "polygon": [],
+        "mask_color": "#FF3B30",
+        "render_order": 500,
+        "interaction_type": "open_shop"
       }
     ],
     "obstacle_areas": [

@@ -185,7 +185,7 @@
                   <polygon class="grid-tile" data-x="4" data-y="4" points="75.2,68.0 83.6,71.5 92.0,68.0 83.6,64.5" />
                 </svg>
 
-                <div class="fighter-hero" id="fighter-hero-wrap" data-x="2" data-y="2">
+                <div class="fighter-hero" id="fighter-hero-wrap" data-x="2" data-y="0">
                     <div class="hero-floating-hp" id="hero-floating-hp" data-hp-level="high">
                         <div class="hero-floating-hp-fill" id="hero-floating-hp-fill" style="width: 100%"></div>
                         <div class="hp-num-overlay" id="hero-hp-overlay">300/300</div>
@@ -297,7 +297,7 @@ const state = {
     heroHP: 300, heroMaxHP: 300,
     heroMP: 50,  heroMaxMP: 50,
     bossHP: 1000, bossMaxHP: 1000,
-    heroPos: { x: 2, y: 2 },   // 起始中央格 (派派 5/23：對齊參考圖玩家站中央)
+    heroPos: { x: 2, y: 0 },   // 前排左側站位（對齊 PVP 開場對峙、不站中央）
     combo: 0,
     qIdx: 0,
     busy: false,

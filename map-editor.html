@@ -2148,6 +2148,20 @@ function renderSpriteMarkers() {
         el.dataset.bid = b.id;
         if (!isReference) attachSpriteDrag(el, b, w, h, false);
         mf.appendChild(el);
+        // 走近觸發圈：有 interaction 的建築顯示觸發範圍(虛線圈、按 radius 大小)，看得到走近多近會觸發、拖建築圈跟著
+        if (b.interaction && b.interaction.type && b.anchor) {
+            const trad = (b.interaction.radius || 110) * displayScale;
+            const ring = document.createElement('div');
+            ring.className = 'placed-sprite trigger-ring';
+            ring.dataset.trigfor = b.id;
+            ring.style.cssText = 'position:absolute;border-radius:50%;border:2px dashed #ffb000;background:rgba(255,176,0,.08);'
+                + 'transform:translate(-50%,-50%);pointer-events:none;box-sizing:border-box;z-index:3;'
+                + 'width:' + (trad * 2) + 'px;height:' + (trad * 2) + 'px';
+            ring.style.left = (b.anchor.x * w) + 'px';
+            ring.style.top  = (b.anchor.y * h) + 'px';
+            if (isReference) ring.style.opacity = '0.4';
+            mf.appendChild(ring);
+        }
     });
 
     // NPCs — sprite sheet 顯示第一格（新 schema 用 sprites.side，舊 fallback 用 image）
@@ -2282,6 +2296,11 @@ function attachSpriteDrag(el, obj, w, h, isNpc, isPlayer) {
             }
             el.style.left = (nx * w) + 'px';
             el.style.top  = (ny * h) + 'px';
+            // 同步該建築的觸發圈(走近觸發圈跟著建築移動)
+            if (obj.id) {
+                const ring = document.querySelector('.trigger-ring[data-trigfor="' + obj.id + '"]');
+                if (ring) { ring.style.left = (nx * w) + 'px'; ring.style.top = (ny * h) + 'px'; }
+            }
         };
         const onUp = () => {
             document.removeEventListener('mousemove', onMove);

@@ -682,10 +682,9 @@ class ExploreScene extends Phaser.Scene {
   // 🐴 馬車快遞：走近會跑的馬車 → 列 8 大據點 → 選了複用 portal 轉場傳送
   _openTaxi(onClose) {
     const DESTS = [
-      { id: "village", name: "村莊" }, { id: "academy", name: "五大學院" },
-      { id: "campus", name: "學園生活區" }, { id: "shopping", name: "商店街" },
-      { id: "competitive", name: "競技場" }, { id: "playground", name: "遊樂場" },
-      { id: "dock", name: "學園碼頭" }, { id: "island", name: "海島" },
+      { id: "academy", name: "五大學院" }, { id: "forest", name: "禁忌森林" },
+      { id: "playground", name: "遊樂場" }, { id: "dock", name: "學園碼頭" },
+      { id: "campus", name: "學園生活區" },
     ];
     if (this._taxiOpen) return;   // 防重複開（Codex #2）
     this._taxiOpen = true;
@@ -694,8 +693,8 @@ class ExploreScene extends Phaser.Scene {
     m = document.createElement("div"); m.id = "taxi-overlay"; m.className = "open";
     m.style.cssText = "position:fixed;inset:0;z-index:7000;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.55);font-family:sans-serif";
     let html = "<div style='background:#fff6e2;border:5px solid #8a5a2b;border-radius:20px;max-width:360px;width:100%;padding:16px;box-shadow:0 14px 40px rgba(0,0,0,.5)'>";
-    html += "<div style='font-weight:900;font-size:19px;color:#7a4715;text-align:center'>馬車快遞</div>";
-    html += "<div style='font-size:13px;color:#9a7038;text-align:center;margin:2px 0 12px'>要去哪裡？跳上馬車馬上到！</div>";
+    html += "<div style='font-weight:900;font-size:19px;color:#7a4715;text-align:center'>公車站</div>";
+    html += "<div style='font-size:13px;color:#9a7038;text-align:center;margin:2px 0 12px'>要去哪裡？搭公車馬上到！</div>";
     html += "<div style='display:grid;grid-template-columns:1fr 1fr;gap:8px'>";
     DESTS.forEach((d) => {
       const here = d.id === cur;

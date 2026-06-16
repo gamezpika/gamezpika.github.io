@@ -3778,6 +3778,26 @@
         "mask_color": "#FF3B30",
         "render_order": 500,
         "interaction_type": "open_modal"
+      },
+      {
+        "id": "bus_stop",
+        "name": "公車站牌",
+        "anchor": {
+          "x": 0.36,
+          "y": 0.7
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "taxi",
+          "label": "搭公車",
+          "radius": 135
+        },
+        "sprite": {
+          "image": "bus_stop.webp",
+          "scale": 0.11,
+          "anchor_x": 0.5,
+          "anchor_y": 1.0
+        }
       }
     ],
     "obstacle_areas": [
@@ -4387,71 +4407,6 @@
         ],
         "speed": 45,
         "greeting": "啾啾～"
-      },
-      {
-        "id": "carriage_taxi",
-        "name": "馬車快遞",
-        "greeting": "要搭車嗎？跳上來馬上到！",
-        "spawn": {
-          "x": 0.7150707398935167,
-          "y": 0.8425258929659738
-        },
-        "speed": 80,
-        "patrol": [
-          {
-            "x": 0.6866190479979696,
-            "y": 0.8824193023222896
-          },
-          {
-            "x": 0.5010219693016814,
-            "y": 0.7480003471493141
-          },
-          {
-            "x": 0.3996836870687388,
-            "y": 0.5929015527189576
-          },
-          {
-            "x": 0.28126591906619913,
-            "y": 0.4673453857991453
-          },
-          {
-            "x": 0.43042676145401354,
-            "y": 0.5530190055797232
-          },
-          {
-            "x": 0.6627077679205337,
-            "y": 0.5042736701873254
-          },
-          {
-            "x": 0.5420127351487144,
-            "y": 0.5722217134615768
-          },
-          {
-            "x": 0.74241203484532,
-            "y": 0.6268755743560833
-          }
-        ],
-        "interaction": {
-          "type": "open_shop",
-          "shop_id": "taxi",
-          "label": "叫車馬車",
-          "radius": 145
-        },
-        "sprite": {
-          "scale": 0.75,
-          "sprites": {
-            "side": {
-              "image": "carriage_walk.webp",
-              "facing": "left",
-              "frame_width": 586,
-              "frame_height": 258,
-              "frames": 6,
-              "grid_cols": 6,
-              "grid_rows": 1,
-              "frame_rate": 6
-            }
-          }
-        }
       }
     ],
     "objects": []

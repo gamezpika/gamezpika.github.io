@@ -2232,52 +2232,30 @@
         "mask_color": "#FF3B30",
         "render_order": 500,
         "interaction_type": "open_modal"
-      }
-    ],
-    "obstacle_areas": [],
-    "npcs": [
+      },
       {
-        "id": "carriage_taxi",
-        "name": "馬車快遞",
-        "greeting": "要搭車嗎？跳上來馬上到！",
-        "spawn": {
-          "x": 0.5,
-          "y": 0.18
+        "id": "bus_stop",
+        "name": "公車站牌",
+        "anchor": {
+          "x": 0.36,
+          "y": 0.22
         },
-        "speed": 80,
-        "patrol": [
-          {
-            "x": 0.5,
-            "y": 0.18
-          },
-          {
-            "x": 0.5,
-            "y": 0.3
-          }
-        ],
         "interaction": {
           "type": "open_shop",
           "shop_id": "taxi",
-          "label": "叫車馬車",
-          "radius": 145
+          "label": "搭公車",
+          "radius": 135
         },
         "sprite": {
-          "scale": 0.26,
-          "sprites": {
-            "side": {
-              "image": "carriage_walk.webp",
-              "facing": "left",
-              "frame_width": 586,
-              "frame_height": 258,
-              "frames": 6,
-              "grid_cols": 6,
-              "grid_rows": 1,
-              "frame_rate": 6
-            }
-          }
+          "image": "bus_stop.webp",
+          "scale": 0.11,
+          "anchor_x": 0.5,
+          "anchor_y": 1.0
         }
       }
     ],
+    "obstacle_areas": [],
+    "npcs": [],
     "objects": []
   }
 }

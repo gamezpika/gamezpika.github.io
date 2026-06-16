@@ -466,6 +466,8 @@ function showCreator(){
     PLAYER={ name, gender:g.dataset.v, grade:gr.dataset.v };
     // 存性別給村莊/職業介紹所讀（女角職業圖用女版）
     try { localStorage.setItem('village_gender', g.dataset.v === '女生' ? 'female' : 'male'); } catch(e){}
+    // 存年級給魔王戰等讀（顯示用；後端題目年級已綁 demo child 帳號）
+    try { localStorage.setItem('village_grade', String(gr.dataset.v)); } catch(e){}
     // pptx 第5-6頁：輸入完 = 真的在 demo 後台建一個玩家（背景進行，不擋劇情）
     createDemoAccount(name, g.dataset.v, gr.dataset.v);
     wrap.classList.add('leaving'); setTimeout(()=>wrap.remove(), 400);

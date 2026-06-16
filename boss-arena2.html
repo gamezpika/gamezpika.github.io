@@ -81,7 +81,7 @@
                     <div class="hero-portrait">
                         <img src="assets/images/arena/hero.png" alt="hero">
                     </div>
-                    <div class="hero-lv-chip">五年級</div>
+                    <div class="hero-lv-chip" id="hero-lv-chip">五年級</div>
                     <div class="hero-name-chip" id="hero-name-display">派派</div>
                 </div>
                 <!-- 隱藏節點供舊 JS 寫，避免 undefined -->
@@ -1190,6 +1190,9 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // 丟球分幀：男/女學生各 6 幀（配現有投射物球）；?hero=girl 切女生
 let heroGender = "boy";
+let playerGrade = 2;   // 玩家年級（讀 village_grade，顯示用；後端題目年級綁 demo child 帳號）
+const GRADE_CN = ["", "一", "二", "三", "四", "五", "六"];
+function gradeLabel(g) { return (GRADE_CN[g] || g) + "年級"; }
 const HERO_THROW = {
     boy:  [0, 1, 2, 3, 4, 5].map(i => `assets/images/arena/throw/boy_${i}.webp?v=1`),
     girl: [0, 1, 2, 3, 4, 5].map(i => `assets/images/arena/throw/girl_${i}.webp?v=1`),
@@ -1388,7 +1391,9 @@ async function startArena() {
 
     // 套用 UI 文字
     document.getElementById("hero-name-display").textContent = playerSetup.name;
-    document.getElementById("info-subject-name").textContent = `${subj.emoji} ${subj.label}·五年級·${tierData.label}`;
+    const _gl = gradeLabel(playerGrade);
+    const _chip = document.getElementById("hero-lv-chip"); if (_chip) _chip.textContent = _gl;
+    document.getElementById("info-subject-name").textContent = `${subj.emoji} ${subj.label}·${_gl}·${tierData.label}`;
 
     // 套用職業 buff + 主角造型 sprite + 對應武器動畫
     applyJobBuff();
@@ -1677,6 +1682,10 @@ function towerFailed() {
     const _urlHero = qp.get("hero");
     if (_urlHero === "girl" || _urlHero === "boy") heroGender = _urlHero;
     else { try { heroGender = localStorage.getItem("village_gender") === "female" ? "girl" : "boy"; } catch (e) { heroGender = "boy"; } }
+    // 年級：?grade= 覆蓋優先，否則讀 village_grade（onboarding 建角存的）
+    const _urlGrade = parseInt(qp.get("grade") || "", 10);
+    if (_urlGrade >= 1 && _urlGrade <= 6) playerGrade = _urlGrade;
+    else { try { const g = parseInt(localStorage.getItem("village_grade") || "", 10); if (g >= 1 && g <= 6) playerGrade = g; } catch (e) {} }
 
     // 鎮魔塔分波模式：?tower=1&subject&floor&waves&map&back_spawn
     if (qp.get("tower") === "1") {

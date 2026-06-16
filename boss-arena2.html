@@ -190,7 +190,7 @@
                         <div class="hero-floating-hp-fill" id="hero-floating-hp-fill" style="width: 100%"></div>
                         <div class="hp-num-overlay" id="hero-hp-overlay">300/300</div>
                     </div>
-                    <img src="assets/images/arena/hero_iso.png?v=3" class="fighter-hero-img" id="fighter-hero" alt="hero">
+                    <img src="assets/images/arena/hero_student.webp?v=1" class="fighter-hero-img" id="fighter-hero" alt="hero">
                 </div>
                 <div class="fighter-boss" id="fighter-boss-wrap">
                     <div class="boss-floating-hp" id="boss-floating-hp" data-hp-level="high">
@@ -1098,8 +1098,8 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 state.weapon = "sword";
 
 function setHeroSpriteFromJob(job) {
-    // 原型：不分職業/武器 → 固定小男孩(之後加小女孩切換)，攻擊用通用 staff 風魔法特效
-    hero.src = "assets/images/arena/hero_boy.webp?v=1";
+    // 原型：用學生(預設)造型(白T卡其褲、無武器)，攻擊用通用 staff 風魔法特效
+    hero.src = "assets/images/arena/hero_student.webp?v=1";
     state.weapon = "staff";
 }
 

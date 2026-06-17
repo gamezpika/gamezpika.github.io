@@ -17,6 +17,9 @@
     <script src="arcade/shim.js?v=3"></script>  <!-- 接真後端：eduApi + demo token -->
     <script src="arcade/boss/bopomofo.js?v=1"></script>
     <style>
+    /* 派派 6/17：上方列(arena-hud)浮在戰場上方，背景=戰場同一張連續(此頁 HUD 內容已隱藏→等於拿掉那條不符的帶子)。全裝置生效 */
+    #screen-arena { position: relative; }
+    .arena-hud { position: absolute; top: 0; left: 0; right: 0; background: transparent !important; box-shadow: none !important; border-bottom: none !important; pointer-events: none; }
     /* 派派 6/17：電腦版魔王戰全螢幕鋪滿——拿掉手機外殼，戰鬥畫面填滿整個視窗（左右也滿）*/
     @media (min-width: 768px) {
         body { overflow: hidden; }
@@ -1432,13 +1435,8 @@ async function startArena() {
 
     // 戰場用 tier 的 bg（15 張 boss 各自背景），5×5 棋盤是 CSS overlay 疊在上面
     stage.style.backgroundImage = `url("assets/images/${tierData.bg}?v=1")`;
-    // 派派 5/24：主角狀態列 (arena-hud) 也套同 bg + 深色 overlay，視覺上下連續
-    const hud = document.querySelector(".arena-hud");
-    if (hud) {
-        hud.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.35)), url("assets/images/${tierData.bg}?v=1")`;
-        hud.style.backgroundSize = "cover";
-        hud.style.backgroundPosition = "center top";
-    }
+    // 6/17 派派：上方列改浮在戰場上方(CSS position:absolute)，背景=戰場同一張連續，
+    // 不再給它另一塊 center top 裁切的 bg（原本跟戰場 center 對不上→上半部與背景不符）
 
     // 套用 UI 文字
     document.getElementById("hero-name-display").textContent = playerSetup.name;

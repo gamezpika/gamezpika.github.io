@@ -79,7 +79,7 @@
     "buildings": [
       {
         "id": "forest_science",
-        "name": "自然禁忌森林",
+        "name": "自然遺跡",
         "category": "house",
         "sprite": {
           "image": "forest_mansion_science.webp",
@@ -100,7 +100,7 @@
         "interaction": {
           "type": "open_shop",
           "shop_id": "fpract:science",
-          "label": "自然禁忌森林",
+          "label": "自然遺跡",
           "radius": 140
         },
         "path": [],
@@ -128,11 +128,12 @@
         ],
         "mask_color": "#FF3B30",
         "render_order": 500,
-        "interaction_type": "open_modal"
+        "interaction_type": "open_modal",
+        "show_name": true
       },
       {
         "id": "forest_social",
-        "name": "社會禁忌森林",
+        "name": "社會遺跡",
         "category": "house",
         "sprite": {
           "image": "forest_mansion_social.webp",
@@ -153,7 +154,7 @@
         "interaction": {
           "type": "open_shop",
           "shop_id": "fpract:social",
-          "label": "社會禁忌森林",
+          "label": "社會遺跡",
           "radius": 140
         },
         "path": [],
@@ -185,11 +186,12 @@
         ],
         "mask_color": "#FF3B30",
         "render_order": 500,
-        "interaction_type": "open_modal"
+        "interaction_type": "open_modal",
+        "show_name": true
       },
       {
         "id": "forest_english",
-        "name": "英語禁忌森林",
+        "name": "英語遺跡",
         "category": "house",
         "sprite": {
           "image": "forest_mansion_english.webp",
@@ -207,7 +209,12 @@
           "x_max": 1.0092318051681173,
           "y_max": 0.8767632794900908
         },
-        "interaction": null,
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "fpract:english",
+          "label": "英語遺跡",
+          "radius": 140
+        },
         "path": [],
         "center": {
           "x": 0.898946941701382,
@@ -237,11 +244,12 @@
         ],
         "mask_color": "#FF3B30",
         "render_order": 500,
-        "interaction_type": "open_modal"
+        "interaction_type": "open_modal",
+        "show_name": true
       },
       {
         "id": "forest_math",
-        "name": "數學禁忌森林",
+        "name": "數學遺跡",
         "category": "house",
         "sprite": {
           "image": "forest_mansion_math.webp",
@@ -262,7 +270,7 @@
         "interaction": {
           "type": "open_shop",
           "shop_id": "fpract:math",
-          "label": "數學禁忌森林",
+          "label": "數學遺跡",
           "radius": 140
         },
         "path": [],
@@ -290,11 +298,12 @@
         ],
         "mask_color": "#FF3B30",
         "render_order": 500,
-        "interaction_type": "open_modal"
+        "interaction_type": "open_modal",
+        "show_name": true
       },
       {
         "id": "forest_chinese",
-        "name": "國語禁忌森林",
+        "name": "國語遺跡",
         "category": "house",
         "sprite": {
           "image": "forest_mansion_chinese.webp",
@@ -315,7 +324,7 @@
         "interaction": {
           "type": "open_shop",
           "shop_id": "fpract:chinese",
-          "label": "國語禁忌森林",
+          "label": "國語遺跡",
           "radius": 140
         },
         "path": [],
@@ -347,7 +356,8 @@
         ],
         "mask_color": "#FF3B30",
         "render_order": 500,
-        "interaction_type": "open_modal"
+        "interaction_type": "open_modal",
+        "show_name": true
       },
       {
         "id": "bus_stop",

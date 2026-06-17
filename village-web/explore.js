@@ -360,6 +360,18 @@ class ExploreScene extends Phaser.Scene {
           if (tx.width > maxW) tx.setScale(maxW / tx.width);
           tx.setDepth((typeof b.render_depth === "number" ? b.render_depth : anchor.y) + 0.1);
         }
+        // 建築浮名牌（show_name）：把建築名浮在門口傳送圈上方，跟其他傳送點標籤(前往海島…)同高同語感。
+        // 給沒把名字畫進素材的傳送點建築（禁忌森林 5 棟學科館）用。深色森林→奶油金字＋深棕描邊好讀。
+        if (b.show_name && b.name) {
+          const _ia = (b.interaction && b.interaction.anchor && typeof b.interaction.anchor.x === "number") ? b.interaction.anchor : b.anchor;
+          const nlbl = this.add.text(this._nx(_ia.x), this._ny(_ia.y) - 60, b.name, {
+            fontFamily: '"Yuanti TC","YouYuan","PingFang TC","Microsoft JhengHei",sans-serif',
+            fontSize: "21px", fontStyle: "bold", color: "#ffe9b0", align: "center",
+            stroke: "#3a1d10", strokeThickness: 5,
+          }).setOrigin(0.5, 1);
+          nlbl.setShadow(0, 2, "rgba(0,0,0,0.45)", 4, false, true);
+          nlbl.setDepth(this._ny(_ia.y) + 5);
+        }
       }
       // Collision bbox（草/花卉跳過，可踩過去）
       if (b.bounding_box && !(b.sprite && WALKABLE_DECOR.has(b.sprite.image))) {

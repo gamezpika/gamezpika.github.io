@@ -95,6 +95,44 @@ body { background: #1A1A2E; color: #fff; font-family: "Noto Sans TC", "PingFang 
     grid-area: go; text-align: center;
     font-size: 22px; font-weight: 900; color: rgba(255,255,255,0.55);
 }
+
+/* ════ 派派 6/17：競技場主題（讓 PK 入口頁變遊戲式、跟鬥技場戰鬥連貫）════ */
+/* 背景：鬥技場插畫(調暗) 取代純深藍 */
+body {
+    background:
+        linear-gradient(180deg, rgba(18,12,28,0.74) 0%, rgba(14,10,22,0.88) 100%),
+        url("village-web/arena_stadium_bg.webp?v=1") center top / cover no-repeat fixed !important;
+}
+/* 標題/說明文字：描金 + 陰影，遊戲感 */
+.screen-title { color: #ffe7c0 !important; text-shadow: 0 2px 6px rgba(0,0,0,.7); }
+.pvp-subject-intro { color: #ffe7c0 !important; font-weight: 800; text-shadow: 0 2px 6px rgba(0,0,0,.7); letter-spacing: 1px; }
+.pvp-subject-hint { color: rgba(255,235,200,.7) !important; text-shadow: 0 1px 3px rgba(0,0,0,.7); }
+/* 科目卡：木質/石質 framed + 金邊 + 光澤（取代扁平藍紫方塊）*/
+.pvp-subject-btn {
+    background: linear-gradient(165deg, rgba(70,52,32,0.94) 0%, rgba(40,28,18,0.96) 100%) !important;
+    border: 2px solid rgba(214,170,90,0.55) !important;
+    border-radius: 18px !important;
+    color: #ffe7c0 !important;
+    text-shadow: 0 2px 3px rgba(0,0,0,.65);
+    box-shadow: 0 8px 20px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,230,170,.20), inset 0 0 24px rgba(0,0,0,.3) !important;
+    transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.pvp-subject-btn:hover {
+    border-color: rgba(255,214,120,0.95) !important;
+    box-shadow: 0 10px 26px rgba(0,0,0,.55), 0 0 20px rgba(255,200,100,.35), inset 0 1px 0 rgba(255,230,170,.25) !important;
+    transform: translateY(-2px);
+}
+/* 年級鈕：金邊徽章，active 用金色(取代靛紫→粉) */
+.pvp-grade-tab { background: rgba(40,28,18,0.55) !important; border-color: rgba(214,170,90,0.4) !important; color: #ffe7c0 !important; }
+.pvp-grade-tab.active {
+    background: linear-gradient(135deg, #ffd76b, #f0a32a) !important;
+    border-color: rgba(255,240,190,0.9) !important;
+    color: #5a3a10 !important;
+    box-shadow: 0 4px 16px rgba(240,160,40,.6) !important;
+}
+.pvp-grade-tab.pvp-grade-locked { background: rgba(255,255,255,0.04) !important; border-color: rgba(255,255,255,0.10) !important; color: rgba(255,255,255,0.45) !important; }
+/* 三卡模式選擇：加金邊 + 更厚的陰影，跟科目卡同一套質感 */
+.pvp-mode-card { border: 2px solid rgba(214,170,90,0.45) !important; box-shadow: 0 10px 26px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,230,170,.15) !important; }
 </style>
 </head>
 <body>

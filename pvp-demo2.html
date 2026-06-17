@@ -1541,12 +1541,13 @@ async function startArena() {
     await Promise.all(framesToPreload.map(p => preloadImage(`assets/images/${p}`)));
     hideSetupSpinner();
 
-    // 戰場用 tier 的 bg（15 張 boss 各自背景），5×5 棋盤是 CSS overlay 疊在上面
-    stage.style.backgroundImage = `url("assets/images/${tierData.bg}?v=1")`;
+    // 派派 6/17：PVP 是競技場 PK → 戰場背景用競技場(鬥技場)圖，不用魔王戰的 tier 背景
+    const PVP_ARENA_BG = "arcade/img/pvp/arena_bg_dim.webp?v=1";
+    stage.style.backgroundImage = `url("${PVP_ARENA_BG}")`;
     // 派派 5/24：score strip 也套相同 bg + 半透明深色 overlay 確保 score 字清楚
     const scoreStrip = document.querySelector(".pvp-score-strip");
     if (PVP_MODE && scoreStrip) {
-        scoreStrip.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.35)), url("assets/images/${tierData.bg}?v=1")`;
+        scoreStrip.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.35)), url("${PVP_ARENA_BG}")`;
         scoreStrip.style.backgroundSize = "cover";
         scoreStrip.style.backgroundPosition = "center top";
         scoreStrip.style.borderBottom = "none";

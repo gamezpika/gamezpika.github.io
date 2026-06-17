@@ -16,6 +16,19 @@
     <script src="static/js/combat-engine.js?v=1"></script>
     <script src="arcade/shim.js?v=3"></script>  <!-- 接真後端：eduApi + demo token -->
     <script src="arcade/boss/bopomofo.js?v=1"></script>
+    <style>
+    /* 派派 6/17：電腦版魔王戰全螢幕鋪滿——拿掉手機外殼，戰鬥畫面填滿整個視窗（左右也滿）*/
+    @media (min-width: 768px) {
+        body { overflow: hidden; }
+        .iphone-frame {
+            width: 100vw !important; height: 100vh !important; height: 100dvh !important;
+            border-radius: 0 !important; padding: 0 !important;
+            background: none !important; box-shadow: none !important; transform: none !important;
+        }
+        .iphone-screen { width: 100% !important; height: 100% !important; border-radius: 0 !important; box-shadow: none !important; max-width: 100% !important; }
+        .iphone-island, .iphone-home { display: none !important; }
+    }
+    </style>
 </head>
 <body>
 

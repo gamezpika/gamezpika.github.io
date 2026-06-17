@@ -266,8 +266,8 @@
 .arena-stage {
     flex: 1;
     position: relative;
-    min-height: 45vh;       /* fallback */
-    min-height: 45dvh;      /* 派派 5/24：用 dvh 才會扣掉 iOS chrome */
+    min-height: 30vh;       /* fallback（6/17 派派：min 由 45→30，短螢幕讓位給題目/選項不被框壓） */
+    min-height: 30dvh;      /* 派派 5/24：用 dvh 才會扣掉 iOS chrome */
     background-image: url("../../assets/images/arena/dungeon_bg.png?v=2");
     background-size: cover;
     background-position: center;
@@ -882,20 +882,34 @@ body[data-theme="ice"] .grid-wall-front { fill: rgba(110, 134, 156, 0.96); }
     font-size: 18px;
     line-height: 1.4;
     font-weight: 700;
-    min-height: 110px;       /* 派派 5/24：吃 2-3 行長題目空間，但不過度壓戰場 */
+    min-height: 60px;        /* 6/17 派派：110→60，題目自然撐高、短螢幕不被框壓爆 */
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow-wrap: anywhere; /* 長題目可斷行，不被右邊切掉 */
+    word-break: break-word;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 2;
 }
+/* 注音 anti-orphan 用 inline white-space:nowrap，窄螢幕會撐出右界被切 → 題目卡內一律允許斷行 */
+.arena-question span { white-space: normal !important; }
 
 .arena-options {
     flex-shrink: 0;
-    padding: 6px 14px 12px;
+    /* 6/17 派派：底部加 safe-area，選項才不被 in-app 瀏覽器工具列/home indicator 蓋住 */
+    padding: 6px 14px calc(12px + env(safe-area-inset-bottom));
     display: grid;
     grid-template-columns: 1fr;    /* 派派 5/24：改成 ABCD 條列直排 */
     gap: 4px;                       /* 派派 5/24：選項瘦身，gap 8→4 */
     z-index: 2;
+}
+/* 矮螢幕（in-app 瀏覽器、小手機、桌面殼縮放）：再收緊戰場、題目、選項，確保全部塞得下不被框壓 */
+@media (max-height: 740px) {
+    .arena-stage { min-height: 24vh; min-height: 24dvh; }
+    .arena-question { min-height: 44px; font-size: 16px; padding: 8px 12px; margin-top: 6px; }
+    .arena-options { gap: 4px; padding-top: 4px; }
+    .opt-btn { padding: 6px 12px; font-size: 14px; }
 }
 .opt-btn {
     padding: 7px 14px;              /* 派派 5/24：選項瘦身，vertical 12→7 */

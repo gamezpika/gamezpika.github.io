@@ -2545,23 +2545,21 @@
         setEquip("pet", c.dataset.id); dhBubble(ov, "選擇「" + eqItem("pet", c.dataset.id).name + "」當夥伴！"); dhRender(ov);
       }));
     } else if (dhTab === "book") {
-      // 圖鑑＝原 EDU 知識卡圖鑑（11 分類，靜態型錄，無 emoji）；有圖的用真圖、抽象概念用分類配色文字卡
+      // 圖鑑＝原 EDU 知識卡圖鑑（10 分類，無 emoji，道具收集格風）；已拿到顯示圖+名、未拿到顯示「？」勾求知慾
       const D = window.DEX_CARDS || [];
       const total = D.reduce((n, c) => n + c.cards.length, 0);
-      dhBubble(ov, "知識卡圖鑑 · 共 " + total + " 張，玩遊戲收集滿就能拿收藏證書！");
-      const CAT_COLOR = {
-        pet: "#b388d4", animal: "#d49a52", plant: "#74b85e", food: "#ec8f4a", exercise: "#4f9fd4", habit: "#d56f97",
-        subject_math: "#5a86d8", subject_chinese: "#d4944a", subject_english: "#3fb8a4", subject_science: "#74b85e", subject_social: "#d4715a",
-      };
+      const isGot = (x) => x.un && x.img;   // 計數=實際顯示的 got 格(有解鎖且有圖)，跟渲染條件一致
+      const got = D.reduce((n, c) => n + c.cards.filter(isGot).length, 0);
+      dhBubble(ov, "知識卡圖鑑 · 已收集 " + got + " / " + total + " 張，去玩遊戲解鎖更多！");
       box.innerHTML = D.map((cat) => {
-        const col = CAT_COLOR[cat.key] || "#c9a36a";
+        const cgot = cat.cards.filter(isGot).length;
         const cards = cat.cards.map((c) => {
-          if (c.img) {
-            return `<div class="dex-card"><div class="dex-pic"><img src="${c.img}?v=1" alt="" loading="lazy" draggable="false"></div><div class="dex-nm">${aoEsc(c.name)}</div></div>`;
+          if (c.un && c.img) {
+            return `<div class="dex-card"><div class="dex-slot got"><img src="${c.img}?v=1" alt="" loading="lazy" draggable="false"></div><div class="dex-nm">${aoEsc(c.name)}</div></div>`;
           }
-          return `<div class="dex-card"><div class="dex-txt" style="--cc:${col}">${aoEsc(c.name)}</div></div>`;
+          return `<div class="dex-card"><div class="dex-slot lock">？</div><div class="dex-nm lock">？？？</div></div>`;
         }).join("");
-        return `<div class="dh-sub">${aoEsc(cat.label)} <span class="dex-cnt">${cat.cards.length}</span></div><div class="dex-grid">${cards}</div>`;
+        return `<div class="dh-sub">${aoEsc(cat.label)} <span class="dex-cnt">${cgot}/${cat.cards.length}</span></div><div class="dex-grid">${cards}</div>`;
       }).join("");
     } else if (dhTab === "ach") {
       // 🏅 成就：讀後端 /api/awards（主線終獎稱號/證照）

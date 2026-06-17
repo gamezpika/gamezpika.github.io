@@ -584,23 +584,25 @@
   margin-top: 10px; background: #fff; color: #5a3a18; font-size: 14px; font-weight: 600;
   padding: 9px 12px; border-radius: 12px; border: 3px solid #d8a85a; text-align: center; min-height: 20px;
 }
-/* EDU 知識卡圖鑑（圖鑑分頁）：有圖卡用真圖、抽象卡用分類配色文字卡 */
-.dex-cnt { opacity: .55; font-weight: 600; font-size: 12px; }
+/* EDU 知識卡圖鑑（圖鑑分頁）：道具收集格風；已拿到=圖+名，未拿到=「？」勾求知慾 */
+.dex-cnt { opacity: .6; font-weight: 700; font-size: 12px; color: #b5712f; }
 .dex-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(66px, 1fr)); gap: 8px; margin-bottom: 8px; }
 .dex-card { display: flex; flex-direction: column; }
-.dex-pic {
-  aspect-ratio: 1/1; background: #fffaf0; border: 2px solid #e6c873; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center; padding: 4px; box-shadow: 0 1px 0 #e3c089;
+/* 道具收集格（同背包 .eq-bp-cell 語言）：白凹槽+焦糖邊+內陰影 */
+.dex-slot {
+  aspect-ratio: 1/1; border: 2px solid #e3c089; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; padding: 4px; overflow: hidden;
 }
-.dex-pic img { width: 100%; height: 100%; object-fit: contain; }
+.dex-slot.got { background: #fff; box-shadow: inset 0 2px 4px rgba(0,0,0,.06); }
+.dex-slot.got img { width: 100%; height: 100%; object-fit: contain; }
+.dex-slot.lock {
+  background: linear-gradient(160deg, #f6eed9, #e9dcc0);
+  color: #c6a86e; font-size: 27px; font-weight: 900; line-height: 1;
+  text-shadow: 0 1px 0 #fff, 0 -1px 1px rgba(120,90,40,.25);
+  box-shadow: inset 0 2px 5px rgba(120,90,40,.16);
+}
 .dex-nm { font-size: 11px; font-weight: 700; color: #7a5a2e; text-align: center; margin-top: 3px; line-height: 1.15; }
-.dex-txt {
-  aspect-ratio: 1/1; border-radius: 10px; display: flex; align-items: center; justify-content: center;
-  text-align: center; padding: 5px; font-size: 12px; font-weight: 800; color: #fff; line-height: 1.18;
-  background: var(--cc); border: 2px solid rgba(90,54,19,.4);
-  box-shadow: inset 0 2px 6px rgba(255,255,255,.28), inset 0 -3px 8px rgba(0,0,0,.18), 0 1px 0 rgba(90,54,19,.3);
-  text-shadow: 0 1px 2px rgba(0,0,0,.4); overflow: hidden;
-}
+.dex-nm.lock { color: #c2ad88; letter-spacing: 1px; }
 @media (max-width: 560px) {
   .dh-panel { flex-direction: column; height: min(90vh, 680px); }
   .dh-leftcol { flex: 0 0 auto; margin-top: 52px; padding: 4px 0 4px; }

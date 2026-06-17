@@ -344,13 +344,8 @@
     stroke-width: 0.25;
     vector-effect: non-scaling-stroke;
 }
-/* 主角當前格：金色（派派 5/23 拿掉藍紅 range，只留金色 hero-pos） */
-.grid-tile.hero-pos {
-    fill: rgba(255, 220, 100, 0.32);
-    stroke: rgba(255, 230, 100, 1);
-    stroke-width: 0.32;
-}
-/* 移動範圍 / 攻擊範圍 / 魔王格：派派要求拿掉藍紅顯示（class 仍存在但不渲染） */
+/* 6/17 派派：站原地丟球已不需要「主角當前格」高亮 → 拿掉金黃色，所有格子顏色一致
+   （hero-pos/move-range/attack-range/boss-pos class JS 仍會加，但都不渲染，純無害殘留）*/
 
 /* ===== 5 種棋盤主題（URL ?theme=sandstone|rocky|marble|volcanic|ice）===== */
 /* sandstone (default) — 已在 .grid-tile 預設 */

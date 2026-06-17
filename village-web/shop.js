@@ -2504,6 +2504,26 @@
     return ov;
   }
   function dhBubble(ov, txt) { ov.querySelector(".dh-bubble").textContent = txt || ""; }
+  // 圖鑑點卡彈說明：已解鎖→放大圖+卡名+知識小語；未解鎖→？+求知慾提示
+  function dhShowCardPop(ov, c) {
+    if (!c) return;
+    let pop = ov.querySelector(".dex-pop"); if (pop) pop.remove();
+    const got = !!(c.un && c.img);
+    pop = document.createElement("div"); pop.className = "dex-pop";
+    const face = got
+      ? `<div class="dex-pop-ic got"><img src="${c.img}?v=1" alt="" draggable="false"></div>`
+      : `<div class="dex-pop-ic lock">？</div>`;
+    pop.innerHTML = `<div class="dex-pop-card">
+        <button class="dex-pop-x" aria-label="關閉">×</button>
+        ${face}
+        <div class="dex-pop-nm">${got ? aoEsc(c.name) : "？？？"}</div>
+        <div class="dex-pop-d">${got ? aoEsc(c.d || "") : "還沒解鎖～去玩遊戲收集這張知識卡吧！"}</div>
+      </div>`;
+    ov.appendChild(pop);
+    const close = () => pop.remove();
+    pop.addEventListener("click", (e) => { if (e.target === pop) close(); });
+    pop.querySelector(".dex-pop-x").addEventListener("click", close);
+  }
   function dhCard(opts) {
     return `<div class="dh-card${opts.sel ? " sel" : ""}${opts.ro ? " ro" : ""}" data-cat="${opts.cat || ""}" data-id="${opts.id || ""}">
         <img src="${opts.img}?v=1" alt="${opts.name}" loading="lazy" draggable="false">
@@ -2550,17 +2570,21 @@
       const total = D.reduce((n, c) => n + c.cards.length, 0);
       const isGot = (x) => x.un && x.img;   // 計數=實際顯示的 got 格(有解鎖且有圖)，跟渲染條件一致
       const got = D.reduce((n, c) => n + c.cards.filter(isGot).length, 0);
-      dhBubble(ov, "知識卡圖鑑 · 已收集 " + got + " / " + total + " 張，去玩遊戲解鎖更多！");
+      dhBubble(ov, "知識卡圖鑑 · 已收集 " + got + " / " + total + " 張，點卡看知識小語！");
+      const flat = [];
       box.innerHTML = D.map((cat) => {
         const cgot = cat.cards.filter(isGot).length;
         const cards = cat.cards.map((c) => {
+          const i = flat.length; flat.push(c);
           if (c.un && c.img) {
-            return `<div class="dex-card"><div class="dex-slot got"><img src="${c.img}?v=1" alt="" loading="lazy" draggable="false"></div><div class="dex-nm">${aoEsc(c.name)}</div></div>`;
+            return `<div class="dex-card" data-i="${i}"><div class="dex-slot got"><img src="${c.img}?v=1" alt="" loading="lazy" draggable="false"></div><div class="dex-nm">${aoEsc(c.name)}</div></div>`;
           }
-          return `<div class="dex-card"><div class="dex-slot lock">？</div><div class="dex-nm lock">？？？</div></div>`;
+          return `<div class="dex-card" data-i="${i}"><div class="dex-slot lock">？</div><div class="dex-nm lock">？？？</div></div>`;
         }).join("");
         return `<div class="dh-sub">${aoEsc(cat.label)} <span class="dex-cnt">${cgot}/${cat.cards.length}</span></div><div class="dex-grid">${cards}</div>`;
       }).join("");
+      box.querySelectorAll(".dex-card").forEach((card) =>
+        card.addEventListener("click", () => dhShowCardPop(ov, flat[+card.dataset.i])));
     } else if (dhTab === "ach") {
       // 🏅 成就：讀後端 /api/awards（主線終獎稱號/證照）
       dhBubble(ov, "你達成的成就都在這！");

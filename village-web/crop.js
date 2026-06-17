@@ -170,7 +170,7 @@
           }
         };
         img.onerror = () => { if (this._pending[key] === token) delete this._pending[key]; };
-        img.src = CROPS[ck].sheet + "?v=1";
+        img.src = CROPS[ck].sheet + "?v=2";
       });
     },
 
@@ -289,7 +289,7 @@
 
   function stageImg(crop, idx) {
     // 從 spritesheet 切一格當預覽（用 background-position）
-    return '<span class="pic" style="display:inline-block;background:url(' + CROPS[crop].sheet + '?v=1) -' + (idx * 52) + 'px 0/' + (52 * FRAMES) + 'px 52px no-repeat"></span>';
+    return '<span class="pic" style="display:inline-block;background:url(' + CROPS[crop].sheet + '?v=2) -' + (idx * 52) + 'px 0/' + (52 * FRAMES) + 'px 52px no-repeat"></span>';
   }
 
   function renderGrid(body) {
@@ -372,7 +372,7 @@
   function stagePreviewImg(crop, step) {
     // 進行中→顯示當前動作美術(擺動)；3 步完成→顯示幼苗預告
     if (step >= 3) {
-      return '<img src="' + CROPS[crop].sheet + '?v=1" style="object-position:-150px 0;width:' + (150 * FRAMES) + 'px;max-width:none;left:0">';
+      return '<img src="' + CROPS[crop].sheet + '?v=2" style="object-position:-150px 0;width:' + (150 * FRAMES) + 'px;max-width:none;left:0">';
     }
     return '<img class="crop-action-art" src="' + STEPS[step].img + '?v=1" alt="' + STEPS[step].label + '">';
   }

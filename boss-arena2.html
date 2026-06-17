@@ -16,6 +16,8 @@
     <script src="static/js/combat-engine.js?v=1"></script>
     <script src="arcade/shim.js?v=3"></script>  <!-- 接真後端：eduApi + demo token -->
     <script src="arcade/boss/bopomofo.js?v=1"></script>
+    <link rel="stylesheet" href="arcade/game-ui.css?v=1">       <!-- 統一結算頁(小遊戲同款 arcadeUI.victory) -->
+    <script src="arcade/game-ui.js?v=2"></script>
     <style>
     /* 派派 6/17：上方列(arena-hud)浮在戰場上方，背景=戰場同一張連續(此頁 HUD 內容已隱藏→等於拿掉那條不符的帶子)。全裝置生效 */
     #screen-arena { position: relative; }
@@ -1217,6 +1219,25 @@ async function endGame(outcome) {
     }
     setTimeout(() => {
         const fromMap = /^[a-z0-9_]+$/.test(new URLSearchParams(location.search).get("map") || "");
+        // 統一用小遊戲那套結算頁 arcadeUI.victory（同款好看），不再用 emoji overlay
+        if (window.arcadeUI && window.arcadeUI.victory) {
+            const rewards = [{ key: "coins", icon: "arcade/img/icons/coin.png?s=6", label: `+${coinsEarned} 金幣` }];
+            rewards.push(outcome === "win"
+                ? { key: "hp", icon: "arcade/img/icons/hundred.png?s=6", label: `剩餘 HP ${state.heroHP}` }
+                : { key: "q",  icon: "arcade/img/icons/hundred.png?s=6", label: `答對 ${state.qIdx} 題` });
+            window.arcadeUI.victory({
+                win: outcome === "win",
+                title: outcome === "win" ? "勝利" : "失敗",
+                sub: outcome === "win" ? "擊敗魔王！" : "再接再厲！",
+                rewards,
+                replayLabel: "再戰一次",
+                exitLabel: "回地圖",
+                exitIcon: "assets/images/icons/sword.png?s=6",
+                onReplay: () => location.reload(),
+                onExit: fromMap ? arenaExit : null,
+            });
+            return;
+        }
         const overlay = document.createElement("div");
         overlay.className = "arena-overlay";
         overlay.innerHTML =

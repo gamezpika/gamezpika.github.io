@@ -696,10 +696,12 @@ class ExploreScene extends Phaser.Scene {
   // 🐴 馬車快遞：走近會跑的馬車 → 列 8 大據點 → 選了複用 portal 轉場傳送
   _openTaxi(onClose) {
     const DESTS = [
-      { id: "academy", name: "五大學院" }, { id: "forest", name: "禁忌森林" },
-      { id: "playground", name: "遊樂場" }, { id: "dock", name: "學園碼頭" },
-      { id: "campus", name: "學園生活區" },
+      { id: "village", name: "村莊" }, { id: "academy", name: "五大學院" },
+      { id: "forest", name: "禁忌森林" }, { id: "playground", name: "遊樂場" },
+      { id: "dock", name: "學園碼頭" }, { id: "campus", name: "學園生活區" },
     ];
+    // 「在這」標記：用可愛學生人頭圖（依 onboarding 性別選男/女），取代原本文字
+    const hereHead = isFemalePlayer() ? "head_girl.webp" : "head_boy.webp";
     if (this._taxiOpen) return;   // 防重複開（Codex #2）
     this._taxiOpen = true;
     const cur = this.mapId;
@@ -713,9 +715,11 @@ class ExploreScene extends Phaser.Scene {
     DESTS.forEach((d) => {
       const here = d.id === cur;
       html += "<button class='taxi-dest' data-map='" + d.id + "'" + (here ? " disabled" : "") +
-        " style='border:none;border-radius:12px;padding:13px 8px;font-size:14px;font-weight:800;background:" +
-        (here ? "#e8ddc4" : "#b5712f") + ";color:" + (here ? "#a89878" : "#fff7e6") + "'>" +
-        d.name + (here ? "（在這）" : "") + "</button>";
+        " style='border:none;border-radius:12px;padding:" + (here ? "8px" : "13px") + " 8px;font-size:14px;font-weight:800;background:" +
+        (here ? "#e8ddc4" : "#b5712f") + ";color:" + (here ? "#a89878" : "#fff7e6") +
+        ";display:flex;align-items:center;justify-content:center;gap:5px'>" +
+        (here ? "<img src='" + hereHead + "' alt='在這' style='width:30px;height:30px;flex:none'>" : "") +
+        "<span>" + d.name + "</span></button>";
     });
     html += "</div><button id='taxi-close' style='margin-top:12px;width:100%;border:none;border-radius:12px;padding:10px;background:#bbb;color:#fff;font-weight:800'>關閉</button></div>";
     m.innerHTML = html;

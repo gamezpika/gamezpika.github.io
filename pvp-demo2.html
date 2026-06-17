@@ -1926,7 +1926,13 @@ function ensureRoomPanel() {
     document.getElementById("rm-cancel").onclick = cancelRoom;
     document.getElementById("rm-join-btn").onclick = roomJoin;
     document.getElementById("rm-join-code").addEventListener("keydown", e => { if (e.key === "Enter") roomJoin(); });
-    document.getElementById("rm-back").onclick = () => { closeRoomPanel(); arenaExit(); };
+    document.getElementById("rm-back").onclick = () => {
+        closeRoomPanel();
+        // 回設定頁（不是退出競技場）；重置回「隨機配對」避免又被當朋友房
+        pvpMode = "ranked";
+        document.querySelectorAll("#setup-pvp-mode .pvp-mode-btn").forEach(x => x.classList.toggle("active", x.dataset.pvpmode === "ranked"));
+        const ss = document.getElementById("screen-setup"); if (ss) ss.style.display = "flex";
+    };
 }
 
 function roomShowTab(tab) {
@@ -2307,6 +2313,7 @@ window.arenaExit = arenaExit;
         b.onclick = () => {
             pvpMode = b.dataset.pvpmode;
             document.querySelectorAll("#setup-pvp-mode .pvp-mode-btn").forEach(x => x.classList.toggle("active", x === b));
+            if (pvpMode === "room") openRoomPanel("create");   // 點朋友房直接跳出建房/加入面板（開房按鈕一鍵就看到）
         };
     });
     document.getElementById("setup-start").onclick = () => {

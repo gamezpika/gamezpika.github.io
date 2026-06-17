@@ -3956,6 +3956,36 @@
         "mask_color": "#FF3B30",
         "render_order": 500,
         "interaction_type": "open_shop"
+      },
+      {
+        "id": "cropboard",
+        "name": "農場布告欄",
+        "category": "house",
+        "sprite": {
+          "image": "cropboard.webp",
+          "scale": 0.32,
+          "anchor_x": 0.5,
+          "anchor_y": 1
+        },
+        "anchor": {
+          "x": 0.27,
+          "y": 0.74
+        },
+        "interaction": {
+          "type": "open_shop",
+          "shop_id": "cropboard",
+          "label": "種田",
+          "radius": 150
+        },
+        "path": [],
+        "center": {
+          "x": 0.27,
+          "y": 0.74
+        },
+        "polygon": [],
+        "mask_color": "#FF3B30",
+        "render_order": 495,
+        "interaction_type": "open_shop"
       }
     ],
     "obstacle_areas": [

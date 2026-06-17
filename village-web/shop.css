@@ -607,6 +607,18 @@
 }
 #equip-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #7a4715; }
 
+/* 走路速度設定鈕：在裝備鈕正下方，同款藥丸樣式 */
+#speed-btn {
+  position: fixed; top: 58px; right: 14px; z-index: 4000;
+  font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-size: 15px; font-weight: 800; color: #fff7e6; white-space: nowrap;
+  background: linear-gradient(180deg, #5aa86a, #3c8a4e); border: 3px solid #fff2dd;
+  border-radius: 999px; padding: 8px 14px; cursor: pointer; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 0 #2c6a3a, 0 6px 14px rgba(0,0,0,.3);
+}
+#speed-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #2c6a3a; }
+
 /* 地圖轉場黑幕（DOM 層，跨 Phaser scene.restart 穩定） */
 #map-fade {
   position: fixed; inset: 0; z-index: 6000; background: #000;

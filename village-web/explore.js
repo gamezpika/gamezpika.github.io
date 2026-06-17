@@ -38,6 +38,23 @@ const DEFAULT_F_SHEETS = { side: "walk_f_default_side.webp", down: "walk_f_defau
 function isFemalePlayer() {
   try { return localStorage.getItem("village_gender") === "female"; } catch (e) { return false; }
 }
+
+// 走路速度倍率（玩家可在齒輪設定面板調，存 localStorage）：套在各地圖 config player.speed 上。
+// 預設 1.4＝比原本快一點；合法範圍 0.8~2.4，超出或壞值就回預設。
+const SPEED_LEVELS = [
+  { mult: 1.0, name: "標準" },
+  { mult: 1.5, name: "快速" },
+  { mult: 2.0, name: "飛快" },
+];
+const DEFAULT_SPEED_MULT = 1.5;
+let _walkSpeedMult = (function () {
+  try { const v = parseFloat(localStorage.getItem("village_speed_mult")); return (v >= 0.8 && v <= 2.4) ? v : DEFAULT_SPEED_MULT; }
+  catch (e) { return DEFAULT_SPEED_MULT; }
+})();
+function setWalkSpeedMult(v) {
+  _walkSpeedMult = v;
+  try { localStorage.setItem("village_speed_mult", String(v)); } catch (e) {}
+}
 function walkOutfitCurrent() {
   try {
     const body = (JSON.parse(localStorage.getItem("village_equip") || "{}") || {}).body;
@@ -970,7 +987,7 @@ class ExploreScene extends Phaser.Scene {
 
   // 有任何會擋操作的 DOM 面板開著嗎？（含牧場面板：它用 style.display 不是 .open class）
   _anyPanelOpen() {
-    if (document.querySelector("#ca-overlay.open,#ao-overlay.open,#jc-overlay.open,#shop-overlay.open,#eq-overlay.open,#dh-overlay.open,#en-overlay.open,#info-modal.open,#taxi-overlay.open,#tower-overlay.open")) return true;
+    if (document.querySelector("#ca-overlay.open,#ao-overlay.open,#jc-overlay.open,#shop-overlay.open,#eq-overlay.open,#dh-overlay.open,#en-overlay.open,#info-modal.open,#taxi-overlay.open,#tower-overlay.open,#speed-overlay.open")) return true;
     const r = document.getElementById("ranch-overlay");
     return !!(r && r.style.display && r.style.display !== "none");
   }
@@ -1521,7 +1538,7 @@ class ExploreScene extends Phaser.Scene {
     this._lastPX = this.player.x; this._lastPY = this.player.y;
     const len = Math.hypot(dx, dy);
     if (len > 1) { dx /= len; dy /= len; }
-    this.player.body.setVelocity(dx * this.PLAYER_SPEED, dy * this.PLAYER_SPEED);
+    this.player.body.setVelocity(dx * this.PLAYER_SPEED * _walkSpeedMult, dy * this.PLAYER_SPEED * _walkSpeedMult);
 
     // 樹（play_on_proximity）：玩家靠近才搖，離開停回靜止幀
     if (this._proxAnims) {
@@ -1624,6 +1641,37 @@ game.events.once("ready", () => {
     window.visualViewport.addEventListener("resize", _applyDpr);
   }
 });
+
+// 走路速度設定面板（右上齒輪鈕開）：選速度倍率，存 localStorage，即時生效。
+// DOM overlay（同 taxi 風格）；開啟時把當前場景 modalOpen=true 凍結移動，關閉還原。
+window.openSpeedSettings = function () {
+  const sc = game.scene.getScenes(true).find((s) => s.player && s.config);
+  let m = document.getElementById("speed-overlay"); if (m) m.remove();
+  m = document.createElement("div"); m.id = "speed-overlay"; m.className = "open";
+  m.style.cssText = "position:fixed;inset:0;z-index:7000;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.55);font-family:sans-serif";
+  let html = "<div style='background:#fff6e2;border:5px solid #8a5a2b;border-radius:20px;max-width:320px;width:100%;padding:16px;box-shadow:0 14px 40px rgba(0,0,0,.5)'>";
+  html += "<div style='font-weight:900;font-size:19px;color:#7a4715;text-align:center'>🚶 走路速度</div>";
+  html += "<div style='font-size:13px;color:#9a7038;text-align:center;margin:2px 0 12px'>選一個移動速度，馬上生效</div>";
+  html += "<div style='display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px'>";
+  SPEED_LEVELS.forEach((lv) => {
+    const on = Math.abs(_walkSpeedMult - lv.mult) < 0.01;
+    html += "<button class='speed-opt' data-mult='" + lv.mult + "'" +
+      " style='border:" + (on ? "3px solid #3aa657" : "none") + ";border-radius:12px;padding:13px 8px;font-size:15px;font-weight:800;background:" +
+      (on ? "#dff3e2" : "#b5712f") + ";color:" + (on ? "#2c7a45" : "#fff7e6") + "'>" +
+      lv.name + "<br><span style='font-size:12px;font-weight:700;opacity:.85'>" + lv.mult + "×</span></button>";
+  });
+  html += "</div><button id='speed-close' style='margin-top:12px;width:100%;border:none;border-radius:12px;padding:10px;background:#bbb;color:#fff;font-weight:800'>關閉</button></div>";
+  m.innerHTML = html;
+  document.body.appendChild(m);
+  if (sc) sc.modalOpen = true;
+  const close = () => { if (sc) sc.modalOpen = false; if (m.parentNode) m.remove(); };
+  m.addEventListener("pointerdown", (e) => { if (e.target === m) close(); });
+  m.querySelector("#speed-close").addEventListener("click", close);
+  m.querySelectorAll(".speed-opt").forEach((btn) => btn.addEventListener("click", () => {
+    setWalkSpeedMult(parseFloat(btn.getAttribute("data-mult")));
+    close();
+  }));
+};
 
 // 服裝店買衣服「買了馬上變」：當場把 hero 三方向 texture+動畫換成新造型
 // （shop.js 購買/更衣室切換時呼叫；新圖尺寸幀數同原版，config 設定照用）

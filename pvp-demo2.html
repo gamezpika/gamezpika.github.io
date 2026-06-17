@@ -63,6 +63,8 @@
         }
     </style>
     <script src="static/js/combat-engine.js?v=1"></script>
+    <script src="arcade/shim.js?v=3"></script>  <!-- 接真後端：eduApi + demo token（真即時多人 PVP）-->
+    <script src="arcade/boss/bopomofo.js?v=1"></script>
 </head>
 <body>
 
@@ -74,8 +76,8 @@
 
         <!-- 開場設定面板 -->
         <div class="setup-modal" id="screen-setup">
-            <div class="setup-title">⚔ PVP 對戰設定 ⚔</div>
-            <div class="setup-sub">楓之谷風 SRPG 雙人 PK · 對手從 24 職業隨機選</div>
+            <div class="setup-title">⚔ 競技場 PK ⚔</div>
+            <div class="setup-sub">格子丟球 1v1 對戰 · 答對搶分擊敗對手</div>
 
             <div class="setup-section">
                 <h3>👤 玩家名稱</h3>
@@ -90,34 +92,10 @@
             </div>
 
             <div class="setup-section">
-                <h3>⚔️ 對手難度（決定 HP）</h3>
-                <div class="subject-grid" id="setup-tiers">
-                    <!-- 3 tier button JS render -->
-                </div>
-            </div>
-
-            <div class="setup-section">
-                <h3>🎓 選擇職業（24 個，影響武器 + HP）</h3>
-                <div class="job-grid" id="setup-jobs">
-                    <!-- 24 職業 JS render -->
-                </div>
-                <div class="job-preview" id="job-preview">點選職業看詳細</div>
-            </div>
-
-            <div class="setup-section">
-                <h3>👤 我方性別</h3>
+                <h3>👤 我方造型性別</h3>
                 <div class="theme-picker" id="setup-gender">
                     <button class="theme-btn gender-btn active" data-gender="m">👦 男孩</button>
                     <button class="theme-btn gender-btn" data-gender="f">👧 女孩</button>
-                </div>
-            </div>
-
-            <div class="setup-section">
-                <h3>🤖 對手性別</h3>
-                <div class="theme-picker" id="setup-opp-gender">
-                    <button class="theme-btn opp-gender-btn active" data-opp-gender="random">🎲 隨機</button>
-                    <button class="theme-btn opp-gender-btn" data-opp-gender="m">👦 男</button>
-                    <button class="theme-btn opp-gender-btn" data-opp-gender="f">👧 女</button>
                 </div>
             </div>
 
@@ -132,12 +110,20 @@
                 </div>
             </div>
 
+            <div class="setup-section">
+                <h3>⚔️ 對戰方式</h3>
+                <div class="theme-picker" id="setup-pvp-mode">
+                    <button class="theme-btn pvp-mode-btn active" data-pvpmode="ranked">🎲 隨機配對</button>
+                    <button class="theme-btn pvp-mode-btn" data-pvpmode="room">👥 朋友房</button>
+                </div>
+            </div>
+
             <button class="setup-start" id="setup-start">⚔️ 開始 PVP 對戰 →</button>
         </div>
 
         <div id="screen-arena" style="display: none">
 
-            <button class="arena-back" onclick="location.href='index.html'" title="返回首頁">←</button>
+            <button class="arena-back" onclick="arenaExit()" title="返回">←</button>
 
             <!-- PVP 計分條（派派 5/24：砍 HP 改競速計分）-->
             <div class="pvp-score-strip">
@@ -591,12 +577,8 @@ async function pvpAttackOpponent() {
     boss.classList.remove("hit");
 }
 
-async function pvpOpponentAnswer(isCorrect) {
-    if (!isCorrect) return;  // AI 答錯 = 沒事
-    state.oppScore = (state.oppScore || 0) + 1;
-    updateScoreUI();
-    showOpponentAnswerToast();
-    // 對手學生丟球分幀（朝左，出手幀放球飛向你；不扣血、純視覺）
+// 對手丟球純動畫（朝左，出手幀放球飛向你；不扣血、純視覺）— 真後端模式直接重用，分數由伺服器給
+async function oppThrowAnim() {
     await playThrow(boss, oppGenderG, () => spawnBall(boss, hero));
     await sleep(120);
     hero.classList.add("hit");
@@ -605,6 +587,14 @@ async function pvpOpponentAnswer(isCorrect) {
     await sleep(420);
     hero.classList.remove("hit");
     stage.classList.remove("shake", "player-hit");
+}
+
+async function pvpOpponentAnswer(isCorrect) {
+    if (!isCorrect) return;  // mock AI 答錯 = 沒事
+    state.oppScore = (state.oppScore || 0) + 1;
+    updateScoreUI();
+    showOpponentAnswerToast();
+    await oppThrowAnim();
 }
 
 function showOpponentAnswerToast() {
@@ -1576,11 +1566,23 @@ async function startArena() {
     bindSkillButtons();
 
     state.busy = true;
-    if (PVP_MODE) {
-        state.myScore = 0;
-        state.oppScore = 0;
-        updateScoreUI();
+    state.myScore = 0;
+    state.oppScore = 0;
+    updateScoreUI();
+
+    if (PVP_BACKEND) {
+        // ── 真即時多人：題庫/分數/對手全由伺服器驅動 ──
+        BACKEND_QUESTIONS = prepBackendQuestions((pvpInitState && pvpInitState.questions) || []);
+        myIdx = (pvpInitState && pvpInitState.me && pvpInitState.me.answered_count) || 0;   // 重連/in_session 從伺服器進度起跳（Codex P2-1）
+        oppPrevScore = (pvpInitState && pvpInitState.opponent && pvpInitState.opponent.score) || 0;
+        oppThrowPending = false; oppThrowBusy = false; lastAnsweredQid = null;
+        pvpFinished = false;
+        loadQuestionBackend();
+        setTimeout(() => { state.busy = false; startGameLoop(); }, 1100);
+        return;
     }
+
+    // ── 本地 fallback（後端連不上）：mock AI 對手 ──
     loadQuestion();
     setTimeout(() => {
         state.busy = false;
@@ -1730,6 +1732,533 @@ function applyTheme(theme) {
     try { localStorage.setItem("eduarena_demo_theme", theme); } catch (e) {}
 }
 
+// ═══════════════ 真即時多人 PVP 後端整合（配對 + 輪詢 + 真對手丟球）═══════════════
+let PVP_BACKEND = false;        // true = 接真後端配對；false = 本地 mock fallback
+let pvpSessionId = null;
+let pvpInitState = null;        // 配對成功當下的 state（含 questions/opponent）
+let BACKEND_QUESTIONS = [];     // 本場題庫（伺服器給）
+let myIdx = 0;                  // 我目前作答到第幾題（本地推進，求即時手感）
+let oppPrevScore = 0;           // 上次 poll 的對手分數，變大 = 對手答對 → 丟球
+let oppThrowPending = false, oppThrowBusy = false;  // 對手丟球序列化（防重疊/防漏）
+let lastAnsweredQid = null;     // 我剛作答的題 id（防 poll 把同題重渲染成可再答 / 防客戶端超前伺服器卡死）
+let pvpFinished = false;
+let matchPollTimer = null, matchPollErrors = 0;
+let gamePollTimer = null, pollSoonTimer = null;
+let pvpMode = "ranked";          // "ranked"(隨機配對) | "room"(朋友房)
+let roomCode = null, roomPollTimer = null;
+
+// debug handle（同 window.__moba 慣例，供測試/排錯讀內部狀態）
+window.__pvp = {
+    get backend() { return PVP_BACKEND; },
+    get sessionId() { return pvpSessionId; },
+    get q() { return state._q; },
+    get finished() { return pvpFinished; },
+    get questions() { return BACKEND_QUESTIONS; },
+    get myIdx() { return myIdx; },
+    get total() { return BACKEND_QUESTIONS.length; },
+    get busy() { return state.busy; },
+    last: null,   // 最後一次 poll 的 state（debug）
+};
+
+// 後端題前處理：去重複題(同 display+prompt) + 洗 choices（答案以選項文字送伺服器判分，洗牌不影響判分，只修正後端正解常落在 A）
+function prepBackendQuestions(qs) {
+    if (!Array.isArray(qs)) return [];
+    const norm = s => String(s || "").toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
+    const seen = new Set(), out = [];
+    qs.forEach(q => {
+        const key = norm(q.display) + "│" + norm(q.prompt);
+        if (key !== "│" && seen.has(key)) return;
+        if (key !== "│") seen.add(key);
+        if (Array.isArray(q.choices) && q.choices.length > 1) {
+            const c = q.choices.slice();
+            for (let i = c.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [c[i], c[j]] = [c[j], c[i]]; }
+            q.choices = c;
+        }
+        out.push(q);
+    });
+    return out;
+}
+
+// ── 配對流程：start → 等待 → 倒數 → 進戰場 ──
+async function beginMatch() {
+    document.getElementById("screen-setup").style.display = "none";
+    showSetupSpinner();
+    setSpinnerText("🔍 配對中...");
+    // 預載雙方丟球 6 幀（避免第一次出招卡頓）
+    await Promise.all([...HERO_THROW.boy, ...HERO_THROW.girl].map(preloadImage));
+
+    if (!window.eduApi) return fallbackLocal();
+    let data = null;
+    try {
+        const r = await window.eduApi("/api/pvp/start", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ subject_key: playerSetup.subject, grade: playerGrade }),
+        });
+        data = await r.json();
+        if (!data || data.detail || r.status >= 400) throw new Error((data && data.detail) || r.status);
+    } catch (e) {
+        console.warn("[pvp] /api/pvp/start 失敗，改用本地 mock 對手", e);
+        return fallbackLocal();
+    }
+    if (data.status === "in_session" && data.session_id) pvpSessionId = data.session_id;
+    startMatchPoll();
+}
+
+function fallbackLocal() {
+    hideSetupSpinner();
+    PVP_BACKEND = false;
+    startArena();   // 本地 mock 流程（題庫=subjects.json、對手=mock AI）
+}
+
+function setSpinnerText(txt) {
+    const el = document.querySelector("#setup-spinner .setup-spinner-text");
+    if (el) el.textContent = txt;
+}
+
+function startMatchPoll() {
+    stopMatchPoll();
+    matchPollErrors = 0;
+    pollMatch();
+    matchPollTimer = setInterval(pollMatch, 1500);
+}
+function stopMatchPoll() { if (matchPollTimer) { clearInterval(matchPollTimer); matchPollTimer = null; } }
+
+async function pollMatch() {
+    if (!window.eduApi) return;
+    let d = null;
+    try {
+        const r = await window.eduApi(pvpSessionId ? "/api/pvp/state?session_id=" + encodeURIComponent(pvpSessionId) : "/api/pvp/state");
+        if (!r.ok) throw new Error("state " + r.status);
+        d = await r.json();
+        matchPollErrors = 0;
+    } catch (e) {
+        matchPollErrors++;
+        if (matchPollErrors >= 5) { stopMatchPoll(); hideSetupSpinner(); alert("連線不穩定，已退出配對"); arenaExit(); }
+        return;
+    }
+    const st = d.status;
+    if (st === "waiting") { updateMatchSpinner(d); return; }
+    if (st === "playing") { stopMatchPoll(); pvpSessionId = d.session_id; onMatched(d); return; }
+    if (st === "finished" || st === "abandoned" || st === "idle") { stopMatchPoll(); hideSetupSpinner(); arenaExit(); return; }
+}
+
+function updateMatchSpinner(d) {
+    let t = "🔍 配對中... 已等 " + (d.elapsed_seconds || 0) + " 秒";
+    if (typeof d.ai_in === "number" && d.ai_in > 0) t += "（" + d.ai_in + " 秒後配電腦陪練）";
+    setSpinnerText(t);
+}
+
+async function onMatched(d) {
+    pvpInitState = d;
+    PVP_BACKEND = true;
+    // 對手性別：後端沒給就隨機；固定下來讓倒數→戰鬥一致
+    const og = (d.opponent && (d.opponent.gender === "f" || d.opponent.gender === "m")) ? d.opponent.gender : (Math.random() < 0.5 ? "m" : "f");
+    playerSetup.oppGender = og;
+    state.opponentName = (d.opponent && d.opponent.is_ai) ? "電腦陪練" : "對手";
+    hideSetupSpinner();
+    await runCountdown(d.opponent);
+    await startArena();   // 視覺戰場（PVP_BACKEND=true 分支會接 startGameLoop）
+}
+
+function runCountdown(opp) {
+    return new Promise(resolve => {
+        const ov = document.createElement("div");
+        ov.id = "pvp-countdown-ov";
+        ov.style.cssText = "position:fixed;inset:0;z-index:9998;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:radial-gradient(ellipse at 50% 40%,#1a2e5e 0%,#08122a 78%);color:#fff;text-align:center";
+        const oppName = (opp && opp.is_ai) ? "🤖 電腦陪練" : "🧑 玩家";
+        ov.innerHTML = '<div style="font-size:18px;color:#bcd2ff">配對成功！對手：' + oppName + '</div>'
+            + '<div id="pvp-cd-num" style="font-size:72px;font-weight:900;text-shadow:0 0 20px rgba(120,180,255,.8)">3</div>';
+        document.body.appendChild(ov);
+        let n = 3;
+        const numEl = ov.querySelector("#pvp-cd-num");
+        const timer = setInterval(() => {
+            n -= 1;
+            if (n > 0) { numEl.textContent = String(n); numEl.style.animation = "none"; void numEl.offsetWidth; numEl.style.animation = ""; }
+            else if (n === 0) { numEl.textContent = "GO!"; }
+            else { clearInterval(timer); ov.remove(); resolve(); }
+        }, 800);
+    });
+}
+
+// ── 朋友房：建房（自訂密碼）/ 加入（輸碼）/ 邀請連結 ──
+function ensureRoomPanel() {
+    if (document.getElementById("pvp-room-ov")) return;
+    const ov = document.createElement("div");
+    ov.id = "pvp-room-ov";
+    ov.style.cssText = "position:fixed;inset:0;z-index:9997;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:radial-gradient(ellipse at 50% 35%,#22305c 0%,#0a1428 80%);color:#fff;text-align:center;padding:20px;box-sizing:border-box";
+    ov.innerHTML =
+        '<div style="font-size:22px;font-weight:900">👥 朋友房 PK</div>'
+        + '<div style="display:flex;gap:8px">'
+        + '  <button id="rm-tab-create" class="theme-btn active" style="min-width:96px">建立房間</button>'
+        + '  <button id="rm-tab-join" class="theme-btn" style="min-width:96px">加入房間</button>'
+        + '</div>'
+        // 建房
+        + '<div id="rm-create" style="width:min(360px,86vw);display:flex;flex-direction:column;gap:10px">'
+        + '  <div id="rm-create-input" style="display:flex;flex-direction:column;gap:8px">'
+        + '    <div style="font-size:14px;color:#bcd2ff">設一個房間密碼給朋友（英數 1~12 字）</div>'
+        + '    <input id="rm-code" class="setup-input" maxlength="12" placeholder="例如 ABC123" style="text-transform:uppercase">'
+        + '    <div id="rm-create-err" style="color:#ff8a8a;font-size:13px;min-height:16px"></div>'
+        + '    <button id="rm-create-btn" class="setup-start">建立並等朋友 →</button>'
+        + '  </div>'
+        + '  <div id="rm-create-wait" style="display:none;flex-direction:column;gap:10px">'
+        + '    <div style="font-size:14px;color:#bcd2ff">房間密碼</div>'
+        + '    <div id="rm-code-show" style="font-size:34px;font-weight:900;letter-spacing:4px;color:#ffd54d"></div>'
+        + '    <button id="rm-copy-link" class="theme-btn">📋 複製邀請連結</button>'
+        + '    <div id="rm-wait-line" style="font-size:14px;color:#bcd2ff">等待朋友加入…</div>'
+        + '    <button id="rm-cancel" class="theme-btn" style="background:#5a3a3a">取消房間</button>'
+        + '  </div>'
+        + '</div>'
+        // 加入
+        + '<div id="rm-join" style="width:min(360px,86vw);display:none;flex-direction:column;gap:8px">'
+        + '  <div style="font-size:14px;color:#bcd2ff">輸入朋友給的房間密碼</div>'
+        + '  <input id="rm-join-code" class="setup-input" maxlength="12" placeholder="房間密碼" style="text-transform:uppercase">'
+        + '  <div id="rm-join-err" style="color:#ff8a8a;font-size:13px;min-height:16px"></div>'
+        + '  <button id="rm-join-btn" class="setup-start">加入 →</button>'
+        + '</div>'
+        + '<button id="rm-back" class="theme-btn" style="margin-top:6px">← 返回</button>';
+    document.body.appendChild(ov);
+
+    document.getElementById("rm-tab-create").onclick = () => roomShowTab("create");
+    document.getElementById("rm-tab-join").onclick = () => roomShowTab("join");
+    document.getElementById("rm-create-btn").onclick = roomCreate;
+    document.getElementById("rm-code").addEventListener("keydown", e => { if (e.key === "Enter") roomCreate(); });
+    document.getElementById("rm-copy-link").onclick = roomCopyLink;
+    document.getElementById("rm-cancel").onclick = cancelRoom;
+    document.getElementById("rm-join-btn").onclick = roomJoin;
+    document.getElementById("rm-join-code").addEventListener("keydown", e => { if (e.key === "Enter") roomJoin(); });
+    document.getElementById("rm-back").onclick = () => { closeRoomPanel(); arenaExit(); };
+}
+
+function roomShowTab(tab) {
+    document.getElementById("rm-tab-create").classList.toggle("active", tab === "create");
+    document.getElementById("rm-tab-join").classList.toggle("active", tab === "join");
+    document.getElementById("rm-create").style.display = tab === "create" ? "flex" : "none";
+    document.getElementById("rm-join").style.display = tab === "join" ? "flex" : "none";
+}
+
+function openRoomPanel(tab) {
+    ensureRoomPanel();
+    document.getElementById("screen-setup").style.display = "none";
+    // reset 建房到輸入態
+    document.getElementById("rm-create-input").style.display = "flex";
+    document.getElementById("rm-create-wait").style.display = "none";
+    document.getElementById("rm-create-err").textContent = "";
+    document.getElementById("rm-join-err").textContent = "";
+    roomShowTab(tab || "create");
+    document.getElementById("pvp-room-ov").style.display = "flex";
+}
+function closeRoomPanel() {
+    stopRoomPoll();
+    const ov = document.getElementById("pvp-room-ov");
+    if (ov) ov.style.display = "none";
+}
+
+async function roomCreate() {
+    const errEl = document.getElementById("rm-create-err");
+    const code = (document.getElementById("rm-code").value || "").trim().toUpperCase();
+    if (!/^[A-Z0-9]{1,12}$/.test(code)) { errEl.textContent = "密碼只能用英文或數字，1~12 個字"; return; }
+    errEl.textContent = "";
+    const btn = document.getElementById("rm-create-btn"); btn.disabled = true;
+    try {
+        const r = await window.eduApi("/api/pvp/room/create", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ subject_key: playerSetup.subject, grade: playerGrade, code }),
+        });
+        const d = await r.json();
+        if (r.status === 409 && d.detail === "room_code_taken") { errEl.textContent = "這個密碼有人在用，換一個"; return; }
+        if (d.detail || !r.ok) { errEl.textContent = "建房失敗：" + (d.detail || r.status); return; }
+        roomCode = d.code;
+        document.getElementById("rm-code-show").textContent = d.code;
+        document.getElementById("rm-create-input").style.display = "none";
+        document.getElementById("rm-create-wait").style.display = "flex";
+        startRoomPoll(d.code);
+    } catch (e) { errEl.textContent = "建房失敗：" + e.message; }
+    finally { btn.disabled = false; }
+}
+
+function roomCopyLink() {
+    if (!roomCode) return;
+    const link = location.origin + "/pvp-demo2.html?invite=" + roomCode;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(() => { document.getElementById("rm-wait-line").textContent = "✅ 連結已複製，傳給朋友！"; }).catch(() => {});
+    }
+}
+
+function startRoomPoll(code) {
+    stopRoomPoll();
+    roomPollTimer = setInterval(async () => {
+        if (!code || !window.eduApi) return;
+        let d = null;
+        try { const r = await window.eduApi("/api/pvp/room/" + encodeURIComponent(code)); if (!r.ok) return; d = await r.json(); } catch (e) { return; }
+        const line = document.getElementById("rm-wait-line");
+        if (d.state === "session_created" && d.session_id) {
+            stopRoomPoll();
+            await enterFromSession(d.session_id);
+        } else if (d.state === "expired" || d.state === "cancelled") {
+            stopRoomPoll();
+            if (line) line.textContent = "❌ 房間已" + (d.state === "expired" ? "過期" : "取消");
+        } else if (line) {
+            const mins = d.expire_remaining_seconds ? "（剩 " + Math.ceil(d.expire_remaining_seconds / 60) + " 分）" : "";
+            line.textContent = "等待朋友加入…" + mins;
+        }
+    }, 2000);
+}
+function stopRoomPoll() { if (roomPollTimer) { clearInterval(roomPollTimer); roomPollTimer = null; } }
+
+async function cancelRoom() {
+    if (roomCode && window.eduApi) {
+        try { await window.eduApi("/api/pvp/room/cancel", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: roomCode }) }); } catch (e) {}
+    }
+    stopRoomPoll(); roomCode = null;
+    openRoomPanel("create");
+}
+
+async function roomJoin() {
+    const errEl = document.getElementById("rm-join-err");
+    const code = (document.getElementById("rm-join-code").value || "").trim().toUpperCase();
+    if (!/^[A-Z0-9]{1,12}$/.test(code)) { errEl.textContent = "密碼只能用英文或數字，1~12 個字"; return; }
+    errEl.textContent = "";
+    const btn = document.getElementById("rm-join-btn"); btn.disabled = true;
+    try {
+        const r = await window.eduApi("/api/pvp/room/join", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code }),
+        });
+        const d = await r.json();
+        if (d.detail || !r.ok) { errEl.textContent = "加入失敗：" + (d.detail || r.status); return; }
+        await enterFromSession(d.session_id);
+    } catch (e) { errEl.textContent = "加入失敗：" + e.message; }
+    finally { btn.disabled = false; }
+}
+
+// 房間配對成功（拿到 session_id）→ 抓初始 state → 倒數 → 進戰場
+async function enterFromSession(sessionId) {
+    pvpSessionId = sessionId;
+    let d = null;
+    try { const r = await window.eduApi("/api/pvp/state?session_id=" + encodeURIComponent(sessionId)); if (r.ok) d = await r.json(); } catch (e) {}
+    d = d || {};
+    closeRoomPanel();
+    pvpInitState = d;
+    PVP_BACKEND = true;
+    const og = (d.opponent && (d.opponent.gender === "f" || d.opponent.gender === "m")) ? d.opponent.gender : (Math.random() < 0.5 ? "m" : "f");
+    playerSetup.oppGender = og;
+    state.opponentName = (d.opponent && d.opponent.is_ai) ? "電腦陪練" : "對手";
+    await runCountdown(d.opponent);
+    await startArena();
+}
+
+// ── 戰鬥中：題目渲染（後端題） ──
+function loadQuestionBackend() {
+    if (!BACKEND_QUESTIONS.length) {
+        // 題目還沒到（朋友房剛開戰）→ pollGame 安全網會補上並重載
+        $("arena-question").textContent = "⏳ 準備題目中...";
+        document.querySelectorAll("#arena-options .opt-btn").forEach(b => { b.disabled = true; b.style.visibility = "hidden"; });
+        return;
+    }
+    const q = BACKEND_QUESTIONS[myIdx];
+    if (!q) {
+        // 我已答完所有題 → 等對手結束
+        $("arena-question").textContent = "✅ 你已答完，等對手結束...";
+        document.querySelectorAll("#arena-options .opt-btn").forEach(b => { b.disabled = true; b.style.visibility = "hidden"; });
+        return;
+    }
+    if (q.question_id === lastAnsweredQid) {
+        // 這題我剛答過，等伺服器把 answered_count 推進到下一題（進度權威在伺服器，避免重複作答/超前卡死）
+        $("arena-question").textContent = "✓ 已作答，下一題準備中...";
+        document.querySelectorAll("#arena-options .opt-btn").forEach(b => { b.disabled = true; });
+        return;
+    }
+    state._q = q;
+    const text = [q.display, q.prompt].filter(Boolean).join("　");
+    const bopo = q.bopomofo || (q.content_json && q.content_json.bopomofo);
+    const _ansHasBopo = /[ㄅ-ㄯㆠ-ㆿ]/.test(String(q.answer || ""));
+    const useBopo = !!bopo && !!window.applyBopomofoSmart && playerGrade >= 1 && playerGrade <= 2 && !_ansHasBopo;
+    const qEl = $("arena-question");
+    if (useBopo) qEl.innerHTML = window.applyBopomofoSmart(text, bopo);
+    else qEl.textContent = text || "";
+    renderChoiceButtons(q.choices || [], useBopo, bopo);
+}
+
+function renderChoiceButtons(choices, useBopo, bopo) {
+    const btns = document.querySelectorAll("#arena-options .opt-btn");
+    btns.forEach((btn, i) => {
+        const c = choices[i];
+        const has = c != null && c !== "";
+        btn.className = "opt-btn";
+        btn.disabled = !has;
+        btn.style.visibility = has ? "" : "hidden";
+        btn.dataset.choice = has ? String(c) : "";
+        if (!has) { btn.textContent = ""; btn.onclick = null; return; }
+        const label = "ABCD"[i] + ". ";
+        if (useBopo && window.applyBopomofoSmart) btn.innerHTML = label + window.applyBopomofoSmart(String(c), bopo);
+        else btn.textContent = label + c;
+        btn.onclick = () => handleAnswerBackend(String(c), btn);
+    });
+}
+
+// ── 我作答 → /api/pvp/answer（伺服器判分）；答對才丟球 ──
+async function handleAnswerBackend(choiceStr, btn) {
+    if (state.busy || pvpFinished) return;
+    state.busy = true;
+    const q = state._q;
+    document.querySelectorAll("#arena-options .opt-btn").forEach(b => b.disabled = true);
+
+    const ctrl = new AbortController();
+    const to = setTimeout(() => ctrl.abort(), 8000);
+    let d = null, ok = false;
+    try {
+        const r = await window.eduApi("/api/pvp/answer", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ session_id: pvpSessionId, question_id: q.question_id, answer: String(choiceStr) }),
+            signal: ctrl.signal,
+        });
+        clearTimeout(to);
+        ok = r.ok;
+        d = await r.json();
+    } catch (e) { clearTimeout(to); d = null; ok = false; }
+
+    // 失敗（HTTP 非2xx / 無 result / detail / 連線斷）→ 不推進，重載當前題讓玩家重試，並 poll 對帳（Codex P2-2）
+    // 伺服器若其實已收到（逾時但成功）→ poll 會看到 me.answered_count 前進，pollGame 自動推進到下一題
+    if (!ok || !d || d.detail || !d.result) {
+        state.busy = false;
+        loadQuestionBackend();
+        schedulePollSoon();
+        return;
+    }
+
+    lastAnsweredQid = q.question_id;   // 標記已作答，防 poll 重渲染成可再答
+    if (d.result.correct) {
+        btn.classList.add("correct");
+        state.combo++; showComboIfDue();
+        await pvpAttackOpponent();   // 我答對 → 我丟球飛對手
+    } else {
+        btn.classList.add("wrong");
+        state.combo = 0;
+        const ca = d.result.correct_answer != null ? d.result.correct_answer : d.correct_answer;
+        if (ca != null) document.querySelectorAll("#arena-options .opt-btn").forEach(b => { if (b.dataset.choice === String(ca)) b.classList.add("correct"); });
+        await sleep(350);
+    }
+    // 進度權威在伺服器：不本地 myIdx++（避免客戶端超前 answered_count → 卡死無法結算，Codex P2-1）
+    state.busy = false;
+    if (!pvpFinished) loadQuestionBackend();   // 顯示「已作答，下一題準備中」(lastAnsweredQid 命中)
+    schedulePollSoon();   // poll 讀 me.answered_count → myIdx 前進 → 載下一題 + 刷新分數/結算
+}
+
+// ── 對戰輪詢：對手丟球（真事件）+ 分數同步 + 結算 ──
+function startGameLoop() {
+    stopGameLoop();
+    pollGame();
+    gamePollTimer = setInterval(pollGame, 1500);
+}
+function stopGameLoop() {
+    if (gamePollTimer) { clearInterval(gamePollTimer); gamePollTimer = null; }
+    if (pollSoonTimer) { clearTimeout(pollSoonTimer); pollSoonTimer = null; }
+}
+function schedulePollSoon() {
+    if (pollSoonTimer) clearTimeout(pollSoonTimer);
+    pollSoonTimer = setTimeout(() => { pollSoonTimer = null; pollGame(); }, 400);
+}
+async function pollGame() {
+    if (!window.eduApi || pvpFinished) return;
+    let d = null;
+    try {
+        const r = await window.eduApi("/api/pvp/state?session_id=" + encodeURIComponent(pvpSessionId));
+        if (!r.ok) throw new Error("state " + r.status);
+        d = await r.json();
+    } catch (e) { return; }   // 暫時失敗：下次 poll 再試（不誤判勝負）
+    window.__pvp.last = d;
+    if (d.status === "playing") {
+        // 安全網：配對當下沒帶 questions 時，第一次 playing poll 補上
+        if (!BACKEND_QUESTIONS.length && Array.isArray(d.questions) && d.questions.length) {
+            BACKEND_QUESTIONS = prepBackendQuestions(d.questions);
+            if (!state.busy) loadQuestionBackend();
+        }
+        // 進度權威：myIdx 完全由伺服器 me.answered_count 決定（不本地超前），變動就載對應題（Codex P2-1）
+        const srvIdx = (d.me && d.me.answered_count) || 0;
+        if (srvIdx !== myIdx) { myIdx = srvIdx; if (!state.busy) loadQuestionBackend(); }
+        updateScoresFromState(d);
+        detectOpponent(d.opponent);
+    } else if (d.status === "finished" || d.status === "abandoned") {
+        updateScoresFromState(d);
+        finishBackend(d);
+    }
+}
+function updateScoresFromState(d) {
+    const me = d.me || {}, opp = d.opponent || {};
+    state.myScore = me.score || 0;
+    state.oppScore = opp.score || 0;
+    updateScoreUI();
+}
+// 對手分數變大 = 對手答對 → 丟球（真人/後端AI 都走這條，取代 mock timer）
+// 註：後端 score 是「分數(每答對約+10~20，含 combo/時間加成)」非「答對題數」，所以多次增加collapse成一次丟球
+// （無法由分數差反推答對幾題）；重點是序列化避免動畫重疊、且我丟球時不丟失（Codex P2-3）
+function detectOpponent(opp) {
+    if (!opp) return;
+    const sc = opp.score || 0;
+    if (sc > oppPrevScore) { oppPrevScore = sc; oppThrowPending = true; drainOppThrows(); }
+    else if (sc !== oppPrevScore) { oppPrevScore = sc; }   // 同步（理論上不會倒退）
+}
+async function drainOppThrows() {
+    if (oppThrowBusy) return;
+    oppThrowBusy = true;
+    while (oppThrowPending && !pvpFinished) {
+        if (state.busy) { await sleep(200); continue; }   // 我正在丟球 → 等，不丟失 pending
+        oppThrowPending = false;
+        showOpponentAnswerToast();
+        await oppThrowAnim();   // 序列化，一個播完才下一個
+    }
+    oppThrowBusy = false;
+}
+function finishBackend(d) {
+    if (pvpFinished) return;
+    pvpFinished = true; state.finished = true;
+    stopGameLoop();
+    const me = d.me || {}, opp = d.opponent || {};
+    const draw = d.winner_player_id == null;
+    const outcome = draw ? "draw" : (me.is_winner ? "win" : "lose");
+    endGamePvp(outcome, me.score || 0, opp.score || 0, me.coins_earned || 0);
+}
+
+function endGamePvp(outcome, myScore, oppScore, coins) {
+    let emoji, title, titleClass;
+    if (outcome === "win") {
+        boss.classList.add("defeated");
+        stage.classList.add("slow-mo");
+        hero.classList.add("victory");
+        emoji = "🎉"; title = "勝利！"; titleClass = "";
+    } else if (outcome === "draw") {
+        emoji = "🤝"; title = "平手"; titleClass = "";
+    } else {
+        const vig = document.createElement("div"); vig.className = "lose-vignette"; stage.appendChild(vig);
+        emoji = "💀"; title = "落敗..."; titleClass = "lose";
+    }
+    setTimeout(() => {
+        const overlay = document.createElement("div");
+        overlay.className = "arena-overlay";
+        const coinLine = coins > 0 ? `<div class="overlay-sub">🪙 +${coins} 金幣</div>` : "";
+        overlay.innerHTML =
+            `<div class="overlay-emoji">${emoji}</div>
+             <div class="overlay-title ${titleClass}">${title}</div>
+             <div class="overlay-sub">比分 ${myScore} : ${oppScore}</div>
+             ${coinLine}
+             <button class="overlay-btn" onclick="location.reload()">再戰一次</button>
+             <button class="overlay-btn" style="margin-left:8px;background:linear-gradient(135deg,#9b8bbf,#6f5e9c)" onclick="arenaExit()">回競技場</button>`;
+        stage.appendChild(overlay);
+    }, outcome === "win" ? 1600 : 1000);
+}
+
+// 返回：從地圖(?back_map/?map)進來回該地圖原位；獨立測試回首頁
+function arenaExit() {
+    stopMatchPoll(); stopGameLoop(); stopRoomPoll();
+    const qp = new URLSearchParams(location.search);
+    const map = /^[a-z0-9_]+$/.test(qp.get("back_map") || "") ? qp.get("back_map")
+        : (/^[a-z0-9_]+$/.test(qp.get("map") || "") ? qp.get("map") : "");
+    const bs = qp.get("back_spawn") || "";
+    if (map) location.href = "village-web/index.html?map=" + map + (/^0\.\d+,0\.\d+$/.test(bs) ? "&spawn=" + bs : "");
+    else location.href = "index.html";
+}
+window.arenaExit = arenaExit;
+
 (async function init() {
     const qp = new URLSearchParams(location.search);
     // in-game：立刻藏設定面板，不閃跳選職業/場景
@@ -1750,45 +2279,54 @@ function applyTheme(theme) {
     playerSetup.oppGender = "random";
     playerSetup.jobKey = null;
 
-    // in-game：URL 帶 ?subject 或 ?auto=1 → 直接進對戰，跳過設定面板
+    // 邀請連結 ?invite=CODE → 直接開朋友房「加入」頁、預填密碼
+    const inv = (qp.get("invite") || "").trim().toUpperCase().slice(0, 12);
+    if (/^[A-Z0-9]{1,12}$/.test(inv)) {
+        const ss = document.getElementById("screen-setup"); if (ss) ss.style.display = "none";
+        const _is = qp.get("subject");
+        if (_is && SUBJECTS_DATA[_is]) playerSetup.subject = _is;
+        openRoomPanel("join");
+        const ji = document.getElementById("rm-join-code"); if (ji) ji.value = inv;
+        return;
+    }
+
+    // in-game：URL 帶 ?subject 或 ?auto=1 → 直接配對開戰，跳過設定面板
     const urlSubj = qp.get("subject");
     if (qp.get("auto") === "1" || (urlSubj && SUBJECTS_DATA[urlSubj])) {
         if (urlSubj && SUBJECTS_DATA[urlSubj]) playerSetup.subject = urlSubj;
         const t = qp.get("tier");
         playerSetup.tier = ["t1", "t2", "t3"].includes(t) ? t : "t2";
-        await startArena();
+        await beginMatch();
         return;
     }
 
     restoreSetup();
     renderSubjectPicker();
-    renderJobPicker();
-    renderTierPicker();
-    // 套上恢復的職業
-    const savedJob = JOBS_DATA.find(j => j.key === playerSetup.jobKey);
-    selectJob(savedJob);
-    document.getElementById("setup-start").onclick = startArena;
+    // 對戰方式：隨機配對 / 朋友房
+    document.querySelectorAll("#setup-pvp-mode .pvp-mode-btn").forEach(b => {
+        b.onclick = () => {
+            pvpMode = b.dataset.pvpmode;
+            document.querySelectorAll("#setup-pvp-mode .pvp-mode-btn").forEach(x => x.classList.toggle("active", x === b));
+        };
+    });
+    document.getElementById("setup-start").onclick = () => {
+        playerSetup.name = (document.getElementById("setup-name").value || "").trim() || playerName();
+        if (pvpMode === "room") openRoomPanel("create");
+        else beginMatch();
+    };
     // 主題按鈕綁定
     document.querySelectorAll("#setup-theme .theme-btn").forEach(b => {
         b.onclick = () => applyTheme(b.dataset.theme);
     });
-    // 派派 5/24：我方性別按鈕
+    // 我方造型性別按鈕（同步 active；對手性別由配對結果決定）
     document.querySelectorAll("#setup-gender .gender-btn").forEach(b => {
         b.onclick = () => {
             playerSetup.gender = b.dataset.gender;
             document.querySelectorAll("#setup-gender .gender-btn").forEach(x => x.classList.toggle("active", x === b));
-            // 即時更新預覽圖
-            const job = JOBS_DATA.find(j => j.key === playerSetup.jobKey);
-            if (job) setHeroSpriteFromJob(job);
         };
     });
-    // 派派 5/24：對手性別按鈕
-    document.querySelectorAll("#setup-opp-gender .opp-gender-btn").forEach(b => {
-        b.onclick = () => {
-            playerSetup.oppGender = b.dataset.oppGender;
-            document.querySelectorAll("#setup-opp-gender .opp-gender-btn").forEach(x => x.classList.toggle("active", x === b));
-        };
-    });
+    // 依 village_gender 預選我方性別 active
+    document.querySelectorAll("#setup-gender .gender-btn").forEach(x => x.classList.toggle("active", x.dataset.gender === playerSetup.gender));
 })();
 </script>
 

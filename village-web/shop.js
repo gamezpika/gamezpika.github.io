@@ -239,7 +239,7 @@
         const sc = window.game.scene.scenes.find((s) => s.player && s.WORLD_W);
         if (sc) q += "&back_spawn=" + (sc.player.x / sc.WORLD_W).toFixed(4) + "," + (sc.player.y / sc.WORLD_H).toFixed(4);
       } catch (e) {}
-      location.href = "../arcade-pvp.html" + q;
+      location.href = "../pvp-demo2.html" + q;   // 競技場改格子丟球 PVP（真即時多人），舊 arcade-pvp.html 保留可 revert
       return;
     }
     if (shopId === "tower") { openTower(onClose); return; }

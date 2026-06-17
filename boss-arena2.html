@@ -386,6 +386,27 @@ function updateGridHighlight() {
     }
 }
 
+// 後端題前處理：去重複題(同 display+prompt) + 洗 choices。
+// 答案是以「選項文字」送伺服器判分，洗牌不影響判分，只修正後端正解常落在 A 的問題。
+function prepBackendQuestions(qs) {
+    if (!Array.isArray(qs)) return [];
+    // 正規化：去空白/標點/底線，只留字母數字中日文 → 抓「同文但底線數/標點不同」的近似重複題
+    const norm = s => String(s || "").toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
+    const seen = new Set(), out = [];
+    qs.forEach(q => {
+        const key = norm(q.display) + "│" + norm(q.prompt);
+        if (key !== "│" && seen.has(key)) return;   // 同題去重
+        if (key !== "│") seen.add(key);
+        if (Array.isArray(q.choices) && q.choices.length > 1) {
+            const c = q.choices.slice();
+            for (let i = c.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [c[i], c[j]] = [c[j], c[i]]; }
+            q.choices = c;
+        }
+        out.push(q);
+    });
+    return out;
+}
+
 function loadQuestion() {
     const q = QUESTIONS[state.qIdx % QUESTIONS.length];
     state._q = q;
@@ -446,7 +467,8 @@ async function handleAnswer(idx, btn) {
             state.combo = 0;
             await getHitByBoss(d.damage, d.player_hp);
         }
-        if (d.done || state.bossHP <= 0 || state.heroHP <= 0) return endGame();   // 後端決定真勝負
+        // 後端決定真勝負；題目用完也結算（不繞回重答同題 → 防重複/防後端重答錯誤）
+        if (d.done || state.bossHP <= 0 || state.heroHP <= 0 || state.qIdx + 1 >= QUESTIONS.length) return endGame();
         await sleep(500);
         state.qIdx++; state.busy = false; loadQuestion();
         return;
@@ -1423,7 +1445,7 @@ async function startArena() {
         if (d && !d.error && !d.detail && d.session_id && Array.isArray(d.questions) && d.questions.length) {
             state.backend = true;
             state.sessionId = d.session_id;
-            QUESTIONS = d.questions;
+            QUESTIONS = prepBackendQuestions(d.questions);   // 去重複題 + 洗 choices(正解不再都 A)
             state.qIdx = 0;
             state.bossMaxHP = d.enemy_max_hp ?? d.enemy_hp ?? d.boss_hp ?? state.bossMaxHP;
             state.bossHP    = d.enemy_hp ?? d.boss_hp ?? state.bossHP;

@@ -1542,7 +1542,8 @@ async function startArena() {
     hideSetupSpinner();
 
     // 派派 6/17：PVP 是競技場 PK → 戰場背景用競技場(鬥技場)圖，不用魔王戰的 tier 背景
-    const PVP_ARENA_BG = "arcade/img/pvp/arena_bg_dim.webp?v=1";
+    // 派派選「有觀眾版」(看台坐滿觀眾，更像比賽現場)，取代原本暗版(寬螢幕拉糊)
+    const PVP_ARENA_BG = "village-web/arena_stadium_bg.webp?v=1";
     stage.style.backgroundImage = `url("${PVP_ARENA_BG}")`;
     // 派派 5/24：score strip 也套相同 bg + 半透明深色 overlay 確保 score 字清楚
     const scoreStrip = document.querySelector(".pvp-score-strip");

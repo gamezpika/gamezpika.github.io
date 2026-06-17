@@ -393,8 +393,19 @@ window.currentUser = { grade: 2 };
 </script>
 <script src="arcade/pvp/pvp-v3.js?v=1"></script>
 <script>
+// 進 PK 前先把村莊選的性別同步到後端角色檔，對手 poll 到的才是我真實性別（沒變不重設）
+async function pvpSyncGender() {
+    try {
+        if (!window.eduApi) return;
+        const g = (localStorage.getItem("village_gender") === "female") ? "female" : "male";
+        if (localStorage.getItem("eduarena_demo_gender_synced") === g) return;
+        await window.eduApi("/api/avatar/gender", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ gender: g }) });
+        localStorage.setItem("eduarena_demo_gender_synced", g);
+    } catch (e) {}
+}
 // 入口：建好身分直接進模式選擇
-window.arcadeEnsureToken().then(() => {
+window.arcadeEnsureToken().then(async () => {
+    await pvpSyncGender();   // 配對前同步性別
     // ?invite=CODE → 直接帶到加入房頁。自己解析網址，不等 pvp-v3 的 sessionStorage（它在 DOMContentLoaded
     // 才存；回訪用戶 token 現成、這裡比它先跑會漏接 — Codex P2）。正式版消化點掛在 home 畫面，本頁沒有 home。
     let inv = "";

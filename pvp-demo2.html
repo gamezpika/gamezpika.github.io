@@ -1780,6 +1780,17 @@ function prepBackendQuestions(qs) {
     return out;
 }
 
+// 把村莊選的性別同步到後端角色檔（對手才能看到我真實性別）；沒變就不重設
+async function syncGenderToBackend() {
+    try {
+        if (!window.eduApi) return;
+        const g = (localStorage.getItem("village_gender") === "female") ? "female" : "male";
+        if (localStorage.getItem("eduarena_demo_gender_synced") === g) return;
+        await window.eduApi("/api/avatar/gender", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ gender: g }) });
+        localStorage.setItem("eduarena_demo_gender_synced", g);
+    } catch (e) { /* 同步失敗不擋對戰 */ }
+}
+
 // ── 配對流程：start → 等待 → 倒數 → 進戰場 ──
 async function beginMatch() {
     document.getElementById("screen-setup").style.display = "none";
@@ -1789,6 +1800,7 @@ async function beginMatch() {
     await Promise.all([...HERO_THROW.boy, ...HERO_THROW.girl].map(preloadImage));
 
     if (!window.eduApi) return fallbackLocal();
+    await syncGenderToBackend();   // 配對前先同步我的性別，對手 poll 到的就是真實性別
     let data = null;
     try {
         const r = await window.eduApi("/api/pvp/start", {
@@ -1852,8 +1864,11 @@ function updateMatchSpinner(d) {
 async function onMatched(d) {
     pvpInitState = d;
     PVP_BACKEND = true;
-    // 對手性別：後端沒給就隨機；固定下來讓倒數→戰鬥一致
-    const og = (d.opponent && (d.opponent.gender === "f" || d.opponent.gender === "m")) ? d.opponent.gender : (Math.random() < 0.5 ? "m" : "f");
+    // 對手性別：後端真實回傳 male/female（對應 m/f）；舊資料沒給才隨機 fallback
+    const rawog = d.opponent && d.opponent.gender;
+    const og = (rawog === "female" || rawog === "f") ? "f"
+             : (rawog === "male" || rawog === "m") ? "m"
+             : (Math.random() < 0.5 ? "m" : "f");
     playerSetup.oppGender = og;
     state.opponentName = (d.opponent && d.opponent.is_ai) ? "電腦陪練" : "對手";
     hideSetupSpinner();
@@ -1992,6 +2007,7 @@ async function roomCreate() {
     if (!/^[A-Z0-9]{1,12}$/.test(code)) { errEl.textContent = "密碼只能用英文或數字，1~12 個字"; return; }
     errEl.textContent = "";
     const btn = document.getElementById("rm-create-btn"); btn.disabled = true;
+    await syncGenderToBackend();   // 建房前同步性別，朋友 poll 到的是我真實性別
     try {
         const r = await window.eduApi("/api/pvp/room/create", {
             method: "POST", headers: { "Content-Type": "application/json" },
@@ -2052,6 +2068,7 @@ async function roomJoin() {
     if (!/^[A-Z0-9]{1,12}$/.test(code)) { errEl.textContent = "密碼只能用英文或數字，1~12 個字"; return; }
     errEl.textContent = "";
     const btn = document.getElementById("rm-join-btn"); btn.disabled = true;
+    await syncGenderToBackend();   // 加入前同步性別
     try {
         const r = await window.eduApi("/api/pvp/room/join", {
             method: "POST", headers: { "Content-Type": "application/json" },

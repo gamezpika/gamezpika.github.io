@@ -127,30 +127,49 @@
   const Farm = {
     scene: null, slots: [], plotXY: [], onUpdate: null, _attached: false, _pending: {},
 
-    // 從 field_iso 田地建築讀位置→在田上排 2 列 x 3 行 6 格（派派在地圖編輯器移田地，作物自動跟著）
+    // 沿大田菱形「等距(iso)」方向切 3 欄 x 2 列 = 六等份，每格正中央一個座標。
+    // 跟著 field_iso 的位置/大小/旋轉走（地圖編輯器移田，作物與分隔線自動跟）。
+    _geom: null,
+    isoPoint(s, t) {   // s,t in [0,1] 在菱形兩條 iso 邊上的參數座標
+      const g = this._geom, cos = Math.cos(g.rot), sin = Math.sin(g.rot);
+      const ox = (s - t) * g.HW, oy = (s + t - 1) * g.HH;
+      return { x: g.cx + ox * cos - oy * sin, y: g.cy + ox * sin + oy * cos };
+    },
     computePlots() {
       const sc = this.scene;
       const f = sc.children.list.find((o) => o.texture && o.texture.key === "field_iso.webp");
       this.plotXY = [];
-      let cx, cy, halfW, halfH;
       if (f) {
-        cx = f.x; cy = f.y - f.displayHeight * (f.originY != null ? f.originY : 1) + f.displayHeight * 0.5;
-        halfW = f.displayWidth * 0.30; halfH = f.displayHeight * 0.22;
-      } else { // 後備：田地座標附近
-        cx = 0.438 * sc.IMG_W; cy = 0.80 * sc.IMG_H + (sc.WORLD_OFFSET_Y || 0);
-        halfW = sc.IMG_W * 0.12; halfH = sc.IMG_H * 0.05;
+        const dW = f.displayWidth, dH = f.displayHeight, rot = f.rotation || 0;
+        // sprite 原點在底中(originY=1)、繞原點旋轉 → 算菱形視覺中心
+        this._geom = { cx: f.x + dH * 0.5 * Math.sin(rot), cy: f.y - dH * 0.5 * Math.cos(rot), HW: dW * 0.40, HH: dH * 0.40, rot };
+      } else {
+        this._geom = { cx: 0.438 * sc.IMG_W, cy: 0.70 * sc.IMG_H + (sc.WORLD_OFFSET_Y || 0), HW: sc.IMG_W * 0.17, HH: sc.IMG_H * 0.12, rot: 0 };
       }
-      // 2 列(後/前) x 3 行，前排略往下、整體略 iso
-      for (let r = 0; r < 2; r++) {
-        for (let c = 0; c < 3; c++) {
-          const fx = (c - 1) / 1;            // -1,0,1
-          const fy = r === 0 ? -0.55 : 0.55;
-          this.plotXY.push({ x: cx + fx * halfW, y: cy + fy * halfH });
-        }
-      }
+      const S = [1 / 6, 3 / 6, 5 / 6], T = [1 / 4, 3 / 4];   // 3 欄 x 2 列，各等份正中央
+      for (const t of T) for (const s of S) this.plotXY.push(this.isoPoint(s, t));
     },
 
-    spriteScale(srcH) { return (FRAME * 0.62) / srcH; },   // 田格作物顯示大小
+    // 在田上畫六等份的草綠走道分隔線（s=1/3,2/3 兩條欄界 + t=1/2 一條列界）
+    drawDividers() {
+      if (this.dividers) { this.dividers.destroy(); this.dividers = null; }
+      if (!this._geom || !this.scene) return;
+      const g = this.scene.add.graphics();
+      g.setDepth(1.6);                          // 田(1)之上、玩家/作物之下
+      const lo = 0.05, hi = 0.95;
+      const line = (a, b, w, col, al) => { g.lineStyle(w, col, al); g.lineBetween(a.x, a.y, b.x, b.y); };
+      [1 / 3, 2 / 3].forEach((s) => {           // 兩條欄界(固定 s)
+        line(this.isoPoint(s, lo), this.isoPoint(s, hi), 11, 0x5d4524, 0.30);   // 下方陰影
+        line(this.isoPoint(s, lo), this.isoPoint(s, hi), 7, 0x9cbb56, 0.92);    // 草綠走道
+      });
+      [1 / 2].forEach((t) => {                  // 一條列界(固定 t)
+        line(this.isoPoint(lo, t), this.isoPoint(hi, t), 11, 0x5d4524, 0.30);
+        line(this.isoPoint(lo, t), this.isoPoint(hi, t), 7, 0x9cbb56, 0.92);
+      });
+      this.dividers = g;
+    },
+
+    spriteScale(srcH) { return (FRAME * 0.46) / srcH; },   // 田格作物顯示大小(縮小以塞進六等份各格)
 
     // 載入作物 sheet：完全繞開 scene 共用 LoaderPlugin（與 farm.js 共用會 race），
     // 改用瀏覽器原生 Image 各自平行載入 → 載好用 textures.addSpriteSheet 註冊。零 loader 競爭。
@@ -178,6 +197,7 @@
       this.detach();
       this.scene = scene; this.slots = new Array(PLOTS).fill(null); this._pending = {};
       this.computePlots();
+      this.drawDividers();   // 田上畫六等份草綠走道
       // 不再用單一 syncAll/ensureSheet（會被 loader race 坑）；改由 update() 每幀自癒建立 sprite
       this.onUpdate = () => this.update();
       scene.events.on("update", this.onUpdate);
@@ -187,6 +207,7 @@
     detach() {
       if (this.scene && this.onUpdate) this.scene.events.off("update", this.onUpdate);
       this.slots.forEach((s) => { if (s) { if (s.spr) s.spr.destroy(); if (s.shadow) s.shadow.destroy(); } });
+      if (this.dividers) { this.dividers.destroy(); this.dividers = null; }
       this.slots = []; this.onUpdate = null; this._pending = {};
       if (this.scene) this.scene.__cropAttached = false;
       this.scene = null; this._attached = false;

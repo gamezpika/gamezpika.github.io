@@ -68,6 +68,33 @@
     <script src="arcade/shim.js?v=3"></script>  <!-- 接真後端：eduApi + demo token（真即時多人 PVP）-->
     <script src="arcade/boss/bopomofo.js?v=1"></script>
     <style>
+    /* 派派 6/17：結算畫面重新設計（無 emoji）——彩色結果橫幅 + 你/對手比分框 + CSS 金幣 + 按鈕 */
+    .pvp-result-card {
+        display: flex; flex-direction: column; align-items: center; gap: 18px;
+        padding: 26px 30px;
+        background: linear-gradient(180deg, rgba(30,23,16,0.94) 0%, rgba(16,12,10,0.97) 100%);
+        border: 2px solid rgba(255,220,150,0.22);
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06);
+        min-width: 280px; animation: bigBounce 0.5s;
+    }
+    .pvp-result-banner { font-size: 30px; font-weight: 900; letter-spacing: 4px; color: #fff; padding: 6px 30px; border-radius: 12px; }
+    .pvp-result-card.win  .pvp-result-banner { background: linear-gradient(135deg,#f3ba56,#d4891f); box-shadow: 0 0 26px rgba(243,186,86,.6); }
+    .pvp-result-card.lose .pvp-result-banner { background: linear-gradient(135deg,#a14f4f,#6e2e2e); box-shadow: 0 0 22px rgba(200,70,70,.45); }
+    .pvp-result-card.draw .pvp-result-banner { background: linear-gradient(135deg,#7d7d88,#54545e); }
+    .pvp-result-score { display: flex; align-items: center; gap: 16px; }
+    .prs-side { display: flex; flex-direction: column; align-items: center; min-width: 76px; padding: 8px 14px; border-radius: 12px; border: 2px solid; background: rgba(0,0,0,0.25); }
+    .prs-side.me  { border-color: #4a90e2; box-shadow: 0 0 14px rgba(100,200,255,.4); }
+    .prs-side.opp { border-color: #d64040; box-shadow: 0 0 14px rgba(255,90,90,.4); }
+    .prs-label { font-size: 12px; color: #cbb890; margin-bottom: 2px; }
+    .prs-num { font-size: 30px; font-weight: 900; color: #ffe7a0; line-height: 1; }
+    .prs-vs { font-size: 15px; font-weight: 800; color: #b6a98c; }
+    .pvp-result-reward { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700; color: #ffe7a0; }
+    .prs-coin { width: 20px; height: 20px; border-radius: 50%; display: inline-block; background: radial-gradient(circle at 35% 30%, #ffe9a0, #e8a93a 60%, #b07d23); box-shadow: inset 0 0 0 2px rgba(120,80,20,.5), 0 1px 2px rgba(0,0,0,.5); }
+    .pvp-result-btns { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 4px; }
+    .pvp-result-btns .overlay-btn { width: 100%; }
+    .overlay-btn.primary { background: linear-gradient(180deg,#f3ba56,#c0832b); }
+    .overlay-btn.ghost   { background: linear-gradient(135deg,#9b8bbf,#6f5e9c); }
     /* 派派 6/17：電腦版 PK 全螢幕鋪滿——拿掉手機外殼，戰鬥畫面填滿整個視窗（左右也滿）*/
     @media (min-width: 768px) {
         body { overflow: hidden; }
@@ -2285,31 +2312,42 @@ function finishBackend(d) {
 }
 
 function endGamePvp(outcome, myScore, oppScore, coins) {
-    let emoji, title, titleClass;
+    let title, cls;
     if (outcome === "win") {
         boss.classList.add("defeated");
         stage.classList.add("slow-mo");
         hero.classList.add("victory");
-        emoji = "🎉"; title = "勝利！"; titleClass = "";
+        title = "勝利"; cls = "win";
     } else if (outcome === "draw") {
-        emoji = "🤝"; title = "平手"; titleClass = "";
+        title = "平手"; cls = "draw";
     } else {
         const vig = document.createElement("div"); vig.className = "lose-vignette"; stage.appendChild(vig);
-        emoji = "💀"; title = "落敗..."; titleClass = "lose";
+        title = "落敗"; cls = "lose";
     }
     setTimeout(() => {
+        // 結算時收掉殘留的答題卡/選項，讓結算畫面乾淨
+        const qEl = $("arena-question"); if (qEl) qEl.style.display = "none";
+        const oEl = $("arena-options"); if (oEl) oEl.style.display = "none";
         const overlay = document.createElement("div");
         overlay.className = "arena-overlay";
-        const coinLine = coins > 0 ? `<div class="overlay-sub">🪙 +${coins} 金幣</div>` : "";
         // 從三卡頁進來：再戰＝回三卡頁重新配對（reload 會落在已結束的 session）；獨立測試才 reload
         const replayAction = cameFromPicker ? "backToPicker()" : "location.reload()";
+        const reward = coins > 0
+            ? `<div class="pvp-result-reward"><span class="prs-coin"></span>+${coins} 金幣</div>` : "";
         overlay.innerHTML =
-            `<div class="overlay-emoji">${emoji}</div>
-             <div class="overlay-title ${titleClass}">${title}</div>
-             <div class="overlay-sub">比分 ${myScore} : ${oppScore}</div>
-             ${coinLine}
-             <button class="overlay-btn" onclick="${replayAction}">再戰一次</button>
-             <button class="overlay-btn" style="margin-left:8px;background:linear-gradient(135deg,#9b8bbf,#6f5e9c)" onclick="arenaExit()">回競技場</button>`;
+            `<div class="pvp-result-card ${cls}">
+                <div class="pvp-result-banner">${title}</div>
+                <div class="pvp-result-score">
+                    <div class="prs-side me"><span class="prs-label">你</span><span class="prs-num">${myScore}</span></div>
+                    <div class="prs-vs">VS</div>
+                    <div class="prs-side opp"><span class="prs-label">對手</span><span class="prs-num">${oppScore}</span></div>
+                </div>
+                ${reward}
+                <div class="pvp-result-btns">
+                    <button class="overlay-btn primary" onclick="${replayAction}">再戰一次</button>
+                    <button class="overlay-btn ghost" onclick="arenaExit()">回競技場</button>
+                </div>
+            </div>`;
         stage.appendChild(overlay);
     }, outcome === "win" ? 1600 : 1000);
 }

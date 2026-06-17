@@ -77,7 +77,8 @@
 
             <!-- 上方主角 HUD（5/25 派派 A 方案：左上角 chip + 名字膠囊，菇勇者風）-->
             <div class="arena-hud arena-hud-slim arena-hud-chip">
-                <div class="hero-card">
+                <!-- 派派要求移除左上角人物卡 logo（節點保留隱藏供 JS 寫，避免 undefined）-->
+                <div class="hero-card" style="display:none">
                     <div class="hero-portrait">
                         <img src="assets/images/arena/hero.png" alt="hero">
                     </div>

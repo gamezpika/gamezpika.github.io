@@ -239,7 +239,7 @@
         const sc = window.game.scene.scenes.find((s) => s.player && s.WORLD_W);
         if (sc) q += "&back_spawn=" + (sc.player.x / sc.WORLD_W).toFixed(4) + "," + (sc.player.y / sc.WORLD_H).toFixed(4);
       } catch (e) {}
-      location.href = "../pvp-demo2.html" + q;   // 競技場改格子丟球 PVP（真即時多人），舊 arcade-pvp.html 保留可 revert
+      location.href = "../arcade-pvp.html" + q;   // 原本三卡模式選擇頁（同年級/大亂鬥/朋友房）；配對成功後 pvp-v3 轉進 pvp-demo2 格子戰鬥
       return;
     }
     if (shopId === "tower") { openTower(onClose); return; }

@@ -1735,6 +1735,7 @@ function applyTheme(theme) {
 // ═══════════════ 真即時多人 PVP 後端整合（配對 + 輪詢 + 真對手丟球）═══════════════
 let PVP_BACKEND = false;        // true = 接真後端配對；false = 本地 mock fallback
 let pvpSessionId = null;
+let cameFromPicker = false;     // 從 arcade-pvp 三卡選擇頁 ?session 轉進來（決定結算「再戰」回三卡頁）
 let pvpInitState = null;        // 配對成功當下的 state（含 questions/opponent）
 let BACKEND_QUESTIONS = [];     // 本場題庫（伺服器給）
 let myIdx = 0;                  // 我目前作答到第幾題（本地推進，求即時手感）
@@ -1859,6 +1860,32 @@ async function onMatched(d) {
     await runCountdown(d.opponent);
     await startArena();   // 視覺戰場（PVP_BACKEND=true 分支會接 startGameLoop）
 }
+
+// 從 arcade-pvp 三卡選擇頁帶 ?session 轉進來：抓既有 session 的 state → 倒數 → 格子戰鬥
+async function enterExistingSession() {
+    showSetupSpinner();
+    setSpinnerText("⚔ 進入對戰...");
+    await Promise.all([...HERO_THROW.boy, ...HERO_THROW.girl].map(preloadImage));
+    let d = null;
+    try {
+        const r = await window.eduApi("/api/pvp/state?session_id=" + encodeURIComponent(pvpSessionId));
+        if (r.ok) d = await r.json();
+    } catch (e) { d = null; }
+    hideSetupSpinner();
+    if (d && d.status === "playing") { await onMatched(d); return; }
+    // session 已結束/逾時/查無 → 回三卡選擇頁（不卡死）
+    backToPicker();
+}
+
+// 回三卡選擇頁（arcade-pvp），保留返回村莊參數
+function backToPicker() {
+    const qp = new URLSearchParams(location.search);
+    const p = new URLSearchParams();
+    const bm = qp.get("back_map"); if (bm) p.set("back_map", bm);
+    const bs = qp.get("back_spawn"); if (bs) p.set("back_spawn", bs);
+    location.href = "arcade-pvp.html" + (p.toString() ? "?" + p.toString() : "");
+}
+window.backToPicker = backToPicker;
 
 function runCountdown(opp) {
     return new Promise(resolve => {
@@ -2242,12 +2269,14 @@ function endGamePvp(outcome, myScore, oppScore, coins) {
         const overlay = document.createElement("div");
         overlay.className = "arena-overlay";
         const coinLine = coins > 0 ? `<div class="overlay-sub">🪙 +${coins} 金幣</div>` : "";
+        // 從三卡頁進來：再戰＝回三卡頁重新配對（reload 會落在已結束的 session）；獨立測試才 reload
+        const replayAction = cameFromPicker ? "backToPicker()" : "location.reload()";
         overlay.innerHTML =
             `<div class="overlay-emoji">${emoji}</div>
              <div class="overlay-title ${titleClass}">${title}</div>
              <div class="overlay-sub">比分 ${myScore} : ${oppScore}</div>
              ${coinLine}
-             <button class="overlay-btn" onclick="location.reload()">再戰一次</button>
+             <button class="overlay-btn" onclick="${replayAction}">再戰一次</button>
              <button class="overlay-btn" style="margin-left:8px;background:linear-gradient(135deg,#9b8bbf,#6f5e9c)" onclick="arenaExit()">回競技場</button>`;
         stage.appendChild(overlay);
     }, outcome === "win" ? 1600 : 1000);
@@ -2267,10 +2296,19 @@ window.arenaExit = arenaExit;
 
 (async function init() {
     const qp = new URLSearchParams(location.search);
-    // in-game：立刻藏設定面板，不閃跳選職業/場景
-    if (qp.get("auto") === "1" || qp.get("subject")) {
-        const ss = document.getElementById("screen-setup"); if (ss) ss.style.display = "none";
+    const _sess0 = (qp.get("session") || "").trim();
+    const _inv0 = /^[A-Z0-9]{1,12}$/.test((qp.get("invite") || "").trim().toUpperCase());
+    // 競技場入口＝arcade-pvp 三卡選擇頁；pvp-demo2 只負責格子戰鬥。
+    // 直接開 pvp-demo2 沒帶任何參數 → 導去三卡選擇頁（不顯示舊設定表單）
+    if (!_sess0 && !_inv0 && !qp.get("subject") && qp.get("auto") !== "1") {
+        const p = new URLSearchParams();
+        const bm = qp.get("back_map"); if (bm) p.set("back_map", bm);
+        const bs = qp.get("back_spawn"); if (bs) p.set("back_spawn", bs);
+        location.replace("arcade-pvp.html" + (p.toString() ? "?" + p.toString() : ""));
+        return;
     }
+    // 任何帶參數的進入都不顯示設定表單
+    { const ss = document.getElementById("screen-setup"); if (ss) ss.style.display = "none"; }
     const urlTheme = qp.get("theme");
     const savedTheme = (() => { try { return localStorage.getItem("eduarena_demo_theme"); } catch (e) { return null; } })();
     applyTheme(urlTheme || savedTheme || "sandstone");
@@ -2284,6 +2322,15 @@ window.arenaExit = arenaExit;
     const _ug = parseInt(qp.get("grade") || "", 10); if (_ug >= 1 && _ug <= 6) playerGrade = _ug;
     playerSetup.oppGender = "random";
     playerSetup.jobKey = null;
+
+    // 從 arcade-pvp 三卡選擇頁配對成功轉進來：?session=ID → 直接接既有 session 進格子戰鬥（倒數也在這做）
+    if (_sess0) {
+        const _ss = qp.get("subject"); if (_ss && SUBJECTS_DATA[_ss]) playerSetup.subject = _ss;
+        pvpSessionId = _sess0;
+        cameFromPicker = true;
+        await enterExistingSession();
+        return;
+    }
 
     // 邀請連結 ?invite=CODE → 直接開朋友房「加入」頁、預填密碼
     const inv = (qp.get("invite") || "").trim().toUpperCase().slice(0, 12);

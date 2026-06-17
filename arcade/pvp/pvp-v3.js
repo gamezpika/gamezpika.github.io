@@ -12,6 +12,19 @@
     let pollErrors = 0;
     let currentSessionId = null;
 
+    // 競技場改格子丟球：三模式都用這個三卡選擇頁配對，配對成功後帶 session_id 轉進 pvp-demo2 的格子戰鬥
+    // （倒數 + 對戰畫面都在 pvp-demo2，這裡不再進自己的 pvp-game 畫面）
+    function goToGridBattle(sessionId) {
+        if (!sessionId) return;
+        stopPolling();
+        const qp = new URLSearchParams(location.search);
+        const p = new URLSearchParams();
+        p.set("session", sessionId);
+        const bm = qp.get("back_map"); if (bm) p.set("back_map", bm);
+        const bs = qp.get("back_spawn"); if (bs) p.set("back_spawn", bs);
+        location.href = "pvp-demo2.html?" + p.toString();
+    }
+
     // ── Step 5: 首頁卡片 → mode picker ──
     function bindHomeCard() {
         const card = document.getElementById("pvp-home-card");
@@ -656,10 +669,10 @@
             return;
         }
         if (status === "playing") {
-            // 配上！停 polling，進倒數畫面（Step 8）
+            // 配上！停 polling，轉進 pvp-demo2 格子丟球戰鬥（倒數也在那邊做）
             currentSessionId = data.session_id;
             stopPolling();
-            showCountdown(data);
+            goToGridBattle(data.session_id);
             return;
         }
         if (status === "finished" || status === "abandoned") {
@@ -1142,13 +1155,9 @@
             if (!resp.ok) return;
             const data = await resp.json();
             if (data.status === "playing") {
-                // 之前在對戰，斷線/refresh 回來 → 直接接回對戰畫面
+                // 之前在對戰，斷線/refresh 回來 → 轉進 pvp-demo2 格子戰鬥
                 currentSessionId = data.session_id;
-                gameSession = data;
-                if (window.eduApp && window.eduApp.showScreen) {
-                    window.eduApp.showScreen("pvp-game");
-                }
-                startGameLoop();
+                goToGridBattle(data.session_id);
             } else if (data.status === "finished" || data.status === "abandoned") {
                 // 對戰結束（含對手棄賽 server 自動結算），把結果秀出來
                 currentSessionId = data.session_id;

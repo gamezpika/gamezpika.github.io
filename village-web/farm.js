@@ -11,23 +11,27 @@
     const st = document.createElement("style");
     st.id = "ranch-css";
     st.textContent =
-      "#ranch-overlay{position:fixed;inset:0;z-index:21000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.5)}" +
-      "#ranch-overlay .ranch-panel{position:relative;box-sizing:border-box;display:block;width:min(92vw,440px);max-height:86vh;overflow-y:auto;padding:20px 16px 16px;background:#fffdf7;border:3px solid #e6c98c;border-radius:20px;box-shadow:0 12px 40px rgba(0,0,0,.35)}" +
-      ".ranch-close{position:absolute;top:10px;right:12px;width:32px;height:32px;border:none;border-radius:50%;background:#e8a24a;color:#fff;font-size:17px;font-weight:700;cursor:pointer;line-height:32px;text-align:center;padding:0}" +
-      ".ranch-title{font-size:20px;font-weight:800;color:#5a3a14;text-align:center}" +
-      ".ranch-sub{font-size:13px;color:#8a6a3a;text-align:center;margin:4px 0 12px}" +
-      ".ranch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}" +
-      ".ranch-card{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;border:2px solid #e6c98c;border-radius:14px;background:#fff8ec;cursor:pointer}" +
-      ".ranch-card:active{transform:scale(.95)}" +
-      ".ranch-emoji{font-size:34px;line-height:1}" +
-      ".ranch-name{font-size:14px;font-weight:700;color:#5a3a14}" +
-      ".ranch-prod{font-size:11px;color:#9a7a4a}" +
-      ".ranch-add{font-size:12px;color:#3a8a3a;font-weight:700}" +
-      ".ranch-sec{margin-top:14px;padding-top:10px;border-top:1px dashed #e0c894}" +
-      ".ranch-sec-t{font-size:13px;color:#8a6a3a;margin-bottom:6px;font-weight:700}" +
-      ".ranch-chip{display:inline-block;background:#fdeccb;border-radius:10px;padding:3px 9px;margin:0 6px 6px 0;font-size:13px;color:#5a3a14}" +
-      ".ranch-chip.harvest{background:#eaf6d8}" +
-      ".ranch-empty{font-size:13px;color:#aa8a5a}";
+      // 村莊風（同商店/布告欄：奶油底+棕邊+棕標題列+紅關閉鈕+奶油卡）
+      "#ranch-overlay{position:fixed;inset:0;z-index:21000;display:none;align-items:center;justify-content:center;background:rgba(20,14,8,.55);backdrop-filter:blur(2px);font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif}" +
+      ".ranch-panel{position:relative;width:min(94vw,430px);max-height:88vh;background:linear-gradient(180deg,#fff6e2,#ffeecb);border:5px solid #8a5a2b;border-radius:20px;box-shadow:0 14px 40px rgba(0,0,0,.5),inset 0 0 0 3px #ffd98a;overflow:hidden;display:flex;flex-direction:column;animation:ranch-pop .2s cubic-bezier(.2,1.3,.5,1)}" +
+      "@keyframes ranch-pop{from{transform:scale(.88);opacity:0}to{transform:scale(1);opacity:1}}" +
+      ".ranch-close{position:absolute;top:8px;right:10px;z-index:4;width:34px;height:34px;border-radius:50%;background:#e8533a;color:#fff;border:3px solid #fff2dd;font-size:19px;font-weight:900;cursor:pointer;line-height:1;box-shadow:0 3px 0 #a8331f;padding:0}" +
+      ".ranch-close:active{transform:translateY(2px);box-shadow:0 1px 0 #a8331f}" +
+      "#ranch-overlay #ranch-body{display:flex;flex-direction:column;flex:1;min-height:0}" +
+      ".ranch-tbar{flex:0 0 auto;background:linear-gradient(180deg,#b5712f,#94591f);color:#fff7e6;font-size:20px;font-weight:800;letter-spacing:2px;text-align:center;padding:12px 46px;border-bottom:3px solid #ffd98a;text-shadow:0 2px 0 rgba(0,0,0,.25)}" +
+      ".ranch-content{flex:1;min-height:0;padding:14px;overflow-y:auto;-webkit-overflow-scrolling:touch}" +
+      ".ranch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}" +
+      ".ranch-card{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px 7px;border:3px solid #e3c089;border-radius:14px;background:#fffaf0;cursor:pointer;box-shadow:0 2px 0 #e3c089}" +
+      ".ranch-card:active{transform:translateY(2px);box-shadow:0 0 0 #e3c089}" +
+      ".ranch-card img{width:50px;height:50px;object-fit:contain}" +
+      ".ranch-name{font-size:13px;font-weight:800;color:#5a3a18}" +
+      ".ranch-prod{font-size:11px;color:#a07a4a}" +
+      ".ranch-add{font-size:12px;color:#2bb05a;font-weight:800;margin-top:1px}" +
+      ".ranch-sec{margin-top:13px;padding-top:10px;border-top:2px dashed #e3c089}" +
+      ".ranch-sec-t{font-size:13px;color:#8a5a2b;font-weight:800;margin-bottom:6px}" +
+      ".ranch-chip{display:inline-block;background:#ffe3b0;border:2px solid #d8a85a;border-radius:999px;padding:3px 10px;margin:0 6px 6px 0;font-size:12px;font-weight:700;color:#7a4f1e}" +
+      ".ranch-chip.harvest{background:#e6f3cf;border-color:#bcd98a;color:#4a6a1e}" +
+      ".ranch-empty{font-size:12px;color:#b89a6a}";
     document.head.appendChild(st);
   })();
 
@@ -41,6 +45,8 @@
     goose:   { name: "鵝", emoji: "🪿", img: "goose_walk.webp", fw: 247, fh: 264, frames: 2, fr: 5, facing: "right", speed: 30, baby: "goose_baby.webp",   teen: "goose_teen.webp",   product: "🥚", h: 80,  zone: "pond" },
   };
   const ORDER = ["cow", "chicken", "pig", "sheep", "duck", "goose"];
+  // 面板不顯示 emoji → 產物/收成 emoji 對應中文名(含作物,收成籃與種田共用)
+  const NAME_MAP = { "🥛": "牛奶", "🥚": "蛋", "🍖": "肉", "🧶": "羊毛", "🥦": "花椰菜", "🥕": "胡蘿蔔", "🍅": "番茄", "🌽": "玉米", "🍎": "蘋果", "🍠": "地瓜" };
 
   // 成長時間（秒級 demo）
   const BABY_MS = 7000, TEEN_MS = 18000;   // 0~7s 寶寶 / 7~18s 青年 / 18s+ 成年
@@ -302,11 +308,7 @@
     ov.innerHTML =
       '<div class="ranch-panel">' +
       '  <button class="ranch-close" id="ranch-close">✕</button>' +
-      '  <div class="ranch-title">🐮 學園牧場・養動物</div>' +
-      '  <div class="ranch-sub">養動物→寶寶長大成年→點成年的動物收成（收成後牠會離開）</div>' +
-      '  <div class="ranch-grid" id="ranch-grid"></div>' +
-      '  <div class="ranch-sec" id="ranch-owned"></div>' +
-      '  <div class="ranch-sec" id="ranch-harvest"></div>' +
+      '  <div id="ranch-body"></div>' +
       "</div>";
     document.body.appendChild(ov);
     ov.querySelector("#ranch-close").onclick = closeRanch;
@@ -314,18 +316,22 @@
     return ov;
   }
   function render() {
-    ov.querySelector("#ranch-grid").innerHTML = ORDER.map((k) =>
-      '<button class="ranch-card" data-k="' + k + '"><div class="ranch-emoji">' + SPECIES[k].emoji + '</div>' +
-      '<div class="ranch-name">' + SPECIES[k].name + '</div><div class="ranch-prod">產 ' + SPECIES[k].product + '</div>' +
-      '<div class="ranch-add">＋ 養</div></button>').join("");
-    ov.querySelectorAll(".ranch-card").forEach((b) => { b.onclick = () => addAnimal(b.dataset.k); });
     const stock = loadStock(), counts = {};
     stock.forEach((r) => { counts[r.species] = (counts[r.species] || 0) + 1; });
-    ov.querySelector("#ranch-owned").innerHTML = '<div class="ranch-sec-t">目前牧場：</div>' +
-      (stock.length ? ORDER.filter((k) => counts[k]).map((k) => '<span class="ranch-chip">' + SPECIES[k].emoji + " " + SPECIES[k].name + " ×" + counts[k] + "</span>").join("") : '<span class="ranch-empty">還沒有動物，養一隻吧</span>');
     const h = loadHarvest(), keys = Object.keys(h).filter((k) => h[k] > 0);
-    ov.querySelector("#ranch-harvest").innerHTML = '<div class="ranch-sec-t">已收成：</div>' +
-      (keys.length ? keys.map((k) => '<span class="ranch-chip harvest">' + k + " ×" + h[k] + "</span>").join("") : '<span class="ranch-empty">還沒收成，養大動物點牠收成</span>');
+    const cards = ORDER.map((k) =>
+      '<button class="ranch-card" data-k="' + k + '"><img src="' + SPECIES[k].teen + '?v=3" alt="">' +
+      '<div class="ranch-name">' + SPECIES[k].name + '</div><div class="ranch-prod">產 ' + (NAME_MAP[SPECIES[k].product] || SPECIES[k].product) + '</div>' +
+      '<div class="ranch-add">＋ 養</div></button>').join("");
+    ov.querySelector("#ranch-body").innerHTML =
+      '<div class="ranch-tbar">學園牧場</div><div class="ranch-content">' +
+      '<div class="ranch-grid">' + cards + "</div>" +
+      '<div class="ranch-sec"><div class="ranch-sec-t">目前牧場</div>' +
+      (stock.length ? ORDER.filter((k) => counts[k]).map((k) => '<span class="ranch-chip">' + SPECIES[k].name + " ×" + counts[k] + "</span>").join("") : '<span class="ranch-empty">還沒有動物</span>') + "</div>" +
+      '<div class="ranch-sec"><div class="ranch-sec-t">已收成</div>' +
+      (keys.length ? keys.map((k) => '<span class="ranch-chip harvest">' + (NAME_MAP[k] || k) + " ×" + h[k] + "</span>").join("") : '<span class="ranch-empty">還沒收成</span>') + "</div>" +
+      "</div>";
+    ov.querySelectorAll(".ranch-card").forEach((b) => { b.onclick = () => addAnimal(b.dataset.k); });
   }
   function addAnimal(species) {
     const stock = loadStock();

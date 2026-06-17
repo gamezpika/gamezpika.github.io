@@ -834,8 +834,13 @@ class ExploreScene extends Phaser.Scene {
       // 雙指真的同時觸控才是 pinch（用自管計數，避免卡住的 pointer2.isDown 害每次點擊都被當縮放→不能走）
       if (this._nDown >= 2 && this.input.pointer2 && this.input.pointer2.isDown) {
         this._beginPinch();
+      } else if (!pointer.wasTouch) {
+        // 滑鼠點地圖移動（電腦版）：點哪走哪，update() 朝目標走。
+        // 只認滑鼠(wasTouch=false)；手機觸控維持左下虛擬搖桿，不受影響。
+        this.moveTarget = { x: pointer.worldX, y: pointer.worldY };
+        // 重置卡牆偵測 baseline，免被前一個目標殘留的卡牆計數誤清新目標
+        this._stuckMs = 0; this._lastPX = this.player.x; this._lastPY = this.player.y;
       }
-      // 點地圖移動已移除（改虛擬搖桿）；單指點擊不再設 moveTarget
     });
 
     // Pinch (手機雙指縮放)
@@ -977,6 +982,7 @@ class ExploreScene extends Phaser.Scene {
 
   _tryInteract() {
     if (this.modalOpen || this._transitioning) return;
+    this.moveTarget = null;   // 互動時取消點擊移動目標，免關面板後又自己走回去
     if (this._nearPortal) { this._enterPortal(this._nearPortal); return; }
     const item = this.currentInteractable;
     if (!item) return;
@@ -1477,7 +1483,9 @@ class ExploreScene extends Phaser.Scene {
       }
     }
     // 轉場中：凍結玩家、不處理輸入（等黑幕淡入後 scene.restart）
-    if (this._transitioning) { if (this.player.body) this.player.body.setVelocity(0, 0); return; }
+    if (this._transitioning) { this.moveTarget = null; if (this.player.body) this.player.body.setVelocity(0, 0); return; }
+    // 任何路徑開了面板/商店/公車(modalOpen)就放棄點擊目標，免關閉後又自己走回去（涵蓋走近自動開的情況）
+    if (this.modalOpen) this.moveTarget = null;
     let dx = 0, dy = 0;
     if (!this.modalOpen) {
       // 鍵盤輸入（電腦版仍可用方向鍵 / WASD）
@@ -1489,7 +1497,24 @@ class ExploreScene extends Phaser.Scene {
       if (dx === 0 && dy === 0 && this._joyVec && (this._joyVec.x || this._joyVec.y)) {
         dx = this._joyVec.x; dy = this._joyVec.y;
       }
+      // 滑鼠點擊移動（電腦版）：鍵盤/搖桿一動就取消點擊目標；否則朝目標走，到點/撞牆自動停
+      if (dx !== 0 || dy !== 0) {
+        this.moveTarget = null;
+      } else if (this.moveTarget) {
+        const tx = this.moveTarget.x - this.player.x, ty = this.moveTarget.y - this.player.y;
+        const td = Math.hypot(tx, ty);
+        if (td < 6) {
+          this.moveTarget = null;                       // 到了
+        } else {
+          dx = tx / td; dy = ty / td;
+          // 卡牆偵測：有速度卻幾乎沒移動 → 累積，超過 ~0.4s 就放棄目標(免貼牆原地踏步)
+          const moved = Math.hypot(this.player.x - (this._lastPX || this.player.x), this.player.y - (this._lastPY || this.player.y));
+          if (moved < 0.4) { this._stuckMs = (this._stuckMs || 0) + delta; if (this._stuckMs > 400) { this.moveTarget = null; this._stuckMs = 0; } }
+          else this._stuckMs = 0;
+        }
+      }
     }
+    this._lastPX = this.player.x; this._lastPY = this.player.y;
     const len = Math.hypot(dx, dy);
     if (len > 1) { dx /= len; dy /= len; }
     this.player.body.setVelocity(dx * this.PLAYER_SPEED, dy * this.PLAYER_SPEED);

@@ -266,31 +266,6 @@
         "interaction_type": "open_modal"
       },
       {
-        "id": "crop_field",
-        "name": "翻土田",
-        "category": "decoration",
-        "sprite": {
-          "image": "field_iso.webp",
-          "scale": 0.65,
-          "anchor_x": 0.5,
-          "anchor_y": 1,
-          "rotation": 0.08726646259971647
-        },
-        "anchor": {
-          "x": 0.4812546997529273,
-          "y": 0.8628160431254212
-        },
-        "render_order": 290,
-        "path": [],
-        "center": {
-          "x": 0.4812546997529273,
-          "y": 0.8628160431254212
-        },
-        "polygon": [],
-        "mask_color": "#FF3B30",
-        "interaction_type": "open_modal"
-      },
-      {
         "id": "deco_well_5",
         "name": "井",
         "category": "decoration",
@@ -3986,6 +3961,156 @@
         "mask_color": "#FF3B30",
         "render_order": 495,
         "interaction_type": "open_shop"
+      },
+      {
+        "id": "cropplot_0",
+        "name": "菜畦",
+        "category": "decoration",
+        "sprite": {
+          "image": "plot.webp",
+          "scale": 0.31,
+          "anchor_x": 0.5,
+          "anchor_y": 0.5,
+          "rotation": 0
+        },
+        "anchor": {
+          "x": 0.4388,
+          "y": 0.6063
+        },
+        "render_depth": 1.6063,
+        "render_order": 260,
+        "path": [],
+        "center": {
+          "x": 0.4388,
+          "y": 0.6063
+        },
+        "polygon": [],
+        "mask_color": "#FF3B30"
+      },
+      {
+        "id": "cropplot_1",
+        "name": "菜畦",
+        "category": "decoration",
+        "sprite": {
+          "image": "plot.webp",
+          "scale": 0.31,
+          "anchor_x": 0.5,
+          "anchor_y": 0.5,
+          "rotation": 0
+        },
+        "anchor": {
+          "x": 0.4918,
+          "y": 0.66
+        },
+        "render_depth": 1.6600000000000001,
+        "render_order": 260,
+        "path": [],
+        "center": {
+          "x": 0.4918,
+          "y": 0.66
+        },
+        "polygon": [],
+        "mask_color": "#FF3B30"
+      },
+      {
+        "id": "cropplot_2",
+        "name": "菜畦",
+        "category": "decoration",
+        "sprite": {
+          "image": "plot.webp",
+          "scale": 0.31,
+          "anchor_x": 0.5,
+          "anchor_y": 0.5,
+          "rotation": 0
+        },
+        "anchor": {
+          "x": 0.3513,
+          "y": 0.6649
+        },
+        "render_depth": 1.6649,
+        "render_order": 260,
+        "path": [],
+        "center": {
+          "x": 0.3513,
+          "y": 0.6649
+        },
+        "polygon": [],
+        "mask_color": "#FF3B30"
+      },
+      {
+        "id": "cropplot_3",
+        "name": "菜畦",
+        "category": "decoration",
+        "sprite": {
+          "image": "plot.webp",
+          "scale": 0.31,
+          "anchor_x": 0.5,
+          "anchor_y": 0.5,
+          "rotation": 0
+        },
+        "anchor": {
+          "x": 0.5447,
+          "y": 0.7137
+        },
+        "render_depth": 1.7137,
+        "render_order": 260,
+        "path": [],
+        "center": {
+          "x": 0.5447,
+          "y": 0.7137
+        },
+        "polygon": [],
+        "mask_color": "#FF3B30"
+      },
+      {
+        "id": "cropplot_4",
+        "name": "菜畦",
+        "category": "decoration",
+        "sprite": {
+          "image": "plot.webp",
+          "scale": 0.31,
+          "anchor_x": 0.5,
+          "anchor_y": 0.5,
+          "rotation": 0
+        },
+        "anchor": {
+          "x": 0.4042,
+          "y": 0.7186
+        },
+        "render_depth": 1.7186,
+        "render_order": 260,
+        "path": [],
+        "center": {
+          "x": 0.4042,
+          "y": 0.7186
+        },
+        "polygon": [],
+        "mask_color": "#FF3B30"
+      },
+      {
+        "id": "cropplot_5",
+        "name": "菜畦",
+        "category": "decoration",
+        "sprite": {
+          "image": "plot.webp",
+          "scale": 0.31,
+          "anchor_x": 0.5,
+          "anchor_y": 0.5,
+          "rotation": 0
+        },
+        "anchor": {
+          "x": 0.4572,
+          "y": 0.7723
+        },
+        "render_depth": 1.7723,
+        "render_order": 260,
+        "path": [],
+        "center": {
+          "x": 0.4572,
+          "y": 0.7723
+        },
+        "polygon": [],
+        "mask_color": "#FF3B30"
       }
     ],
     "obstacle_areas": [

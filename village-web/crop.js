@@ -126,61 +126,27 @@
 
   // ---------- 世界裡的田地管理 ----------
   const Farm = {
-    scene: null, slots: [], plotXY: [], plotSprites: [], onUpdate: null, _attached: false, _pending: {}, _plotScale: 1,
+    scene: null, slots: [], plotXY: [], onUpdate: null, _attached: false, _pending: {},
 
-    // 沿大田菱形「等距(iso)」方向切 3 欄 x 2 列 = 六等份，每格正中央一個座標。
-    // 跟著 field_iso 的位置/大小/旋轉走（地圖編輯器移田，作物與分隔線自動跟）。
-    _geom: null,
-    isoPoint(s, t) {   // s,t in [0,1] 在菱形兩條 iso 邊上的參數座標
-      const g = this._geom, cos = Math.cos(g.rot), sin = Math.sin(g.rot);
-      const ox = (s - t) * g.HW, oy = (s + t - 1) * g.HH;
-      return { x: g.cx + ox * cos - oy * sin, y: g.cy + ox * sin + oy * cos };
-    },
+    // 從 config 的土畦 building(plot.webp) 讀 6 格位置（土畦由 explore.js 依 config 畫；
+    // 地圖編輯器移/加土畦 → 作物自動跟）。按 (y,x) 排序給穩定的格索引。
+    _pitch: 100,
     computePlots() {
       const sc = this.scene;
-      const f = sc.children.list.find((o) => o.texture && o.texture.key === "field_iso.webp");
-      this.plotXY = [];
-      if (f) {
-        const dW = f.displayWidth, dH = f.displayHeight, rot = f.rotation || 0;
-        // sprite 原點在底中(originY=1)、繞原點旋轉 → 算菱形視覺中心
-        this._geom = { cx: f.x + dH * 0.5 * Math.sin(rot), cy: f.y - dH * 0.5 * Math.cos(rot), HW: dW * 0.40, HH: dH * 0.40, rot };
-      } else {
-        this._geom = { cx: 0.438 * sc.IMG_W, cy: 0.70 * sc.IMG_H + (sc.WORLD_OFFSET_Y || 0), HW: sc.IMG_W * 0.17, HH: sc.IMG_H * 0.12, rot: 0 };
-      }
-      const S = [1 / 6, 3 / 6, 5 / 6], T = [1 / 4, 3 / 4];   // 3 欄 x 2 列，各等份正中央
-      for (const t of T) for (const s of S) this.plotXY.push(this.isoPoint(s, t));
+      const plots = sc.children.list.filter((o) => o.texture && o.texture.key === "plot.webp");
+      this.plotXY = plots.map((s) => ({ x: s.x, y: s.y })).sort((a, b) => (a.y - b.y) || (a.x - b.x));
+      // 最近鄰格距（算作物大小用）
+      let m = Infinity;
+      for (let i = 0; i < this.plotXY.length; i++)
+        for (let j = i + 1; j < this.plotXY.length; j++) {
+          const d = Math.hypot(this.plotXY[i].x - this.plotXY[j].x, this.plotXY[i].y - this.plotXY[j].y);
+          if (d > 1 && d < m) m = d;
+        }
+      this._pitch = isFinite(m) ? m : 100;
     },
 
-    // 開心農場土畦：載入深色空土畦圖(單張 image，繞 loader race)
-    ensurePlotTex() {
-      const sc = this.scene, key = "cropplot";
-      if (!sc || sc.textures.exists(key) || this._pending[key]) return;
-      const token = {}; this._pending[key] = token;
-      const img = new Image();
-      img.onload = () => { if (this._pending[key] === token) delete this._pending[key]; if (this.scene && !this.scene.textures.exists(key)) this.scene.textures.addImage(key, img); };
-      img.onerror = () => { if (this._pending[key] === token) delete this._pending[key]; };
-      img.src = "plot.webp?v=1";
-    },
-    // 6 格各鋪一塊空土畦(永遠在)，並隱藏舊大田犁溝底；土畦大小依格距
-    makePlots() {
-      const sc = this.scene;
-      if (!sc || !sc.textures.exists("cropplot") || !this.plotXY.length || this.plotSprites.length) return;
-      const f = sc.children.list.find((o) => o.texture && o.texture.key === "field_iso.webp");
-      if (f) f.setVisible(false);   // 隱藏舊大田(留作定位錨)
-      const a = this.plotXY[0], b = this.plotXY[1];
-      const pitch = Math.hypot(b.x - a.x, b.y - a.y);
-      const natW = sc.textures.get("cropplot").getSourceImage().width || 420;
-      this._plotScale = (pitch * 1.34) / natW;   // 略大於格距→土畦緊貼幾乎無縫
-      this.plotXY.forEach((p) => {
-        const im = sc.add.image(p.x, p.y, "cropplot").setOrigin(0.5, 0.5).setScale(this._plotScale).setDepth(p.y);
-        this.plotSprites.push(im);
-      });
-    },
-
-    spriteScale(cropKey) {   // 基準高 ≈ 1.3 格距，再乘各作物 sz 倍率
-      const g = this._geom;
-      const base = (g ? Math.hypot(g.HW, g.HH) / 3 * 1.3 : 110);
-      return base * ((CROPS[cropKey] && CROPS[cropKey].sz) || 1) / FRAME;
+    spriteScale(cropKey) {   // 基準高 ≈ 1.35 格距，再乘各作物 sz 倍率
+      return (this._pitch * 1.35) * ((CROPS[cropKey] && CROPS[cropKey].sz) || 1) / FRAME;
     },
 
     // 載入作物 sheet：完全繞開 scene 共用 LoaderPlugin（與 farm.js 共用會 race），
@@ -207,9 +173,9 @@
 
     attach(scene) {
       this.detach();
-      this.scene = scene; this.slots = new Array(PLOTS).fill(null); this.plotSprites = []; this._pending = {};
+      this.scene = scene; this.slots = new Array(PLOTS).fill(null); this._pending = {};
       this.computePlots();
-      // 土畦/作物都由 update() 每幀自癒建立(繞 loader race)
+      // 作物由 update() 每幀自癒建立(繞 loader race)；土畦由 explore.js 依 config 畫
       this.onUpdate = () => this.update();
       scene.events.on("update", this.onUpdate);
       scene.events.once("shutdown", () => this.detach());
@@ -218,8 +184,6 @@
     detach() {
       if (this.scene && this.onUpdate) this.scene.events.off("update", this.onUpdate);
       this.slots.forEach((s) => { if (s) { if (s.spr) s.spr.destroy(); if (s.shadow) s.shadow.destroy(); } });
-      this.plotSprites.forEach((im) => im && im.destroy());
-      this.plotSprites = [];
       this.slots = []; this.onUpdate = null; this._pending = {};
       if (this.scene) this.scene.__cropAttached = false;
       this.scene = null; this._attached = false;
@@ -227,6 +191,7 @@
 
     syncPlot(i, rec) {
       const sc = this.scene, p = this.plotXY[i];
+      if (!p) return;   // 土畦還沒載到這格→等下一幀
       let s = this.slots[i];
       if (!rec) {   // 空格：清掉 sprite
         if (s) { if (s.spr) s.spr.destroy(); if (s.shadow) s.shadow.destroy(); this.slots[i] = null; }
@@ -271,8 +236,7 @@
 
     update() {
       if (!this.scene) return;
-      this.ensurePlotTex();   // 土畦圖
-      this.makePlots();       // 6 塊空土畦(載好+座標好就建、隱藏舊大田)
+      if (this.plotXY.length < PLOTS) this.computePlots();   // 土畦 building 還沒全載到→每幀補算
       const data = loadCrops();
       // 先批次確保需要的作物貼圖載入（idle 時一次排完）
       const needed = [];

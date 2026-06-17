@@ -1651,26 +1651,50 @@ window.openSpeedSettings = function () {
   m.style.cssText = "position:fixed;inset:0;z-index:7000;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.55);font-family:sans-serif";
   let html = "<div style='background:#fff6e2;border:5px solid #8a5a2b;border-radius:20px;max-width:320px;width:100%;padding:16px;box-shadow:0 14px 40px rgba(0,0,0,.5)'>";
   html += "<div style='font-weight:900;font-size:19px;color:#7a4715;text-align:center'>🚶 走路速度</div>";
-  html += "<div style='font-size:13px;color:#9a7038;text-align:center;margin:2px 0 12px'>選一個移動速度，馬上生效</div>";
-  html += "<div style='display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px'>";
-  SPEED_LEVELS.forEach((lv) => {
-    const on = Math.abs(_walkSpeedMult - lv.mult) < 0.01;
-    html += "<button class='speed-opt' data-mult='" + lv.mult + "'" +
-      " style='border:" + (on ? "3px solid #3aa657" : "none") + ";border-radius:12px;padding:13px 8px;font-size:15px;font-weight:800;background:" +
-      (on ? "#dff3e2" : "#b5712f") + ";color:" + (on ? "#2c7a45" : "#fff7e6") + "'>" +
-      lv.name + "<br><span style='font-size:12px;font-weight:700;opacity:.85'>" + lv.mult + "×</span></button>";
+  html += "<div style='font-size:13px;color:#9a7038;text-align:center;margin:2px 0 14px'>點數字或拖三角形，馬上生效</div>";
+  // 水平儀：3 組數字在上、木質軌道+圓點停點、三角形指針滑到選中的停點。停點位置=flex 各格中心 (i+0.5)/N
+  const N = SPEED_LEVELS.length;
+  const pct = (i) => ((i + 0.5) / N) * 100;
+  let curIdx = SPEED_LEVELS.findIndex((lv) => Math.abs(_walkSpeedMult - lv.mult) < 0.01);
+  if (curIdx < 0) curIdx = 0;
+  html += "<div class='spd-gauge'>";
+  html += "<div class='spd-ticks'>";
+  SPEED_LEVELS.forEach((lv, i) => {
+    html += "<button class='spd-tick" + (i === curIdx ? " on" : "") + "' data-i='" + i + "'><b>" + lv.name + "</b><span>" + lv.mult + "×</span></button>";
   });
-  html += "</div><button id='speed-close' style='margin-top:12px;width:100%;border:none;border-radius:12px;padding:10px;background:#bbb;color:#fff;font-weight:800'>關閉</button></div>";
+  html += "</div><div class='spd-track-wrap'><div class='spd-track'></div>";
+  SPEED_LEVELS.forEach((lv, i) => { html += "<span class='spd-dot' style='left:" + pct(i) + "%'></span>"; });
+  html += "<div class='spd-pointer' style='left:" + pct(curIdx) + "%'></div></div></div>";
+  html += "<button id='speed-close' style='margin-top:14px;width:100%;border:none;border-radius:12px;padding:10px;background:#bbb;color:#fff;font-weight:800'>關閉</button></div>";
   m.innerHTML = html;
   document.body.appendChild(m);
   if (sc) sc.modalOpen = true;
   const close = () => { if (sc) sc.modalOpen = false; if (m.parentNode) m.remove(); };
   m.addEventListener("pointerdown", (e) => { if (e.target === m) close(); });
   m.querySelector("#speed-close").addEventListener("click", close);
-  m.querySelectorAll(".speed-opt").forEach((btn) => btn.addEventListener("click", () => {
-    setWalkSpeedMult(parseFloat(btn.getAttribute("data-mult")));
-    close();
-  }));
+
+  const pointer = m.querySelector(".spd-pointer");
+  const ticks = Array.prototype.slice.call(m.querySelectorAll(".spd-tick"));
+  const wrap = m.querySelector(".spd-track-wrap");
+  const selectIdx = (i) => {
+    i = Math.max(0, Math.min(N - 1, i));
+    pointer.style.left = pct(i) + "%";
+    ticks.forEach((t, j) => t.classList.toggle("on", j === i));
+    setWalkSpeedMult(SPEED_LEVELS[i].mult);   // 馬上生效，面板不關（才看得到指針滑動）
+  };
+  ticks.forEach((t, i) => t.addEventListener("click", () => selectIdx(i)));
+  // 點軌道/拖三角形：依 x 吸附到最近停點
+  const pickFromX = (clientX) => {
+    const r = wrap.getBoundingClientRect();
+    const frac = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+    selectIdx(Math.round(frac * N - 0.5));
+  };
+  let dragging = false;
+  wrap.addEventListener("pointerdown", (e) => { dragging = true; try { wrap.setPointerCapture(e.pointerId); } catch (x) {} pickFromX(e.clientX); });
+  wrap.addEventListener("pointermove", (e) => { if (dragging) pickFromX(e.clientX); });
+  const endDrag = () => { dragging = false; };
+  wrap.addEventListener("pointerup", endDrag);
+  wrap.addEventListener("pointercancel", endDrag);
 };
 
 // 服裝店買衣服「買了馬上變」：當場把 hero 三方向 texture+動畫換成新造型

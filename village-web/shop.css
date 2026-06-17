@@ -638,6 +638,37 @@
   box-shadow: 0 1px 0 #4a2c10, 0 2px 6px rgba(0,0,0,.35), inset 0 2px 2px rgba(255,255,255,.28);
 }
 
+/* 走路速度水平儀：3 組數字在上、木質軌道+圓點停點、三角形指針滑到選中停點 */
+.spd-gauge { padding: 2px 6px 0; }
+/* ticks 與 track-wrap 共用同一左右 12px inset，停點(pct=各格中心)才會對齊數字中心 */
+.spd-ticks { display: flex; margin: 0 12px; }
+.spd-tick {
+  flex: 1; background: none; border: none; cursor: pointer; padding: 2px 0;
+  font-family: inherit; color: #9a7038; line-height: 1.15;
+  -webkit-tap-highlight-color: transparent; transition: color .18s;
+}
+.spd-tick b { display: block; font-size: 16px; font-weight: 800; transition: transform .18s; }
+.spd-tick span { font-size: 12px; font-weight: 700; opacity: .85; }
+.spd-tick.on { color: #2c7a45; }
+.spd-tick.on b { transform: scale(1.12); }
+.spd-track-wrap { position: relative; height: 34px; margin: 8px 12px 2px; touch-action: none; }
+.spd-track {
+  position: absolute; top: 7px; left: 0; right: 0; height: 9px; border-radius: 6px;
+  background: linear-gradient(180deg, #caa06a, #a8763e); border: 2px solid #6e4a22;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.3);
+}
+.spd-dot {
+  position: absolute; top: 11px; width: 13px; height: 13px; border-radius: 50%;
+  margin: -6px 0 0 -7px; background: #fff3da; border: 2px solid #6e4a22; box-sizing: border-box;
+}
+.spd-pointer {
+  position: absolute; top: 19px; margin-left: -9px; width: 0; height: 0;
+  border-left: 9px solid transparent; border-right: 9px solid transparent;
+  border-bottom: 13px solid #3aa657;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,.35));
+  transition: left .22s cubic-bezier(.34, 1.4, .64, 1);
+}
+
 /* 地圖轉場黑幕（DOM 層，跨 Phaser scene.restart 穩定） */
 #map-fade {
   position: fixed; inset: 0; z-index: 6000; background: #000;

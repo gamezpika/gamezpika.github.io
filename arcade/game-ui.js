@@ -3,9 +3,11 @@
  *   intro({ icon, title, sub, steps:[{ico,text}], onStart })
  *     封面（標題＋開始遊戲＋怎麼玩）；進頁教學卡自動打開、可「略過」，
  *     按「開始遊戲」才呼叫 onStart 開局。
- *   victory({ win, title, sub, rewards:[{key,icon,label}], onReplay, onExit }) → vid
+ *   victory({ win, title, sub, rewards:[{key,icon,label}], onReplay, onExit,
+ *            replayLabel, replayIcon, exitLabel, exitIcon }) → vid
  *     統一勝利結算：金光放射＋拱形標題＋徽章＋獲得獎勵列。
  *     win=false 走銀灰「再接再厲」版。onExit 不給＝隱藏「回遊樂場」鈕。
+ *     replayLabel/exitLabel/Icon 選填：自訂按鈕文字+圖示(預設 再玩一次/回遊樂場)，PVP 用「再戰一次/回競技場」。
  *     回傳本次結算的流水號 vid，給 updateReward 防舊請求寫錯局。
  *   updateReward(vid, key, label)  結算後非同步更新某格獎勵字（金幣入帳）；
  *     vid 對不上現在這張結算頁（玩家已再玩一局）就忽略。
@@ -123,8 +125,8 @@
             </div>
             <div class="agv-rewards">${tiles}</div>
             <div class="agv-actions">
-                <button class="agv-btn agv-btn-replay" id="agv-replay"><img class="bico" src="arcade/img/icons/refresh.png?s=6" alt=""> 再玩一次</button>
-                <button class="agv-btn agv-btn-exit" id="agv-exit"><img class="bico" src="arcade/img/icons/ui_ferris.png?v=1" alt=""> 回遊樂場</button>
+                <button class="agv-btn agv-btn-replay" id="agv-replay">${iconHTML(o.replayIcon || "arcade/img/icons/refresh.png?s=6", "bico")} ${esc(o.replayLabel || "再玩一次")}</button>
+                <button class="agv-btn agv-btn-exit" id="agv-exit">${iconHTML(o.exitIcon || "arcade/img/icons/ui_ferris.png?v=1", "bico")} ${esc(o.exitLabel || "回遊樂場")}</button>
             </div>`;
         root.classList.add("open");
 

@@ -60,13 +60,14 @@
   })();
 
   // 6 種作物（對齊圖鑑「種植植物」+ 商店蔬果）：4 階成長 spritesheet(1024x256, 4 幀 256)
+  // sz = 各作物相對大小倍率（蘋果是樹最大、花椰菜/胡蘿蔔是蔬菜較小）
   const CROPS = {
-    broccoli:     { name: "花椰菜", emoji: "🥦", sheet: "crop_broccoli.webp" },
-    carrot:       { name: "胡蘿蔔", emoji: "🥕", sheet: "crop_carrot.webp" },
-    tomato:       { name: "番茄",   emoji: "🍅", sheet: "crop_tomato.webp" },
-    corn:         { name: "玉米",   emoji: "🌽", sheet: "crop_corn.webp" },
-    apple:        { name: "蘋果",   emoji: "🍎", sheet: "crop_apple.webp" },
-    sweet_potato: { name: "地瓜",   emoji: "🍠", sheet: "crop_sweet_potato.webp" },
+    broccoli:     { name: "花椰菜", emoji: "🥦", sheet: "crop_broccoli.webp", sz: 0.72 },
+    carrot:       { name: "胡蘿蔔", emoji: "🥕", sheet: "crop_carrot.webp",   sz: 0.82 },
+    tomato:       { name: "番茄",   emoji: "🍅", sheet: "crop_tomato.webp",   sz: 1.00 },
+    corn:         { name: "玉米",   emoji: "🌽", sheet: "crop_corn.webp",     sz: 1.18 },
+    apple:        { name: "蘋果",   emoji: "🍎", sheet: "crop_apple.webp",    sz: 1.55 },
+    sweet_potato: { name: "地瓜",   emoji: "🍠", sheet: "crop_sweet_potato.webp", sz: 0.88 },
   };
   const ORDER = ["broccoli", "carrot", "tomato", "corn", "apple", "sweet_potato"];
   const FRAME = 256, FRAMES = 4;            // 1024x256, 4 幀：seed/sprout/growing/ripe
@@ -176,7 +177,11 @@
       });
     },
 
-    spriteScale() { const g = this._geom; return (g ? Math.hypot(g.HW, g.HH) / 3 * 1.55 : 130) / FRAME; },   // 作物高 ≈ 1.55 格距
+    spriteScale(cropKey) {   // 基準高 ≈ 1.3 格距，再乘各作物 sz 倍率
+      const g = this._geom;
+      const base = (g ? Math.hypot(g.HW, g.HH) / 3 * 1.3 : 110);
+      return base * ((CROPS[cropKey] && CROPS[cropKey].sz) || 1) / FRAME;
+    },
 
     // 載入作物 sheet：完全繞開 scene 共用 LoaderPlugin（與 farm.js 共用會 race），
     // 改用瀏覽器原生 Image 各自平行載入 → 載好用 textures.addSpriteSheet 註冊。零 loader 競爭。
@@ -232,7 +237,7 @@
       if (!s) {
         // 作物底部那撮土坐在土畦『中心』→ origin 偏下、位置在 plotXY(畦中心)
         const spr = sc.add.sprite(p.x, p.y, key, idx).setOrigin(0.5, 0.86);
-        spr.setScale(this.spriteScale());
+        spr.setScale(this.spriteScale(rec.crop));
         s = this.slots[i] = { spr, crop: rec.crop, idx: -1 };
       }
       if (s.crop !== rec.crop) { s.spr.setTexture(key, idx); s.crop = rec.crop; s.idx = idx; }

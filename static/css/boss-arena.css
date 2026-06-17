@@ -883,14 +883,17 @@ body[data-theme="ice"] .grid-wall-front { fill: rgba(110, 134, 156, 0.96); }
     line-height: 1.4;
     font-weight: 700;
     min-height: 60px;        /* 6/17 派派：110→60，題目自然撐高、短螢幕不被框壓爆 */
+    max-height: 38vh;        /* fallback */
+    max-height: 38dvh;       /* 6/17 派派：注音長閱讀題很高→封頂+內部捲動，保證下方選項一定看得到 */
+    overflow-y: auto;        /* 題目太長就題目卡內部捲動，不把選項擠出螢幕 */
+    overflow-x: hidden;
     box-sizing: border-box;
     max-width: 100%;
     overflow-wrap: break-word; /* 長題目可斷行，不被右邊切掉 */
     word-break: break-word;
     /* 6/17 派派：注音長題排版亂掉根因＝display:flex 把多個 <ruby> 當 flex item → 閱讀順序錯亂。
-       改 grid place-items:center：維持上下左右置中，但文字回到正常 block 換行（順序正確）。 */
-    display: grid;
-    place-items: center;
+       改回 display:block + text-align:center（上面已有 text-align）：正常 block 換行(順序正確) + 可上下捲動。 */
+    display: block;
     z-index: 2;
 }
 /* 注音 anti-orphan 用 inline white-space:nowrap，窄螢幕會撐出右界被切 → 題目卡內一律允許斷行 */
@@ -907,8 +910,8 @@ body[data-theme="ice"] .grid-wall-front { fill: rgba(110, 134, 156, 0.96); }
 }
 /* 矮螢幕（in-app 瀏覽器、小手機、桌面殼縮放）：再收緊戰場、題目、選項，確保全部塞得下不被框壓 */
 @media (max-height: 740px) {
-    .arena-stage { min-height: 24vh; min-height: 24dvh; }
-    .arena-question { min-height: 44px; font-size: 16px; padding: 8px 12px; margin-top: 6px; }
+    .arena-stage { min-height: 20vh; min-height: 20dvh; }
+    .arena-question { min-height: 44px; max-height: 34dvh; font-size: 16px; padding: 8px 12px; margin-top: 6px; }
     .arena-options { gap: 4px; padding-top: 4px; }
     .opt-btn { padding: 6px 12px; font-size: 14px; }
 }

@@ -149,7 +149,8 @@
         "path": [],
         "render_order": 281,
         "mask_color": "#FF3B30",
-        "interaction_type": "open_shop"
+        "interaction_type": "open_shop",
+        "show_name": true
       },
       {
         "id": "grocer",
@@ -213,7 +214,8 @@
         "path": [],
         "render_order": 563,
         "mask_color": "#FF3B30",
-        "interaction_type": "open_shop"
+        "interaction_type": "open_shop",
+        "show_name": true
       },
       {
         "id": "boutique",
@@ -273,7 +275,8 @@
         "path": [],
         "render_order": 515,
         "mask_color": "#FF3B30",
-        "interaction_type": "open_shop"
+        "interaction_type": "open_shop",
+        "show_name": true
       },
       {
         "id": "costcool",
@@ -337,7 +340,8 @@
         "path": [],
         "render_order": 796,
         "mask_color": "#FF3B30",
-        "interaction_type": "open_shop"
+        "interaction_type": "open_shop",
+        "show_name": true
       },
       {
         "id": "publisher",
@@ -398,7 +402,8 @@
         "path": [],
         "render_order": 748,
         "mask_color": "#FF3B30",
-        "interaction_type": "open_shop"
+        "interaction_type": "open_shop",
+        "show_name": true
       },
       {
         "id": "deco_aframe_1",

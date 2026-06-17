@@ -125,7 +125,7 @@
 
   // ---------- 世界裡的田地管理 ----------
   const Farm = {
-    scene: null, slots: [], plotXY: [], onUpdate: null, _attached: false, _pending: {},
+    scene: null, slots: [], plotXY: [], plotSprites: [], onUpdate: null, _attached: false, _pending: {}, _plotScale: 1,
 
     // 沿大田菱形「等距(iso)」方向切 3 欄 x 2 列 = 六等份，每格正中央一個座標。
     // 跟著 field_iso 的位置/大小/旋轉走（地圖編輯器移田，作物與分隔線自動跟）。
@@ -150,26 +150,33 @@
       for (const t of T) for (const s of S) this.plotXY.push(this.isoPoint(s, t));
     },
 
-    // 在田上畫六等份的草綠走道分隔線（s=1/3,2/3 兩條欄界 + t=1/2 一條列界）
-    drawDividers() {
-      if (this.dividers) { this.dividers.destroy(); this.dividers = null; }
-      if (!this._geom || !this.scene) return;
-      const g = this.scene.add.graphics();
-      g.setDepth(1.6);                          // 田(1)之上、玩家/作物之下
-      const lo = 0.05, hi = 0.95;
-      const line = (a, b, w, col, al) => { g.lineStyle(w, col, al); g.lineBetween(a.x, a.y, b.x, b.y); };
-      [1 / 3, 2 / 3].forEach((s) => {           // 兩條欄界(固定 s)
-        line(this.isoPoint(s, lo), this.isoPoint(s, hi), 11, 0x5d4524, 0.30);   // 下方陰影
-        line(this.isoPoint(s, lo), this.isoPoint(s, hi), 7, 0x9cbb56, 0.92);    // 草綠走道
+    // 開心農場土畦：載入深色空土畦圖(單張 image，繞 loader race)
+    ensurePlotTex() {
+      const sc = this.scene, key = "cropplot";
+      if (!sc || sc.textures.exists(key) || this._pending[key]) return;
+      const token = {}; this._pending[key] = token;
+      const img = new Image();
+      img.onload = () => { if (this._pending[key] === token) delete this._pending[key]; if (this.scene && !this.scene.textures.exists(key)) this.scene.textures.addImage(key, img); };
+      img.onerror = () => { if (this._pending[key] === token) delete this._pending[key]; };
+      img.src = "plot.webp?v=1";
+    },
+    // 6 格各鋪一塊空土畦(永遠在)，並隱藏舊大田犁溝底；土畦大小依格距
+    makePlots() {
+      const sc = this.scene;
+      if (!sc || !sc.textures.exists("cropplot") || !this.plotXY.length || this.plotSprites.length) return;
+      const f = sc.children.list.find((o) => o.texture && o.texture.key === "field_iso.webp");
+      if (f) f.setVisible(false);   // 隱藏舊大田(留作定位錨)
+      const a = this.plotXY[0], b = this.plotXY[1];
+      const pitch = Math.hypot(b.x - a.x, b.y - a.y);
+      const natW = sc.textures.get("cropplot").getSourceImage().width || 420;
+      this._plotScale = (pitch * 1.34) / natW;   // 略大於格距→土畦緊貼幾乎無縫
+      this.plotXY.forEach((p) => {
+        const im = sc.add.image(p.x, p.y, "cropplot").setOrigin(0.5, 0.5).setScale(this._plotScale).setDepth(p.y);
+        this.plotSprites.push(im);
       });
-      [1 / 2].forEach((t) => {                  // 一條列界(固定 t)
-        line(this.isoPoint(lo, t), this.isoPoint(hi, t), 11, 0x5d4524, 0.30);
-        line(this.isoPoint(lo, t), this.isoPoint(hi, t), 7, 0x9cbb56, 0.92);
-      });
-      this.dividers = g;
     },
 
-    spriteScale(srcH) { return (FRAME * 0.46) / srcH; },   // 田格作物顯示大小(縮小以塞進六等份各格)
+    spriteScale() { const g = this._geom; return (g ? Math.hypot(g.HW, g.HH) / 3 * 1.55 : 130) / FRAME; },   // 作物高 ≈ 1.55 格距
 
     // 載入作物 sheet：完全繞開 scene 共用 LoaderPlugin（與 farm.js 共用會 race），
     // 改用瀏覽器原生 Image 各自平行載入 → 載好用 textures.addSpriteSheet 註冊。零 loader 競爭。
@@ -189,16 +196,15 @@
           }
         };
         img.onerror = () => { if (this._pending[key] === token) delete this._pending[key]; };
-        img.src = CROPS[ck].sheet + "?v=2";
+        img.src = CROPS[ck].sheet + "?v=4";
       });
     },
 
     attach(scene) {
       this.detach();
-      this.scene = scene; this.slots = new Array(PLOTS).fill(null); this._pending = {};
+      this.scene = scene; this.slots = new Array(PLOTS).fill(null); this.plotSprites = []; this._pending = {};
       this.computePlots();
-      this.drawDividers();   // 田上畫六等份草綠走道
-      // 不再用單一 syncAll/ensureSheet（會被 loader race 坑）；改由 update() 每幀自癒建立 sprite
+      // 土畦/作物都由 update() 每幀自癒建立(繞 loader race)
       this.onUpdate = () => this.update();
       scene.events.on("update", this.onUpdate);
       scene.events.once("shutdown", () => this.detach());
@@ -207,7 +213,8 @@
     detach() {
       if (this.scene && this.onUpdate) this.scene.events.off("update", this.onUpdate);
       this.slots.forEach((s) => { if (s) { if (s.spr) s.spr.destroy(); if (s.shadow) s.shadow.destroy(); } });
-      if (this.dividers) { this.dividers.destroy(); this.dividers = null; }
+      this.plotSprites.forEach((im) => im && im.destroy());
+      this.plotSprites = [];
       this.slots = []; this.onUpdate = null; this._pending = {};
       if (this.scene) this.scene.__cropAttached = false;
       this.scene = null; this._attached = false;
@@ -223,11 +230,10 @@
       const key = "crop_" + rec.crop, idx = stageIndex(rec);
       if (!sc.textures.exists(key)) return;   // 貼圖還沒好→下一幀自癒重試（update 會批次排載），絕不建 __MISSING
       if (!s) {
-        const shadow = sc.add.ellipse(p.x, p.y, 46, 15, 0x000000, 0.22);
-        const spr = sc.add.sprite(p.x, p.y, key, idx).setOrigin(0.5, 0.92);
-        const srcH = sc.textures.get(key).getSourceImage().height || FRAME;
-        spr.setScale(this.spriteScale(srcH));
-        s = this.slots[i] = { spr, shadow, crop: rec.crop, idx: -1, srcH };
+        // 作物底部那撮土坐在土畦『中心』→ origin 偏下、位置在 plotXY(畦中心)
+        const spr = sc.add.sprite(p.x, p.y, key, idx).setOrigin(0.5, 0.86);
+        spr.setScale(this.spriteScale());
+        s = this.slots[i] = { spr, crop: rec.crop, idx: -1 };
       }
       if (s.crop !== rec.crop) { s.spr.setTexture(key, idx); s.crop = rec.crop; s.idx = idx; }
       if (s.idx !== idx) { s.spr.setFrame(idx); s.idx = idx; }
@@ -235,7 +241,7 @@
       if (idx === 3) {
         if (!s._inter) { s.spr.setInteractive(); s.spr.on("pointerdown", () => this.harvest(i)); s._inter = true; }
       } else if (s._inter) { s.spr.disableInteractive(); s._inter = false; }
-      s.spr.setDepth(s.spr.y); s.shadow.setDepth(s.spr.y - 1);
+      s.spr.setDepth(p.y + 1);   // 疊在自己那塊土畦(depth=p.y)之上
     },
 
     harvest(i) {
@@ -260,6 +266,8 @@
 
     update() {
       if (!this.scene) return;
+      this.ensurePlotTex();   // 土畦圖
+      this.makePlots();       // 6 塊空土畦(載好+座標好就建、隱藏舊大田)
       const data = loadCrops();
       // 先批次確保需要的作物貼圖載入（idle 時一次排完）
       const needed = [];
@@ -310,7 +318,7 @@
 
   function stageImg(crop, idx) {
     // 從 spritesheet 切一格當預覽（用 background-position）
-    return '<span class="pic" style="display:inline-block;background:url(' + CROPS[crop].sheet + '?v=2) -' + (idx * 52) + 'px 0/' + (52 * FRAMES) + 'px 52px no-repeat"></span>';
+    return '<span class="pic" style="display:inline-block;background:url(' + CROPS[crop].sheet + '?v=4) -' + (idx * 52) + 'px 0/' + (52 * FRAMES) + 'px 52px no-repeat"></span>';
   }
 
   function renderGrid(body) {
@@ -393,7 +401,7 @@
   function stagePreviewImg(crop, step) {
     // 進行中→顯示當前動作美術(擺動)；3 步完成→顯示幼苗預告
     if (step >= 3) {
-      return '<img src="' + CROPS[crop].sheet + '?v=2" style="object-position:-150px 0;width:' + (150 * FRAMES) + 'px;max-width:none;left:0">';
+      return '<img src="' + CROPS[crop].sheet + '?v=4" style="object-position:-150px 0;width:' + (150 * FRAMES) + 'px;max-width:none;left:0">';
     }
     return '<img class="crop-action-art" src="' + STEPS[step].img + '?v=1" alt="' + STEPS[step].label + '">';
   }

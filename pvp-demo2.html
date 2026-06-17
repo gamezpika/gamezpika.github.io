@@ -68,33 +68,43 @@
     <script src="arcade/shim.js?v=3"></script>  <!-- 接真後端：eduApi + demo token（真即時多人 PVP）-->
     <script src="arcade/boss/bopomofo.js?v=1"></script>
     <style>
-    /* 派派 6/17：結算畫面重新設計（無 emoji）——彩色結果橫幅 + 你/對手比分框 + CSS 金幣 + 按鈕 */
+    /* 派派 6/17 v2：結算畫面重新設計（無 emoji，深色活潑風）——光暈卡 + 漸層描金標題 + 發光比分框 */
     .pvp-result-card {
-        display: flex; flex-direction: column; align-items: center; gap: 18px;
-        padding: 26px 30px;
-        background: linear-gradient(180deg, rgba(30,23,16,0.94) 0%, rgba(16,12,10,0.97) 100%);
-        border: 2px solid rgba(255,220,150,0.22);
-        border-radius: 20px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06);
-        min-width: 280px; animation: bigBounce 0.5s;
+        position: relative; overflow: hidden;
+        display: flex; flex-direction: column; align-items: center; gap: 16px;
+        padding: 30px 32px 26px; min-width: 300px;
+        background: linear-gradient(180deg, #2b2550 0%, #1a1733 100%);
+        border: 1px solid rgba(255,255,255,0.10);
+        border-radius: 24px;
+        box-shadow: 0 26px 70px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.10);
+        animation: bigBounce 0.5s;
     }
-    .pvp-result-banner { font-size: 30px; font-weight: 900; letter-spacing: 4px; color: #fff; padding: 6px 30px; border-radius: 12px; }
-    .pvp-result-card.win  .pvp-result-banner { background: linear-gradient(135deg,#f3ba56,#d4891f); box-shadow: 0 0 26px rgba(243,186,86,.6); }
-    .pvp-result-card.lose .pvp-result-banner { background: linear-gradient(135deg,#a14f4f,#6e2e2e); box-shadow: 0 0 22px rgba(200,70,70,.45); }
-    .pvp-result-card.draw .pvp-result-banner { background: linear-gradient(135deg,#7d7d88,#54545e); }
+    /* 頂部依結果上色的柔光 */
+    .pvp-result-card::before { content:""; position:absolute; top:0; left:0; right:0; height:120px; pointer-events:none; }
+    .pvp-result-card.win::before  { background: radial-gradient(ellipse at 50% -10%, rgba(255,205,90,.40), transparent 72%); }
+    .pvp-result-card.lose::before { background: radial-gradient(ellipse at 50% -10%, rgba(255,95,95,.34), transparent 72%); }
+    .pvp-result-card.draw::before { background: radial-gradient(ellipse at 50% -10%, rgba(170,180,210,.30), transparent 72%); }
+    /* 標題：漸層描金大字 + 發光，拿掉扁平色塊 */
+    .pvp-result-banner {
+        position: relative; font-size: 46px; font-weight: 900; letter-spacing: 8px; padding-left: 8px;
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .pvp-result-card.win  .pvp-result-banner { background-image: linear-gradient(180deg,#fff1c2 0%,#ffd24d 45%,#f0a32a 100%); filter: drop-shadow(0 2px 3px rgba(0,0,0,.5)) drop-shadow(0 0 18px rgba(255,200,80,.65)); }
+    .pvp-result-card.lose .pvp-result-banner { background-image: linear-gradient(180deg,#ffc0c0 0%,#ff7a7a 50%,#e23b3b 100%); filter: drop-shadow(0 2px 3px rgba(0,0,0,.5)) drop-shadow(0 0 16px rgba(255,90,90,.5)); }
+    .pvp-result-card.draw .pvp-result-banner { background-image: linear-gradient(180deg,#f2f5ff 0%,#c3cbe2 55%,#8b94b3 100%); filter: drop-shadow(0 2px 3px rgba(0,0,0,.5)); }
     .pvp-result-score { display: flex; align-items: center; gap: 16px; }
-    .prs-side { display: flex; flex-direction: column; align-items: center; min-width: 76px; padding: 8px 14px; border-radius: 12px; border: 2px solid; background: rgba(0,0,0,0.25); }
-    .prs-side.me  { border-color: #4a90e2; box-shadow: 0 0 14px rgba(100,200,255,.4); }
-    .prs-side.opp { border-color: #d64040; box-shadow: 0 0 14px rgba(255,90,90,.4); }
-    .prs-label { font-size: 12px; color: #cbb890; margin-bottom: 2px; }
-    .prs-num { font-size: 30px; font-weight: 900; color: #ffe7a0; line-height: 1; }
-    .prs-vs { font-size: 15px; font-weight: 800; color: #b6a98c; }
-    .pvp-result-reward { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700; color: #ffe7a0; }
-    .prs-coin { width: 20px; height: 20px; border-radius: 50%; display: inline-block; background: radial-gradient(circle at 35% 30%, #ffe9a0, #e8a93a 60%, #b07d23); box-shadow: inset 0 0 0 2px rgba(120,80,20,.5), 0 1px 2px rgba(0,0,0,.5); }
-    .pvp-result-btns { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 4px; }
-    .pvp-result-btns .overlay-btn { width: 100%; }
-    .overlay-btn.primary { background: linear-gradient(180deg,#f3ba56,#c0832b); }
-    .overlay-btn.ghost   { background: linear-gradient(135deg,#9b8bbf,#6f5e9c); }
+    .prs-side { display: flex; flex-direction: column; align-items: center; min-width: 84px; padding: 10px 16px; border-radius: 16px; }
+    .prs-side.me  { background: linear-gradient(165deg,#27568f 0%,#0f1f38 100%); border: 1px solid #6cb0ff; box-shadow: 0 0 20px rgba(90,170,255,.45), inset 0 1px 0 rgba(255,255,255,.15); }
+    .prs-side.opp { background: linear-gradient(165deg,#8a2f2f 0%,#33100f 100%); border: 1px solid #ff8585; box-shadow: 0 0 20px rgba(255,100,100,.4), inset 0 1px 0 rgba(255,255,255,.15); }
+    .prs-label { font-size: 12px; color: rgba(255,255,255,.72); margin-bottom: 3px; letter-spacing: 1px; }
+    .prs-num { font-size: 34px; font-weight: 900; color: #fff; line-height: 1; text-shadow: 0 2px 4px rgba(0,0,0,.4); }
+    .prs-vs { font-size: 16px; font-weight: 800; color: rgba(255,255,255,.5); letter-spacing: 1px; }
+    .pvp-result-reward { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 800; color: #ffe7a0; }
+    .prs-coin { width: 22px; height: 22px; border-radius: 50%; display: inline-block; background: radial-gradient(circle at 35% 30%, #fff3c0, #ecb43e 58%, #b07d23); box-shadow: inset 0 0 0 2px rgba(150,100,30,.6), 0 1px 3px rgba(0,0,0,.5); }
+    .pvp-result-btns { display: flex; flex-direction: column; gap: 11px; width: 100%; margin-top: 6px; }
+    .pvp-result-btns .overlay-btn { width: 100%; border: none; border-radius: 14px; padding: 15px; font-size: 17px; }
+    .overlay-btn.primary { background: linear-gradient(180deg,#ffd76b 0%,#f0a32a 100%); color:#5a3a10; text-shadow:none; box-shadow: 0 6px 16px rgba(240,160,40,.4), inset 0 1px 0 rgba(255,255,255,.5); }
+    .overlay-btn.ghost   { background: linear-gradient(180deg,#b7a6e6 0%,#7d6bb5 100%); color:#fff; box-shadow: 0 6px 16px rgba(110,90,170,.4), inset 0 1px 0 rgba(255,255,255,.3); }
     /* 派派 6/17：電腦版 PK 全螢幕鋪滿——拿掉手機外殼，戰鬥畫面填滿整個視窗（左右也滿）*/
     @media (min-width: 768px) {
         body { overflow: hidden; }

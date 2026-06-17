@@ -2545,10 +2545,24 @@
         setEquip("pet", c.dataset.id); dhBubble(ov, "選擇「" + eqItem("pet", c.dataset.id).name + "」當夥伴！"); dhRender(ov);
       }));
     } else if (dhTab === "book") {
-      dhBubble(ov, "你收集到的造型、帽子、夥伴都在這！");
-      const sect = (label, items) => `<div class="dh-sub">${label}</div><div class="dh-grid">` +
-        items.map((it) => dhCard({ img: it.img, name: it.name, ro: true })).join("") + `</div>`;
-      box.innerHTML = sect("造型", EQUIP.body.items) + sect("帽子", EQUIP.hat.items) + sect("寵物", EQUIP.pet.items);
+      // 圖鑑＝原 EDU 知識卡圖鑑（11 分類，靜態型錄，無 emoji）；有圖的用真圖、抽象概念用分類配色文字卡
+      const D = window.DEX_CARDS || [];
+      const total = D.reduce((n, c) => n + c.cards.length, 0);
+      dhBubble(ov, "知識卡圖鑑 · 共 " + total + " 張，玩遊戲收集滿就能拿收藏證書！");
+      const CAT_COLOR = {
+        pet: "#b388d4", animal: "#d49a52", plant: "#74b85e", food: "#ec8f4a", exercise: "#4f9fd4", habit: "#d56f97",
+        subject_math: "#5a86d8", subject_chinese: "#d4944a", subject_english: "#3fb8a4", subject_science: "#74b85e", subject_social: "#d4715a",
+      };
+      box.innerHTML = D.map((cat) => {
+        const col = CAT_COLOR[cat.key] || "#c9a36a";
+        const cards = cat.cards.map((c) => {
+          if (c.img) {
+            return `<div class="dex-card"><div class="dex-pic"><img src="${c.img}?v=1" alt="" loading="lazy" draggable="false"></div><div class="dex-nm">${aoEsc(c.name)}</div></div>`;
+          }
+          return `<div class="dex-card"><div class="dex-txt" style="--cc:${col}">${aoEsc(c.name)}</div></div>`;
+        }).join("");
+        return `<div class="dh-sub">${aoEsc(cat.label)} <span class="dex-cnt">${cat.cards.length}</span></div><div class="dex-grid">${cards}</div>`;
+      }).join("");
     } else if (dhTab === "ach") {
       // 🏅 成就：讀後端 /api/awards（主線終獎稱號/證照）
       dhBubble(ov, "你達成的成就都在這！");

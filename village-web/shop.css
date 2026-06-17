@@ -596,28 +596,47 @@
   .dh-rightcol { margin-top: 0; }
 }
 /* 右上角常駐「裝備」按鈕（HTML 疊在 Phaser 上） */
-#equip-btn {
-  position: fixed; top: 14px; right: 14px; z-index: 4000;
+/* HUD 圖示鈕（木質羊皮紙框 + 四角金鉚釘 + 手繪 icon）：貼村莊手繪美術的 MMORPG icon 風 */
+.hud-icon {
+  position: fixed; right: 12px; z-index: 4000;
+  border: none; background: none; padding: 0; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  -webkit-tap-highlight-color: transparent; user-select: none;
   font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
-  font-size: 16px; font-weight: 800; color: #fff7e6; white-space: nowrap;
-  background: linear-gradient(180deg, #c8843a, #a8631f); border: 3px solid #fff2dd;
-  border-radius: 999px; padding: 9px 16px; cursor: pointer; user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  box-shadow: 0 4px 0 #7a4715, 0 6px 14px rgba(0,0,0,.3);
 }
-#equip-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #7a4715; }
-
-/* 走路速度設定鈕：在裝備鈕正下方，同款藥丸樣式 */
-#speed-btn {
-  position: fixed; top: 58px; right: 14px; z-index: 4000;
-  font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
-  font-size: 15px; font-weight: 800; color: #fff7e6; white-space: nowrap;
-  background: linear-gradient(180deg, #5aa86a, #3c8a4e); border: 3px solid #fff2dd;
-  border-radius: 999px; padding: 8px 14px; cursor: pointer; user-select: none;
-  -webkit-tap-highlight-color: transparent;
-  box-shadow: 0 4px 0 #2c6a3a, 0 6px 14px rgba(0,0,0,.3);
+#equip-btn.hud-icon { top: 12px; }
+#speed-btn.hud-icon { top: 96px; }
+.hud-icon .hud-slot {
+  width: 56px; height: 56px; border-radius: 14px; position: relative;
+  /* 四角金鉚釘(4 radial) 疊在木紋漸層上；外深棕描邊 + 立體底影 */
+  background:
+    radial-gradient(circle at 8px 8px, #ffe48f 2.3px, rgba(120,80,40,.6) 3px, transparent 3.6px),
+    radial-gradient(circle at calc(100% - 8px) 8px, #ffe48f 2.3px, rgba(120,80,40,.6) 3px, transparent 3.6px),
+    radial-gradient(circle at 8px calc(100% - 8px), #ffe48f 2.3px, rgba(120,80,40,.6) 3px, transparent 3.6px),
+    radial-gradient(circle at calc(100% - 8px) calc(100% - 8px), #ffe48f 2.3px, rgba(120,80,40,.6) 3px, transparent 3.6px),
+    linear-gradient(180deg, #b88247, #8a5a2b);
+  border: 3px solid #5a3613;
+  box-shadow: 0 4px 0 #4a2c10, 0 6px 12px rgba(0,0,0,.35), inset 0 2px 2px rgba(255,255,255,.28);
+  display: flex; align-items: center; justify-content: center;
 }
-#speed-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #2c6a3a; }
+.hud-icon .hud-slot::before {   /* 內凹羊皮紙底 */
+  content: ""; position: absolute; inset: 6px; border-radius: 9px;
+  background: radial-gradient(circle at 50% 32%, #fff8ea, #efd9ab);
+  box-shadow: inset 0 1px 4px rgba(90,54,19,.45);
+}
+.hud-icon .hud-slot img {
+  width: 40px; height: 40px; position: relative; z-index: 1; object-fit: contain;
+  filter: drop-shadow(0 1px 1px rgba(0,0,0,.28));
+}
+.hud-icon .hud-label {
+  font-size: 12px; font-weight: 800; color: #fff7e6; line-height: 1;
+  padding: 2px 8px; border-radius: 8px; background: rgba(90,54,19,.9);
+  border: 1.5px solid #c8945a; text-shadow: 0 1px 1px rgba(0,0,0,.45);
+}
+.hud-icon:active .hud-slot {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #4a2c10, 0 2px 6px rgba(0,0,0,.35), inset 0 2px 2px rgba(255,255,255,.28);
+}
 
 /* 地圖轉場黑幕（DOM 層，跨 Phaser scene.restart 穩定） */
 #map-fade {

@@ -27,8 +27,9 @@
         }
         .iphone-screen { width: 100% !important; height: 100% !important; border-radius: 0 !important; box-shadow: none !important; max-width: 100% !important; }
         .iphone-island, .iphone-home { display: none !important; }
-        /* 題目+選項置中、限寬，不被拉到整個視窗那麼長（戰場仍滿版）。
-           給明確 width 避免 flex column 下 margin:auto 讓它縮成文字寬 */
+        /* 6/17 派派：戰鬥畫面濃縮到中央(不要拉滿整個視窗)，左右留深色 */
+        #screen-arena { max-width: 920px !important; margin-left: auto !important; margin-right: auto !important; }
+        /* 題目+選項置中、限寬，不被拉到整個視窗那麼長。給明確 width 避免 flex column 下 margin:auto 縮成文字寬 */
         .arena-question, .arena-options { width: 560px !important; max-width: 92% !important; margin-left: auto !important; margin-right: auto !important; }
     }
     </style>

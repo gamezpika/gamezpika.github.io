@@ -17,16 +17,18 @@
         /* 對手學生：朝左翻 + 停掉 bossIdle（避免縮放抖動干擾丟球幀）*/
         .fighter-boss.opp-flip { transform: translateX(-50%) scaleX(-1) !important; animation: none !important; }
         /* PVP 計分條 — 取代 HP 條 */
+        /* 計分條浮在戰場上方（同一張競技場背景連續，不再是另一塊裁切的 bg）*/
         .pvp-score-strip {
-            flex-shrink: 0;
+            position: absolute;
+            top: 0; left: 0; right: 0;
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
             padding: 8px 18px;
-            background: linear-gradient(135deg, #c79a5a 0%, #a37840 30%, #8a6332 60%, #6b4a22 100%);
-            border-bottom: 3px solid #3d2810;
-            box-shadow: inset 0 1px 0 rgba(255, 220, 160, 0.4), 0 4px 10px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.25) 55%, rgba(0,0,0,0) 100%);
+            border-bottom: none;
+            box-shadow: none;
             z-index: 5;
         }
         .pvp-score-side {
@@ -76,8 +78,9 @@
         }
         .iphone-screen { width: 100% !important; height: 100% !important; border-radius: 0 !important; box-shadow: none !important; max-width: 100% !important; }
         .iphone-island, .iphone-home { display: none !important; }
-        /* 題目+選項置中、限寬，不被拉到整個視窗那麼長（戰場仍滿版）。
-           給明確 width 避免 flex column 下 margin:auto 讓它縮成文字寬 */
+        /* 6/17 派派：戰鬥畫面濃縮到中央(不要拉滿整個視窗)，左右留深色 */
+        #screen-arena { max-width: 920px !important; margin-left: auto !important; margin-right: auto !important; }
+        /* 題目+選項置中、限寬，不被拉到整個視窗那麼長。給明確 width 避免 flex column 下 margin:auto 縮成文字寬 */
         .arena-question, .arena-options { width: 560px !important; max-width: 92% !important; margin-left: auto !important; margin-right: auto !important; }
     }
     </style>
@@ -1545,14 +1548,8 @@ async function startArena() {
     // 派派選「有觀眾版」(看台坐滿觀眾，更像比賽現場)，取代原本暗版(寬螢幕拉糊)
     const PVP_ARENA_BG = "village-web/arena_stadium_bg.webp?v=1";
     stage.style.backgroundImage = `url("${PVP_ARENA_BG}")`;
-    // 派派 5/24：score strip 也套相同 bg + 半透明深色 overlay 確保 score 字清楚
-    const scoreStrip = document.querySelector(".pvp-score-strip");
-    if (PVP_MODE && scoreStrip) {
-        scoreStrip.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.35)), url("${PVP_ARENA_BG}")`;
-        scoreStrip.style.backgroundSize = "cover";
-        scoreStrip.style.backgroundPosition = "center top";
-        scoreStrip.style.borderBottom = "none";
-    }
+    // 6/17 派派：計分條改浮在戰場上方(CSS position:absolute + 深色漸層)，背景=戰場同一張競技場圖連續，
+    // 不再給計分條另一塊裁切 bg（原本 center top 裁切跟戰場 center 對不上→綠框上半部與背景不符）
 
     // 套用 UI 文字
     document.getElementById("hero-name-display").textContent = playerSetup.name;

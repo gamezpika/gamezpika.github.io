@@ -12,44 +12,49 @@
     const st = document.createElement("style");
     st.id = "crop-css";
     st.textContent =
-      "#crop-overlay{position:fixed;inset:0;z-index:21000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.5)}" +
-      "#crop-overlay .crop-panel{position:relative;box-sizing:border-box;display:block;width:min(92vw,460px);max-height:88vh;overflow-y:auto;padding:20px 16px 16px;background:#fffdf7;border:3px solid #bfe08c;border-radius:20px;box-shadow:0 12px 40px rgba(0,0,0,.35)}" +
-      ".crop-close{position:absolute;top:10px;right:12px;width:32px;height:32px;border:none;border-radius:50%;background:#74b13a;color:#fff;font-size:17px;font-weight:700;cursor:pointer;line-height:32px;text-align:center;padding:0}" +
-      ".crop-title{font-size:20px;font-weight:800;color:#3c5a14;text-align:center}" +
-      ".crop-sub{font-size:13px;color:#5f8a3a;text-align:center;margin:4px 0 12px}" +
-      ".crop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}" +
-      ".crop-plot{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border:2px solid #cfe6a4;border-radius:14px;background:#f5fbe8;cursor:pointer;min-height:96px;justify-content:center}" +
-      ".crop-plot:active{transform:scale(.96)}" +
-      ".crop-plot .pic{width:52px;height:52px;object-fit:contain;image-rendering:auto}" +
-      ".crop-plot .ph{font-size:30px;line-height:1;opacity:.5}" +
-      ".crop-plot .nm{font-size:13px;font-weight:700;color:#3c5a14}" +
-      ".crop-plot .st{font-size:11px;color:#7a9a4a}" +
-      ".crop-plot .ripe{font-size:11px;color:#3a8a3a;font-weight:700}" +
-      ".crop-plot .idx{position:absolute;top:4px;left:7px;font-size:10px;color:#a9c47a;font-weight:700}" +
-      ".crop-sec{margin-top:14px;padding-top:10px;border-top:1px dashed #cfe0a4}" +
-      ".crop-sec-t{font-size:13px;color:#5f8a3a;margin-bottom:6px;font-weight:700}" +
-      ".crop-chip{display:inline-block;background:#eaf6d8;border-radius:10px;padding:3px 9px;margin:0 6px 6px 0;font-size:13px;color:#3c5a14}" +
-      ".crop-empty{font-size:13px;color:#8aa45a}" +
-      // 種作物選擇 + 種植步驟
-      ".crop-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}" +
-      ".crop-pickcard{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border:2px solid #cfe6a4;border-radius:14px;background:#fff8ec;cursor:pointer}" +
-      ".crop-pickcard:active{transform:scale(.95)}" +
-      ".crop-pickcard img{width:46px;height:46px;object-fit:contain}" +
-      ".crop-pickcard .nm{font-size:13px;font-weight:700;color:#3c5a14}" +
-      ".crop-back{display:inline-block;margin-bottom:8px;font-size:13px;color:#74b13a;font-weight:700;cursor:pointer;background:none;border:none;padding:0}" +
-      ".crop-steps{text-align:center}" +
-      ".crop-stage-view{position:relative;width:200px;height:200px;margin:8px auto;background:radial-gradient(ellipse at 50% 70%,#e7d3a8 0%,#cdb381 60%,#bda06e 100%);border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center}" +
-      ".crop-stage-view img{width:150px;height:150px;object-fit:contain}" +
+      // 村莊風（同商店：奶油底+棕邊+棕標題列+紅關閉鈕+奶油卡）
+      "#crop-overlay{position:fixed;inset:0;z-index:21000;display:none;align-items:center;justify-content:center;background:rgba(20,14,8,.55);backdrop-filter:blur(2px);font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif}" +
+      ".crop-panel{position:relative;width:min(94vw,430px);max-height:88vh;background:linear-gradient(180deg,#fff6e2,#ffeecb);border:5px solid #8a5a2b;border-radius:20px;box-shadow:0 14px 40px rgba(0,0,0,.5),inset 0 0 0 3px #ffd98a;overflow:hidden;display:flex;flex-direction:column;animation:crop-pop .2s cubic-bezier(.2,1.3,.5,1)}" +
+      "@keyframes crop-pop{from{transform:scale(.88);opacity:0}to{transform:scale(1);opacity:1}}" +
+      ".crop-close{position:absolute;top:8px;right:10px;z-index:4;width:34px;height:34px;border-radius:50%;background:#e8533a;color:#fff;border:3px solid #fff2dd;font-size:19px;font-weight:900;cursor:pointer;line-height:1;box-shadow:0 3px 0 #a8331f;padding:0}" +
+      ".crop-close:active{transform:translateY(2px);box-shadow:0 1px 0 #a8331f}" +
+      "#crop-overlay #crop-body{display:flex;flex-direction:column;flex:1;min-height:0}" +
+      ".crop-tbar{flex:0 0 auto;background:linear-gradient(180deg,#b5712f,#94591f);color:#fff7e6;font-size:20px;font-weight:800;letter-spacing:2px;text-align:center;padding:12px 46px;border-bottom:3px solid #ffd98a;text-shadow:0 2px 0 rgba(0,0,0,.25)}" +
+      ".crop-content{flex:1;min-height:0;padding:14px;overflow-y:auto;-webkit-overflow-scrolling:touch}" +
+      ".crop-back{display:inline-block;margin-bottom:10px;font-size:14px;color:#8a5a2b;font-weight:800;cursor:pointer;background:none;border:none;padding:0}" +
+      ".crop-cap{font-size:12px;color:#a07a4a;text-align:center;margin:-2px 0 12px}" +
+      // 田格
+      ".crop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}" +
+      ".crop-plot{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px 7px;border:3px solid #e3c089;border-radius:14px;background:#fffaf0;cursor:pointer;min-height:92px;justify-content:center;box-shadow:0 2px 0 #e3c089}" +
+      ".crop-plot:active{transform:translateY(2px);box-shadow:0 0 0 #e3c089}" +
+      ".crop-plot .pic{width:52px;height:52px}" +
+      ".crop-plot .soil{width:44px;height:30px;border-radius:8px;background:linear-gradient(180deg,#a07a4a,#6e4f2c);box-shadow:inset 0 2px 5px rgba(0,0,0,.35)}" +
+      ".crop-plot .nm{font-size:13px;font-weight:800;color:#5a3a18}" +
+      ".crop-plot .st{font-size:11px;color:#a07a4a}" +
+      ".crop-plot .ripe{font-size:12px;color:#2bb05a;font-weight:800}" +
+      ".crop-plot .idx{position:absolute;top:3px;left:6px;font-size:10px;color:#c8a86a;font-weight:800}" +
+      // 已收成
+      ".crop-sec{margin-top:13px;padding-top:10px;border-top:2px dashed #e3c089}" +
+      ".crop-sec-t{font-size:13px;color:#8a5a2b;font-weight:800;margin-bottom:6px}" +
+      ".crop-chip{display:inline-block;background:#ffe3b0;border:2px solid #d8a85a;border-radius:999px;padding:3px 10px;margin:0 6px 6px 0;font-size:12px;font-weight:700;color:#7a4f1e}" +
+      ".crop-empty{font-size:12px;color:#b89a6a}" +
+      // 選作物
+      ".crop-pick{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}" +
+      ".crop-pickcard{display:flex;align-items:center;gap:8px;padding:9px 10px;border:3px solid #e3c089;border-radius:14px;background:#fffaf0;cursor:pointer;box-shadow:0 2px 0 #e3c089}" +
+      ".crop-pickcard:active{transform:translateY(2px);box-shadow:0 0 0 #e3c089}" +
+      ".crop-pickcard .pic{width:46px;height:46px;flex:0 0 auto}" +
+      ".crop-pickcard .nm{font-size:15px;font-weight:800;color:#5a3a18}" +
+      // 種植步驟
+      ".crop-stage-view{position:relative;width:190px;height:168px;margin:4px auto 12px;background:radial-gradient(ellipse at 50% 75%,#e7d3a8,#bda06e);border-radius:14px;overflow:hidden;display:flex;align-items:center;justify-content:center;border:3px solid #e3c089}" +
+      ".crop-stage-view img{width:138px;height:138px;object-fit:contain}" +
       ".crop-action-art{animation:cropBob 1.1s ease-in-out infinite;filter:drop-shadow(0 5px 6px rgba(0,0,0,.25))}" +
-      "@keyframes cropBob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-9px) rotate(3deg)}}" +
-      ".crop-step-btns{display:flex;gap:8px;justify-content:center;margin-top:10px}" +
-      ".crop-step-btn{flex:1;max-width:120px;padding:10px 4px;border:2px solid #cfe6a4;border-radius:12px;background:#f5fbe8;font-size:14px;font-weight:700;color:#3c5a14;cursor:pointer}" +
-      ".crop-step-btn.done{background:#dff0c8;color:#7a9a4a;border-color:#dff0c8}" +
-      ".crop-step-btn.active{background:#74b13a;color:#fff;border-color:#74b13a;animation:cropPulse 1s infinite}" +
-      ".crop-step-btn:disabled{opacity:.55;cursor:default}" +
-      "@keyframes cropPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}" +
+      "@keyframes cropBob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-8px) rotate(3deg)}}" +
+      ".crop-step-btns{display:flex;gap:8px;justify-content:center}" +
+      ".crop-step-btn{flex:1;max-width:120px;padding:11px 4px;border:3px solid #e3c089;border-radius:12px;background:#fffaf0;font-size:14px;font-weight:800;color:#8a5a2b;cursor:pointer;box-shadow:0 2px 0 #e3c089}" +
+      ".crop-step-btn.done{background:#ffe3b0;color:#b89a6a;border-color:#e3c089}" +
+      ".crop-step-btn.active{background:linear-gradient(180deg,#b5712f,#94591f);color:#fff7e6;border-color:#94591f}" +
+      ".crop-step-btn:disabled{opacity:.5;cursor:default}" +
       // 動作粒子特效
-      ".crop-fx{position:absolute;pointer-events:none;font-size:0}" +
       ".crop-seed-p{position:absolute;width:8px;height:11px;background:#8a5a2a;border-radius:40% 40% 50% 50%;top:-14px;animation:cropSeedFall .9s ease-in forwards}" +
       "@keyframes cropSeedFall{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(150px) rotate(120deg);opacity:0}}" +
       ".crop-drop{position:absolute;width:7px;height:12px;background:#5fb6e8;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;top:-14px;animation:cropDrop .8s ease-in forwards}" +
@@ -72,6 +77,8 @@
   const ORDER = ["broccoli", "carrot", "tomato", "corn", "apple", "sweet_potato"];
   const FRAME = 256, FRAMES = 4;            // 1024x256, 4 幀：seed/sprout/growing/ripe
   const STAGE_NAME = ["種子", "幼苗", "生長", "熟成"];
+  // 收成籃以 emoji 為鍵(與牧場共用)；面板不顯示 emoji → 對應名稱
+  const NAME_MAP = { "🥦": "花椰菜", "🥕": "胡蘿蔔", "🍅": "番茄", "🌽": "玉米", "🍎": "蘋果", "🍠": "地瓜", "🥛": "牛奶", "🥚": "蛋", "🍖": "肉", "🧶": "羊毛" };
   const PLOTS = 6;
 
   // 成長時間（預設 20 分；?cropgrow=秒數 或 window.CROP_GROW_MS=毫秒 可調，存 localStorage）
@@ -285,9 +292,9 @@
     if (viewMode === "plant") return renderPlant(body);
   }
 
-  function stageImg(crop, idx) {
-    // 從 spritesheet 切一格當預覽（用 background-position）
-    return '<span class="pic" style="display:inline-block;background:url(' + CROPS[crop].sheet + '?v=4) -' + (idx * 52) + 'px 0/' + (52 * FRAMES) + 'px 52px no-repeat"></span>';
+  function stageImg(crop, idx, sz) {
+    sz = sz || 52;   // 從 spritesheet 切一格當預覽（background-position）
+    return '<span class="pic" style="display:inline-block;width:' + sz + 'px;height:' + sz + 'px;background:url(' + CROPS[crop].sheet + '?v=4) -' + (idx * sz) + 'px 0/' + (sz * FRAMES) + 'px ' + sz + 'px no-repeat"></span>';
   }
 
   function renderGrid(body) {
@@ -297,22 +304,21 @@
       const rec = data[i];
       let inner;
       if (!rec) {
-        inner = '<div class="ph">🟫</div><div class="nm">空地</div><div class="st">＋ 種植</div>';
+        inner = '<div class="soil"></div><div class="nm">空地</div><div class="st">＋ 種植</div>';
       } else {
         const idx = stageIndex(rec), sp = CROPS[rec.crop];
         inner = stageImg(rec.crop, idx) + '<div class="nm">' + sp.name + "</div>" +
-          (idx === 3 ? '<div class="ripe">🧺 點我收成</div>' : '<div class="st">' + STAGE_NAME[idx] + "・" + remainText(rec) + "</div>");
+          (idx === 3 ? '<div class="ripe">可收成</div>' : '<div class="st">' + STAGE_NAME[idx] + "・" + remainText(rec) + "</div>");
       }
       cards += '<div class="crop-plot" data-i="' + i + '"><span class="idx">' + (i + 1) + "</span>" + inner + "</div>";
     }
     const h = loadHarvest(), keys = Object.keys(h).filter((k) => h[k] > 0);
     body.innerHTML =
-      '<div class="crop-title">🌾 學園農場・布告欄</div>' +
-      '<div class="crop-sub">選一塊地種菜：撒種子→施肥→澆水，等它長大就能收成</div>' +
-      '<div class="crop-grid" id="crop-grid">' + cards + "</div>" +
-      '<div class="crop-sec"><div class="crop-sec-t">已收成：</div>' +
-      (keys.length ? keys.map((k) => '<span class="crop-chip">' + k + " ×" + h[k] + "</span>").join("") : '<span class="crop-empty">還沒收成，種點菜吧</span>') +
-      "</div>";
+      '<div class="crop-tbar">學園農場</div><div class="crop-content">' +
+      '<div class="crop-grid">' + cards + "</div>" +
+      '<div class="crop-sec"><div class="crop-sec-t">已收成</div>' +
+      (keys.length ? keys.map((k) => '<span class="crop-chip">' + (NAME_MAP[k] || k) + " ×" + h[k] + "</span>").join("") : '<span class="crop-empty">還沒收成</span>') +
+      "</div></div>";
     body.querySelectorAll(".crop-plot").forEach((el) => {
       el.onclick = () => {
         const i = +el.dataset.i, data2 = loadCrops(), rec = data2[i];
@@ -324,13 +330,13 @@
 
   function renderPick(body) {
     body.innerHTML =
+      '<div class="crop-tbar">選擇作物</div><div class="crop-content">' +
       '<button class="crop-back" id="crop-back">‹ 返回</button>' +
-      '<div class="crop-title">選擇要種的作物</div>' +
-      '<div class="crop-sub">第 ' + (pickPlot + 1) + " 塊地</div>" +
+      '<div class="crop-cap">第 ' + (pickPlot + 1) + " 塊地</div>" +
       '<div class="crop-pick">' +
-      ORDER.map((k) => '<div class="crop-pickcard" data-k="' + k + '">' + stageImg(k, 3) +
+      ORDER.map((k) => '<div class="crop-pickcard" data-k="' + k + '">' + stageImg(k, 3, 46) +
         '<div class="nm">' + CROPS[k].name + "</div></div>").join("") +
-      "</div>";
+      "</div></div>";
     body.querySelector("#crop-back").onclick = () => { viewMode = "grid"; render(); };
     body.querySelectorAll(".crop-pickcard").forEach((el) => {
       el.onclick = () => { startPlant(pickPlot, el.dataset.k); };
@@ -349,19 +355,16 @@
   function renderPlant(body) {
     const ps = plantState, sp = CROPS[ps.crop];
     body.innerHTML =
+      '<div class="crop-tbar">種 ' + sp.name + "</div><div class=\"crop-content\">" +
       '<button class="crop-back" id="crop-back">‹ 返回</button>' +
-      '<div class="crop-title">種 ' + sp.name + "</div>" +
-      '<div class="crop-sub">依序完成 3 個步驟</div>' +
-      '<div class="crop-steps">' +
-      '  <div class="crop-stage-view" id="crop-stage-view">' + stagePreviewImg(ps.crop, ps.step) + "</div>" +
-      '  <div class="crop-step-btns">' +
+      '<div class="crop-stage-view" id="crop-stage-view">' + stagePreviewImg(ps.crop, ps.step) + "</div>" +
+      '<div class="crop-step-btns">' +
       STEPS.map((s, i) => {
         const cls = ps.step > i ? "done" : (ps.step === i ? "active" : "");
         return '<button class="crop-step-btn ' + cls + '" data-s="' + i + '"' + (ps.step === i ? "" : " disabled") + ">" +
-          (ps.step > i ? "✔ " : "") + s.label + "</button>";
+          (ps.step > i ? "✓ " : "") + s.label + "</button>";
       }).join("") +
-      "  </div>" +
-      "</div>";
+      "</div></div>";
     body.querySelector("#crop-back").onclick = () => { plantState = null; viewMode = "grid"; render(); };
     body.querySelectorAll(".crop-step-btn").forEach((b) => {
       b.onclick = () => doStep(+b.dataset.s);

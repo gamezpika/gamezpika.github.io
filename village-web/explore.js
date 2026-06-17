@@ -754,7 +754,7 @@ class ExploreScene extends Phaser.Scene {
   }
 
   _showPortalBtn(label) {
-    if (this.portalEl) { this.portalEl.textContent = (label || "前往") + " →"; this.portalEl.classList.add("show"); }
+    if (this.portalEl) { this.portalEl.textContent = (label || "前往"); this.portalEl.classList.add("show"); }
   }
   _hidePortalBtn() { if (this.portalEl) this.portalEl.classList.remove("show"); }
 
@@ -1261,7 +1261,7 @@ class ExploreScene extends Phaser.Scene {
       // 走動村民/動物（npc:true 無 category）維持走近直接開，不在此列
       || (this._nearShop.type === "open_modal" && this._nearShop.category === "npc")));
     if (isManual && !this.modalOpen && !this._transitioning) {
-      this._showEnter((this._nearShop.label || "對話") + " →");
+      this._showEnter(this._nearShop.label || "對話");
     } else {
       this._hideEnter();   // 進入按鈕退役（派派 6/11：走近建築直接開）
     }

@@ -53,15 +53,15 @@
     will-change: transform;
   }
 </style>
-<link rel="stylesheet" href="shop.css?v=48">
+<link rel="stylesheet" href="shop.css?v=49">
 </head>
 <body>
 <div class="hint">左下搖桿 或 WASD 移動 / 滾輪縮放 / 雙指 pinch 縮放</div>
 <div id="game"></div>
 <button id="equip-btn" class="hud-icon" onclick="window.openEquip&&window.openEquip()"><span class="hud-slot"><img src="icons/ic_equip.webp?v=1" alt=""></span><span class="hud-label">裝備</span></button>
 <button id="speed-btn" class="hud-icon" onclick="window.openSpeedSettings&&window.openSpeedSettings()"><span class="hud-slot"><img src="icons/ic_speed.webp?v=1" alt=""></span><span class="hud-label">速度</span></button>
-<button id="enter-shop">🛒 進入</button>
-<button id="enter-portal">前往 →</button>
+<button id="enter-shop">進入</button>
+<button id="enter-portal">前往</button>
 <div id="joystick"><div id="joy-thumb"></div></div>
 <div id="map-fade"></div>
 <script>
@@ -98,6 +98,6 @@
 <script src="farm.js?v=13"></script>
 <!-- 多人整合（feature flag）：?mp=1 才載 colyseus + mp.js，否則完全是原本單機 demo -->
 <script>if(new URLSearchParams(location.search).get("mp")==="1"){document.write('<script src="colyseus.bundle.js"><\/script><script src="mp.js?v=30"><\/script>');}</script>
-<script src="explore.js?v=130"></script>
+<script src="explore.js?v=131"></script>
 </body>
 </html>

@@ -143,43 +143,38 @@
 }
 
 /* 「進入商店」按鈕 — HTML(不受 Phaser 相機 zoom 影響,手機一定看得到) */
-#enter-shop {
-  position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%);
+/* 「進入」「前往」情境鈕 — 木質風(木紋+四角金鉚釘)，純文字無 emoji/箭頭；保留吸睛 glow */
+#enter-shop, #enter-portal {
+  position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%);
   z-index: 4000; display: none;
   font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
-  font-size: 20px; font-weight: 800; color: #fff7e6; white-space: nowrap;
-  background: linear-gradient(180deg, #c8843a, #a8631f);
-  border: 3px solid #fff2dd; border-radius: 999px; padding: 13px 28px;
+  font-size: 19px; font-weight: 800; color: #fff7e6; white-space: nowrap; letter-spacing: 1px;
+  background:
+    radial-gradient(circle at 11px 9px, #ffe48f 2.3px, rgba(120,80,40,.6) 3px, transparent 3.6px),
+    radial-gradient(circle at calc(100% - 11px) 9px, #ffe48f 2.3px, rgba(120,80,40,.6) 3px, transparent 3.6px),
+    radial-gradient(circle at 11px calc(100% - 9px), #ffe48f 2.3px, rgba(120,80,40,.6) 3px, transparent 3.6px),
+    radial-gradient(circle at calc(100% - 11px) calc(100% - 9px), #ffe48f 2.3px, rgba(120,80,40,.6) 3px, transparent 3.6px),
+    linear-gradient(180deg, #b88247, #8a5a2b);
+  border: 3px solid #5a3613; border-radius: 15px; padding: 12px 32px;
   cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none;
-  box-shadow: 0 5px 0 #7a4715, 0 8px 18px rgba(0,0,0,.35);
-  animation: enter-glow 1.2s ease-in-out infinite;
+  text-shadow: 0 1px 1px rgba(0,0,0,.45);
 }
-#enter-shop.show { display: block; }
-#enter-shop:active { transform: translateX(-50%) translateY(3px); box-shadow: 0 2px 0 #7a4715; }
+#enter-shop { animation: enter-glow 1.2s ease-in-out infinite; }
+#enter-portal { animation: portal-glow 1.2s ease-in-out infinite; }
+#enter-shop.show, #enter-portal.show { display: block; }
+#enter-shop:active, #enter-portal:active {
+  transform: translateX(-50%) translateY(3px); animation: none;
+  box-shadow: 0 1px 0 #4a2c10, 0 3px 8px rgba(0,0,0,.35), inset 0 2px 2px rgba(255,255,255,.25);
+}
 @keyframes enter-glow {
-  0%, 100% { box-shadow: 0 5px 0 #7a4715, 0 8px 18px rgba(0,0,0,.35); }
-  50%      { box-shadow: 0 5px 0 #7a4715, 0 0 22px 5px rgba(255,210,120,.95); }
+  0%, 100% { box-shadow: 0 5px 0 #4a2c10, 0 8px 18px rgba(0,0,0,.35), inset 0 2px 2px rgba(255,255,255,.25); }
+  50%      { box-shadow: 0 5px 0 #4a2c10, 0 0 22px 5px rgba(255,210,120,.95), inset 0 2px 2px rgba(255,255,255,.25); }
 }
-
-/* 「前往新地圖」傳送門按鈕 — 跟進入鈕同一套木質風（世界內視覺語言） */
-#enter-portal {
-  position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%);
-  z-index: 4000; display: none;
-  font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
-  font-size: 20px; font-weight: 800; color: #fff7e6; white-space: nowrap;
-  background: linear-gradient(180deg, #c8843a, #a8631f);
-  border: 3px solid #fff2dd; border-radius: 999px; padding: 13px 28px;
-  cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none;
-  box-shadow: 0 5px 0 #7a4715, 0 8px 18px rgba(0,0,0,.35);
-  animation: portal-glow 1.2s ease-in-out infinite;
-}
-#enter-portal.show { display: block; }
-#enter-portal:active { transform: translateX(-50%) translateY(3px); box-shadow: 0 2px 0 #7a4715; }
 @keyframes portal-glow {
   0%, 100% { transform: translateX(-50%) scale(1) translateY(0);
-             box-shadow: 0 5px 0 #7a4715, 0 8px 18px rgba(0,0,0,.35); }
+             box-shadow: 0 5px 0 #4a2c10, 0 8px 18px rgba(0,0,0,.35), inset 0 2px 2px rgba(255,255,255,.25); }
   50%      { transform: translateX(-50%) scale(1.07) translateY(-4px);
-             box-shadow: 0 9px 0 #7a4715, 0 0 28px 8px rgba(255,205,120,.95); }
+             box-shadow: 0 9px 0 #4a2c10, 0 0 28px 8px rgba(255,205,120,.95), inset 0 2px 2px rgba(255,255,255,.25); }
 }
 
 /* ───────────── 職業介紹所 ───────────── */

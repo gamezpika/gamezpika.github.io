@@ -1140,14 +1140,19 @@
     for (const ch of s) out += zh[ch] ? `<ruby>${aoEsc(ch)}<rt>${aoEsc(zh[ch])}</rt></ruby>` : aoEsc(ch);
     return out;
   }
-  // 題目圖片放在正式版 static(web-production)，demo 後台沒有那些檔→用正式版當圖床(img 顯示不需 CORS)
-  const Q_IMG_BASE = "https://web-production-48b09.up.railway.app";
+  // 題目圖片放在正式版 static(web-production)，demo 後台沒有那些檔。
+  // demo 站開了 COEP，跨來源圖片會被擋 → 轉成「本站同源」相對路徑（Caddy 反代 /static/images/q/*）。
   // 題幹區＝白色題卡（圖片 + display 大字 + prompt）；模板 v2（派派 6/12）
   function qBodyHTML(q) {
     const zh = qZhuyin(q);
     let h = "";
     const rawImg = typeof q.image_url === "string" ? q.image_url.trim() : "";
-    if (rawImg) { const isrc = /^https?:/i.test(rawImg) ? rawImg : (Q_IMG_BASE + rawImg); h += `<img src="${aoEsc(isrc)}" alt="題目圖" onerror="this.style.display='none'" style="max-width:100%;max-height:36vh;object-fit:contain;display:block;margin:4px auto;border-radius:8px;">`; }
+    if (rawImg) {
+      // 圖床（正式版 EduArena）或相對路徑 → 轉成本站同源 /static/...（避開 COEP 擋跨來源）；其他網域維持原樣
+      let isrc = rawImg;
+      try { const u = new URL(rawImg, location.origin); if (u.host === location.host || u.host === "web-production-48b09.up.railway.app") isrc = u.pathname + u.search; } catch (e) {}
+      h += `<img src="${aoEsc(isrc)}" alt="題目圖" onerror="this.style.display='none'" style="max-width:100%;max-height:36vh;object-fit:contain;display:block;margin:4px auto;border-radius:8px;">`;
+    }
     const disp = String(q.display || "").trim(), prom = String(q.prompt || "").trim();
     if (disp) {
       h += `<div style="font-size:28px;font-weight:900;line-height:1.55;margin:4px 0;color:#2f2415;">${qRuby(disp, zh)}</div>`;

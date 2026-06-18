@@ -7,6 +7,15 @@
     # 預設靜態資源 cache 短期（10 分鐘），方便派派改檔 cache-bust ?v=N 強刷
     header Cache-Control "public, max-age=600"
 
+    # 題目圖（立體圖/塗色等「圖目」）放在正式版 EduArena（別的網域）當圖床。
+    # demo 站開了 COEP（cross-origin isolation，給 Godot 網頁版用），跨來源圖片
+    # 因圖床沒回 CORP 標頭會被瀏覽器擋掉 → 反向代理成「本站同源」，COEP 就放行。
+    # 範圍只限題目圖實際所在的 /static/images/q/*，不吃本站其他 /static 路徑
+    @qimg path /static/images/q/*
+    reverse_proxy @qimg https://web-production-48b09.up.railway.app {
+        header_up Host web-production-48b09.up.railway.app
+    }
+
     # Web build 需要 SharedArrayBuffer → 必須回 cross-origin isolation headers
     @godot {
         path /village-web/*

@@ -4166,6 +4166,25 @@
         "render_order": 500,
         "interaction_type": "open_modal",
         "path": []
+      },
+      {
+        "id": "pond_water",
+        "name": "池塘",
+        "category": "decoration",
+        "sprite": {
+          "image": "pond_water.webp",
+          "scale": 1.0,
+          "anchor_x": 0.5,
+          "anchor_y": 0.5,
+          "frame_width": 361,
+          "frame_height": 307,
+          "grid_cols": 4,
+          "grid_rows": 2,
+          "frames": 8,
+          "frame_rate": 6
+        },
+        "anchor": { "x": 0.13314, "y": 0.81299 },
+        "render_depth": 0.5
       }
     ],
     "obstacle_areas": [

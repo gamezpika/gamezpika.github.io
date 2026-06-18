@@ -191,7 +191,7 @@
         .building-list {
             overflow-y: auto;
             border-bottom: 1px solid #0d1019;
-            max-height: 280px;
+            flex: 1; min-height: 0;   /* 跟下方屬性欄各分一半，避免清單佔太多把屬性欄擠扁 */
         }
         .building-row {
             padding: 12px 16px; cursor: pointer; font-size: 15px;
@@ -209,7 +209,7 @@
         .building-count { font-size: 12px; color: #888; flex-shrink: 0; padding-left: 6px; }
 
         .building-detail {
-            padding: 14px; overflow-y: auto; flex: 1;
+            padding: 14px; overflow-y: auto; flex: 1; min-height: 0;
             font-size: 12px;
         }
         .building-detail h3 {
@@ -434,8 +434,8 @@
         <input type="file" id="fileInput" accept="image/*" style="display:none">
         <button class="btn-secondary" id="btnLoadLocal">📂 上傳本地圖</button>
         <button class="btn-secondary" id="btnLoadUrl">🔗 從 URL</button>
-        <button class="btn-secondary" id="btnNewBuilding" title="新建 collision shape（六邊形 polygon 預設，可拖點調形狀）">➕ 新 collision</button>
-        <button class="btn-secondary" id="btnNewObstacle" title="新建純 polygon 擋區（不規則形狀如河流，沒 sprite 沒互動）">➕ 純 polygon</button>
+        <button class="btn-secondary" id="btnNewBuilding" title="新增建築擋區（預設六邊形，可拖點調形狀；會擋路、可點互動，可再設定圖片）">➕ 新增建築擋區</button>
+        <button class="btn-secondary" id="btnNewObstacle" title="新增純擋路多邊形（不規則形狀如河流，只擋路、沒圖片、沒互動）">➕ 純擋路多邊形</button>
     </div>
 
     <div class="mode-tabs">

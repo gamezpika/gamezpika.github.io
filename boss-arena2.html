@@ -490,6 +490,11 @@ async function handleAnswer(idx, btn) {
             state.combo = 0;
             await getHitByBoss(d.damage, d.player_hp);
         }
+        // 新手任務(onboarding)：只打一題就定勝負（對→贏 / 錯→輸），跳過後端 HP 結算覆蓋
+        if (new URLSearchParams(location.search).get("from") === "onboarding") {
+            state.sessionId = null;
+            return endGame(d.correct ? "win" : "dead");
+        }
         // 後端決定真勝負；題目用完也結算（不繞回重答同題 → 防重複/防後端重答錯誤）
         if (d.done || state.bossHP <= 0 || state.heroHP <= 0 || state.qIdx + 1 >= QUESTIONS.length) return endGame();
         await sleep(500);
@@ -506,6 +511,8 @@ async function handleAnswer(idx, btn) {
         const cb = document.querySelectorAll(".opt-btn")[q.ans]; if (cb) cb.classList.add("correct");
         state.combo = 0; await getHitByBoss();
     }
+    // 新手任務：只打一題就定勝負（樣本 fallback 分支也要套，後端沒起來時才不會變多題）
+    if (new URLSearchParams(location.search).get("from") === "onboarding") return endGame(idx === q.ans ? "win" : "dead");
     if (state.bossHP <= 0) return endGame("win");
     if (state.heroHP <= 0) return endGame("dead");
     await sleep(700);
@@ -1222,12 +1229,13 @@ async function endGame(outcome) {
         // 新手任務(onboarding)導進來的魔王戰：打贏 → 回 onboarding 結尾領大獎
         const fromOnb = new URLSearchParams(location.search).get("from") === "onboarding";
         const onbWin = fromOnb && outcome === "win";
-        // onboarding 退路：打贏→寫一次性 flag 回結尾領獎；打輸→回新手任務(重來)。供 arcadeUI + fallback 共用
+        // onboarding：打贏→寫一次性 flag 回結尾領獎；打輸→「重打一次」(reload)不另給退出鈕
         const onbExit = () => {
-            try { if (onbWin) localStorage.setItem("onboarding_boss_cleared", "1"); } catch (e) {}
-            location.href = "onboarding.html" + (onbWin ? "?scene=end" : "");
+            try { localStorage.setItem("onboarding_boss_cleared", "1"); } catch (e) {}
+            location.href = "onboarding.html?scene=end";
         };
         window.__onbExit = onbExit;
+        const replayTxt = (fromOnb && !onbWin) ? "重打一次" : "再戰一次";
         // 統一用小遊戲那套結算頁 arcadeUI.victory（同款好看），不再用 emoji overlay
         if (window.arcadeUI && window.arcadeUI.victory) {
             const rewards = [{ key: "coins", icon: "arcade/img/icons/coin.png?s=6", label: `+${coinsEarned} 金幣` }];
@@ -1239,11 +1247,11 @@ async function endGame(outcome) {
                 title: outcome === "win" ? "勝利" : "失敗",
                 sub: outcome === "win" ? "擊敗魔王！" : "再接再厲！",
                 rewards,
-                replayLabel: "再戰一次",
-                exitLabel: fromOnb ? (onbWin ? "完成新手任務 →" : "回新手任務") : "回地圖",
+                replayLabel: replayTxt,
+                exitLabel: onbWin ? "完成新手任務 →" : "回地圖",
                 exitIcon: "assets/images/icons/sword.png?s=6",
                 onReplay: () => location.reload(),
-                onExit: fromOnb ? onbExit : (fromMap ? arenaExit : null),
+                onExit: onbWin ? onbExit : (fromOnb ? null : (fromMap ? arenaExit : null)),
             });
             return;
         }
@@ -1253,9 +1261,9 @@ async function endGame(outcome) {
             `<div class="overlay-emoji">${emoji}</div>
              <div class="overlay-title ${titleClass}">${title}</div>
              <div class="overlay-sub">${sub}${coinsLine}</div>
-             <button class="overlay-btn" onclick="location.reload()">再戰一次</button>`
-            + (fromOnb ? `<button class="overlay-btn" style="margin-left:8px;background:linear-gradient(135deg,#9b8bbf,#6f5e9c)" onclick="window.__onbExit&&window.__onbExit()">${onbWin ? "完成新手任務 →" : "回新手任務"}</button>`
-               : fromMap ? `<button class="overlay-btn" style="margin-left:8px;background:linear-gradient(135deg,#9b8bbf,#6f5e9c)" onclick="arenaExit()">回地圖</button>` : '');
+             <button class="overlay-btn" onclick="location.reload()">${replayTxt}</button>`
+            + (onbWin ? `<button class="overlay-btn" style="margin-left:8px;background:linear-gradient(135deg,#9b8bbf,#6f5e9c)" onclick="window.__onbExit&&window.__onbExit()">完成新手任務 →</button>`
+               : (fromOnb ? '' : (fromMap ? `<button class="overlay-btn" style="margin-left:8px;background:linear-gradient(135deg,#9b8bbf,#6f5e9c)" onclick="arenaExit()">回地圖</button>` : '')));
         stage.appendChild(overlay);
     }, overlayDelay);
 }

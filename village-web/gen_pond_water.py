@@ -10,6 +10,7 @@ BG = HERE / "campus_ground_v2.webp"
 N = 8            # 幀數
 COLS, ROWS = 4, 2
 PAD = 14        # 水域外擴（給波紋位移 + 羽化留邊）
+AMP = 0.45      # 水波幅度倍率（越小波越微；1.0=原始較大，派派覺得太大改 0.45）
 
 im = Image.open(BG).convert("RGB")
 W, H = im.size
@@ -37,8 +38,8 @@ frames = []
 for t in range(N):
     ph = 2 * np.pi * t / N
     # 波紋位移：水平 + 垂直雙向小幅 sine（振幅小，池塘靜水感，非河流流向）
-    dx = 2.2 * np.sin(yy * 0.085 + xx * 0.02 + ph) + 1.1 * np.cos(yy * 0.05 - ph)
-    dy = 1.6 * np.sin(xx * 0.075 - yy * 0.02 + ph * 1.0)
+    dx = AMP * (2.2 * np.sin(yy * 0.085 + xx * 0.02 + ph) + 1.1 * np.cos(yy * 0.05 - ph))
+    dy = AMP * (1.6 * np.sin(xx * 0.075 - yy * 0.02 + ph * 1.0))
     sx = np.clip(xx + dx, 0, fw - 1).astype(np.int32)
     sy = np.clip(yy + dy, 0, fh - 1).astype(np.int32)
     warped = rgb[sy, sx]

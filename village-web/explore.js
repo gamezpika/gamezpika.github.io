@@ -114,6 +114,7 @@ class ExploreScene extends Phaser.Scene {
     const _im = document.getElementById("info-modal");
     if (_im) _im.classList.remove("open");
     if (this._joyVec) { this._joyVec.x = 0; this._joyVec.y = 0; }   // 換場景清搖桿向量，防殘留持續移動
+    if (this._hideJoystick) this._hideJoystick();                   // 換場景同時隱藏浮動搖桿
   }
 
   // backbuffer 是 css × dpr，UI/zoom 計算要用 CSS 尺寸（除以 dpr）
@@ -900,8 +901,9 @@ class ExploreScene extends Phaser.Scene {
     this.moveTarget = null;
   }
 
-  // 左下虛擬搖桿（DOM #joystick）：拖中央鈕 → 設 this._joyVec 單位方向，update() 當移動輸入。
-  // 用 DOM 而非 Phaser，免疫相機 zoom（Phaser 搖桿會被 zoom 推位/變形，同 _showModal 問題）。
+  // 浮動搖桿（DOM #joystick）：平常隱藏，手指在地圖上「真的拖曳」超過門檻才出現在起點、跟著拖；放開即隱藏。
+  // 綁在 document：觸控會隱式捕捉到起點元素 → 整段手勢的 move/up 都冒泡到 document，定位用原生 clientX/Y（免疫相機 zoom，scale=NONE 下 pointer.x 是 ×DPR 不能用）。
+  // 只認觸控單指；點在按鈕/搖桿、modalOpen、轉場、第二指(pinch) 都不啟動。桌面滑鼠不啟動（走 WASD / 點地圖移動）。
   // 跨 scene.restart 同一 scene instance → 只綁一次（_joyBound），handler 內 this 仍指當前 scene。
   _setupJoystick() {
     if (this._joyBound) return;
@@ -910,9 +912,22 @@ class ExploreScene extends Phaser.Scene {
     if (!base || !thumb) return;
     this._joyBound = true;
     this._joyVec = this._joyVec || { x: 0, y: 0 };
-    const R = 44, DEAD = 7;   // thumb 最大位移半徑 / 死區（px）
-    let pid = null;
-    const reset = () => { pid = null; this._joyVec.x = 0; this._joyVec.y = 0; thumb.style.transform = "translate(0px,0px)"; };
+    const R = 44, DEAD = 7, SHOW = 12;   // thumb 最大位移半徑 / 死區 / 啟動拖曳門檻（px）
+    let pid = null, sx = 0, sy = 0, active = false;
+    const hide = () => {
+      pid = null; active = false;
+      this._joyVec.x = 0; this._joyVec.y = 0;
+      thumb.style.transform = "translate(0px,0px)";
+      base.classList.remove("show");
+    };
+    this._hideJoystick = hide;   // 供換場景 / pinch 呼叫，防殘留持續移動
+    const showAt = (x, y) => {   // 把搖桿底盤中心移到觸控起點（夾在畫面內，免貼邊露半截）
+      const half = base.offsetWidth / 2;
+      const cx = Math.max(half + 6, Math.min(window.innerWidth - half - 6, x));
+      const cy = Math.max(half + 6, Math.min(window.innerHeight - half - 6, y));
+      base.style.left = (cx - half) + "px"; base.style.top = (cy - half) + "px"; base.style.bottom = "auto";
+      base.classList.add("show");
+    };
     const apply = (cx, cy) => {
       const r = base.getBoundingClientRect();
       let dx = cx - (r.left + r.width / 2), dy = cy - (r.top + r.height / 2);
@@ -922,17 +937,27 @@ class ExploreScene extends Phaser.Scene {
       if (d < DEAD) { this._joyVec.x = 0; this._joyVec.y = 0; }
       else { const n = Math.hypot(dx, dy) || 1; this._joyVec.x = dx / n; this._joyVec.y = dy / n; }
     };
-    base.addEventListener("pointerdown", (e) => {
-      pid = e.pointerId; try { base.setPointerCapture(pid); } catch (x) {}
-      apply(e.clientX, e.clientY); e.preventDefault();
-    });
-    base.addEventListener("pointermove", (e) => {
-      if (e.pointerId === pid) { apply(e.clientX, e.clientY); e.preventDefault(); }
-    });
-    const end = (e) => { if (e.pointerId === pid) reset(); };
-    base.addEventListener("pointerup", end);
-    base.addEventListener("pointercancel", end);
-    base.addEventListener("lostpointercapture", end);
+    // 起點落在 UI（按鈕/搖桿本體）上 → 不啟動搖桿，讓那些元件正常點擊；面板/商店開著時 modalOpen 已擋
+    const onUI = (t) => t && t.closest && t.closest("button, a, input, select, textarea, #joystick");
+    document.addEventListener("pointerdown", (e) => {
+      if (e.pointerType === "mouse") return;            // 只給觸控；滑鼠走 WASD / 點地圖移動
+      if (pid !== null) { hide(); return; }              // 第二指落下 → 立刻放掉搖桿(清 _joyVec 防殘留續走)，整段交給 pinch
+      if (this.modalOpen || this._transitioning) return;
+      if (onUI(e.target)) return;
+      pid = e.pointerId; sx = e.clientX; sy = e.clientY; active = false;
+    }, { passive: true });
+    document.addEventListener("pointermove", (e) => {
+      if (e.pointerId !== pid) return;
+      if (this.input && this.input.pointer2 && this.input.pointer2.isDown) { hide(); return; }   // 第二指 → pinch，放掉搖桿
+      if (!active) {
+        if (Math.hypot(e.clientX - sx, e.clientY - sy) < SHOW) return;   // 還沒到「真的拖曳」門檻
+        active = true; showAt(sx, sy);                                    // 底盤定在起點，從起點量方向最自然
+      }
+      apply(e.clientX, e.clientY);
+    }, { passive: true });
+    const end = (e) => { if (e.pointerId === pid) hide(); };
+    document.addEventListener("pointerup", end);
+    document.addEventListener("pointercancel", end);
   }
 
   // 對話框氣泡：圓角白框 + 下方尖角（指向 NPC），完整台詞自動換行。回傳 container。

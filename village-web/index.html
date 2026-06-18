@@ -34,7 +34,7 @@
   @media (pointer: coarse) {
     .hint { display: none; }
   }
-  /* 左下虛擬搖桿（DOM，免疫相機 zoom；取代點地圖移動）*/
+  /* 浮動搖桿（DOM，免疫相機 zoom）：平常隱藏，手指真的拖曳地圖才由 JS 定位到起點並加 .show 淡入 */
   #joystick {
     position: fixed; left: 20px; bottom: 24px;
     width: 116px; height: 116px; border-radius: 50%;
@@ -42,7 +42,10 @@
     border: 3px solid rgba(255,255,255,0.45);
     box-shadow: 0 2px 12px rgba(0,0,0,0.28);
     z-index: 400; touch-action: none;
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity .12s ease;
   }
+  #joystick.show { opacity: 1; visibility: visible; }
   #joy-thumb {
     position: absolute; left: 50%; top: 50%;
     width: 52px; height: 52px; margin: -26px 0 0 -26px;
@@ -100,6 +103,6 @@
 <script src="crop.js?v=7"></script>
 <!-- 多人整合（feature flag）：?mp=1 才載 colyseus + mp.js，否則完全是原本單機 demo -->
 <script>if(new URLSearchParams(location.search).get("mp")==="1"){document.write('<script src="colyseus.bundle.js"><\/script><script src="mp.js?v=30"><\/script>');}</script>
-<script src="explore.js?v=131"></script>
+<script src="explore.js?v=132"></script>
 </body>
 </html>

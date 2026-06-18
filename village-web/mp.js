@@ -50,9 +50,9 @@
     var base = scene.assetBase || "", f = skinSheets(id);
     var d = { side: frameDimsOf(scene, "hero"), down: frameDimsOf(scene, "hero_down"), up: frameDimsOf(scene, "hero_up") };
     outfitLoading[id] = true;
-    if (!scene.textures.exists(prefix + "_side")) scene.load.spritesheet(prefix + "_side", base + f.side + "?v=4", { frameWidth: d.side.w, frameHeight: d.side.h });
-    if (!scene.textures.exists(prefix + "_down")) scene.load.spritesheet(prefix + "_down", base + f.down + "?v=4", { frameWidth: d.down.w, frameHeight: d.down.h });
-    if (!scene.textures.exists(prefix + "_up")) scene.load.spritesheet(prefix + "_up", base + f.up + "?v=4", { frameWidth: d.up.w, frameHeight: d.up.h });
+    if (!scene.textures.exists(prefix + "_side")) scene.load.spritesheet(prefix + "_side", base + f.side + "?v=5", { frameWidth: d.side.w, frameHeight: d.side.h });
+    if (!scene.textures.exists(prefix + "_down")) scene.load.spritesheet(prefix + "_down", base + f.down + "?v=5", { frameWidth: d.down.w, frameHeight: d.down.h });
+    if (!scene.textures.exists(prefix + "_up")) scene.load.spritesheet(prefix + "_up", base + f.up + "?v=5", { frameWidth: d.up.w, frameHeight: d.up.h });
     scene.load.once("complete", function () {
       // 三張圖任一 404 → 標記 failed 退回 default，別每幀重試
       if (!scene.textures.exists(prefix + "_side") || !scene.textures.exists(prefix + "_down") || !scene.textures.exists(prefix + "_up")) {

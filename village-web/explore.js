@@ -196,9 +196,9 @@ class ExploreScene extends Phaser.Scene {
     const ow = oc.sheets;
     // 紀錄這批 texture 實際載的是哪套造型（換裝對帳用，texture 是 game 全域所以放 window）
     if (!this.textures.exists("hero")) window.__walkOutfitApplied = oc.id;
-    if (!this.textures.exists("hero"))      this.load.spritesheet("hero",      this.assetBase + (ow ? ow.side : ps.side.image) + "?v=4", { frameWidth: ps.side.frame_width, frameHeight: ps.side.frame_height });
-    if (!this.textures.exists("hero_down")) this.load.spritesheet("hero_down", this.assetBase + (ow ? ow.down : ps.down.image) + "?v=4", { frameWidth: ps.down.frame_width, frameHeight: ps.down.frame_height });
-    if (!this.textures.exists("hero_up"))   this.load.spritesheet("hero_up",   this.assetBase + (ow ? ow.up   : ps.up.image)   + "?v=4", { frameWidth: ps.up.frame_width,   frameHeight: ps.up.frame_height });
+    if (!this.textures.exists("hero"))      this.load.spritesheet("hero",      this.assetBase + (ow ? ow.side : ps.side.image) + "?v=5", { frameWidth: ps.side.frame_width, frameHeight: ps.side.frame_height });
+    if (!this.textures.exists("hero_down")) this.load.spritesheet("hero_down", this.assetBase + (ow ? ow.down : ps.down.image) + "?v=5", { frameWidth: ps.down.frame_width, frameHeight: ps.down.frame_height });
+    if (!this.textures.exists("hero_up"))   this.load.spritesheet("hero_up",   this.assetBase + (ow ? ow.up   : ps.up.image)   + "?v=5", { frameWidth: ps.up.frame_width,   frameHeight: ps.up.frame_height });
 
     // 任務 NPC 頭頂符號（所有地圖共用，已載就跳過）：quest_mark=❗可領獎、quest_ask=❓可接任務、quest_progress=灰❗進行中
     if (!this.textures.exists("quest_mark")) this.load.image("quest_mark", "icons/ic_quest.webp?v=1");
@@ -1744,9 +1744,9 @@ window.applyWalkOutfit = function (sceneArg) {
   // 第一階段：先載到暫存 key，玩家照常顯示舊造型（不能先刪 hero——畫面上還在用，會 glTexture 噴錯）
   const SWAP = ["hero_swap_side", "hero_swap_down", "hero_swap_up"];
   SWAP.forEach((k) => { if (sc.textures.exists(k)) sc.textures.remove(k); });
-  sc.load.spritesheet("hero_swap_side", sc.assetBase + files.hero      + "?v=4", { frameWidth: ps.side.frame_width, frameHeight: ps.side.frame_height });
-  sc.load.spritesheet("hero_swap_down", sc.assetBase + files.hero_down + "?v=4", { frameWidth: ps.down.frame_width, frameHeight: ps.down.frame_height });
-  sc.load.spritesheet("hero_swap_up",   sc.assetBase + files.hero_up   + "?v=4", { frameWidth: ps.up.frame_width,   frameHeight: ps.up.frame_height });
+  sc.load.spritesheet("hero_swap_side", sc.assetBase + files.hero      + "?v=5", { frameWidth: ps.side.frame_width, frameHeight: ps.side.frame_height });
+  sc.load.spritesheet("hero_swap_down", sc.assetBase + files.hero_down + "?v=5", { frameWidth: ps.down.frame_width, frameHeight: ps.down.frame_height });
+  sc.load.spritesheet("hero_swap_up",   sc.assetBase + files.hero_up   + "?v=5", { frameWidth: ps.up.frame_width,   frameHeight: ps.up.frame_height });
   sc.load.once("complete", () => {
     if (gen !== sc._outfitGen) return;   // restart 已重置狀態，殘留回呼不准碰新場景（create 端會自癒補套）
     const done = (okId) => {

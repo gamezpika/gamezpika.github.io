@@ -682,11 +682,11 @@ function task5(){
     hideBubble();
     panel.innerHTML = `<h3><img class="gi" style="height:22px" src="assets/images/onboarding/icon_swords.png?v=1" alt=""> 選擇你的科目</h3>
       <div class="subjects">
-        <div class="subj" data-s="國語"><span class="e"><img class="gi gib" style="height:32px" src="assets/images/onboarding/subj_chinese.png?v=1" alt=""></span><span class="n">國語</span></div>
-        <div class="subj" data-s="英文"><span class="e"><img class="gi gib" style="height:32px" src="assets/images/onboarding/subj_english.png?v=1" alt=""></span><span class="n">英文</span></div>
-        <div class="subj" data-s="數學"><span class="e"><img class="gi gib" style="height:32px" src="assets/images/onboarding/subj_math.png?v=1" alt=""></span><span class="n">數學</span></div>
-        <div class="subj" data-s="自然"><span class="e"><img class="gi gib" style="height:32px" src="assets/images/onboarding/subj_science.png?v=1" alt=""></span><span class="n">自然</span></div>
-        <div class="subj" data-s="社會"><span class="e"><img class="gi gib" style="height:32px" src="assets/images/onboarding/subj_social.png?v=1" alt=""></span><span class="n">社會</span></div>
+        <div class="subj" data-s="國語"><span class="e"><img class="gi gib" style="height:32px" src="assets/images/subjects/chinese.png?v=1" alt=""></span><span class="n">國語</span></div>
+        <div class="subj" data-s="英文"><span class="e"><img class="gi gib" style="height:32px" src="assets/images/subjects/english.png?v=1" alt=""></span><span class="n">英文</span></div>
+        <div class="subj" data-s="數學"><span class="e"><img class="gi gib" style="height:32px" src="assets/images/subjects/math.png?v=1" alt=""></span><span class="n">數學</span></div>
+        <div class="subj" data-s="自然"><span class="e"><img class="gi gib" style="height:32px" src="assets/images/subjects/science.png?v=1" alt=""></span><span class="n">自然</span></div>
+        <div class="subj" data-s="社會"><span class="e"><img class="gi gib" style="height:32px" src="assets/images/subjects/social.png?v=1" alt=""></span><span class="n">社會</span></div>
       </div>`;
     panel.querySelectorAll('.subj').forEach(s=>s.addEventListener('click', ()=>bossFight(s.dataset.s)));
   });

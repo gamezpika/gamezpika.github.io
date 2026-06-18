@@ -400,6 +400,11 @@ async function createDemoAccount(name, genderLabel, grade){
     // 方案A：灌一些國語星星，讓孔丘前幾關現場可演達成→領獎→解鎖
     await fetch(DEMO_API+"/api/demo/grant-stars?subject=chinese&pct=60",
       {method:"POST", headers:{"Authorization":"Bearer "+token}}).then(j).catch(()=>{});
+    // 初始裝備真綁定到帳號：金幣300 + 美工刀(攻擊+5) + 學生服(防禦+3) + 孵小雞
+    await fetch(DEMO_API+"/api/demo/grant-starter",
+      {method:"POST", headers:{"Authorization":"Bearer "+token}})
+      .then(r=>{ if(!r.ok) console.warn("[grant-starter] 綁定失敗 HTTP", r.status); return r.json().catch(()=>null); })
+      .catch(e=>console.warn("[grant-starter] 綁定失敗", e));
   }catch(e){ console.warn("[demo account] 建立失敗，劇情照常continue:", e); }
 }
 
@@ -470,6 +475,8 @@ function showCreator(){
     try { localStorage.setItem('village_grade', String(gr.dataset.v)); } catch(e){}
     // 存名字給魔王戰/多人等讀（顯示用）；village_player_name 是 mp.js 用的 canonical key
     try { localStorage.setItem('village_name', name); localStorage.setItem('village_player_name', name); } catch(e){}
+    // 新手初始裝備穿上身：角色頁裝備槽（武器=美工刀／頭=學生帽／衣=學生服(原本造型)／書包）
+    try { localStorage.setItem('village_equip', JSON.stringify({ body:'basic', hat:'hat_student', weapon:'knife', bag:'bag_student' })); } catch(e){}
     // pptx 第5-6頁：輸入完 = 真的在 demo 後台建一個玩家（背景進行，不擋劇情）
     createDemoAccount(name, g.dataset.v, gr.dataset.v);
     wrap.classList.add('leaving'); setTimeout(()=>wrap.remove(), 400);
@@ -691,35 +698,17 @@ function task5(){
     panel.querySelectorAll('.subj').forEach(s=>s.addEventListener('click', ()=>bossFight(s.dataset.s)));
   });
 }
+// 用真‧棋盤格魔王戰（boss-arena2，接後端真題+真金幣，吃 demo 帳號 attack/defense）
+// 打贏後 boss-arena2 帶 from=onboarding 會導回 onboarding.html?scene=end 看結尾領大獎
+const SUBJ_KEY = { "國語":"chinese", "英文":"english", "數學":"math", "自然":"science", "社會":"social" };
 function bossFight(subj){
-  panel.innerHTML = `<h3><img class="gi" style="height:22px" src="assets/images/onboarding/icon_swords.png?v=1" alt=""> 魔王戰 · ${subj}</h3>
-    <div class="boss"><span class="b"><img class="gi" style="height:104px" src="assets/images/onboarding/boss.png?v=1" alt=""></span>
-      <div class="hpbar"><div class="hpfill" id="bosshp"></div></div>
-      <div style="font-size:12px;color:#9ab;">魔王 HP</div></div>
-    <div class="q" style="font-size:15px;margin-top:14px;">用你的知識攻擊！</div>
-    <div style="text-align:center;"><button class="btn" id="atk"><img class="gi" style="height:22px" src="assets/images/onboarding/icon_attack.png?v=1" alt=""> 攻擊</button></div>`;
-  let hp=100; const bar=$('#bosshp');
-  $('#atk').onclick=function(){
-    hp-=34; bar.style.width=Math.max(hp,0)+'%';
-    const b=panel.querySelector('.b'); b.style.transition='transform .15s'; b.style.transform='translateX(8px) scale(.95)';
-    setTimeout(()=>b.style.transform='',150);
-    coinBurst(window.innerWidth/2, 320, 4);
-    if(hp<=0){ this.disabled=true;
-      setTimeout(()=>{
-        confetti(50);
-        panel.innerHTML = `<h3><img class="gi" style="height:24px" src="assets/images/onboarding/icon_boom.png?v=1" alt=""> 魔王被擊敗！</h3>
-          <div class="card-reward">
-            <div><img class="gi" style="height:70px" src="assets/images/onboarding/trophy.png?v=1" alt=""></div>
-            <div class="rewards" style="display:flex;gap:10px;">
-              <div class="rw" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:10px 14px;font-size:13px;font-weight:800;text-align:center;"><span><img class="gi gib" style="height:28px" src="assets/images/onboarding/coin.png?v=1" alt=""></span>2000 金幣</div>
-              <div class="rw" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:10px 14px;font-size:13px;font-weight:800;text-align:center;"><span><img class="gi gib" style="height:28px" src="assets/images/onboarding/scroll.png?v=1" alt=""></span>轉職道具</div>
-            </div>
-            <button class="btn" id="t5ok">完成！</button>
-          </div>`;
-        $('#t5ok').onclick=()=>{ setHud(5); say('你做到了！打倒初始魔王，正式成為小智學園的一員！', finale); };
-      }, 500);
-    }
-  };
+  const key = SUBJ_KEY[subj] || "math";
+  let hero = "boy";
+  try { hero = localStorage.getItem("village_gender") === "female" ? "girl" : "boy"; } catch(e){}
+  const nm = encodeURIComponent((PLAYER.name || "").slice(0,12));
+  say('進入魔王戰場…用你的「'+subj+'」知識打倒初始魔王！', ()=>{
+    location.href = "boss-arena2.html?subject=" + key + "&hero=" + hero + "&name=" + nm + "&from=onboarding";
+  });
 }
 
 function finale(){
@@ -729,8 +718,16 @@ function finale(){
 function restart(){ stage=0; step=0; PLAYER={ name:'', gender:'', grade:'' }; hud.classList.remove('on'); fairyShow(false); hideBubble();
   document.querySelectorAll('.glow-burst,#flash,#creator,#orb').forEach(e=>e.remove()); resetS1(); showScene('s0'); }
 
-// 啟動
-showScene('s0');
+// 啟動：從棋盤格魔王戰「真的打贏」回來(?scene=end + 一次性 flag) → 顯示結尾領大獎；否則正常開場
+(function(){
+  let sc="", cleared=false;
+  try{ sc=new URLSearchParams(location.search).get('scene')||""; }catch(e){}
+  try{ cleared = localStorage.getItem('onboarding_boss_cleared')==='1'; }catch(e){}
+  if(sc==='end' && cleared){
+    try{ localStorage.removeItem('onboarding_boss_cleared'); }catch(e){}
+    hud.classList.add('on'); setHud(5); hideBubble(); fairyShow(false); showScene('end'); confetti(40);
+  } else { showScene('s0'); }
+})();
 </script>
 </body>
 </html>

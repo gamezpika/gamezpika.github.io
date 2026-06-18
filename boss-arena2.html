@@ -1219,6 +1219,15 @@ async function endGame(outcome) {
     }
     setTimeout(() => {
         const fromMap = /^[a-z0-9_]+$/.test(new URLSearchParams(location.search).get("map") || "");
+        // 新手任務(onboarding)導進來的魔王戰：打贏 → 回 onboarding 結尾領大獎
+        const fromOnb = new URLSearchParams(location.search).get("from") === "onboarding";
+        const onbWin = fromOnb && outcome === "win";
+        // onboarding 退路：打贏→寫一次性 flag 回結尾領獎；打輸→回新手任務(重來)。供 arcadeUI + fallback 共用
+        const onbExit = () => {
+            try { if (onbWin) localStorage.setItem("onboarding_boss_cleared", "1"); } catch (e) {}
+            location.href = "onboarding.html" + (onbWin ? "?scene=end" : "");
+        };
+        window.__onbExit = onbExit;
         // 統一用小遊戲那套結算頁 arcadeUI.victory（同款好看），不再用 emoji overlay
         if (window.arcadeUI && window.arcadeUI.victory) {
             const rewards = [{ key: "coins", icon: "arcade/img/icons/coin.png?s=6", label: `+${coinsEarned} 金幣` }];
@@ -1231,10 +1240,10 @@ async function endGame(outcome) {
                 sub: outcome === "win" ? "擊敗魔王！" : "再接再厲！",
                 rewards,
                 replayLabel: "再戰一次",
-                exitLabel: "回地圖",
+                exitLabel: fromOnb ? (onbWin ? "完成新手任務 →" : "回新手任務") : "回地圖",
                 exitIcon: "assets/images/icons/sword.png?s=6",
                 onReplay: () => location.reload(),
-                onExit: fromMap ? arenaExit : null,
+                onExit: fromOnb ? onbExit : (fromMap ? arenaExit : null),
             });
             return;
         }
@@ -1245,7 +1254,8 @@ async function endGame(outcome) {
              <div class="overlay-title ${titleClass}">${title}</div>
              <div class="overlay-sub">${sub}${coinsLine}</div>
              <button class="overlay-btn" onclick="location.reload()">再戰一次</button>`
-            + (fromMap ? `<button class="overlay-btn" style="margin-left:8px;background:linear-gradient(135deg,#9b8bbf,#6f5e9c)" onclick="arenaExit()">回地圖</button>` : '');
+            + (fromOnb ? `<button class="overlay-btn" style="margin-left:8px;background:linear-gradient(135deg,#9b8bbf,#6f5e9c)" onclick="window.__onbExit&&window.__onbExit()">${onbWin ? "完成新手任務 →" : "回新手任務"}</button>`
+               : fromMap ? `<button class="overlay-btn" style="margin-left:8px;background:linear-gradient(135deg,#9b8bbf,#6f5e9c)" onclick="arenaExit()">回地圖</button>` : '');
         stage.appendChild(overlay);
     }, overlayDelay);
 }

@@ -2162,6 +2162,10 @@
     weapon: { label: "武器", items: [
       { id: "knife", img: "../assets/images/onboarding/knife.png", name: "巨大美工刀", atk: 8 },
     ] },
+    // 書包（裝備槽）：新手任務初始道具；先當「佔槽」用，不給數值加成（避免所有既有玩家被動加血膨脹戰力）
+    bag: { label: "書包", items: [
+      { id: "bag_student", img: "../assets/images/onboarding/backpack.png", name: "書包" },
+    ] },
     // 寵物項圈格：依目前寵物顯示「對應配件」(acc_*)；img=寵物本體圖(寵物頁用)；hp=血量加成
     pet: { label: "寵物項圈", items: [
       { id: "pet_cat", name: "小貓", img: "equip/pet_cat.webp", acc_img: "equip/acc_yarn.webp", acc_name: "毛線球", hp: 20 },
@@ -2177,7 +2181,7 @@
     const s = getEquip();
     const atk = BASE_ATK + (eqItem("weapon", s.weapon).atk || 0);
     const def = BASE_DEF + (eqItem("body", s.body).def || 0);
-    const hp = BASE_HP + (eqItem("hat", s.hat).hp || 0) + (eqItem("pet", s.pet).hp || 0);
+    const hp = BASE_HP + (eqItem("hat", s.hat).hp || 0) + (eqItem("pet", s.pet).hp || 0) + (eqItem("bag", s.bag).hp || 0);
     return { atk, def, hp };
   }
   window.playerStats = playerStats;
@@ -2211,9 +2215,9 @@
     return { subj, gained, lv: e.lv, leveled: e.lv > before };
   }
   window.gainMastery = gainMastery;
-  const EQ_SLOTS = ["hat", "body", "weapon"]; // 中間三格：帽子 / 衣服 / 武器
-  const EQ_SLOT_LB = { hat: "帽子", body: "衣服", weapon: "武器" };
-  const EQ_ALL = ["body", "hat", "weapon", "pet"];
+  const EQ_SLOTS = ["hat", "body", "weapon", "bag"]; // 中間四格：帽子 / 衣服 / 武器 / 書包
+  const EQ_SLOT_LB = { hat: "帽子", body: "衣服", weapon: "武器", bag: "書包" };
+  const EQ_ALL = ["body", "hat", "weapon", "pet", "bag"];
   function setEquip(cat, id) {
     const s = getEquip(); s[cat] = id;
     try { localStorage.setItem(EQ_KEY, JSON.stringify(s)); } catch (e) {}

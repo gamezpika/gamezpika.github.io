@@ -765,7 +765,7 @@
     ov.classList.remove("ao-noprincipal");
     ov.classList.remove("ca-quizpage");
     caQuizHidPrin = false;   // 立繪已還原，避免殘留旗標害下個流程誤還原
-    if (img) ov.querySelector(".ao-principal-img").src = img + "?v=1";
+    if (img) ov.querySelector(".ao-principal-img").src = img + "?v=2";
     ov.querySelector(".ao-owner").textContent = owner || "";
   }
   function caFigBadgeCls(b) { return b === "院長" ? "dean" : (b === "教授" ? "prof" : "assoc"); }
@@ -2390,7 +2390,7 @@
   function eqRender(ov) {
     const s = getEquip();
     // 左大立繪 = 目前造型
-    ov.querySelector("#eq-port").src = bodyImg(eqItem("body", s.body)) + "?v=1";
+    ov.querySelector("#eq-port").src = bodyImg(eqItem("body", s.body)) + "?v=2";
     // 性別切換器（demo）：高亮目前性別那半
     const cur = isFemale() ? "female" : "male";
     ov.querySelectorAll(".eq-g-opt").forEach((o) => o.classList.toggle("on", o.dataset.g === cur));
@@ -2399,7 +2399,7 @@
       const it = eqItem(cat, s[cat]);
       const img = (cat === "body") ? bodyImg(it) : it.img;   // 衣服格 basic 也按性別
       return `<div class="eq-slot" data-cat="${cat}">
-          <div class="eq-slot-ic"><img src="${img}?v=1" alt="${it.name}"></div>
+          <div class="eq-slot-ic"><img src="${img}?v=2" alt="${it.name}"></div>
           <div class="eq-slot-tx"><div class="eq-slot-lb">${EQ_SLOT_LB[cat]}</div><div class="eq-slot-nm">${it.name}</div></div>
         </div>`;
     }).join("");
@@ -2535,14 +2535,14 @@
   }
   function dhCard(opts) {
     return `<div class="dh-card${opts.sel ? " sel" : ""}${opts.ro ? " ro" : ""}" data-cat="${opts.cat || ""}" data-id="${opts.id || ""}">
-        <img src="${opts.img}?v=1" alt="${opts.name}" loading="lazy" draggable="false">
+        <img src="${opts.img}?v=2" alt="${opts.name}" loading="lazy" draggable="false">
         <div class="dh-nm">${opts.name}</div>${opts.sub ? `<div class="dh-sub2">${opts.sub}</div>` : ""}</div>`;
   }
   function dhRender(ov) {
     ov.querySelectorAll(".dh-tabs .jc-tab").forEach((b) =>
       b.classList.toggle("active", b.dataset.tab === dhTab));
     const s = getEquip();
-    ov.querySelector(".dh-port").src = bodyImg(eqItem("body", s.body)) + "?v=1";   // 左預覽=目前造型
+    ov.querySelector(".dh-port").src = bodyImg(eqItem("body", s.body)) + "?v=2";   // 左預覽=目前造型
     const box = ov.querySelector(".dh-content"); box.innerHTML = "";
 
     if (dhTab === "outfit") {

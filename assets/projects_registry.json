@@ -229,6 +229,37 @@
           }
         },
         {
+          "name": "🧒 小牧童",
+          "type": "npc",
+          "scale": 0.2,
+          "default_interaction": "open_modal",
+          "default_greeting": "哈囉，我是小牧童～",
+          "sprites": {
+            "side": {
+              "image": "cowherd_side.webp",
+              "frame_width": 234,
+              "frame_height": 457,
+              "frames": 9,
+              "frame_rate": 6,
+              "facing": "left"
+            },
+            "down": {
+              "image": "cowherd_down.webp",
+              "frame_width": 221,
+              "frame_height": 500,
+              "frames": 9,
+              "frame_rate": 6
+            },
+            "up": {
+              "image": "cowherd_up.webp",
+              "frame_width": 218,
+              "frame_height": 498,
+              "frames": 9,
+              "frame_rate": 6
+            }
+          }
+        },
+        {
           "image": "deco_flower_v2.webp",
           "name": "🌸 花卉",
           "type": "decoration",

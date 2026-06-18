@@ -46,21 +46,42 @@
       ".crop-pickcard .nm{font-size:15px;font-weight:800;color:#5a3a18}" +
       // 種植步驟
       ".crop-stage-view{position:relative;width:190px;height:168px;margin:4px auto 12px;background:radial-gradient(ellipse at 50% 75%,#e7d3a8,#bda06e);border-radius:14px;overflow:hidden;display:flex;align-items:center;justify-content:center;border:3px solid #e3c089}" +
-      ".crop-stage-view img{width:138px;height:138px;object-fit:contain}" +
-      ".crop-action-art{animation:cropBob 1.1s ease-in-out infinite;filter:drop-shadow(0 5px 6px rgba(0,0,0,.25))}" +
-      "@keyframes cropBob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-8px) rotate(3deg)}}" +
+      ".crop-stage-view img{object-fit:contain}" +
+      // 工具（沿用 fx_*.webp，依步驟做傾倒/撒動，transform-origin 在握把處）
+      ".crop-tool{position:absolute;left:50%;top:6px;width:122px;height:122px;transform-origin:58% 78%;filter:drop-shadow(0 5px 6px rgba(0,0,0,.25));z-index:3}" +
+      ".tool-seed{animation:toolSeed 1s ease-in-out infinite}" +
+      ".tool-fert{animation:toolFert 1.1s ease-in-out infinite}" +
+      ".tool-water{animation:toolWater 1.1s ease-in-out infinite}" +
+      "@keyframes toolSeed{0%,100%{transform:translateX(-50%) rotate(-7deg)}50%{transform:translateX(-44%) rotate(7deg)}}" +
+      "@keyframes toolFert{0%,100%{transform:translateX(-50%) rotate(2deg)}50%{transform:translateX(-54%) rotate(-13deg)}}" +
+      "@keyframes toolWater{0%,100%{transform:translateX(-50%) rotate(-2deg)}50%{transform:translateX(-46%) rotate(15deg)}}" +
+      // 土畦（隨步驟變化：撒種坑→施肥變深→澆水濕亮）
+      ".crop-soilbed{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);width:152px;height:58px;border-radius:16px;display:flex;justify-content:space-evenly;align-items:flex-start;padding-top:13px;box-sizing:border-box;background:repeating-linear-gradient(90deg,#7c5a34 0 11px,#8e6c40 11px 22px);box-shadow:inset 0 4px 10px rgba(0,0,0,.4),inset 0 -3px 6px rgba(255,228,176,.22);transition:filter .45s,box-shadow .45s;z-index:1}" +
+      ".crop-soilbed i{width:8px;height:5px;border-radius:50%;background:#3a2814;box-shadow:0 1px 0 rgba(255,230,180,.35);opacity:0;transition:opacity .4s}" +
+      ".crop-soilbed.s-seed i{opacity:1}" +
+      ".crop-soilbed.s-fert{filter:brightness(.76) saturate(1.25)}" +
+      ".crop-soilbed.s-water{filter:brightness(.84) saturate(1.15);box-shadow:inset 0 4px 10px rgba(0,0,0,.4),inset 0 -3px 7px rgba(255,255,255,.32),0 0 14px rgba(120,200,255,.3)}" +
+      ".crop-soilbed.s-water:after{content:'';position:absolute;inset:0;border-radius:16px;background:radial-gradient(ellipse at 50% 22%,rgba(255,255,255,.42),transparent 62%);pointer-events:none}" +
+      // 澆完冒幼苗
+      ".crop-sprout{position:absolute;left:50%;bottom:30px;width:56px;height:56px;transform-origin:bottom center;transform:translateX(-50%) scale(0);animation:sproutPop .55s cubic-bezier(.2,1.5,.4,1) .15s forwards;z-index:2}" +
+      "@keyframes sproutPop{to{transform:translateX(-50%) scale(1)}}" +
+      // 完成慶祝
+      ".crop-cele{position:absolute;left:0;right:0;top:42%;transform:translateY(-50%);text-align:center;color:#fff7e6;font-size:19px;font-weight:900;text-shadow:0 2px 0 #94591f,0 0 12px rgba(255,210,120,.85);animation:celePop .5s cubic-bezier(.2,1.4,.4,1) both;pointer-events:none;z-index:5}" +
+      ".crop-cele small{display:block;font-size:12px;font-weight:700;margin-top:5px;text-shadow:0 1px 0 #94591f}" +
+      "@keyframes celePop{from{transform:translateY(-50%) scale(.5);opacity:0}to{transform:translateY(-50%) scale(1);opacity:1}}" +
+      ".crop-star{position:absolute;width:14px;height:14px;background:radial-gradient(circle,#fff3b4 0 32%,#ffce4a 33% 62%,transparent 63%);clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);z-index:4;animation:cropStar 1.1s ease-out forwards}" +
+      "@keyframes cropStar{0%{transform:translateY(0) scale(.3) rotate(0);opacity:0}30%{opacity:1}100%{transform:translateY(-92px) scale(1) rotate(160deg);opacity:0}}" +
       ".crop-step-btns{display:flex;gap:8px;justify-content:center}" +
       ".crop-step-btn{flex:1;max-width:120px;padding:11px 4px;border:3px solid #e3c089;border-radius:12px;background:#fffaf0;font-size:14px;font-weight:800;color:#8a5a2b;cursor:pointer;box-shadow:0 2px 0 #e3c089}" +
       ".crop-step-btn.done{background:#ffe3b0;color:#b89a6a;border-color:#e3c089}" +
       ".crop-step-btn.active{background:linear-gradient(180deg,#b5712f,#94591f);color:#fff7e6;border-color:#94591f}" +
       ".crop-step-btn:disabled{opacity:.5;cursor:default}" +
       // 動作粒子特效
-      ".crop-seed-p{position:absolute;width:8px;height:11px;background:#8a5a2a;border-radius:40% 40% 50% 50%;top:-14px;animation:cropSeedFall .9s ease-in forwards}" +
-      "@keyframes cropSeedFall{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(150px) rotate(120deg);opacity:0}}" +
-      ".crop-drop{position:absolute;width:7px;height:12px;background:#5fb6e8;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;top:-14px;animation:cropDrop .8s ease-in forwards}" +
-      "@keyframes cropDrop{0%{transform:translateY(0);opacity:.95}100%{transform:translateY(160px);opacity:0}}" +
-      ".crop-spark{position:absolute;width:9px;height:9px;background:radial-gradient(circle,#ffe27a 0%,#ffb43a 70%,transparent 71%);top:30px;animation:cropSpark 1s ease-out forwards}" +
-      "@keyframes cropSpark{0%{transform:scale(.2);opacity:0}40%{transform:scale(1);opacity:1}100%{transform:scale(.4) translateY(-30px);opacity:0}}";
+      ".crop-seed-p{position:absolute;width:8px;height:11px;background:#7c4f24;border-radius:40% 40% 50% 50%;animation:cropFall .9s ease-in forwards}" +
+      ".crop-gran{position:absolute;width:6px;height:6px;border-radius:50%;background:radial-gradient(circle,#ffd66e,#c98a28);animation:cropFall .85s ease-in forwards}" +
+      "@keyframes cropFall{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(150px) rotate(120deg);opacity:0}}" +
+      ".crop-drop{position:absolute;width:7px;height:12px;background:#5fb6e8;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;animation:cropDropF .8s ease-in forwards}" +
+      "@keyframes cropDropF{0%{transform:translateY(0);opacity:.95}100%{transform:translateY(160px);opacity:0}}";
     document.head.appendChild(st);
   })();
 
@@ -346,75 +367,99 @@
   // 種植步驟：撒種子▶施肥▶澆水
   let plantState = null;   // {plot, crop, step:0..3}
   function startPlant(plot, crop) { plantState = { plot, crop, step: 0 }; viewMode = "plant"; render(); }
+  let acting = false;   // 動作播放中鎖：每步工具動畫播完才解鎖下一步，破除 tap-tap-tap 制式感
   const STEPS = [
-    { key: "seed",  label: "撒種子", img: "fx_seed.webp",  fx: spawnSeedFx },
-    { key: "fert",  label: "施肥",   img: "fx_fert.webp",  fx: spawnSparkFx },
-    { key: "water", label: "澆水",   img: "fx_water.webp", fx: spawnDropFx },
+    { key: "seed",  label: "撒種子", img: "fx_seed.webp",  fx: (v) => burst(v, "crop-seed-p", 10, [55, 135], -12) },
+    { key: "fert",  label: "施肥",   img: "fx_fert.webp",  fx: (v) => burst(v, "crop-gran",   12, [40, 120], -12) },
+    { key: "water", label: "澆水",   img: "fx_water.webp", fx: (v) => burst(v, "crop-drop",   12, [95, 150], -10) },
   ];
 
   function renderPlant(body) {
     const ps = plantState, sp = CROPS[ps.crop];
+    const done = ps.step >= 3;
+    const soilCls = "crop-soilbed" + (ps.step >= 1 ? " s-seed" : "") + (ps.step >= 2 ? " s-fert" : "") + (ps.step >= 3 ? " s-water" : "");
+    let center;
+    if (done) {
+      // 冒幼苗（spritesheet 第 1 格）＋ 種好了慶祝
+      center =
+        '<div class="crop-sprout" style="background:url(' + sp.sheet + '?v=4) -54px 0/' + (54 * FRAMES) + 'px 54px no-repeat"></div>' +
+        '<div class="crop-cele">種好了！<small>20 分後回來收成</small></div>';
+    } else {
+      center = '<img class="crop-tool tool-' + STEPS[ps.step].key + '" src="' + STEPS[ps.step].img + '?v=1" alt="' + STEPS[ps.step].label + '">';
+    }
     body.innerHTML =
       '<div class="crop-tbar">種 ' + sp.name + "</div><div class=\"crop-content\">" +
       '<button class="crop-back" id="crop-back">‹ 返回</button>' +
-      '<div class="crop-stage-view" id="crop-stage-view">' + stagePreviewImg(ps.crop, ps.step) + "</div>" +
+      '<div class="crop-stage-view" id="crop-stage-view">' + center +
+        '<div class="' + soilCls + '"><i></i><i></i><i></i><i></i></div>' +
+      "</div>" +
       '<div class="crop-step-btns">' +
       STEPS.map((s, i) => {
         const cls = ps.step > i ? "done" : (ps.step === i ? "active" : "");
-        return '<button class="crop-step-btn ' + cls + '" data-s="' + i + '"' + (ps.step === i ? "" : " disabled") + ">" +
+        return '<button class="crop-step-btn ' + cls + '" data-s="' + i + '"' + ((ps.step === i && !done) ? "" : " disabled") + ">" +
           (ps.step > i ? "✓ " : "") + s.label + "</button>";
       }).join("") +
       "</div></div>";
-    body.querySelector("#crop-back").onclick = () => { plantState = null; viewMode = "grid"; render(); };
-    body.querySelectorAll(".crop-step-btn").forEach((b) => {
-      b.onclick = () => doStep(+b.dataset.s);
-    });
+    body.querySelector("#crop-back").onclick = () => { plantState = null; acting = false; viewMode = "grid"; render(); };
+    body.querySelectorAll(".crop-step-btn").forEach((b) => { b.onclick = () => doStep(+b.dataset.s); });
+    if (done) { spawnStars(body.querySelector("#crop-stage-view")); scheduleCommit(ps); }
   }
-  function stagePreviewImg(crop, step) {
-    // 進行中→顯示當前動作美術(擺動)；3 步完成→顯示幼苗預告
-    if (step >= 3) {
-      return '<img src="' + CROPS[crop].sheet + '?v=4" style="object-position:-150px 0;width:' + (150 * FRAMES) + 'px;max-width:none;left:0">';
-    }
-    return '<img class="crop-action-art" src="' + STEPS[step].img + '?v=1" alt="' + STEPS[step].label + '">';
-  }
+
   function doStep(i) {
     const ps = plantState;
-    if (!ps || ps.step !== i) return;
+    if (!ps || ps.step !== i || acting) return;
+    acting = true;
     const view = ov.querySelector("#crop-stage-view");
     STEPS[i].fx(view);
-    ps.step += 1;
-    if (ps.step >= 3) {
-      // 三步完成→種下，計時開始
-      setTimeout(() => {
-        const data = loadCrops();
-        data[ps.plot] = { crop: ps.crop, plantedAt: Date.now() };
-        saveCrops(data);
-        Farm.syncPlot(ps.plot, data[ps.plot]);
-        plantState = null; viewMode = "grid"; render();
-      }, 900);
-    } else {
-      render();
-    }
+    setTimeout(() => { if (plantState === ps) STEPS[i].fx(view); }, 280);   // 補第二波，工具持續傾倒
+    setTimeout(() => {
+      acting = false;
+      if (plantState !== ps) return;   // 中途返回就放掉
+      ps.step += 1;
+      render();   // 重畫：土畦進階＋換下一個工具；完成時 renderPlant 內撒星星＋排程種下
+    }, 700);
   }
-  // 粒子特效（純 CSS，附在預覽框內）
-  function spawnSeedFx(view) { burst(view, "crop-seed-p", 7); }
-  function spawnDropFx(view) { burst(view, "crop-drop", 9); }
-  function spawnSparkFx(view) { burst(view, "crop-spark", 8); }
-  function burst(view, cls, n) {
+
+  function scheduleCommit(ps) {
+    if (ps._committing) return; ps._committing = true;   // 防重複排程
+    setTimeout(() => {
+      if (plantState !== ps) return;
+      const data = loadCrops();
+      data[ps.plot] = { crop: ps.crop, plantedAt: Date.now() };
+      saveCrops(data);
+      Farm.syncPlot(ps.plot, data[ps.plot]);
+      plantState = null; viewMode = "grid"; render();
+    }, 1700);
+  }
+
+  // 動作粒子（從工具口落下；x 範圍 xr、起始 top 由各步驟給）
+  function burst(view, cls, n, xr, top) {
     if (!view) return;
     for (let k = 0; k < n; k++) {
       const d = document.createElement("div");
       d.className = cls;
-      d.style.left = (24 + Math.random() * 152) + "px";
-      if (cls === "crop-spark") d.style.top = (60 + Math.random() * 80) + "px";
-      d.style.animationDelay = (Math.random() * 0.3) + "s";
+      d.style.left = (xr[0] + Math.random() * (xr[1] - xr[0])) + "px";
+      d.style.top = top + "px";
+      d.style.animationDelay = (Math.random() * 0.45) + "s";
       view.appendChild(d);
       setTimeout(() => d.remove(), 1300);
     }
   }
+  function spawnStars(view) {
+    if (!view) return;
+    for (let k = 0; k < 14; k++) {
+      const d = document.createElement("div");
+      d.className = "crop-star";
+      d.style.left = (18 + Math.random() * 152) + "px";
+      d.style.top = (58 + Math.random() * 70) + "px";
+      d.style.animationDelay = (Math.random() * 0.5) + "s";
+      view.appendChild(d);
+      setTimeout(() => d.remove(), 1600);
+    }
+  }
 
-  function openBoard(cb) { onCloseCb = cb || null; buildOverlay(); viewMode = "grid"; plantState = null; render(); ov.style.display = "flex"; }
-  function closeBoard() { if (ov) ov.style.display = "none"; const cb = onCloseCb; onCloseCb = null; if (cb) cb(); }
+  function openBoard(cb) { onCloseCb = cb || null; buildOverlay(); viewMode = "grid"; plantState = null; acting = false; render(); ov.style.display = "flex"; }
+  function closeBoard() { plantState = null; acting = false; if (ov) ov.style.display = "none"; const cb = onCloseCb; onCloseCb = null; if (cb) cb(); }
 
   const _origOpenShop = window.openShop;
   window.openShop = function (id, cb) {

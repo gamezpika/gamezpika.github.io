@@ -74,6 +74,12 @@
     transition:transform .12s; }
   .btn:active{ transform:scale(.95); }
   .btn.ghost{ background:rgba(255,255,255,.1); color:#cfe0ff; box-shadow:none; border:1px solid rgba(255,255,255,.22); }
+  /* 開始/解鎖 的播放三角 + 對話框「繼續」向下箭頭：純 CSS 圖形，取代原本的 emoji（跟著文字色 currentColor） */
+  .ico-play{ display:inline-block; width:0; height:0; vertical-align:middle; margin-right:7px;
+    border-style:solid; border-width:7px 0 7px 12px; border-color:transparent transparent transparent currentColor; }
+  .ico-play.r{ margin-right:0; margin-left:7px; }
+  .ico-chev{ display:inline-block; width:0; height:0; vertical-align:middle; margin-left:5px;
+    border-style:solid; border-width:6px 5px 0 5px; border-color:currentColor transparent transparent transparent; }
 
   /* ── S0 Logo ── */
   #s0 .logo{ text-align:center; }
@@ -237,7 +243,7 @@
       <div class="en">XIAOZHI ACADEMY</div>
       <div class="tag">撿到一支發光的手機，你的冒險即將開始…</div>
     </div>
-    <div class="start"><button class="btn" onclick="next()">▶ 開始</button></div>
+    <div class="start"><button class="btn" onclick="next()"><span class="ico-play"></span>開始</button></div>
   </section>
 
   <!-- S1 上學路：開學第一天，三人邊走邊聊 -->
@@ -282,7 +288,7 @@
         <div class="rw"><span class="e"><img class="gi gib" style="height:30px" src="assets/images/onboarding/scroll.png?v=1" alt=""></span>轉職道具</div>
       </div>
       <div style="margin-top:18px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-        <a class="btn" href="/village-web/index.html?map=island&spawn=0.672,0.59">🏫 進入學園</a>
+        <a class="btn" href="/village-web/index.html?map=island&spawn=0.672,0.59"><img class="gi" style="height:22px" src="assets/images/onboarding/school.png?v=1" alt=""> 進入學園</a>
         <button class="btn ghost" onclick="restart()"><img class="gi" style="height:20px" src="assets/images/onboarding/icon_replay.png?v=1" alt=""> 重看一次</button>
       </div>
     </div>
@@ -290,7 +296,7 @@
 
   <!-- 精靈 + 泡泡（跨場景持續） -->
   <div id="fairy"><div class="halo"></div><img src="assets/images/onboarding/sprite_main.png?v=1" alt="系統精靈"></div>
-  <div id="bubble"><div class="who">系統精靈 · 艾斯</div><div class="txt" id="btxt"></div><div class="tap" id="btap">輕觸繼續 ▼</div></div>
+  <div id="bubble"><div class="who">系統精靈 · 艾斯</div><div class="txt" id="btxt"></div><div class="tap" id="btap">輕觸繼續<span class="ico-chev"></span></div></div>
 
 </div>
 
@@ -450,13 +456,13 @@ function showCreator(){
   if($('#creator')) return;
   const wrap=document.createElement('div'); wrap.className='panel creator'; wrap.id='creator';
   wrap.innerHTML =
-    '<h3>📱 解鎖手機</h3><div class="sub">輸入你的資料，開始這趟冒險</div>'+
+    '<h3>'+gi('phone',22)+' 解鎖手機</h3><div class="sub">輸入你的資料，開始這趟冒險</div>'+
     '<div class="fld"><span>姓名</span><input id="cName" maxlength="6" placeholder="輸入你的名字" autocomplete="off"></div>'+
     '<div class="fld"><span>性別</span><div class="seg" id="segGender">'+
       '<button data-v="男生">男生</button><button data-v="女生">女生</button></div></div>'+
     '<div class="fld"><span>年級</span><div class="seg grades" id="segGrade">'+
       [1,2,3,4,5,6].map(g=>'<button data-v="'+g+'">'+g+'年級</button>').join('')+'</div></div>'+
-    '<button class="btn" id="creatorOk">解鎖 ▶</button>'+
+    '<button class="btn" id="creatorOk">解鎖<span class="ico-play r"></span></button>'+
     '<div class="hint" id="creatorHint"></div>';
   $('#s3').appendChild(wrap);
   wrap.querySelectorAll('.seg').forEach(seg=>{
@@ -551,7 +557,7 @@ function startTask(n){
 
 // 任務 1：解題賺金幣 → 升正式學員
 function task1(){
-  say('任務 ①：答對題目就能賺金幣！試試這一題～', ()=>{
+  say('任務 1：答對題目就能賺金幣！試試這一題～', ()=>{
     hideBubble();
     panel.innerHTML = `<h3><img class="gi" style="height:22px" src="assets/images/onboarding/icon_quest.png?v=1" alt=""> 解題練習</h3>
       <div class="q">8 × 7 = ?</div>
@@ -581,7 +587,7 @@ function task1(){
 
 // 任務 2：商店買學生服 + 美工刀（圖鑑卡 + 開箱）
 function task2(){
-  say('任務 ②：到商店買「學生服」跟你的第一把武器「美工刀」吧！', ()=>{
+  say('任務 2：到商店買「學生服」跟你的第一把武器「美工刀」吧！', ()=>{
     hideBubble();
     panel.innerHTML = `<h3><img class="gi" style="height:22px" src="assets/images/onboarding/icon_shop.png?v=1" alt=""> 學園商店</h3>
       <div class="opts">
@@ -622,7 +628,7 @@ function openGacha(ic,nm,buff,done){
 
 // 任務 3：PK 配對電腦取勝 → 帽 + 書包
 function task3(){
-  say('任務 ③：來場 PK 對戰！搶先答對就贏～對手是電腦，別緊張！', ()=>{
+  say('任務 3：來場 PK 對戰！搶先答對就贏～對手是電腦，別緊張！', ()=>{
     hideBubble();
     panel.innerHTML = `<h3><img class="gi" style="height:22px" src="assets/images/onboarding/icon_pk.png?v=1" alt=""> PK 對戰</h3>
       <div class="pk">
@@ -659,7 +665,7 @@ function task3(){
 
 // 任務 4：看排行/圖鑑 → 初始寵物 + 解鎖牧場
 function task4(){
-  say('任務 ④：看一下你的成果，還有給你一份見面禮——你的第一隻寵物！', ()=>{
+  say('任務 4：看一下你的成果，還有給你一份見面禮——你的第一隻寵物！', ()=>{
     hideBubble();
     panel.innerHTML = `<h3><img class="gi" style="height:24px" src="assets/images/onboarding/trophy.png?v=1" alt=""> 我的成果</h3>
       <div style="display:flex;justify-content:space-around;text-align:center;margin-bottom:14px;">
@@ -685,7 +691,7 @@ function task4(){
 
 // 任務 5：PK 魔王選科 → 2000 金 + 轉職道具
 function task5(){
-  say('任務 ⑤：選一個你最拿手的科目，來打倒初始魔王！', ()=>{
+  say('任務 5：選一個你最拿手的科目，來打倒初始魔王！', ()=>{
     hideBubble();
     panel.innerHTML = `<h3><img class="gi" style="height:22px" src="assets/images/onboarding/icon_swords.png?v=1" alt=""> 選擇你的科目</h3>
       <div class="subjects">

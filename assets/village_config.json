@@ -4551,6 +4551,67 @@
         ],
         "speed": 45,
         "greeting": "啾啾～"
+      },
+      {
+        "id": "npc_06",
+        "name": "小牧童",
+        "sprite": {
+          "scale": 0.2,
+          "sprites": {
+            "side": {
+              "image": "cowherd_side.webp",
+              "frame_width": 234,
+              "frame_height": 457,
+              "frames": 9,
+              "frame_rate": 6,
+              "facing": "left"
+            },
+            "down": {
+              "image": "cowherd_down.webp",
+              "frame_width": 221,
+              "frame_height": 500,
+              "frames": 9,
+              "frame_rate": 6
+            },
+            "up": {
+              "image": "cowherd_up.webp",
+              "frame_width": 218,
+              "frame_height": 498,
+              "frames": 9,
+              "frame_rate": 6
+            }
+          }
+        },
+        "spawn": {
+          "x": 0.892712,
+          "y": 0.694167
+        },
+        "patrol": [
+          {
+            "x": 0.892712,
+            "y": 0.694167
+          },
+          {
+            "x": 0.660937,
+            "y": 0.700732
+          },
+          {
+            "x": 0.418028,
+            "y": 0.649525
+          },
+          {
+            "x": 0.316817,
+            "y": 0.497216
+          }
+        ],
+        "speed": 60,
+        "greeting": "哈囉，我是小牧童～",
+        "interaction": {
+          "type": "open_modal",
+          "label": "小牧童",
+          "body": "你好！",
+          "radius": 110
+        }
       }
     ],
     "objects": []

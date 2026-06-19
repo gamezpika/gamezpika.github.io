@@ -1013,8 +1013,12 @@ class ExploreScene extends Phaser.Scene {
   // 有任何會擋操作的 DOM 面板開著嗎？（含牧場面板：它用 style.display 不是 .open class）
   _anyPanelOpen() {
     if (document.querySelector("#ca-overlay.open,#ao-overlay.open,#jc-overlay.open,#shop-overlay.open,#eq-overlay.open,#dh-overlay.open,#en-overlay.open,#info-modal.open,#taxi-overlay.open,#tower-overlay.open,#speed-overlay.open")) return true;
+    // 牧場(ranch)與種田(crop)布告欄都用 style.display 開關（非 .open class）→ 各別認出來，
+    // 否則看門狗在面板開著時 _anyPanelOpen=false 會誤判卡死、亂動 modalOpen（種田曾漏列）
     const r = document.getElementById("ranch-overlay");
-    return !!(r && r.style.display && r.style.display !== "none");
+    if (r && r.style.display && r.style.display !== "none") return true;
+    const c = document.getElementById("crop-overlay");
+    return !!(c && c.style.display && c.style.display !== "none");
   }
 
   _onResize() {

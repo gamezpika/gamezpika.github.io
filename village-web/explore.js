@@ -915,7 +915,7 @@ class ExploreScene extends Phaser.Scene {
     const R = 44, DEAD = 7, SHOW = 12;   // thumb 最大位移半徑 / 死區 / 啟動拖曳門檻（px）
     let pid = null, sx = 0, sy = 0, active = false;
     const hide = () => {
-      pid = null; active = false;
+      pid = null; active = false; this._joyPid = null;
       this._joyVec.x = 0; this._joyVec.y = 0;
       thumb.style.transform = "translate(0px,0px)";
       base.classList.remove("show");
@@ -944,7 +944,7 @@ class ExploreScene extends Phaser.Scene {
       if (pid !== null) { hide(); return; }              // 第二指落下 → 立刻放掉搖桿(清 _joyVec 防殘留續走)，整段交給 pinch
       if (this.modalOpen || this._transitioning) return;
       if (onUI(e.target)) return;
-      pid = e.pointerId; sx = e.clientX; sy = e.clientY; active = false;
+      pid = e.pointerId; sx = e.clientX; sy = e.clientY; active = false; this._joyPid = pid;
     }, { passive: true });
     document.addEventListener("pointermove", (e) => {
       if (e.pointerId !== pid) return;
@@ -1507,10 +1507,15 @@ class ExploreScene extends Phaser.Scene {
       const ov = document.querySelector("#ca-overlay.open,#ao-overlay.open,#jc-overlay.open,#shop-overlay.open,#eq-overlay.open,#dh-overlay.open,#en-overlay.open");
       const f = document.getElementById("map-fade");
       const p2 = this.input.pointer2 && this.input.pointer2.isDown;
+      const _cd = (document.getElementById("crop-overlay") || {}).style;
+      const _rd = (document.getElementById("ranch-overlay") || {}).style;
+      const jv = this._joyVec ? (this._joyVec.x.toFixed(1) + "," + this._joyVec.y.toFixed(1)) : "-";
       this._dbgEl.textContent =
         "map:" + this.mapId + "\nmodalOpen:" + this.modalOpen + " trans:" + this._transitioning +
-        "\nplayer:" + !!this.player + " target:" + !!this.moveTarget +
+        "\nplayer:" + !!this.player + " target:" + !!this.moveTarget + " supp:" + !!this._suppress +
         "\npd:" + this._pdCount + " p1:" + this.input.pointer1.isDown + " p2:" + p2 + " nDown:" + this._nDown +
+        "\njoyPid:" + this._joyPid + " joyVec:" + jv +
+        "\ncropOv:" + ((_cd && _cd.display) || "-") + " ranchOv:" + ((_rd && _rd.display) || "-") +
         "\nopenOv:" + (ov ? ov.id : "-") + " fade:" + !!(f && f.classList.contains("show")) +
         "\ninputEnabled:" + this.input.enabled;
     }

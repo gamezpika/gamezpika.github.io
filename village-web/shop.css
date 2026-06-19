@@ -638,6 +638,8 @@
 #equip-btn.hud-icon { top: 12px; }
 #speed-btn.hud-icon { top: 96px; }
 #intro-btn.hud-icon { top: 264px; }  /* 讓開「剩 X 分」防沉迷牌子(pl-remain, top:180)，排在它下面 */
+/* 鬧鐘 icon 內容留白較多(填約65%)，放大讓它跟裝備/速度的視覺大小一致 */
+#pl-remain .hud-slot img { width: 50px; height: 50px; }
 .hud-icon .hud-slot {
   width: 56px; height: 56px; border-radius: 14px; position: relative;
   /* 四角金鉚釘(4 radial) 疊在木紋漸層上；外深棕描邊 + 立體底影 */

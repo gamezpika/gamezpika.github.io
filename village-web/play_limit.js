@@ -29,14 +29,17 @@
     if (document.getElementById("pl-css")) return;
     var st = document.createElement("style"); st.id = "pl-css";
     st.textContent =
+      // 村莊風（同商店/布告欄：奶油底+棕木邊+金內框+棕字）
       "#pl-overlay{position:fixed;inset:0;z-index:30000;display:none;align-items:center;justify-content:center;" +
-      "background:linear-gradient(135deg,#5b6fd6,#7a4fb0);font-family:-apple-system,'PingFang TC','Noto Sans TC',sans-serif;color:#fff;text-align:center;padding:24px}" +
-      "#pl-overlay .box{max-width:360px;background:rgba(255,255,255,.14);backdrop-filter:blur(8px);border-radius:18px;padding:36px 26px;box-shadow:0 10px 36px rgba(0,0,0,.35)}" +
-      "#pl-overlay .emoji{font-size:54px;margin-bottom:8px}" +
-      "#pl-overlay h2{font-size:22px;margin:0 0 12px}" +
-      "#pl-overlay p{font-size:15px;line-height:1.7;opacity:.95;margin:0 0 18px;white-space:pre-line}" +
-      "#pl-overlay .cd{font-size:30px;font-weight:800;letter-spacing:1px;margin:6px 0 16px}" +
-      "#pl-overlay button{border:none;border-radius:999px;padding:11px 22px;font-size:14px;font-weight:800;cursor:pointer;background:#ffd54f;color:#5a3a00}";
+      "background:rgba(40,25,10,.6);backdrop-filter:blur(3px);font-family:-apple-system,'PingFang TC','Microsoft JhengHei',sans-serif;padding:24px}" +
+      "#pl-overlay .box{position:relative;max-width:340px;width:88%;background:linear-gradient(180deg,#fff6e2,#ffeecb);" +
+      "border:5px solid #8a5a2b;border-radius:22px;box-shadow:0 16px 44px rgba(0,0,0,.5),inset 0 0 0 3px #ffd98a;padding:30px 24px 26px;text-align:center}" +
+      "#pl-overlay h2{font-size:23px;font-weight:900;color:#7a4f1e;margin:0 0 12px;text-shadow:0 2px 0 #ffe9bf}" +
+      "#pl-overlay p{font-size:15px;line-height:1.8;color:#9a6f3a;margin:0 0 16px;white-space:pre-line;font-weight:700}" +
+      "#pl-overlay .cd{display:none;font-size:34px;font-weight:900;color:#8a5a2b;letter-spacing:2px;margin:4px 0 16px;text-shadow:0 2px 0 #ffe9bf}" +
+      "#pl-overlay button{border:2px solid #ffd98a;border-radius:999px;padding:12px 26px;font-size:15px;font-weight:900;cursor:pointer;" +
+      "color:#fff7e6;background:linear-gradient(180deg,#b5712f,#94591f);box-shadow:0 4px 0 #6e4012}" +
+      "#pl-overlay button:active{transform:translateY(2px);box-shadow:0 2px 0 #6e4012}";
     document.head.appendChild(st);
   }
   function overlay() {
@@ -44,9 +47,9 @@
     if (!o) {
       injectCSS();
       o = document.createElement("div"); o.id = "pl-overlay";
-      o.innerHTML = '<div class="box"><div class="emoji" id="pl-emoji">😴</div>' +
+      o.innerHTML = '<div class="box">' +
         '<h2 id="pl-title"></h2><p id="pl-msg"></p><div class="cd" id="pl-cd" style="display:none"></div>' +
-        '<button id="pl-btn">🔄 重新整理</button></div>';
+        '<button id="pl-btn">重新整理</button></div>';
       document.body.appendChild(o);
       document.getElementById("pl-btn").onclick = function () { tick(); };
     }
@@ -54,7 +57,6 @@
   }
   function showLock() {
     var o = overlay(); o.style.display = "flex";
-    document.getElementById("pl-emoji").textContent = "😴";
     document.getElementById("pl-title").textContent = "今天玩夠了～";
     document.getElementById("pl-msg").textContent = "記得吃飯、運動、睡覺，\n明天再來繼續冒險！";
     document.getElementById("pl-cd").style.display = "none";
@@ -63,10 +65,9 @@
   var restTimer = null;
   function showRest(sec) {
     var o = overlay(); o.style.display = "flex";
-    document.getElementById("pl-emoji").textContent = "⏸";
     document.getElementById("pl-title").textContent = "休息一下～";
     document.getElementById("pl-msg").textContent = "玩太久了，先休息一下，\n時間到自動繼續。";
-    var cd = document.getElementById("pl-cd"); cd.style.display = "";
+    var cd = document.getElementById("pl-cd"); cd.style.display = "block";
     document.getElementById("pl-btn").style.display = "none";
     if (restTimer) clearInterval(restTimer);
     var left = Math.max(0, sec | 0);

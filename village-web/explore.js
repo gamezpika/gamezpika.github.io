@@ -750,8 +750,50 @@ class ExploreScene extends Phaser.Scene {
       if (map === cur) return;
       this._taxiOpen = false;
       if (m.parentNode) m.remove(); if (onClose) onClose();
-      this._enterPortal({ target_map: map });   // 複用 portal 轉場(淡出+scene.restart+逾時自救)
+      const dest = DESTS.find((x) => x.id === map);
+      this._busTransit(dest ? dest.name : "");   // 公車行駛轉場（蓋住底下換圖過程，給「搭公車到站」感）
+      this._enterPortal({ target_map: map });    // 底下同時淡出+scene.restart+逾時自救
     }));
+  }
+
+  // 公車行駛轉場：選目的地後跳一台 Q 版公車行駛畫面(速度線+顛簸+路面往後跑)，
+  // 蓋住底下的換圖，約 1.8 秒後淡出露出已到達的新地圖。用 window 計時器(撐過 scene.restart)。
+  _busTransit(destName) {
+    if (!document.getElementById("bus-transit-css")) {
+      const st = document.createElement("style"); st.id = "bus-transit-css";
+      st.textContent =
+        ".bt-ov{position:fixed;inset:0;z-index:9500;overflow:hidden;opacity:1;transition:opacity .45s ease;" +
+        "background:linear-gradient(180deg,#bfe6ff 0%,#dff1ff 55%,#cfe9c4 56%,#a9d089 100%)}" +
+        ".bt-ov.out{opacity:0}" +
+        ".bt-road{position:absolute;left:0;right:0;bottom:0;height:30%;background:linear-gradient(180deg,#c8a063,#a9824b)}" +
+        ".bt-road:before{content:'';position:absolute;top:44%;left:0;right:0;height:6px;" +
+        "background:repeating-linear-gradient(90deg,#fff5d8 0 30px,transparent 30px 64px);animation:btDash .45s linear infinite}" +
+        "@keyframes btDash{to{background-position:-64px 0}}" +
+        ".bt-bus{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(66vw,340px);z-index:3;" +
+        "animation:btBob .5s ease-in-out infinite;filter:drop-shadow(0 12px 10px rgba(0,0,0,.28))}" +
+        "@keyframes btBob{0%,100%{transform:translate(-50%,-50%) rotate(-.8deg)}50%{transform:translate(-50%,calc(-50% - 7px)) rotate(.8deg)}}" +
+        ".bt-spd{position:absolute;height:5px;border-radius:3px;background:rgba(255,255,255,.75);z-index:2;animation:btSpd .6s linear infinite}" +
+        "@keyframes btSpd{from{transform:translateX(62vw)}to{transform:translateX(-90vw)}}" +
+        ".bt-cloud{position:absolute;background:rgba(255,255,255,.92);border-radius:50%;z-index:1;animation:btCloud 3s linear infinite}" +
+        "@keyframes btCloud{from{transform:translateX(60vw)}to{transform:translateX(-70vw)}}" +
+        ".bt-title{position:absolute;top:13%;left:50%;transform:translateX(-50%);z-index:4;white-space:nowrap;" +
+        "background:#fff6e2;border:4px solid #8a5a2b;border-radius:999px;padding:10px 24px;font-size:19px;font-weight:900;" +
+        "color:#7a4715;box-shadow:0 6px 0 rgba(110,64,18,.25);font-family:-apple-system,'PingFang TC',sans-serif}";
+      document.head.appendChild(st);
+    }
+    const old = document.getElementById("bus-transit-ov"); if (old) old.remove();
+    const ov = document.createElement("div"); ov.id = "bus-transit-ov"; ov.className = "bt-ov";
+    let h = "<div class='bt-road'></div>";
+    h += "<div class='bt-cloud' style='top:10%;left:60%;width:90px;height:34px;animation-duration:3.4s'></div>";
+    h += "<div class='bt-cloud' style='top:20%;left:80%;width:64px;height:26px;animation-duration:2.6s;animation-delay:.4s'></div>";
+    [["52%", "120px", "55%", "0s"], ["62%", "80px", "62%", ".15s"], ["70%", "140px", "50%", ".3s"], ["46%", "70px", "68%", ".22s"]]
+      .forEach(function (s) { h += "<div class='bt-spd' style='top:" + s[0] + ";width:" + s[1] + ";left:" + s[2] + ";animation-delay:" + s[3] + "'></div>"; });
+    h += "<img class='bt-bus' src='bus_taxi.webp?v=1' alt=''>";
+    h += "<div class='bt-title'>前往 " + (destName || "目的地") + "…</div>";
+    ov.innerHTML = h;
+    document.body.appendChild(ov);
+    setTimeout(function () { ov.classList.add("out"); }, 1800);          // 1.8 秒後淡出
+    setTimeout(function () { if (ov.parentNode) ov.remove(); }, 2300);   // 淡完移除，露出新地圖
   }
 
   _showPortalBtn(label) {

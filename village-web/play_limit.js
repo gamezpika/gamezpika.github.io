@@ -88,6 +88,30 @@
     if (restTimer) { clearInterval(restTimer); restTimer = null; }
   }
 
+  // ── 右上「今日剩 X 分」常駐牌子（跟裝備/速度同款 .hud-icon 木框，top:180 接在下面）──
+  function ensureBadge() {
+    var el = document.getElementById("pl-remain");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "pl-remain"; el.className = "hud-icon"; el.style.top = "180px"; el.style.display = "none";
+      el.innerHTML = '<span class="hud-slot"><img src="pl_alarm.webp?v=1" alt=""></span>' +
+        '<span class="hud-label" id="pl-remain-label">剩 -- 分</span>';
+      document.body.appendChild(el);
+    }
+    return el;
+  }
+  function updateBadge(s) {
+    var el = ensureBadge();
+    if ((s.limit_seconds || 0) <= 0 || s.locked || s.resting) { el.style.display = "none"; return; }   // 無限制/鎖屏/休息→不顯示
+    el.style.display = "flex";
+    var minLeft = Math.max(0, Math.ceil((s.remaining_seconds || 0) / 60));
+    var lbl = document.getElementById("pl-remain-label");
+    lbl.textContent = "剩 " + minLeft + " 分";
+    var warn = minLeft <= 5;
+    lbl.style.background = warn ? "rgba(176,42,42,.92)" : "";        // 快沒了變紅
+    lbl.style.borderColor = warn ? "#ff9b8a" : "";
+  }
+
   async function tick() {
     await heartbeat();
     var s = await status();
@@ -95,6 +119,7 @@
     if (s.locked) showLock();
     else if (s.resting) showRest(s.rest_remaining_seconds || 0);
     else hide();
+    updateBadge(s);
   }
 
   // 等訪客 token（shop.js 載入時建）就緒才開始；最多等 30 秒，沒身分就不追蹤

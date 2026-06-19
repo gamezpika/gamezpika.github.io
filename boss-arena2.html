@@ -493,6 +493,7 @@ async function handleAnswer(idx, btn) {
         // 新手任務(onboarding)：只打一題就定勝負（對→贏 / 錯→輸），跳過後端 HP 結算覆蓋
         if (new URLSearchParams(location.search).get("from") === "onboarding") {
             state.sessionId = null;
+            if (d.correct) { state.bossHP = 0; updateBars(); }   // 打贏：魔王血直接歸 0
             return endGame(d.correct ? "win" : "dead");
         }
         // 後端決定真勝負；題目用完也結算（不繞回重答同題 → 防重複/防後端重答錯誤）
@@ -512,7 +513,11 @@ async function handleAnswer(idx, btn) {
         state.combo = 0; await getHitByBoss();
     }
     // 新手任務：只打一題就定勝負（樣本 fallback 分支也要套，後端沒起來時才不會變多題）
-    if (new URLSearchParams(location.search).get("from") === "onboarding") return endGame(idx === q.ans ? "win" : "dead");
+    if (new URLSearchParams(location.search).get("from") === "onboarding") {
+        const win = idx === q.ans;
+        if (win) { state.bossHP = 0; updateBars(); }   // 打贏：魔王血直接歸 0
+        return endGame(win ? "win" : "dead");
+    }
     if (state.bossHP <= 0) return endGame("win");
     if (state.heroHP <= 0) return endGame("dead");
     await sleep(700);
@@ -1230,11 +1235,11 @@ async function endGame(outcome) {
         const fromOnb = new URLSearchParams(location.search).get("from") === "onboarding";
         const onbWin = fromOnb && outcome === "win";
         // onboarding：打贏→寫一次性 flag 回結尾領獎；打輸→「重打一次」(reload)不另給退出鈕
-        const onbExit = () => {
+        const onbExit = () => {   // 只用於「打贏」：寫一次性 flag 回 onboarding 結尾領獎
             try { localStorage.setItem("onboarding_boss_cleared", "1"); } catch (e) {}
             location.href = "onboarding.html?scene=end";
         };
-        window.__onbExit = onbExit;
+        window.__onbExit = onbWin ? onbExit : null;   // 輸局清掉，避免被誤觸跳到結尾
         const replayTxt = (fromOnb && !onbWin) ? "重打一次" : "再戰一次";
         // 統一用小遊戲那套結算頁 arcadeUI.victory（同款好看），不再用 emoji overlay
         if (window.arcadeUI && window.arcadeUI.victory) {
@@ -1248,7 +1253,7 @@ async function endGame(outcome) {
                 sub: outcome === "win" ? "擊敗魔王！" : "再接再厲！",
                 rewards,
                 replayLabel: replayTxt,
-                exitLabel: onbWin ? "完成新手任務 →" : "回地圖",
+                exitLabel: onbWin ? "完成新手任務 →" : (fromOnb ? null : "回地圖"),   // onboarding 輸局：不畫退出鈕(只留重打一次)
                 exitIcon: "assets/images/icons/sword.png?s=6",
                 onReplay: () => location.reload(),
                 onExit: onbWin ? onbExit : (fromOnb ? null : (fromMap ? arenaExit : null)),

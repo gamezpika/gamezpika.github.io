@@ -1,11 +1,11 @@
-// 多人整合層（整合波，feature flag）：?mp=1 才連線。
+// 多人整合層：預設打開（多人在線為主）；?mp=0 才退回單機。
 // 把雲端 colyseus world room 的其他玩家畫進真實 Phaser 村莊（重用 hero 走路動畫）。
 // 完全獨立模組，explore.js 只在 create/update 末尾各呼叫一個 window.__mp.*（沒載入＝無作用）。
 // ⚠️ 對戰(PK)/排行 已移除——EDU 專案本來就有完整真人 PK + 王榜，不重複造（見記憶分析）。
 //    這層只做 EDU 缺的「共享即時世界」：同場可見 / 聊天 / 裝扮 / 好友。
 (function () {
   "use strict";
-  if (new URLSearchParams(location.search).get("mp") !== "1") return; // feature flag：預設關＝單機 demo 不變
+  if (new URLSearchParams(location.search).get("mp") === "0") return; // 預設多人在線；?mp=0＝退回單機 demo
 
   var EP = "wss://colyseus-production-34e9.up.railway.app";
   var API = EP.replace(/^wss:/, "https:"); // 家長控管/罐頭句等 HTTP 端點

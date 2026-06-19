@@ -751,18 +751,18 @@ class ExploreScene extends Phaser.Scene {
       this._taxiOpen = false;
       if (m.parentNode) m.remove(); if (onClose) onClose();
       const dest = DESTS.find((x) => x.id === map);
-      this._busTransit(dest ? dest.name : "");   // 公車行駛轉場（蓋住底下換圖過程，給「搭公車到站」感）
-      this._enterPortal({ target_map: map });    // 底下同時淡出+scene.restart+逾時自救
+      this._busTransit(dest ? dest.name : "", map);   // 公車行駛轉場（蓋住底下換圖過程，給「搭公車到站」感）
+      this._enterPortal({ target_map: map });          // 底下同時淡出+scene.restart+逾時自救
     }));
   }
 
   // 公車行駛轉場：選目的地後跳一台 Q 版公車行駛畫面(速度線+顛簸+路面往後跑)，
   // 蓋住底下的換圖，約 1.8 秒後淡出露出已到達的新地圖。用 window 計時器(撐過 scene.restart)。
-  _busTransit(destName) {
+  _busTransit(destName, targetMap) {
     if (!document.getElementById("bus-transit-css")) {
       const st = document.createElement("style"); st.id = "bus-transit-css";
       st.textContent =
-        ".bt-ov{position:fixed;inset:0;z-index:9500;overflow:hidden;opacity:1;transition:opacity .45s ease;" +
+        ".bt-ov{position:fixed;inset:0;z-index:9500;overflow:hidden;opacity:1;transition:opacity .5s ease;" +
         "background:linear-gradient(180deg,#bfe6ff 0%,#dff1ff 55%,#cfe9c4 56%,#a9d089 100%)}" +
         ".bt-ov.out{opacity:0}" +
         ".bt-road{position:absolute;left:0;right:0;bottom:0;height:30%;background:linear-gradient(180deg,#c8a063,#a9824b)}" +
@@ -776,9 +776,13 @@ class ExploreScene extends Phaser.Scene {
         "@keyframes btSpd{from{transform:translateX(62vw)}to{transform:translateX(-90vw)}}" +
         ".bt-cloud{position:absolute;background:rgba(255,255,255,.92);border-radius:50%;z-index:1;animation:btCloud 3s linear infinite}" +
         "@keyframes btCloud{from{transform:translateX(60vw)}to{transform:translateX(-70vw)}}" +
-        ".bt-title{position:absolute;top:13%;left:50%;transform:translateX(-50%);z-index:4;white-space:nowrap;" +
+        ".bt-title{position:absolute;top:12%;left:50%;transform:translateX(-50%);z-index:4;white-space:nowrap;" +
         "background:#fff6e2;border:4px solid #8a5a2b;border-radius:999px;padding:10px 24px;font-size:19px;font-weight:900;" +
-        "color:#7a4715;box-shadow:0 6px 0 rgba(110,64,18,.25);font-family:-apple-system,'PingFang TC',sans-serif}";
+        "color:#7a4715;box-shadow:0 6px 0 rgba(110,64,18,.25);font-family:-apple-system,'PingFang TC',sans-serif}" +
+        // 載入進度條（村莊風）
+        ".bt-prog{position:absolute;top:23%;left:50%;transform:translateX(-50%);z-index:4;width:min(62vw,300px);height:18px;" +
+        "border-radius:999px;background:#6e4b22;border:3px solid #8a5a2b;overflow:hidden;box-shadow:inset 0 2px 4px rgba(0,0,0,.4),0 3px 0 rgba(110,64,18,.3)}" +
+        ".bt-fill{height:100%;width:6%;border-radius:999px;background:linear-gradient(90deg,#ffd54f,#ffb43a);transition:width 1.4s ease}";
       document.head.appendChild(st);
     }
     const old = document.getElementById("bus-transit-ov"); if (old) old.remove();
@@ -790,10 +794,29 @@ class ExploreScene extends Phaser.Scene {
       .forEach(function (s) { h += "<div class='bt-spd' style='top:" + s[0] + ";width:" + s[1] + ";left:" + s[2] + ";animation-delay:" + s[3] + "'></div>"; });
     h += "<img class='bt-bus' src='bus_taxi.webp?v=1' alt=''>";
     h += "<div class='bt-title'>前往 " + (destName || "目的地") + "…</div>";
+    h += "<div class='bt-prog'><div class='bt-fill' id='bt-fill'></div></div>";
     ov.innerHTML = h;
     document.body.appendChild(ov);
-    setTimeout(function () { ov.classList.add("out"); }, 1800);          // 1.8 秒後淡出
-    setTimeout(function () { if (ov.parentNode) ov.remove(); }, 2300);   // 淡完移除，露出新地圖
+
+    const fill = ov.querySelector("#bt-fill");
+    requestAnimationFrame(function () { fill.style.width = "85%"; });   // 平滑跑到 85%（CSS 1.4s）
+
+    const t0 = Date.now(), MIN = 1200, MAX = 5000;
+    // 新地圖就緒：新場景 create 跑完(window.__scene 換成目標圖、不再轉場、黑幕已收)
+    const ready = function () {
+      const s = window.__scene, f = document.getElementById("map-fade");
+      return s && s.mapId === targetMap && !s._transitioning && !(f && f.classList.contains("show"));
+    };
+    const finish = function () {
+      if (ov._done) return; ov._done = true;
+      fill.style.transition = "width .25s ease"; fill.style.width = "100%";   // 衝滿
+      setTimeout(function () { ov.classList.add("out"); }, 250);              // 滿了再淡出→底下已是畫好的新地圖，零黑屏
+      setTimeout(function () { if (ov.parentNode) ov.remove(); }, 800);
+    };
+    const poll = setInterval(function () {
+      const el = Date.now() - t0;
+      if ((el >= MIN && ready()) || el >= MAX) { clearInterval(poll); finish(); }   // 就緒+最少1.2s，或5s保險
+    }, 100);
   }
 
   _showPortalBtn(label) {

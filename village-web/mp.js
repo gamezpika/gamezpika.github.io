@@ -9,13 +9,26 @@
 
   var EP = "wss://colyseus-production-34e9.up.railway.app";
   var API = EP.replace(/^wss:/, "https:"); // 家長控管/罐頭句等 HTTP 端點
-  var myUid = "mp" + Math.floor((Date.now() + performance.now()) % 1e9);
+  // uid 存 sessionStorage：同一分頁玩小遊戲(換頁)再回村莊用同一個 uid，
+  // 配合下方「跳過自己舊連線」就不會看到自己換頁前的殘影。
+  var myUid = (function () {
+    try {
+      var u = sessionStorage.getItem("mp_uid");
+      if (u) return u;
+      u = "mp" + Math.floor((Date.now() + performance.now()) % 1e9);
+      sessionStorage.setItem("mp_uid", u);
+      return u;
+    } catch (e) { return "mp" + Math.floor((Date.now() + performance.now()) % 1e9); }
+  })();
   var myParental = { chatEnabled: true, mode: "free", allowWhisper: true }; // 本地角色的家長控管設定（連線後拉一次）
   var quickPhrases = null; // 罐頭安全句快取 [{id,text}]
   var PARENT_PIN = "1234";  // demo 家長 PIN（擋小孩亂改；正式版改真家長 token，見 onAuth 整合波）
   var myName = (localStorage.getItem("village_player_name") || "玩家") + myUid.slice(-3);
 
   var room = null, connecting = false, remotes = {}, lastSend = 0, curScene = null, mpClient = null, mySkin = "default", lastSkinCheck = 0, myLabel = null;
+
+  // 換頁(玩小遊戲/離開)前主動離開房間，讓伺服器即時移除自己→別人/自己回來都不會看到殘影。
+  window.addEventListener("pagehide", function () { try { if (room) room.leave(); } catch (e) {} });
   var desiredMap = "village", joinedMap = null, connSeq = 0; // 依地圖分房；connSeq=連線世代(換房/重連作廢舊房回呼)
   // 地圖 id canonical（與 server sanitizeMap 同規則）→ filterBy 分房 key 與房內一致
   function mapKey(id) { return (String(id || "").replace(/[^a-z0-9_]/gi, "").slice(0, 40)) || "village"; }
@@ -563,7 +576,8 @@
       }
       var seen = {};
       room.state.players.forEach(function (p, key) {
-        if (key === room.sessionId) return; // 跳過自己
+        if (key === room.sessionId) return; // 跳過自己（目前連線）
+        if (p.uid && p.uid === myUid) return; // 跳過自己換頁前的舊連線（同 uid 不同 session）→ 不畫殘影
         seen[key] = 1;
         var r = remotes[key];
         if (!r) { r = createRemote(scene, p); remotes[key] = r; }

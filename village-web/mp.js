@@ -12,13 +12,16 @@
   // uid 存 sessionStorage：同一分頁玩小遊戲(換頁)再回村莊用同一個 uid，
   // 配合下方「跳過自己舊連線」就不會看到自己換頁前的殘影。
   var myUid = (function () {
+    function gen() {
+      try { if (window.crypto && crypto.randomUUID) return "mp" + crypto.randomUUID().replace(/-/g, "").slice(0, 14); } catch (e) {}
+      return "mp" + Math.floor((Date.now() + performance.now()) % 1e9) + Math.floor(Math.random() * 1e6).toString(36);
+    }
     try {
       var u = sessionStorage.getItem("mp_uid");
       if (u) return u;
-      u = "mp" + Math.floor((Date.now() + performance.now()) % 1e9);
-      sessionStorage.setItem("mp_uid", u);
+      u = gen(); sessionStorage.setItem("mp_uid", u);
       return u;
-    } catch (e) { return "mp" + Math.floor((Date.now() + performance.now()) % 1e9); }
+    } catch (e) { return gen(); }
   })();
   var myParental = { chatEnabled: true, mode: "free", allowWhisper: true }; // 本地角色的家長控管設定（連線後拉一次）
   var quickPhrases = null; // 罐頭安全句快取 [{id,text}]
@@ -28,7 +31,14 @@
   var room = null, connecting = false, remotes = {}, lastSend = 0, curScene = null, mpClient = null, mySkin = "default", lastSkinCheck = 0, myLabel = null;
 
   // 換頁(玩小遊戲/離開)前主動離開房間，讓伺服器即時移除自己→別人/自己回來都不會看到殘影。
-  window.addEventListener("pagehide", function () { try { if (room) room.leave(); } catch (e) {} });
+  // 先 connSeq++ 作廢目前世代，擋掉 onLeave 的自動重連(BFCache/離頁競態)；leave() 可能回 Promise 要接 catch。
+  window.addEventListener("pagehide", function () {
+    try {
+      connSeq++;
+      var r = room; room = null;
+      if (r) { var pr = r.leave(); if (pr && pr.catch) pr.catch(function () {}); }
+    } catch (e) {}
+  });
   var desiredMap = "village", joinedMap = null, connSeq = 0; // 依地圖分房；connSeq=連線世代(換房/重連作廢舊房回呼)
   // 地圖 id canonical（與 server sanitizeMap 同規則）→ filterBy 分房 key 與房內一致
   function mapKey(id) { return (String(id || "").replace(/[^a-z0-9_]/gi, "").slice(0, 40)) || "village"; }

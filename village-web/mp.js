@@ -250,6 +250,7 @@
     r.spr.setDepth(r.y);
     r.label.x = r.x; r.label.y = r.spr.getBounds().y - 6;   // 跟著頭頂上方，不擋角色
     r.label.setDepth(r.y + 1);
+    r.label.setVisible(!mpHidden);   // 開面板時跟聊天框一起隱藏
     var scene = r.spr.scene; if (!scene) return;
     var prefix = ensureOutfitAnims(scene, r.skin) || "hero"; // 造型 ready 用該玩家真實造型 anims，否則暫用 hero
     var suffix = r.moving ? (r.dir === "up" ? "_walk_up" : (r.dir === "down" ? "_walk_down" : "_walk")) : "_idle";
@@ -540,6 +541,7 @@
           }).setOrigin(0.5, 1);
         }
         myLabel.x = ps.x; myLabel.y = ps.getBounds().y - 6; myLabel.setDepth(ps.y + 2);
+        myLabel.setVisible(!mpHidden);   // 開面板時跟聊天框一起隱藏
       }
       // 聊天室(含好友)只在大地圖顯示：開任何 demo 選單/裝備/商店面板就隱藏（變化時才寫 DOM）
       var menuOpen = (typeof scene._anyPanelOpen === "function") && scene._anyPanelOpen();

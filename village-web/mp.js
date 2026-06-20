@@ -15,7 +15,7 @@
   var PARENT_PIN = "1234";  // demo 家長 PIN（擋小孩亂改；正式版改真家長 token，見 onAuth 整合波）
   var myName = (localStorage.getItem("village_player_name") || "玩家") + myUid.slice(-3);
 
-  var room = null, connecting = false, remotes = {}, lastSend = 0, curScene = null, mpClient = null, mySkin = "default", lastSkinCheck = 0;
+  var room = null, connecting = false, remotes = {}, lastSend = 0, curScene = null, mpClient = null, mySkin = "default", lastSkinCheck = 0, myLabel = null;
   var desiredMap = "village", joinedMap = null, connSeq = 0; // 依地圖分房；connSeq=連線世代(換房/重連作廢舊房回呼)
   // 地圖 id canonical（與 server sanitizeMap 同規則）→ filterBy 分房 key 與房內一致
   function mapKey(id) { return (String(id || "").replace(/[^a-z0-9_]/gi, "").slice(0, 40)) || "village"; }
@@ -231,10 +231,10 @@
     var psc = (scene.playerSprite && scene.playerSprite.scene && scene.playerSprite.scaleX) || 0.66;
     var spr = scene.add.sprite(p.x, p.y, "hero", 0).setOrigin(0.5, 1).setScale(psc);
     if (scene.anims.exists("hero_idle")) spr.play("hero_idle");
-    var label = scene.add.text(p.x, p.y - 60, p.name || "玩家", {
+    var label = scene.add.text(p.x, spr.getBounds().y - 6, p.name || "玩家", {
       fontFamily: "sans-serif", fontSize: "15px", color: "#ffffff",
       stroke: "#1a2240", strokeThickness: 4,
-    }).setOrigin(0.5, 1);
+    }).setOrigin(0.5, 1);   // 名牌固定在頭頂上方（getBounds().y = sprite 最頂），不擋角色
     var r = { spr: spr, label: label, x: p.x, y: p.y, tx: p.x, ty: p.y, dir: p.dir, moving: false, name: p.name, skin: p.skin || "default", uid: p.uid };
     spr.setInteractive({ useHandCursor: true }); // 點玩家 → 加好友 / 送禮物
     spr.on("pointerdown", function () { openPMenu(r); });
@@ -248,7 +248,7 @@
     r.y += (r.ty - r.y) * 0.25;
     r.spr.x = r.x; r.spr.y = r.y;
     r.spr.setDepth(r.y);
-    r.label.x = r.x; r.label.y = r.y - 56;
+    r.label.x = r.x; r.label.y = r.spr.getBounds().y - 6;   // 跟著頭頂上方，不擋角色
     r.label.setDepth(r.y + 1);
     var scene = r.spr.scene; if (!scene) return;
     var prefix = ensureOutfitAnims(scene, r.skin) || "hero"; // 造型 ready 用該玩家真實造型 anims，否則暫用 hero
@@ -530,6 +530,17 @@
     // explore.js update() 末尾呼叫：送自己位置 + 渲染其他人
     onUpdate: function (scene, x, y, dx, dy, moving) {
       curScene = scene;
+      // 本人名牌：頭頂顯示自己的 ID（不論有沒有連線都顯示；換地圖換 scene 時重建）
+      var ps = scene.playerSprite;
+      if (ps && ps.scene) {
+        if (!myLabel || myLabel.scene !== scene || !myLabel.active) {
+          myLabel = scene.add.text(ps.x, 0, myName, {
+            fontFamily: "sans-serif", fontSize: "15px", color: "#fff3b0",
+            stroke: "#1a2240", strokeThickness: 4,
+          }).setOrigin(0.5, 1);
+        }
+        myLabel.x = ps.x; myLabel.y = ps.getBounds().y - 6; myLabel.setDepth(ps.y + 2);
+      }
       // 聊天室(含好友)只在大地圖顯示：開任何 demo 選單/裝備/商店面板就隱藏（變化時才寫 DOM）
       var menuOpen = (typeof scene._anyPanelOpen === "function") && scene._anyPanelOpen();
       if (menuOpen !== mpHidden) {

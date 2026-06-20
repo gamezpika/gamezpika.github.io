@@ -751,6 +751,8 @@
 .qt-bar i { display: block; height: 100%; background: linear-gradient(90deg, #f5a623, #f7c948); border-radius: 99px; transition: width .25s; }
 .qt-num { font-size: 13px; font-weight: 800; color: #8a6d3b; white-space: nowrap; }
 .qt-card { background: #fff; border: 2px solid #e6dcc8; border-radius: 16px; padding: 14px; box-shadow: 0 2px 8px rgba(120, 90, 40, .08); text-align: center; }
+/* 注音題：每個有注音的字左右撐開，避免上方注音(常比中文字寬)相連糊在一起；只影響 <ruby> 的字，純文字/英數題不受影響 */
+.qt-card ruby, .qt-opt ruby { margin: 0 4px; }
 .qt-opts { display: flex; flex-direction: column; gap: 12px; max-width: 340px; margin: 14px auto 0; }
 .qt-opt { display: flex; align-items: center; gap: 12px; width: 100%; background: #fff; border: 2px solid #e0d5bd; border-radius: 14px; padding: 12px 13px; font-size: 18px; color: #33291a; text-align: left; line-height: 1.5; cursor: pointer; font-family: inherit; }
 .qt-opt .qt-abc { flex: 0 0 30px; height: 30px; border-radius: 50%; background: #f3ead6; color: #a07820; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; }

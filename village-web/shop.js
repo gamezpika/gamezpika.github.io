@@ -1086,10 +1086,11 @@
     (Array.isArray(topics.curriculum) ? topics.curriculum : []).forEach((g) => {
       (g.chapters || []).forEach((c) => chs.push(Object.assign({ _vol: g.volume_label || "", _grade: c.grade || g.grade }, c)));
     });
-    // 禁忌森林=全題庫(課本+AI,一到六有什麼秀什麼;派派 6/10 不鎖年級)；五大學院=只 AI(非課本)
-    // 注意:caPractSource 值 'uploaded' 現在是「森林模式」記號(沿用,UI 文案/按鈕靠它分流),不再代表只濾課本
+    // 五大學院(ai)=只 AI(非課本)；禁忌森林(uploaded 記號)=課本練習
+    // 派派 6/20：數學/國語/自然/社會 的課本練習「只要真課本，不要 AI 生的題」→ 這 4 科森林只留 uploaded
+    const FOREST_TEXTBOOK_ONLY = new Set(["math", "chinese", "science", "social"]);
     caPractChs = caPractSource === "ai" ? chs.filter((c) => c.source !== "uploaded")
-               : chs;
+               : (FOREST_TEXTBOOK_ONLY.has(caSubject) ? chs.filter((c) => c.source === "uploaded") : chs);
     caPractGrade = null;
     caRenderPractice(ov);
   }

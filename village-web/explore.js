@@ -948,7 +948,12 @@ class ExploreScene extends Phaser.Scene {
       this._pinchStart = null;   // 任一指放開就結束 pinch
     });
     this.input.on("pointerupoutside", () => { this._nDown = Math.max(0, (this._nDown || 0) - 1); });
+    this.input.on("pointercancel", () => { this._nDown = Math.max(0, (this._nDown || 0) - 1); this._pinchStart = null; });   // 取消(工具列彈出等)也要清,否則卡住
     this.input.on("gameout", () => { this._nDown = 0; this._pinchStart = null; });   // 手指移出畫布→清觸控計數,防卡住
+    // 切到背景/工具列彈出再回來：觸控計數歸零 + 放掉搖桿，根治「pointer 卡住→不能移動」
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) { this._nDown = 0; this._pinchStart = null; if (this._hideJoystick) this._hideJoystick(); }
+    });
 
     // 滾輪縮放（桌面）
     this.input.on("wheel", (pointer, _go, _dx, dy) => {
@@ -1013,7 +1018,9 @@ class ExploreScene extends Phaser.Scene {
     }, { passive: true });
     document.addEventListener("pointermove", (e) => {
       if (e.pointerId !== pid) return;
-      if (this.input && this.input.pointer2 && this.input.pointer2.isDown) { hide(); return; }   // 第二指 → pinch，放掉搖桿
+      // 第二指 → pinch，放掉搖桿。用自管 _nDown(會被正確清零)判斷，不信 Phaser pointer2.isDown——
+      // 它在手機工具列彈出/pointercancel 漏接時會卡 isDown=true，害新觸控被誤判成第二指 → 永遠不能動。
+      if (this._nDown >= 2) { hide(); return; }
       if (!active) {
         if (Math.hypot(e.clientX - sx, e.clientY - sy) < SHOW) return;   // 還沒到「真的拖曳」門檻
         active = true; showAt(sx, sy);                                    // 底盤定在起點，從起點量方向最自然

@@ -951,9 +951,13 @@ class ExploreScene extends Phaser.Scene {
     this.input.on("pointercancel", () => { this._nDown = Math.max(0, (this._nDown || 0) - 1); this._pinchStart = null; });   // 取消(工具列彈出等)也要清,否則卡住
     this.input.on("gameout", () => { this._nDown = 0; this._pinchStart = null; });   // 手指移出畫布→清觸控計數,防卡住
     // 切到背景/工具列彈出再回來：觸控計數歸零 + 放掉搖桿，根治「pointer 卡住→不能移動」
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) { this._nDown = 0; this._pinchStart = null; if (this._hideJoystick) this._hideJoystick(); }
-    });
+    // guard：document listener 不會被 Phaser 換場景清掉，只綁一次免累積(Codex P3)
+    if (!this._visBound) {
+      this._visBound = true;
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) { this._nDown = 0; this._pinchStart = null; if (this._hideJoystick) this._hideJoystick(); }
+      });
+    }
 
     // 滾輪縮放（桌面）
     this.input.on("wheel", (pointer, _go, _dx, dy) => {

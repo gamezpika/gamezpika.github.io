@@ -1063,7 +1063,7 @@
   /* ── 國語基礎練習：分頁挑章節（年級 → 版本 → 章節），再進去答題 ── */
   function caStars(n) { n = Math.max(0, Math.min(3, Number(n) || 0)); return "⭐".repeat(n) + "☆".repeat(3 - n); }
   function caStars(n) { n = Math.max(0, Math.min(3, Number(n) || 0)); return "⭐".repeat(n) + "☆".repeat(3 - n); }
-  let caPractChs = null, caPractGrade = null, caPractSource = null;
+  let caPractChs = null, caPractGrade = null, caPractSource = null, caPractPub = null;
   let caQuizHidPrin = false;   // 答題頁有沒有「動手藏過」立繪（森林/布告欄本來就藏著的不算，回選章節時不用還原）
 
   async function caOpenPractice(ov, sourceFilter) {
@@ -1095,12 +1095,29 @@
     caRenderPractice(ov);
   }
 
-  // 渲染：年級 tabs → 該年級章節清單(依學期小標分段)。已依 source 過濾，不再有版本分頁。
+  // 出版社 → 版本標籤（禁忌森林：先選版本再選年級章節）
+  const CA_PUB_LABEL = { kanghsuan: "康軒 A版", hanlin: "翰林 B版", nani: "南一", ministry: "部編", generic: "其他" };
+  const CA_PUB_ORDER = ["kanghsuan", "hanlin", "nani", "ministry", "generic"];
+
+  // 渲染：(禁忌森林) 版本 tabs → 年級 tabs → 該年級章節清單(依學期小標分段)
   function caRenderPractice(ov) {
     const box = ov.querySelector(".ao-content");
-    const chs = caPractChs || [];
+    let chs = caPractChs || [];
     if (!chs.length) { box.innerHTML = `<div class="jc-empty">目前沒有可練習的章節</div>`; return; }
-    caBubble(ov, "選年級，再挑章節練習～");
+
+    // 版本選擇（只在禁忌森林=uploaded、且該科有 >1 個出版社時顯示）
+    let verTabs = "";
+    if (caPractSource === "uploaded") {
+      const pubs = [...new Set(chs.map((c) => c.publisher || "generic"))]
+        .sort((a, b) => CA_PUB_ORDER.indexOf(a) - CA_PUB_ORDER.indexOf(b));
+      if (pubs.length > 1) {
+        if (caPractPub == null || !pubs.includes(caPractPub)) caPractPub = pubs[0];
+        verTabs = `<div class="jc-tabs" style="margin-bottom:8px;flex-shrink:0;">` +
+          pubs.map((p) => `<button class="jc-tab${p === caPractPub ? " active" : ""}" data-pub="${p}">${CA_PUB_LABEL[p] || p}</button>`).join("") + `</div>`;
+        chs = chs.filter((c) => (c.publisher || "generic") === caPractPub);
+      } else { caPractPub = null; }
+    }
+    caBubble(ov, caPractPub ? "選版本→年級→章節練習～" : "選年級，再挑章節練習～");
 
     const grades = [...new Set(chs.map((c) => c._grade))].sort((a, b) => a - b);
     if (caPractGrade == null || !grades.includes(caPractGrade)) caPractGrade = grades[0];
@@ -1120,9 +1137,13 @@
     });
 
     box.innerHTML = `
+      ${verTabs}
       <div class="jc-tabs ao-tabs4" style="margin-bottom:10px;flex-shrink:0;">${gradeTabs}</div>
       <div>${list || `<div class="jc-empty">這個年級沒有章節</div>`}</div>`;
 
+    box.querySelectorAll("[data-pub]").forEach((b) => b.addEventListener("click", function () {
+      caPractPub = this.dataset.pub; caPractGrade = null; caRenderPractice(ov);   // 切版本→重選年級
+    }));
     box.querySelectorAll("[data-g]").forEach((b) => b.addEventListener("click", function () {
       caPractGrade = Number(this.dataset.g); caRenderPractice(ov);
     }));

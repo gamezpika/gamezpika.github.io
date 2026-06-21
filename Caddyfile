@@ -13,11 +13,13 @@
     #
     # 圖分散在兩個後端：截圖法新題（數學二是非/選擇）的圖在 demo 自己的後端
     # eduarena-tutoring；舊康軒 G4/G5 圖在正式版 48b09。所以先打 demo 後端，
-    # 該後端 404（沒這張）才 failover 到 48b09 → 兩組圖都服務得到。
+    # 該後端沒這張時 failover 到 48b09 → 兩組圖都服務得到。
+    # 後端「沒這張」會回 404（檔不在）或 307（轉址去 48b09 圖床）；兩種都要 failover，
+    # 否則 307 直接丟回瀏覽器→跨來源 48b09 沒回 CORP→COEP 擋掉→圖消失。
     @qimg path /static/images/q/*
     reverse_proxy @qimg https://eduarena-tutoring-production.up.railway.app {
         header_up Host eduarena-tutoring-production.up.railway.app
-        @imgmiss status 404
+        @imgmiss status 404 307
         handle_response @imgmiss {
             reverse_proxy https://web-production-48b09.up.railway.app {
                 header_up Host web-production-48b09.up.railway.app

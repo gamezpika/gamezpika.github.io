@@ -115,7 +115,7 @@
   function onGoogleCredential(resp) {
     if (!resp || !resp.credential) { showToast("Google 登入沒拿到憑證，再試一次"); return; }
     try { sessionStorage.setItem("eduarena_google_idtoken", resp.credential); } catch (e) {}
-    location.href = "onboarding.html";
+    location.href = "select.html";   // 角色選擇頁：選小朋友或新增(最多3)；沒小孩會自動轉去開場動畫
   }
 
   // 偵測 App 內建瀏覽器（Google 政策禁止在 webview 內登入 → 一定空白）

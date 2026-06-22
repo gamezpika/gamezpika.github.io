@@ -80,6 +80,12 @@
     </div>
     <div class="divider">選擇登入方式</div>
 
+    <!-- App 內建瀏覽器提示（LINE/Telegram 等無法用 Google 登入）-->
+    <div id="inapp-note" style="display:none; background:#fff3e0; border:2px solid #e6b566; border-radius:14px; padding:12px 14px; margin-bottom:10px;">
+      <div style="font-size:13px; font-weight:800; color:#8a5a18; line-height:1.5;">在 App 內無法用 Google 登入<br><span style="font-weight:600; color:#a9803f;">請用手機瀏覽器開啟（或先點「試玩」直接逛）</span></div>
+      <button id="open-ext" style="margin-top:8px; width:100%; border:2px solid #6b3f12; border-radius:12px; padding:10px; cursor:pointer; font-size:15px; font-weight:800; color:#fff7e6; background:linear-gradient(180deg,#5aa9e6,#2e7fd4);">🌐 用瀏覽器開啟</button>
+    </div>
+
     <!-- Google 官方登入按鈕（GIS 渲染）；client id 未設定時 fallback 成「即將推出」自訂鈕 -->
     <div id="g-signin"></div>
     <button class="sbtn" id="g-fallback" data-prov="Google" style="display:none;">
@@ -123,8 +129,33 @@
     location.href = "onboarding.html";
   }
 
+  // 偵測 App 內建瀏覽器（Google 政策禁止在 webview 內登入 → 一定空白）
+  function inAppBrowser() {
+    var ua = navigator.userAgent || "";
+    return /\bLine\//i.test(ua) || /FBAN|FBAV|FB_IAB|Instagram|Messenger/i.test(ua) ||
+           /\bTelegram\b/i.test(ua) || /; wv\)/.test(ua);   // 含 Android WebView
+  }
+  function isLine() { return /\bLine\//i.test(navigator.userAgent || ""); }
+
+  function setupInAppNotice() {
+    document.getElementById("g-signin").style.display = "none";
+    var note = document.getElementById("inapp-note");
+    note.style.display = "block";
+    document.getElementById("open-ext").addEventListener("click", function () {
+      if (isLine()) {
+        // LINE：加 openExternalBrowser=1 會跳到手機系統瀏覽器
+        var u = location.origin + location.pathname;
+        location.href = u + "?openExternalBrowser=1";
+      } else {
+        showToast("請點右上角「⋯」選單 →「用 Safari / 瀏覽器開啟」，才能用 Google 登入");
+      }
+    });
+  }
+
   // 等 GIS 載入後初始化；client id 沒填好就用 fallback 鈕(即將推出)
   function initGoogle() {
+    // App 內建瀏覽器 → 不初始化 GIS（會空白），改顯示「用瀏覽器開啟」
+    if (inAppBrowser()) { setupInAppNotice(); return; }
     var ready = window.google && google.accounts && google.accounts.id;
     var hasCid = GOOGLE_CLIENT_ID && GOOGLE_CLIENT_ID.indexOf("apps.googleusercontent.com") > 0;
     if (!hasCid || !ready) {

@@ -15,6 +15,10 @@
     <header class="screen-header">
         <button class="btn-back" id="enp-back">←</button>
         <span class="screen-title"><img class="emo" src="arcade/img/icons/ui_train.png?v=1" alt=""> 聽力重組小火車</span>
+        <!-- 🚩 回報這題：固定右上角，讀目前題號(english_puzzle 寫入 window.__qreportQid) -->
+        <button id="enp-report" title="回報這題"
+            style="position:fixed;top:10px;right:12px;z-index:30;width:36px;height:36px;border:none;border-radius:50%;background:rgba(0,0,0,0.28);color:#fff;font-size:17px;cursor:pointer;display:none;"
+            onclick="window.QReport&&window.QReport.open(window.__qreportQid,{page:'聽力重組'})">🚩</button>
     </header>
     <div class="game-stats">
         <span class="streak-display" id="enp-streak"><img class="emo" src="arcade/img/icons/fire.png?s=6" alt=""> 0</span>
@@ -67,7 +71,8 @@
 
 <script src="arcade/shim.js?v=1"></script>
 <script src="arcade/game-ui.js?v=3"></script>
-<script src="arcade/english_puzzle.js?v=4"></script>
+<script src="village-web/qreport.js?v=1"></script>  <!-- 🚩 題目回報元件 -->
+<script src="arcade/english_puzzle.js?v=5"></script>
 <script>
 // 封面＋教學：按「開始遊戲」才開局（教學自動彈出、可略過）
 (function boot() {

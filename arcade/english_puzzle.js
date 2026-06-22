@@ -296,6 +296,12 @@
         if (!state.currentQ) return;
         state.selectedChips = [];
         state.locked = false;
+        // 🚩 把目前題號暴露給回報元件，並只在有題號時才顯示回報鈕（沒題目不亮，Codex P3）
+        try {
+            window.__qreportQid = state.currentQ.id || 0;
+            var _rb = document.getElementById("enp-report");
+            if (_rb) _rb.style.display = state.currentQ.id ? "" : "none";
+        } catch (e) {}
 
         // listen mode 顯示喇叭按鈕、隱藏 prompt（無中文意思）；sentence mode 反之
         const promptEl = $("enp-prompt");

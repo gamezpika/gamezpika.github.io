@@ -1182,7 +1182,12 @@
     } else if (prom) {
       h += `<div style="font-size:19px;line-height:1.8;margin:4px 0;color:#5a4630;">${qRuby(prom, zh)}</div>`;
     }
-    return `<div class="qt-card">${h}</div>`;
+    // 題卡右上角「🚩 回報這題」（四畫面共用一次到位）；page 用標題列文字讓後台看得懂在哪
+    const qid = q.id || q.question_id;
+    let pageLabel = "";
+    try { const st = document.querySelector(".shop-title"); if (st) pageLabel = (st.textContent || "").trim(); } catch (e) {}
+    const rbtn = (window.QReport && qid) ? window.QReport.btnHTML(qid, pageLabel) : "";
+    return `<div class="qt-card" style="position:relative;">${rbtn}${h}</div>`;
   }
   // 單一選項按鈕（A/B/C/D 圓徽章＋靠左，含注音）；cls=各畫面的選項 class（ca-choice/en-choice/ex-choice）
   function qChoiceHTML(c, q, cls, i) {

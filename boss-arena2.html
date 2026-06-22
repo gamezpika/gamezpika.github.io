@@ -18,6 +18,7 @@
     <script src="arcade/boss/bopomofo.js?v=1"></script>
     <link rel="stylesheet" href="arcade/game-ui.css?v=1">       <!-- 統一結算頁(小遊戲同款 arcadeUI.victory) -->
     <script src="arcade/game-ui.js?v=2"></script>
+    <script src="village-web/qreport.js?v=1"></script>  <!-- 🚩 題目回報元件 -->
     <style>
     /* 派派 6/17：上方列(arena-hud)浮在戰場上方，背景=戰場同一張連續(此頁 HUD 內容已隱藏→等於拿掉那條不符的帶子)。全裝置生效 */
     #screen-arena { position: relative; }
@@ -96,6 +97,10 @@
         <div id="screen-arena" style="display: none">
 
             <button class="arena-back" onclick="arenaExit()" title="返回">←</button>
+            <!-- 🚩 回報這題：固定右上角，點了回報目前這道魔王題（只在後端真題、有題號時顯示） -->
+            <button id="arena-report" title="回報這題"
+                style="position:absolute;top:10px;right:12px;z-index:30;width:36px;height:36px;border:none;border-radius:50%;background:rgba(0,0,0,0.28);color:#fff;font-size:17px;cursor:pointer;display:none;"
+                onclick="window.QReport&&state._q&&window.QReport.open(state._q.id,{page:'魔王戰'})">🚩</button>
 
             <!-- 上方主角 HUD（5/25 派派 A 方案：左上角 chip + 名字膠囊，菇勇者風）-->
             <div class="arena-hud arena-hud-slim arena-hud-chip">
@@ -437,6 +442,9 @@ function loadQuestion() {
     const text = state.backend ? [q.display, q.prompt].filter(Boolean).join("　") : q.q;
     const choices = state.backend ? (q.choices || []) : q.options;
     $("arena-question").textContent = text || "";
+    // 🚩 回報鈕：只在後端真題(有題號)時顯示，樣本題沒題號不顯示
+    const rb = $("arena-report");
+    if (rb) rb.style.display = (state.backend && q && q.id) ? "block" : "none";
     const btns = document.querySelectorAll(".opt-btn");
     btns.forEach((btn, i) => {
         const has = choices[i] != null && choices[i] !== "";

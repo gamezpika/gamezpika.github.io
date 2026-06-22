@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1a1f2e">
+    <meta property="og:title" content="EduArena 技術 Demo">
+    <meta property="og:description" content="海洋地圖 / 地圖編輯器 / Boss Arena 三個技術展示">
+    <title>EduArena 技術 Demo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            width: 100%; min-height: 100vh; min-height: 100dvh;
+            background: linear-gradient(180deg, #0d1019 0%, #1a3050 100%);
+            color: #e0e0e0;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Microsoft JhengHei", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+        .wrap {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 40px 24px 60px;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            gap: 32px;
+        }
+        header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fdc500, #ff7a1c, #ff5050);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 8px;
+        }
+        header .sub {
+            color: #8fa0bd;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .cards { display: flex; flex-direction: column; gap: 16px; }
+        .card {
+            display: block;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 22px 22px;
+            color: inherit;
+            text-decoration: none;
+            transition: transform 0.15s, background 0.15s, border-color 0.15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .card:hover, .card:active {
+            background: rgba(253, 197, 0, 0.08);
+            border-color: rgba(253, 197, 0, 0.4);
+            transform: translateY(-2px);
+        }
+        .card-head {
+            display: flex; align-items: center; gap: 16px;
+            margin-bottom: 10px;
+        }
+        .card-icon {
+            width: 56px; height: 56px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px;
+            border-radius: 14px;
+            background: rgba(0, 0, 0, 0.3);
+            flex-shrink: 0;
+        }
+        .card-title {
+            font-size: 18px; font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        .card-url {
+            font-size: 11px;
+            color: #6f7d99;
+            font-family: ui-monospace, "SF Mono", monospace;
+        }
+        .card-body {
+            font-size: 13px;
+            color: #a8b3c8;
+            line-height: 1.65;
+        }
+        .card-tags {
+            display: flex; flex-wrap: wrap; gap: 6px;
+            margin-top: 12px;
+        }
+        .tag {
+            display: inline-block;
+            background: rgba(253, 197, 0, 0.12);
+            color: #fdc500;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        footer {
+            margin-top: auto;
+            font-size: 11px;
+            color: #5a6b88;
+            text-align: center;
+            line-height: 1.6;
+        }
+        @media (max-width: 480px) {
+            .wrap { padding: 28px 18px 48px; gap: 24px; }
+            header h1 { font-size: 26px; }
+            .card { padding: 18px; }
+            .card-icon { width: 48px; height: 48px; font-size: 26px; }
+            .card-title { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrap">
+
+    <header>
+        <h1>EduArena 技術 Demo</h1>
+        <div class="sub">技術展示頁，點卡片進入</div>
+    </header>
+
+    <div class="cards">
+
+        <a class="card" href="/moba-demo.html">
+            <div class="card-head">
+                <div class="card-icon">🏰</div>
+                <div>
+                    <div class="card-title">3V3 三路答題對戰</div>
+                    <div class="card-url">/moba-demo.html</div>
+                </div>
+            </div>
+            <div class="card-body">
+                MOBA 式三路對戰：紅藍兩隊各守三路，答對題目推進自己那路英雄、把對面逼退，先推爆對面基地獲勝。讀書＝戰力。（單機 / AI 驗玩法版，未來做真人 6 人連線）
+            </div>
+            <div class="card-tags">
+                <span class="tag">MOBA</span>
+                <span class="tag">答題對戰</span>
+                <span class="tag">Phaser</span>
+            </div>
+        </a>
+
+        <a class="card" href="/onboarding.html">
+            <div class="card-head">
+                <div class="card-icon">🧚</div>
+                <div>
+                    <div class="card-title">小智學園 · 新手任務</div>
+                    <div class="card-url">/onboarding.html</div>
+                </div>
+            </div>
+            <div class="card-body">
+                世界觀 onboarding：撿手機穿越學園島 → 系統精靈「小智」登場 → 5 步新手任務（解題 / 商店開箱 / PK / 孵寵物 / 打魔王）。純前端腳本化演出。
+            </div>
+            <div class="card-tags">
+                <span class="tag">世界觀</span>
+                <span class="tag">系統精靈</span>
+                <span class="tag">CSS 動畫</span>
+            </div>
+        </a>
+
+        <a class="card" href="/ocean.html">
+            <div class="card-head">
+                <div class="card-icon">🌊</div>
+                <div>
+                    <div class="card-title">海洋地圖</div>
+                    <div class="card-url">/ocean.html</div>
+                </div>
+            </div>
+            <div class="card-body">
+                3D 透視縮放海洋地圖 + 慣性視差三層 + 彈簧物理引擎 + iPhone 殼包裝。
+            </div>
+            <div class="card-tags">
+                <span class="tag">3D 透視</span>
+                <span class="tag">彈簧物理</span>
+                <span class="tag">手機 LIFF</span>
+            </div>
+        </a>
+
+        <a class="card" href="/map-editor.html">
+            <div class="card-head">
+                <div class="card-icon">🛠</div>
+                <div>
+                    <div class="card-title">地圖編輯器</div>
+                    <div class="card-url">/map-editor.html</div>
+                </div>
+            </div>
+            <div class="card-body">
+                isometric 地圖視覺編輯器：polygon 多邊形拖拉、path waypoint 點擊新增、JSON config 匯出 + localStorage 自動儲存。
+            </div>
+            <div class="card-tags">
+                <span class="tag">SVG 編輯</span>
+                <span class="tag">配置驅動</span>
+                <span class="tag">JSON export</span>
+            </div>
+        </a>
+
+        <a class="card" href="/boss-arena.html">
+            <div class="card-head">
+                <div class="card-icon">⚔️</div>
+                <div>
+                    <div class="card-title">Boss Arena</div>
+                    <div class="card-url">/boss-arena.html</div>
+                </div>
+            </div>
+            <div class="card-body">
+                等距 2.5D 魔王戰 demo：5 格棋盤移動機制 + chibi 人物 + 連線戰鬥。
+            </div>
+            <div class="card-tags">
+                <span class="tag">2.5D 等距</span>
+                <span class="tag">棋盤移動</span>
+                <span class="tag">魔王戰</span>
+            </div>
+        </a>
+
+        <a class="card" href="/village-web/">
+            <div class="card-head">
+                <div class="card-icon">🗺</div>
+                <div>
+                    <div class="card-title">探索地圖</div>
+                    <div class="card-url">/village-web/</div>
+                </div>
+            </div>
+            <div class="card-body">
+                Phaser 2.5D 村莊：iso 視角 + 搖桿 / WASD 走、5 棟村屋點開互動、噴泉粒子水花動畫、Y-sort 前後遮擋、polygon 底座擋牆，全 JSON config 驅動。
+            </div>
+            <div class="card-tags">
+                <span class="tag">Phaser 2.5D</span>
+                <span class="tag">iso 視角</span>
+                <span class="tag">JSON 驅動</span>
+            </div>
+        </a>
+
+        <a class="card" href="/pvp-demo.html">
+            <div class="card-head">
+                <div class="card-icon">🤺</div>
+                <div>
+                    <div class="card-title">PVP Demo</div>
+                    <div class="card-url">/pvp-demo.html</div>
+                </div>
+            </div>
+            <div class="card-body">
+                雙人答題競速 PK：對手隨機 24 職業 + 招式 VFX + 先到 10 分贏。
+            </div>
+            <div class="card-tags">
+                <span class="tag">PVP</span>
+                <span class="tag">答題競速</span>
+                <span class="tag">楓之谷風 VFX</span>
+            </div>
+        </a>
+
+    </div>
+
+    <footer>
+        EduArena Skill Demo · Railway · Caddy<br>
+        gamezpika/eduarena-skill-demo
+    </footer>
+
+</div>
+
+</body>
+</html>

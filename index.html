@@ -1,262 +1,154 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#1a1f2e">
-    <meta property="og:title" content="EduArena 技術 Demo">
-    <meta property="og:description" content="海洋地圖 / 地圖編輯器 / Boss Arena 三個技術展示">
-    <title>EduArena 技術 Demo</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body {
-            width: 100%; min-height: 100vh; min-height: 100dvh;
-            background: linear-gradient(180deg, #0d1019 0%, #1a3050 100%);
-            color: #e0e0e0;
-            font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Microsoft JhengHei", sans-serif;
-            -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
-        }
-        .wrap {
-            max-width: 720px;
-            margin: 0 auto;
-            padding: 40px 24px 60px;
-            min-height: 100vh;
-            display: flex; flex-direction: column;
-            gap: 32px;
-        }
-        header h1 {
-            font-size: 32px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #fdc500, #ff7a1c, #ff5050);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 8px;
-        }
-        header .sub {
-            color: #8fa0bd;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-        .cards { display: flex; flex-direction: column; gap: 16px; }
-        .card {
-            display: block;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 16px;
-            padding: 22px 22px;
-            color: inherit;
-            text-decoration: none;
-            transition: transform 0.15s, background 0.15s, border-color 0.15s;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .card:hover, .card:active {
-            background: rgba(253, 197, 0, 0.08);
-            border-color: rgba(253, 197, 0, 0.4);
-            transform: translateY(-2px);
-        }
-        .card-head {
-            display: flex; align-items: center; gap: 16px;
-            margin-bottom: 10px;
-        }
-        .card-icon {
-            width: 56px; height: 56px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 32px;
-            border-radius: 14px;
-            background: rgba(0, 0, 0, 0.3);
-            flex-shrink: 0;
-        }
-        .card-title {
-            font-size: 18px; font-weight: 700;
-            color: #fff;
-            margin-bottom: 4px;
-        }
-        .card-url {
-            font-size: 11px;
-            color: #6f7d99;
-            font-family: ui-monospace, "SF Mono", monospace;
-        }
-        .card-body {
-            font-size: 13px;
-            color: #a8b3c8;
-            line-height: 1.65;
-        }
-        .card-tags {
-            display: flex; flex-wrap: wrap; gap: 6px;
-            margin-top: 12px;
-        }
-        .tag {
-            display: inline-block;
-            background: rgba(253, 197, 0, 0.12);
-            color: #fdc500;
-            padding: 3px 10px;
-            border-radius: 999px;
-            font-size: 11px;
-            font-weight: 700;
-        }
-        footer {
-            margin-top: auto;
-            font-size: 11px;
-            color: #5a6b88;
-            text-align: center;
-            line-height: 1.6;
-        }
-        @media (max-width: 480px) {
-            .wrap { padding: 28px 18px 48px; gap: 24px; }
-            header h1 { font-size: 26px; }
-            .card { padding: 18px; }
-            .card-icon { width: 48px; height: 48px; font-size: 26px; }
-            .card-title { font-size: 16px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#2a3e1f">
+<title>小智學園 — 登入</title>
+<!-- Google 登入（GIS）。放在根目錄(無 COEP)才能正常載入跨來源資源 -->
+<script src="https://accounts.google.com/gsi/client" async></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; width: 100%; overflow: hidden; font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif; }
+  body { position: fixed; inset: 0; }
+  .bg { position: absolute; inset: 0; background: url("village-web/village_ground.webp") center/cover no-repeat;
+    filter: blur(5px) brightness(.62) saturate(1.05); transform: scale(1.08); }
+  .bg-tint { position: absolute; inset: 0; background: radial-gradient(120% 90% at 50% 30%, rgba(40,28,12,.15), rgba(30,20,8,.6)); }
+  .wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 22px; overflow-y: auto; }
+
+  .panel { position: relative; width: 100%; max-width: 360px; border-radius: 24px; padding: 26px 22px 18px;
+    background:
+      radial-gradient(circle at 16px 16px, #ffe48f 3px, rgba(120,80,40,.55) 4px, transparent 5px),
+      radial-gradient(circle at calc(100% - 16px) 16px, #ffe48f 3px, rgba(120,80,40,.55) 4px, transparent 5px),
+      radial-gradient(circle at 16px calc(100% - 16px), #ffe48f 3px, rgba(120,80,40,.55) 4px, transparent 5px),
+      radial-gradient(circle at calc(100% - 16px) calc(100% - 16px), #ffe48f 3px, rgba(120,80,40,.55) 4px, transparent 5px),
+      linear-gradient(170deg, #fff7e4, #fbe9c4);
+    border: 4px solid #8a5a2b;
+    box-shadow: 0 18px 50px rgba(0,0,0,.5), inset 0 2px 4px rgba(255,255,255,.6), inset 0 -3px 10px rgba(150,100,50,.18);
+  }
+  .logo { text-align: center; margin-bottom: 4px; }
+  .logo .mk { font-size: 34px; line-height: 1; filter: drop-shadow(0 2px 2px rgba(120,80,30,.3)); }
+  .logo .nm { font-size: 27px; font-weight: 900; color: #7a4715; letter-spacing: 3px; margin-top: 4px;
+    text-shadow: 0 1px 0 #fff, 0 2px 4px rgba(150,100,40,.25); }
+  .logo .sub { font-size: 12.5px; color: #a9803f; font-weight: 700; margin-top: 3px; letter-spacing: 1px; }
+  .divider { display: flex; align-items: center; gap: 8px; color: #b58e54; font-size: 12px; font-weight: 700; margin: 16px 2px 12px; }
+  .divider::before, .divider::after { content: ""; flex: 1; height: 2px; border-radius: 2px;
+    background: linear-gradient(90deg, transparent, #d9b577, transparent); }
+
+  /* Google 官方按鈕容器（GIS 渲染進去；置中） */
+  #g-signin { display: flex; justify-content: center; margin-bottom: 10px; min-height: 44px; }
+
+  .sbtn { display: flex; align-items: center; gap: 12px; width: 100%; border: 2px solid #e6cf9d; border-radius: 14px;
+    background: #fffdf6; padding: 12px 14px; margin-bottom: 10px; cursor: pointer; transition: transform .08s, box-shadow .12s;
+    box-shadow: 0 3px 0 #e3c089, 0 5px 12px rgba(0,0,0,.12); }
+  .sbtn:active { transform: translateY(2px); box-shadow: 0 1px 0 #e3c089, 0 2px 6px rgba(0,0,0,.12); }
+  .sbtn .ic { width: 34px; height: 34px; flex: none; border-radius: 9px; display: flex; align-items: center; justify-content: center; }
+  .sbtn .tx { font-size: 16px; font-weight: 800; color: #5a3a18; }
+  .ic-fb { background: #1877f2; }
+  .ic-line { background: #06c755; }
+  .ic-apple { background: #111; }
+
+  .play { width: 100%; border: 3px solid #6b3f12; border-radius: 16px; padding: 13px; margin-top: 6px; cursor: pointer;
+    font-size: 19px; font-weight: 900; color: #fff7e6; letter-spacing: 4px; text-shadow: 0 1px 2px rgba(0,0,0,.45);
+    background: linear-gradient(180deg, #f0a83e, #d4781f);
+    box-shadow: 0 5px 0 #9a5414, 0 8px 16px rgba(0,0,0,.3), inset 0 2px 2px rgba(255,255,255,.4);
+    animation: glow 1.6s ease-in-out infinite; }
+  .play:active { transform: translateY(3px); box-shadow: 0 2px 0 #9a5414, 0 3px 8px rgba(0,0,0,.3), inset 0 2px 2px rgba(255,255,255,.4); animation: none; }
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 5px 0 #9a5414, 0 8px 16px rgba(0,0,0,.3), inset 0 2px 2px rgba(255,255,255,.4); }
+    50%      { box-shadow: 0 5px 0 #9a5414, 0 0 18px 4px rgba(255,200,110,.85), inset 0 2px 2px rgba(255,255,255,.4); }
+  }
+  .foot { text-align: center; margin-top: 14px; font-size: 12px; color: #b08a4e; font-weight: 600; }
+  .foot a { color: #b08a4e; text-decoration: none; }
+  .foot span { opacity: .5; margin: 0 7px; }
+
+  .toast { position: fixed; left: 50%; bottom: 40px; transform: translateX(-50%) translateY(20px);
+    background: rgba(50,34,16,.94); color: #fff7e6; font-weight: 700; font-size: 14px; padding: 11px 20px; border-radius: 999px;
+    border: 2px solid #c8945a; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; z-index: 50; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
 </head>
 <body>
-
+<div class="bg"></div>
+<div class="bg-tint"></div>
 <div class="wrap">
-
-    <header>
-        <h1>EduArena 技術 Demo</h1>
-        <div class="sub">技術展示頁，點卡片進入</div>
-    </header>
-
-    <div class="cards">
-
-        <a class="card" href="/moba-demo.html">
-            <div class="card-head">
-                <div class="card-icon">🏰</div>
-                <div>
-                    <div class="card-title">3V3 三路答題對戰</div>
-                    <div class="card-url">/moba-demo.html</div>
-                </div>
-            </div>
-            <div class="card-body">
-                MOBA 式三路對戰：紅藍兩隊各守三路，答對題目推進自己那路英雄、把對面逼退，先推爆對面基地獲勝。讀書＝戰力。（單機 / AI 驗玩法版，未來做真人 6 人連線）
-            </div>
-            <div class="card-tags">
-                <span class="tag">MOBA</span>
-                <span class="tag">答題對戰</span>
-                <span class="tag">Phaser</span>
-            </div>
-        </a>
-
-        <a class="card" href="/onboarding.html">
-            <div class="card-head">
-                <div class="card-icon">🧚</div>
-                <div>
-                    <div class="card-title">小智學園 · 新手任務</div>
-                    <div class="card-url">/onboarding.html</div>
-                </div>
-            </div>
-            <div class="card-body">
-                世界觀 onboarding：撿手機穿越學園島 → 系統精靈「小智」登場 → 5 步新手任務（解題 / 商店開箱 / PK / 孵寵物 / 打魔王）。純前端腳本化演出。
-            </div>
-            <div class="card-tags">
-                <span class="tag">世界觀</span>
-                <span class="tag">系統精靈</span>
-                <span class="tag">CSS 動畫</span>
-            </div>
-        </a>
-
-        <a class="card" href="/ocean.html">
-            <div class="card-head">
-                <div class="card-icon">🌊</div>
-                <div>
-                    <div class="card-title">海洋地圖</div>
-                    <div class="card-url">/ocean.html</div>
-                </div>
-            </div>
-            <div class="card-body">
-                3D 透視縮放海洋地圖 + 慣性視差三層 + 彈簧物理引擎 + iPhone 殼包裝。
-            </div>
-            <div class="card-tags">
-                <span class="tag">3D 透視</span>
-                <span class="tag">彈簧物理</span>
-                <span class="tag">手機 LIFF</span>
-            </div>
-        </a>
-
-        <a class="card" href="/map-editor.html">
-            <div class="card-head">
-                <div class="card-icon">🛠</div>
-                <div>
-                    <div class="card-title">地圖編輯器</div>
-                    <div class="card-url">/map-editor.html</div>
-                </div>
-            </div>
-            <div class="card-body">
-                isometric 地圖視覺編輯器：polygon 多邊形拖拉、path waypoint 點擊新增、JSON config 匯出 + localStorage 自動儲存。
-            </div>
-            <div class="card-tags">
-                <span class="tag">SVG 編輯</span>
-                <span class="tag">配置驅動</span>
-                <span class="tag">JSON export</span>
-            </div>
-        </a>
-
-        <a class="card" href="/boss-arena.html">
-            <div class="card-head">
-                <div class="card-icon">⚔️</div>
-                <div>
-                    <div class="card-title">Boss Arena</div>
-                    <div class="card-url">/boss-arena.html</div>
-                </div>
-            </div>
-            <div class="card-body">
-                等距 2.5D 魔王戰 demo：5 格棋盤移動機制 + chibi 人物 + 連線戰鬥。
-            </div>
-            <div class="card-tags">
-                <span class="tag">2.5D 等距</span>
-                <span class="tag">棋盤移動</span>
-                <span class="tag">魔王戰</span>
-            </div>
-        </a>
-
-        <a class="card" href="/village-web/">
-            <div class="card-head">
-                <div class="card-icon">🗺</div>
-                <div>
-                    <div class="card-title">探索地圖</div>
-                    <div class="card-url">/village-web/</div>
-                </div>
-            </div>
-            <div class="card-body">
-                Phaser 2.5D 村莊：iso 視角 + 搖桿 / WASD 走、5 棟村屋點開互動、噴泉粒子水花動畫、Y-sort 前後遮擋、polygon 底座擋牆，全 JSON config 驅動。
-            </div>
-            <div class="card-tags">
-                <span class="tag">Phaser 2.5D</span>
-                <span class="tag">iso 視角</span>
-                <span class="tag">JSON 驅動</span>
-            </div>
-        </a>
-
-        <a class="card" href="/pvp-demo.html">
-            <div class="card-head">
-                <div class="card-icon">🤺</div>
-                <div>
-                    <div class="card-title">PVP Demo</div>
-                    <div class="card-url">/pvp-demo.html</div>
-                </div>
-            </div>
-            <div class="card-body">
-                雙人答題競速 PK：對手隨機 24 職業 + 招式 VFX + 先到 10 分贏。
-            </div>
-            <div class="card-tags">
-                <span class="tag">PVP</span>
-                <span class="tag">答題競速</span>
-                <span class="tag">楓之谷風 VFX</span>
-            </div>
-        </a>
-
+  <div class="panel">
+    <div class="logo">
+      <div class="mk">🎓</div>
+      <div class="nm">小智學園</div>
+      <div class="sub">EduArena · 一起快樂學習</div>
     </div>
+    <div class="divider">選擇登入方式</div>
 
-    <footer>
-        EduArena Skill Demo · Railway · Caddy<br>
-        gamezpika/eduarena-skill-demo
-    </footer>
+    <!-- Google 官方登入按鈕（GIS 渲染）；client id 未設定時 fallback 成「即將推出」自訂鈕 -->
+    <div id="g-signin"></div>
+    <button class="sbtn" id="g-fallback" data-prov="Google" style="display:none;">
+      <span class="ic" style="background:#fff;border:1px solid #ececec;"><svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.76h3.56c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.56-2.76c-.98.66-2.23 1.06-3.72 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/></svg></span>
+      <span class="tx">使用 Google 登入</span>
+    </button>
 
+    <button class="sbtn" data-prov="Facebook">
+      <span class="ic ic-fb"><svg width="18" height="18" viewBox="0 0 24 24"><path fill="#fff" d="M15.12 8.4h-2.1V7c0-.66.44-.8.75-.8h1.32V3.96L13.06 3.95c-2.02 0-2.48 1.5-2.48 2.46V8.4H9v2.55h1.58V21h2.44v-10.05h1.86l.24-2.55z"/></svg></span>
+      <span class="tx">使用 Facebook 登入</span>
+    </button>
+    <button class="sbtn" data-prov="LINE">
+      <span class="ic ic-line"><svg width="20" height="20" viewBox="0 0 24 24"><path fill="#fff" d="M12 4C6.9 4 2.75 7.34 2.75 11.46c0 3.69 3.29 6.78 7.73 7.37.3.06.71.2.81.46.09.24.06.6.03.85l-.13.79c-.04.24-.19.93.82.5 1-.42 5.4-3.18 7.37-5.45 1.36-1.49 2.01-3 2.01-4.97C21.25 7.34 17.1 4 12 4z"/></svg></span>
+      <span class="tx">使用 LINE 登入</span>
+    </button>
+    <button class="sbtn" data-prov="Apple">
+      <span class="ic ic-apple"><svg width="18" height="18" viewBox="0 0 24 24"><path fill="#fff" d="M16.36 12.78c-.02-2.05 1.67-3.03 1.75-3.08-0.95-1.4-2.43-1.59-2.96-1.61-1.26-.13-2.46.74-3.1.74-.64 0-1.62-.72-2.67-.7-1.37.02-2.64.8-3.35 2.03-1.43 2.48-.37 6.15 1.02 8.16.68.99 1.49 2.1 2.55 2.06 1.02-.04 1.41-.66 2.65-.66 1.23 0 1.58.66 2.66.64 1.1-.02 1.79-1 2.46-2 .78-1.15 1.1-2.26 1.12-2.32-.02-.01-2.15-.83-2.18-3.29zM14.3 6.4c.56-.68.94-1.62.84-2.56-.81.03-1.79.54-2.37 1.22-.52.6-.97 1.56-.85 2.48.9.07 1.82-.46 2.38-1.14z"/></svg></span>
+      <span class="tx">使用 Apple 登入</span>
+    </button>
+
+    <button class="play" onclick="location.href='village-web/index.html'">試 玩</button>
+
+    <div class="foot"><a href="#">服務條款</a><span>|</span><a href="#">隱私政策</a></div>
+  </div>
 </div>
+<div class="toast" id="toast"></div>
+<script>
+  // ⚠️ 把下面換成你的 Google 用戶端 ID（xxxx.apps.googleusercontent.com）
+  var GOOGLE_CLIENT_ID = "978002960103-ca65annj4hp40f92eo84hsgqhhlra5na.apps.googleusercontent.com";
 
+  var toast = document.getElementById("toast"), tT;
+  function showToast(msg) {
+    toast.textContent = msg; toast.classList.add("show"); clearTimeout(tT);
+    tT = setTimeout(function () { toast.classList.remove("show"); }, 2200);
+  }
+
+  // Google 登入成功 → 存 ID token → 去開場動畫(onboarding)用 Google 身分建角色
+  function onGoogleCredential(resp) {
+    if (!resp || !resp.credential) { showToast("Google 登入沒拿到憑證，再試一次"); return; }
+    try { sessionStorage.setItem("eduarena_google_idtoken", resp.credential); } catch (e) {}
+    location.href = "onboarding.html";
+  }
+
+  // 等 GIS 載入後初始化；client id 沒填好就用 fallback 鈕(即將推出)
+  function initGoogle() {
+    var ready = window.google && google.accounts && google.accounts.id;
+    var hasCid = GOOGLE_CLIENT_ID && GOOGLE_CLIENT_ID.indexOf("apps.googleusercontent.com") > 0;
+    if (!hasCid || !ready) {
+      // 還沒設定 client id 或 GIS 沒載到 → 顯示 fallback 自訂鈕
+      document.getElementById("g-fallback").style.display = "flex";
+      return;
+    }
+    google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: onGoogleCredential });
+    google.accounts.id.renderButton(document.getElementById("g-signin"),
+      { type: "standard", theme: "outline", size: "large", text: "signin_with", shape: "pill", locale: "zh_TW", width: 300 });
+  }
+  // GIS 是 async 載入，輪詢等它好（最多 ~4 秒）
+  (function waitGIS(n) {
+    if (window.google && google.accounts && google.accounts.id) return initGoogle();
+    if (n <= 0) return initGoogle();   // 逾時 → fallback
+    setTimeout(function () { waitGIS(n - 1); }, 200);
+  })(20);
+
+  // 其他社群鈕（含 Google fallback）：尚未接 OAuth → 即將推出
+  document.querySelectorAll(".sbtn").forEach(function (b) {
+    b.addEventListener("click", function () {
+      showToast(b.dataset.prov + " 登入即將推出，先點「試玩」進去逛逛吧！");
+    });
+  });
+</script>
 </body>
 </html>

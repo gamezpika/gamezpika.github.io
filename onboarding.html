@@ -388,29 +388,52 @@ function next(){ stage++; run(); }
 const DEMO_API = "https://eduarena-tutoring-production.up.railway.app";
 async function createDemoAccount(name, genderLabel, grade){
   try{
-    const uid = "demo_" + Date.now().toString(36) + Math.floor(Math.random()*1e4).toString(36);
     const j = (r)=>r.json();
-    await fetch(DEMO_API+"/api/auth", {method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({type:"web", userId:uid, name})}).then(j);
+    // Google 登入會在登入頁把 ID token 存進 sessionStorage → 這裡用 Google 身分建角色(持久)
+    let gidt = ""; try { gidt = sessionStorage.getItem("eduarena_google_idtoken") || ""; } catch(e){}
+    let platform, uid;
+    if (gidt) {
+      platform = "google";
+      const auth = await fetch(DEMO_API+"/api/auth", {method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({type:"google", idToken:gidt})}).then(j).catch(()=>null);
+      if (!auth || !auth.account) { console.warn("[google auth] 失敗"); return; }
+      uid = auth.account.platformUserId;
+    } else {
+      platform = "web";
+      uid = "demo_" + Date.now().toString(36) + Math.floor(Math.random()*1e4).toString(36);
+      await fetch(DEMO_API+"/api/auth", {method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({type:"web", userId:uid, name})}).then(j);
+    }
+    // 建小孩帳號（Google 帳號最多 3 個）
     const created = await fetch(DEMO_API+"/api/auth/child/create", {method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({platform:"web", platform_user_id:uid, child_name:name, grade:Number(grade), semester:1})}).then(j);
-    const cid = created && created.child && created.child.id;
+      body:JSON.stringify({platform, platform_user_id:uid, child_name:name, grade:Number(grade), semester:1})}).then(j);
+    let cid = created && created.child && created.child.id;
+    const isNew = !!cid;
+    // Google 帳號已滿 3 人 → 不卡住，改用既有最後一個小孩進場
+    if (!cid && created && created.error === "max_children") {
+      const re = await fetch(DEMO_API+"/api/auth", {method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify(gidt ? {type:"google", idToken:gidt} : {type:"web", userId:uid, name})}).then(j).catch(()=>null);
+      const kids = (re && re.children) || [];
+      if (kids.length) cid = kids[kids.length-1].id;
+    }
     if(!cid) return;
     const sel = await fetch(DEMO_API+"/api/auth/child/select", {method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({platform:"web", platform_user_id:uid, child_id:cid})}).then(j);
+      body:JSON.stringify({platform, platform_user_id:uid, child_id:cid})}).then(j);
     const token = sel && sel.token;
     if(!token) return;
     localStorage.setItem("eduarena_demo_token", token);
     localStorage.setItem("eduarena_demo_uid", uid);
     localStorage.setItem("eduarena_demo_child_id", String(cid));
-    // 方案A：灌一些國語星星，讓孔丘前幾關現場可演達成→領獎→解鎖
-    await fetch(DEMO_API+"/api/demo/grant-stars?subject=chinese&pct=60",
-      {method:"POST", headers:{"Authorization":"Bearer "+token}}).then(j).catch(()=>{});
-    // 初始裝備真綁定到帳號：金幣300 + 美工刀(攻擊+5) + 學生服(防禦+3) + 孵小雞
-    await fetch(DEMO_API+"/api/demo/grant-starter",
-      {method:"POST", headers:{"Authorization":"Bearer "+token}})
-      .then(r=>{ if(!r.ok) console.warn("[grant-starter] 綁定失敗 HTTP", r.status); return r.json().catch(()=>null); })
-      .catch(e=>console.warn("[grant-starter] 綁定失敗", e));
+    try { sessionStorage.removeItem("eduarena_google_idtoken"); } catch(e){}
+    // 只有「新建的小孩」才灌初始進度＋裝備（既有小孩不重灌）
+    if (isNew) {
+      await fetch(DEMO_API+"/api/demo/grant-stars?subject=chinese&pct=60",
+        {method:"POST", headers:{"Authorization":"Bearer "+token}}).then(j).catch(()=>{});
+      await fetch(DEMO_API+"/api/demo/grant-starter",
+        {method:"POST", headers:{"Authorization":"Bearer "+token}})
+        .then(r=>{ if(!r.ok) console.warn("[grant-starter] 綁定失敗 HTTP", r.status); return r.json().catch(()=>null); })
+        .catch(e=>console.warn("[grant-starter] 綁定失敗", e));
+    }
   }catch(e){ console.warn("[demo account] 建立失敗，劇情照常continue:", e); }
 }
 

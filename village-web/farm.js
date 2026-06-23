@@ -69,9 +69,9 @@
     localStorage.setItem(LS_STOCK, JSON.stringify(seed));
     return seed;
   }
-  function saveStock(a) { localStorage.setItem(LS_STOCK, JSON.stringify(a)); }
+  function saveStock(a) { localStorage.setItem(LS_STOCK, JSON.stringify(a)); if (window.DemoState) window.DemoState.save("campus_livestock"); }
   function loadHarvest() { try { return JSON.parse(localStorage.getItem(LS_HARVEST)) || {}; } catch (e) { return {}; } }
-  function saveHarvest(h) { localStorage.setItem(LS_HARVEST, JSON.stringify(h)); }
+  function saveHarvest(h) { localStorage.setItem(LS_HARVEST, JSON.stringify(h)); if (window.DemoState) window.DemoState.save("campus_harvest"); }
   function newId() { _seq += 1; return "a" + Date.now() + "_" + _seq; }
 
   function stageOf(rec) {
@@ -349,4 +349,7 @@
     if (typeof _origOpenShop === "function") return _origOpenShop(id, cb);
   };
   window.openRanch = openRanch;
+  // hydrate 後 campus_livestock 變了→若牧場已掛上(玩家正在 campus)，用新 localStorage 重建動物。
+  // 牧場 attach 時 spawn 一次、之後只跑動畫不重讀，故需這個鉤子（種田 crop.js 每幀 reconcile 不用）。
+  window.refreshRanch = function () { if (Ranch.scene) Ranch.attach(Ranch.scene); };
 })();

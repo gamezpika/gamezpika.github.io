@@ -1,11 +1,16 @@
-// demo_state.js — demo 站前端狀態接後端（職業 village_job / 精通 village_mastery）
-// 目的：綁帳號 + 跨裝置 + 後台 test-tools 改得到。原本這些是純前端 localStorage。
-// 機制：進村莊先 hydrate（後端→localStorage），寫入時 write-through（localStorage→後端，debounce）。
-// 訪客（沒登入、沒 token）不同步，維持純本地。Phase 1 只管職業+精通；Phase 2 再把 equip/farm 鍵加進 KEYS。
+// demo_state.js — demo 站前端狀態接後端
+// Phase 1：職業 village_job / 精通 village_mastery（全域鍵：localStorage 名＝後端名）。
+// Phase 2：裝備 village_equip / 造型 village_outfits_owned / 農場 campus_crops、campus_harvest、campus_livestock
+//          （accNS「base::child_id」帳號前綴鍵：後端存 base 名，localStorage 用 accNS(base)）。
+// 目的：綁帳號 + 跨裝置 + 後台改得到。機制：進村莊 hydrate（後端→localStorage），寫入時 write-through（debounce）。
+// 訪客（沒 token）不同步，維持純本地。
 (function () {
   var API = "https://eduarena-tutoring-production.up.railway.app";
-  var KEYS = ["village_job", "village_mastery"];
-  var OWNER_KEY = "demo_state_owner";   // 這兩個 global 鍵目前屬於哪個 child_id（用來分辨「我的舊資料」vs「別帳號殘留」）
+  var GLOBAL_KEYS = ["village_job", "village_mastery"];
+  var NS_KEYS = ["village_equip", "village_outfits_owned", "campus_crops", "campus_harvest", "campus_livestock"];
+  var ALL_KEYS = GLOBAL_KEYS.concat(NS_KEYS);
+  var OWNER_KEY = "demo_state_owner";          // 全域鍵歸屬哪個 child_id（防共用裝置串帳號）
+  var NS_SYNCED_KEY = "demo_state_ns_synced";  // 前綴鍵已同步集合 {"base::cid":true}（分辨 rollout 遷移 vs admin 刪除清掉）
 
   function token() {
     try { return localStorage.getItem("eduarena_demo_token") || ""; } catch (e) { return ""; }
@@ -13,18 +18,39 @@
   function childId() {
     try { return localStorage.getItem("eduarena_demo_child_id") || ""; } catch (e) { return ""; }
   }
+  function isNS(base) { return NS_KEYS.indexOf(base) >= 0; }
 
-  // dirty[k]＝這鍵本頁被本地改過（玩家選職業/長精通，或舊資料待遷移）：要上傳，且 hydrate 回應不准覆蓋。
+  // 前綴鍵的實際 localStorage 名：在「載入當下」快取 accNS(base)——跟 farm.js/crop.js/shop.js 的 const 同一時點、
+  // 同一 child_id。否則訪客 provision 後 child_id 由無變有，demo_state 動態算出的鍵會跟 readers 當初寫的鍵對不上。
+  var NS_LS = {};
+  try {
+    for (var _i = 0; _i < NS_KEYS.length; _i++) {
+      var _b = NS_KEYS[_i];
+      NS_LS[_b] = (typeof window.accNS === "function") ? window.accNS(_b) : _b;
+    }
+  } catch (e) {}
+  function lsKey(base) { return isNS(base) ? (NS_LS[base] || base) : base; }
+
+  function loadNsSynced() {
+    try { var o = JSON.parse(localStorage.getItem(NS_SYNCED_KEY) || "{}"); return (o && typeof o === "object") ? o : {}; }
+    catch (e) { return {}; }
+  }
+  function markNsSynced(base, cid) {
+    try { var o = loadNsSynced(); o[base + "::" + cid] = true; localStorage.setItem(NS_SYNCED_KEY, JSON.stringify(o)); } catch (e) {}
+  }
+  function isNsSynced(base, cid) { return loadNsSynced()[base + "::" + cid] === true; }
+
+  // dirty[base]＝這鍵本頁被本地改過（玩家操作或舊資料待遷移）：要上傳，且 hydrate 回應不准覆蓋。
   var timer = null, dirty = {};
 
-  // 只把 dirty 鍵 POST 回後端（後端是部分鍵 merge）。keepalive=true 用於離開頁面時仍能送達。
-  // 只送 dirty——避免在 hydrate 清掉別帳號殘留前，把那些非 dirty 的舊值夾帶上傳到新帳號。
+  // 只把 dirty 的 base 鍵 POST 回後端（後端是部分鍵 merge）。keepalive=true 用於離開頁面時仍能送達。
   function postState(keepalive) {
     var t = token(); if (!t) return;
+    var cid = childId();
     var sent = {};
-    KEYS.forEach(function (k) {
-      if (!dirty[k]) return;
-      try { var v = localStorage.getItem(k); if (v != null) sent[k] = v; } catch (e) {}
+    ALL_KEYS.forEach(function (base) {
+      if (!dirty[base]) return;
+      try { var v = localStorage.getItem(lsKey(base)); if (v != null) sent[base] = v; } catch (e) {}
     });
     var sentKeys = Object.keys(sent);
     if (!sentKeys.length) return;
@@ -37,10 +63,12 @@
     try {
       fetch(API + "/api/demo/state", opts).then(function (r) {
         if (!r || !r.ok) return;
-        // 上傳成功＝後端已等於本地→清 dirty，讓之後的 hydrate 能套用後端權威值(如 admin reset)。
-        // 但只在這鍵自送出後沒再被改過(值仍相同)才清；若已有新編輯則保留 dirty 續傳。
-        sentKeys.forEach(function (k) {
-          try { if (localStorage.getItem(k) === sent[k]) delete dirty[k]; } catch (e) {}
+        // 上傳成功＝後端已等於本地→清 dirty（但這鍵自送出後有新編輯則保留續傳）；前綴鍵另記「已同步」。
+        sentKeys.forEach(function (base) {
+          try {
+            if (localStorage.getItem(lsKey(base)) === sent[base]) delete dirty[base];
+            if (isNS(base)) markNsSynced(base, cid);
+          } catch (e) {}
         });
       }).catch(function () {});
     } catch (e) {}
@@ -57,16 +85,13 @@
   }
   function flush() {
     if (timer) { clearTimeout(timer); timer = null; }
-    // 不靠 timer 判斷：只要還有未被後端確認的 dirty 鍵就 keepalive 補送
-    // （debounce 已觸發但 fetch 還在途/失敗時，離開頁面也能補上；postState 沒 dirty 會自行 return）。
-    postState(true);
+    postState(true);   // 不靠 timer：只要還有未確認的 dirty 就 keepalive 補送（postState 沒 dirty 會自行 return）
   }
 
-  // hydrate：後端有的鍵覆蓋本地；後端缺鍵時依「這台裝置是否已為這帳號同步過」決定：
-  //   sameOwner（已同步過這帳號）→ 後端全權威，缺鍵＝被清(admin reset / null 刪)→本地跟著清。
-  //   legacy（從沒同步過任何帳號）→ 現有本地值是純前端時代舊資料 → 認領給現帳號 + 標記上傳遷移（救老玩家）。
-  //   其餘（owner 是別帳號：換帳號 / 訪客）→ 不沿用，清掉。
-  // dirty 鍵一律跳過（玩家剛改的新值最大，稍後 scheduleUpload 上傳）。
+  // hydrate：後端有的鍵覆蓋本地；後端缺鍵時——
+  //   前綴鍵(已帳號隔離)：已同步過→被刪→清(尊重 admin/後端刪除)；沒同步過→rollout 舊資料→保留+上傳遷移。
+  //   全域鍵：owner 戳記防串帳號——sameOwner→清(後端權威)；legacy(從沒同步過任何帳號)→遷移；別帳號→清。
+  //   dirty 鍵一律跳過（玩家剛改的新值最大，稍後 scheduleUpload 上傳）。
   function hydrate() {
     var t = token();
     if (!t) return Promise.resolve(false);
@@ -80,23 +105,33 @@
         try { owner = localStorage.getItem(OWNER_KEY) || ""; } catch (e) {}
         var sameOwner = (owner === cid);
         var legacy = (owner === "");
-        KEYS.forEach(function (k) {
+        var prevLivestock = null;
+        try { prevLivestock = localStorage.getItem(lsKey("campus_livestock")); } catch (e) {}
+        ALL_KEYS.forEach(function (base) {
           try {
-            if (dirty[k]) return;   // 本地剛改過→保留玩家新值，不被這次 hydrate 覆蓋
-            if (Object.prototype.hasOwnProperty.call(data, k) && typeof data[k] === "string") {
-              localStorage.setItem(k, data[k]);                       // 後端有值→後端為真相
-            } else if (sameOwner) {
-              localStorage.removeItem(k);                             // 已同步過這帳號、後端現在沒有→後端被清→跟著清
-            } else if (legacy && localStorage.getItem(k) != null) {
-              dirty[k] = true;                                        // 純前端舊資料→保留並標記上傳遷移
+            if (dirty[base]) return;   // 本地剛改過→保留玩家新值
+            var k = lsKey(base);
+            var has = Object.prototype.hasOwnProperty.call(data, base) && typeof data[base] === "string";
+            if (isNS(base)) {
+              if (has) { localStorage.setItem(k, data[base]); markNsSynced(base, cid); }   // 後端有→權威+標記已同步
+              else if (isNsSynced(base, cid)) { localStorage.removeItem(k); }                // 同步過卻沒了→被刪→清
+              else if (localStorage.getItem(k) != null) { dirty[base] = true; }              // 沒同步過→rollout 舊資料→遷移
             } else {
-              localStorage.removeItem(k);                             // 別帳號殘留→清掉不沿用
+              if (has) { localStorage.setItem(k, data[base]); }                              // 後端有→權威
+              else if (sameOwner) { localStorage.removeItem(k); }                            // 已同步這帳號、後端被清→清
+              else if (legacy) { if (localStorage.getItem(k) != null) dirty[base] = true; }  // 純前端舊資料→遷移
+              else { localStorage.removeItem(k); }                                           // 別帳號殘留→清(防串帳號)
             }
           } catch (e) {}
         });
         try { localStorage.setItem(OWNER_KEY, cid); } catch (e) {}
-        // 遷移的舊資料 + 在 token/基準就緒前玩家就改好的 dirty 鍵，現在才有 token，補上傳。
         if (Object.keys(dirty).length) scheduleUpload();
+        // 裝備/造型 hydrate 後可能變→若晚於 Phaser create，主動觸發走路 sprite live-swap（applyWalkOutfit 自帶比對/no-op）。
+        try { if (typeof window.applyWalkOutfit === "function") window.applyWalkOutfit(); } catch (e) {}
+        // 牧場動物只在 attach 時 spawn 一次→livestock 真的變了才重建（種田每幀自刷不用管）。
+        try {
+          if (localStorage.getItem(lsKey("campus_livestock")) !== prevLivestock && typeof window.refreshRanch === "function") window.refreshRanch();
+        } catch (e) {}
         window.__demoStateHydrated = true;
         return true;
       })
@@ -106,7 +141,7 @@
   window.addEventListener("pagehide", flush);
   document.addEventListener("visibilitychange", function () { if (document.hidden) flush(); });
 
-  window.DemoState = { hydrate: hydrate, save: save, flush: flush, KEYS: KEYS };
-  // 載入即同步一次（Phaser 啟動期間就載回，玩家點開職業/精通面板前完成；兩鍵開機都不讀，故 fire-and-forget 安全）
+  window.DemoState = { hydrate: hydrate, save: save, flush: flush, KEYS: ALL_KEYS };
+  // 載入即同步一次（Phaser 啟動期間就載回）
   hydrate();
 })();

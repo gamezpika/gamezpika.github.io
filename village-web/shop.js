@@ -76,7 +76,7 @@
   }
   function addOwnedOutfit(id) {
     const a = ownedOutfits();
-    if (a.indexOf(id) < 0) { a.push(id); try { localStorage.setItem(OUTFIT_OWN_KEY, JSON.stringify(a)); } catch (e) {} }
+    if (a.indexOf(id) < 0) { a.push(id); try { localStorage.setItem(OUTFIT_OWN_KEY, JSON.stringify(a)); if (window.DemoState) window.DemoState.save("village_outfits_owned"); } catch (e) {} }
   }
   function realOutfitId(it) {
     // 資料驅動：EQUIP.body 裡標 shop:true 的造型＝真商品（美人魚/配件類沒入表，自動維持純展示）
@@ -2251,7 +2251,7 @@
   const EQ_ALL = ["body", "hat", "weapon", "pet", "bag"];
   function setEquip(cat, id) {
     const s = getEquip(); s[cat] = id;
-    try { localStorage.setItem(EQ_KEY, JSON.stringify(s)); } catch (e) {}
+    try { localStorage.setItem(EQ_KEY, JSON.stringify(s)); if (window.DemoState) window.DemoState.save("village_equip"); } catch (e) {}
   }
   function getEquip() {
     let s = {};

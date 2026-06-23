@@ -120,7 +120,7 @@
     if (Array.isArray(a)) for (let i = 0; i < PLOTS; i++) out[i] = normRec(a[i]);
     return out;
   }
-  function saveCrops(a) { localStorage.setItem(LS_CROPS, JSON.stringify(a)); }
+  function saveCrops(a) { localStorage.setItem(LS_CROPS, JSON.stringify(a)); if (window.DemoState) window.DemoState.save("campus_crops"); }
   function loadHarvest() {   // 防呆：只接受 plain object，count 取正整數
     let h = null;
     try { h = JSON.parse(localStorage.getItem(LS_HARVEST)); } catch (e) {}
@@ -129,7 +129,7 @@
     for (const k in h) { const v = Math.floor(+h[k]); if (Number.isFinite(v) && v > 0) out[k] = v; }
     return out;
   }
-  function saveHarvest(h) { localStorage.setItem(LS_HARVEST, JSON.stringify(h)); }
+  function saveHarvest(h) { localStorage.setItem(LS_HARVEST, JSON.stringify(h)); if (window.DemoState) window.DemoState.save("campus_harvest"); }
 
   // ---------- 世界裡的田地管理 ----------
   const Farm = {

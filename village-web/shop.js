@@ -2586,17 +2586,17 @@
       }));
     } else if (dhTab === "gear") {
       dhBubble(ov, "選頂帽子、看看你的裝備～");
-      box.innerHTML = `<div class="dh-sub">帽子</div><div class="dh-grid">` +
-        EQUIP.hat.items.map((it) => dhCard({ cat: "hat", id: it.id, img: it.img, name: it.name, sel: it.id === s.hat })).join("") + `</div>` +
-        `<div class="dh-sub">武器</div><div class="dh-grid">` +
-        EQUIP.weapon.items.map((it) => dhCard({ cat: "weapon", id: it.id, img: it.img, name: it.name, sel: true })).join("") + `</div>`;
+      box.innerHTML = `<div class="dh-sub">帽子（增加血量 ❤️）</div><div class="dh-grid">` +
+        EQUIP.hat.items.map((it) => dhCard({ cat: "hat", id: it.id, img: it.img, name: it.name, sub: "❤️ +" + it.hp, sel: it.id === s.hat })).join("") + `</div>` +
+        `<div class="dh-sub">武器（增加攻擊 ⚔️）</div><div class="dh-grid">` +
+        EQUIP.weapon.items.map((it) => dhCard({ cat: "weapon", id: it.id, img: it.img, name: it.name, sub: "⚔️ +" + it.atk, sel: true })).join("") + `</div>`;
       box.querySelectorAll('.dh-card[data-cat="hat"]').forEach((c) => c.addEventListener("click", () => {
         setEquip("hat", c.dataset.id); dhBubble(ov, "戴上「" + eqItem("hat", c.dataset.id).name + "」！"); dhRender(ov);
       }));
     } else if (dhTab === "pet") {
       dhBubble(ov, "挑一隻夥伴陪你冒險！");
-      box.innerHTML = `<div class="dh-grid">` +
-        EQUIP.pet.items.map((it) => dhCard({ id: it.id, img: it.img, name: it.name, sub: "配件：" + it.acc_name, sel: it.id === s.pet })).join("") + `</div>`;
+      box.innerHTML = `<div class="dh-sub">寵物（增加血量 ❤️）</div><div class="dh-grid">` +
+        EQUIP.pet.items.map((it) => dhCard({ id: it.id, img: it.img, name: it.name, sub: "❤️ +" + it.hp + "・" + it.acc_name, sel: it.id === s.pet })).join("") + `</div>`;
       box.querySelectorAll(".dh-card").forEach((c) => c.addEventListener("click", () => {
         setEquip("pet", c.dataset.id); dhBubble(ov, "選擇「" + eqItem("pet", c.dataset.id).name + "」當夥伴！"); dhRender(ov);
       }));

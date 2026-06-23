@@ -53,8 +53,8 @@
   const PRODUCT_MS = 10000;                 // 成年每 10s 產出一個產品
   const STAGE_MUL = { baby: 0.55, teen: 0.78, adult: 1.0 };  // 各階段相對成年 h 的倍率
 
-  const LS_STOCK = "campus_livestock";   // [{id,species,bornAt,lastCollect}]
-  const LS_HARVEST = "campus_harvest";   // {emoji: count}
+  const LS_STOCK = accNS("campus_livestock");   // [{id,species,bornAt,lastCollect}]（依帳號分開）
+  const LS_HARVEST = accNS("campus_harvest");   // {emoji: count}（與種田共用收成籃，依帳號分開）
 
   let _seq = 0, _now = 0;
   function now() { return _now || Date.now(); }   // _now 用 scene time 推進，避免 Date 不可用環境

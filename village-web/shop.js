@@ -70,7 +70,7 @@
   function bubble(ov, txt) { ov.querySelector(".shop-bubble").textContent = txt; }
 
   // 服裝店「真商品」4 套：買了記擁有＋走路造型馬上換（其餘商品照舊純展示）
-  const OUTFIT_OWN_KEY = "village_outfits_owned";
+  const OUTFIT_OWN_KEY = accNS("village_outfits_owned");   // 依帳號分開
   function ownedOutfits() {
     try { const a = JSON.parse(localStorage.getItem(OUTFIT_OWN_KEY) || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; }
   }
@@ -2141,7 +2141,7 @@
   }
 
   /* ───────────────────── 裝備欄（純展示：左=目前造型 / 右=帽子·武器·寵物項圈配件）───────────────────── */
-  const EQ_KEY = "village_equip";
+  const EQ_KEY = accNS("village_equip");   // 依帳號分開
   // 裝備加成（角色系統 C）：武器+攻擊、衣服(造型)+防禦、帽子/寵物+血量
   const EQUIP = {
     // body=目前造型(衣服店買的)，顯示在左大立繪，不放右格；def=防禦加成

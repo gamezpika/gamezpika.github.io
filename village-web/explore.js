@@ -57,10 +57,10 @@ function setWalkSpeedMult(v) {
 }
 function walkOutfitCurrent() {
   try {
-    const body = (JSON.parse(localStorage.getItem("village_equip") || "{}") || {}).body;
+    const body = (JSON.parse(localStorage.getItem(accNS("village_equip")) || "{}") || {}).body;
     if (WALK_OUTFITS[body]) {
       // 要真的買過才套造型（舊存檔預設 f_academic 轉真商品後沒買過 → 走預設，跟 shop.js getEquip 移轉一致）
-      const own = JSON.parse(localStorage.getItem("village_outfits_owned") || "[]");
+      const own = JSON.parse(localStorage.getItem(accNS("village_outfits_owned")) || "[]");
       if (Array.isArray(own) && own.indexOf(body) >= 0) return { id: body, sheets: WALK_OUTFITS[body] };
     }
     // 預設造型：女生玩家載女版初始圖，男生用 config 原 player（sheets:null）

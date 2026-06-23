@@ -105,8 +105,8 @@
     return m > 0 ? `還要 ${m} 分` : `還要 ${s} 秒`;
   }
 
-  const LS_CROPS = "campus_crops";          // 長度 6 陣列，每格 {crop, plantedAt} 或 null
-  const LS_HARVEST = "campus_harvest";      // {emoji:count}（與牧場共用收成籃）
+  const LS_CROPS = accNS("campus_crops");          // 長度 6 陣列，每格 {crop, plantedAt} 或 null（依帳號分開）
+  const LS_HARVEST = accNS("campus_harvest");      // {emoji:count}（與牧場共用收成籃，依帳號分開）
 
   function normRec(r) {   // 防呆：只接受合法作物 + 正數時間戳，其餘視為空格
     if (!r || typeof r !== "object" || !CROPS[r.crop]) return null;

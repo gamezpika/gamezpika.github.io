@@ -110,5 +110,19 @@
 <!-- 多人整合：預設打開（多人在線為主），裸網址即多人；?mp=0 才退回單機 demo -->
 <script>if(new URLSearchParams(location.search).get("mp")!=="0"){document.write('<script src="colyseus.bundle.js"><\/script><script src="mp.js?v=36"><\/script>');}</script>
 <script src="explore.js?v=141"></script>
+<!-- 活躍紀錄：進遊戲記一筆「開遊戲」+每5分鐘心跳，給後台 DAU/使用時長/留存用(後端 /api/activity/ping 60秒節流) -->
+<script>
+(function(){
+  var API="https://eduarena-tutoring-production.up.railway.app";
+  function ping(){
+    var t; try{ t=localStorage.getItem("eduarena_demo_token"); }catch(e){}
+    if(!t || document.hidden) return;
+    fetch(API+"/api/activity/ping",{method:"POST",headers:{Authorization:"Bearer "+t}}).catch(function(){});
+  }
+  setTimeout(ping, 4000);                 // 等 login/onboarding 把 token 設好
+  setInterval(ping, 5*60*1000);           // 每 5 分鐘心跳（量在線時長/打開次數）
+  document.addEventListener("visibilitychange", function(){ if(!document.hidden) ping(); });
+})();
+</script>
 </body>
 </html>

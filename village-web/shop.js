@@ -2366,6 +2366,7 @@
       <div class="shop-panel jc-panel eq-panel">
         <div class="shop-title">人物裝備</div>
         <button class="shop-close" aria-label="關閉">×</button>
+        <div class="eq-coins" id="eq-coins" style="text-align:center;font-weight:800;color:#c98a2b;font-size:15px;margin:-4px 0 8px">💰 金幣 …</div>
         <div class="eq-main">
           <div class="eq-leftcol">
             <div class="eq-charbox">
@@ -2458,6 +2459,16 @@
     const ov = eqBuildOverlay();
     eqRender(ov);
     ov.classList.add("open");
+    eqLoadCoins(ov);
+  }
+  // 裝備面板顯示目前真實金幣（抓後端 /api/user/dashboard；無 token/失敗顯示 —）
+  function eqLoadCoins(ov) {
+    const elc = ov.querySelector("#eq-coins"); if (!elc) return;
+    const t = demoToken();
+    if (!t) { elc.textContent = "💰 金幣 —"; return; }
+    fetch(DEMO_API + "/api/user/dashboard", { headers: { Authorization: "Bearer " + t } })
+      .then((r) => r.json()).then((d) => { if (d && typeof d.coins === "number") elc.textContent = "💰 金幣 " + d.coins; })
+      .catch(() => {});
   }
   function eqClose() { const ov = document.getElementById("eq-overlay"); if (ov) ov.classList.remove("open"); }
   window.openEquip = openEquip;

@@ -2562,7 +2562,7 @@
   }
   function dhCard(opts) {
     return `<div class="dh-card${opts.sel ? " sel" : ""}${opts.ro ? " ro" : ""}" data-cat="${opts.cat || ""}" data-id="${opts.id || ""}">
-        <img src="${opts.img}?v=2" alt="${opts.name}" loading="lazy" draggable="false">
+        <img src="${opts.img}?v=3" alt="${opts.name}" loading="lazy" draggable="false">
         <div class="dh-nm">${opts.name}</div>${opts.sub ? `<div class="dh-sub2">${opts.sub}</div>` : ""}</div>`;
   }
   function dhRender(ov) {

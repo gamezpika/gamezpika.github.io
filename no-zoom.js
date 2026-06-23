@@ -8,4 +8,8 @@
   ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (t) {
     document.addEventListener(t, function (e) { e.preventDefault(); }, { passive: false });
   });
+  // 雙擊/連點放大：iOS Safari 連點兩下會放大整頁。touch-action:manipulation 只關掉
+  // 「雙擊縮放」，不影響單點/連點/捲動。設在 <html> 即全頁生效（手勢須經根元素，
+  // 根不允許雙擊縮放就全頁失效）。遊戲畫布另有 touch-action:none 更嚴格、不受影響。
+  try { document.documentElement.style.touchAction = 'manipulation'; } catch (e) {}
 })();

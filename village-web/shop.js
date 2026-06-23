@@ -2506,7 +2506,7 @@
 
   /* ───────────────────── 個人小屋 hub（學生宿舍：更衣室 / 角色裝備 / 寵物 / 圖鑑，純展示）───────────────────── */
   let dhTab = "outfit";
-  let dhAwards = null, dhCerts = null, dhLoadSeq = 0, dhLoadPromise = null; // 快取+世代守衛+in-flight 鎖(避免重複 grant/fetch)
+  let dhAwards = null, dhCerts = null, dhDex = null, dhLoadSeq = 0, dhLoadPromise = null; // 快取+世代守衛+in-flight 鎖(避免重複 grant/fetch)
   function dhBuildOverlay() {
     let ov = document.getElementById("dh-overlay");
     if (ov) return ov;
@@ -2601,10 +2601,12 @@
         setEquip("pet", c.dataset.id); dhBubble(ov, "選擇「" + eqItem("pet", c.dataset.id).name + "」當夥伴！"); dhRender(ov);
       }));
     } else if (dhTab === "book") {
-      // 圖鑑＝原 EDU 知識卡圖鑑（10 分類，無 emoji，道具收集格風）；已拿到顯示圖+名、未拿到顯示「？」勾求知慾
+      // 圖鑑＝原 EDU 知識卡圖鑑；解鎖狀態用後端 /api/cards/dex 真實 per-account 資料(以 key 對應覆蓋靜態型錄)；無 token/失敗→沿用靜態 un
+      if (dhDex === null && demoToken()) { box.innerHTML = `<div class="dh-sub">載入中…</div>`; dhLoadData().then(() => { if (dhTab === "book") dhRender(ov); }); return; }
       const D = window.DEX_CARDS || [];
+      const ub = (dhDex && typeof dhDex === "object");   // true=用後端真解鎖；false=沿用靜態 un
       const total = D.reduce((n, c) => n + c.cards.length, 0);
-      const isGot = (x) => x.un && x.img;   // 計數=實際顯示的 got 格(有解鎖且有圖)，跟渲染條件一致
+      const isGot = (x) => (ub ? !!dhDex[x.key] : x.un) && x.img;   // 計數=實際顯示的 got 格(有解鎖且有圖)，跟渲染條件一致
       const got = D.reduce((n, c) => n + c.cards.filter(isGot).length, 0);
       dhBubble(ov, "知識卡圖鑑 · 已收集 " + got + " / " + total + " 張，點卡看知識小語！");
       const flat = [];
@@ -2612,7 +2614,7 @@
         const cgot = cat.cards.filter(isGot).length;
         const cards = cat.cards.map((c) => {
           const i = flat.length; flat.push(c);
-          if (c.un && c.img) {
+          if (isGot(c)) {
             return `<div class="dex-card" data-i="${i}"><div class="dex-slot got"><img src="${c.img}?v=1" alt="" loading="lazy" draggable="false"></div><div class="dex-nm">${aoEsc(c.name)}</div></div>`;
           }
           return `<div class="dex-card" data-i="${i}"><div class="dex-slot lock">？</div><div class="dex-nm lock">？？？</div></div>`;
@@ -2672,6 +2674,16 @@
         }
         if (seq !== dhLoadSeq) return; dhCerts = cs;
       }
+      if (dhDex === null) {
+        const t = demoToken(); let set = false;   // 物件=後端真解鎖集合(key→1)；false=無 token/失敗→沿用靜態 un
+        if (t) {
+          try {
+            const d = await fetch(DEMO_API + "/api/cards/dex", { headers: { Authorization: "Bearer " + t } }).then((r) => r.json());
+            if (d && d.categories) { set = {}; d.categories.forEach((cat) => (cat.cards || []).forEach((c) => { if (c.unlocked) set[c.key] = 1; })); }
+          } catch (e) {}
+        }
+        if (seq !== dhLoadSeq) return; dhDex = set;
+      }
     })().finally(() => { dhLoadPromise = null; });
     return dhLoadPromise;
   }
@@ -2698,7 +2710,7 @@
   }
   function openDormHub(onClose) {
     onCloseCb = onClose || null;
-    dhLoadSeq++; dhAwards = null; dhCerts = null; // 重開重抓成就/證書（世代+1 作廢舊 fetch）
+    dhLoadSeq++; dhAwards = null; dhCerts = null; dhDex = null; // 重開重抓成就/證書/圖鑑（世代+1 作廢舊 fetch）
     const ov = dhBuildOverlay();
     dhTab = "outfit"; dhRender(ov);
     ov.classList.add("open");

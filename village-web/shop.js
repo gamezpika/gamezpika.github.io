@@ -401,7 +401,7 @@
   const JC_KEY = "village_job";
   // 防呆：非法/過期的存值一律視為「無職業」，避免 JOBS[cur] 取值炸掉把玩家鎖死
   const getJob = () => { const k = localStorage.getItem(JC_KEY); return k && JOBS[k] ? k : null; };
-  const setJob = (k) => { localStorage.setItem(JC_KEY, k); if (window.DemoState) window.DemoState.save(); };
+  const setJob = (k) => { localStorage.setItem(JC_KEY, k); if (window.DemoState) window.DemoState.save(JC_KEY); };
   // 性別（讀 onboarding 建角存的 village_gender）：女角職業圖用 _female 版
   const isFemale = () => localStorage.getItem("village_gender") === "female";
   // 「原本造型」(basic) 卡圖按性別：女生顯示女版初始造型，其餘衣服圖照舊
@@ -1052,6 +1052,10 @@
             localStorage.setItem("eduarena_demo_token", sel.token);
             localStorage.setItem("eduarena_demo_uid", uid);
             localStorage.setItem("eduarena_demo_child_id", String(cid));
+            // 載入時還沒 token、hydrate() 早就空跑過了；現在補到 token 才重跑一次，
+            // 把這個全新帳號的後端狀態載回（後端為空→清掉殘留的舊帳號 village_job/village_mastery，
+            // 不讓共用裝置沿用上一個玩家的職業/精通，也避免下次 save 把髒值上傳）。
+            if (window.DemoState) { try { await window.DemoState.hydrate(); } catch (e) {} }
             await fetch(DEMO_API + "/api/demo/grant-stars?subject=chinese&pct=60", { method: "POST", headers: { "Authorization": "Bearer " + sel.token } }).then(j).catch(() => {});
           }
         }
@@ -2228,7 +2232,7 @@
     });
     return m;
   }
-  function saveMastery(m) { try { localStorage.setItem(MASTERY_KEY, JSON.stringify(m)); if (window.DemoState) window.DemoState.save(); } catch (e) {} }
+  function saveMastery(m) { try { localStorage.setItem(MASTERY_KEY, JSON.stringify(m)); if (window.DemoState) window.DemoState.save(MASTERY_KEY); } catch (e) {} }
   function gainMastery(subj, mult) {
     if (!MASTERY_SUBJ.includes(subj)) return null;
     const m = getMastery(), e = m[subj];

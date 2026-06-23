@@ -2180,14 +2180,14 @@
       { id: "m_wizard_kid", img: "outfits/m_wizard_kid.webp", name: "男 Wizard Kid", def: 7, shop: true },
     ] },
     hat: { label: "帽子", items: [
-      { id: "hat_student", img: "equip/hat_student.webp", name: "學生帽", hp: 20 },
-      { id: "hat_wizard", img: "equip/hat_wizard.webp", name: "巫師帽", hp: 35 },
-      { id: "hat_crown", img: "equip/hat_crown.webp", name: "皇冠", hp: 50 },
-      { id: "hat_catear", img: "equip/hat_catear.webp", name: "貓耳髮箍", hp: 25 },
-      { id: "hat_straw", img: "equip/hat_straw.webp", name: "草帽", hp: 30 },
+      { id: "hat_student", img: "equip/hat_student.webp", name: "學生帽", hp: 20, desc: "學生的標準配備，戴上它精神百倍、認真上課！" },
+      { id: "hat_wizard", img: "equip/hat_wizard.webp", name: "巫師帽", hp: 35, desc: "充滿魔力的尖頂帽，戴上彷彿能施展神奇咒語。" },
+      { id: "hat_crown", img: "equip/hat_crown.webp", name: "皇冠", hp: 50, desc: "王者的象徵，金光閃閃、氣勢非凡，最堅固的護身寶物。" },
+      { id: "hat_catear", img: "equip/hat_catear.webp", name: "貓耳髮箍", hp: 25, desc: "可愛的貓耳造型，戴上瞬間萌度爆表～" },
+      { id: "hat_straw", img: "equip/hat_straw.webp", name: "草帽", hp: 30, desc: "海邊探險的好夥伴，遮陽又清爽。" },
     ] },
     weapon: { label: "武器", items: [
-      { id: "knife", img: "../assets/images/onboarding/knife.png", name: "巨大美工刀", atk: 8 },
+      { id: "knife", img: "../assets/images/onboarding/knife.png", name: "巨大美工刀", atk: 8, desc: "文具界的大力士，切紙裁圖樣樣行，攻擊力滿點！" },
     ] },
     // 書包（裝備槽）：新手任務初始道具；先當「佔槽」用，不給數值加成（避免所有既有玩家被動加血膨脹戰力）
     bag: { label: "書包", items: [
@@ -2195,11 +2195,11 @@
     ] },
     // 寵物項圈格：依目前寵物顯示「對應配件」(acc_*)；img=寵物本體圖(寵物頁用)；hp=血量加成
     pet: { label: "寵物項圈", items: [
-      { id: "pet_cat", name: "小貓", img: "equip/pet_cat.webp", acc_img: "equip/acc_yarn.webp", acc_name: "毛線球", hp: 20 },
-      { id: "pet_bunny", name: "兔子", img: "equip/pet_bunny.webp", acc_img: "equip/acc_carrot.webp", acc_name: "紅蘿蔔", hp: 25 },
-      { id: "pet_puppy", name: "小狗", img: "equip/pet_puppy.webp", acc_img: "equip/acc_collar.webp", acc_name: "項圈", hp: 30 },
-      { id: "pet_penguin", name: "企鵝", img: "equip/pet_penguin.webp", acc_img: "equip/acc_fish.webp", acc_name: "小魚", hp: 35 },
-      { id: "pet_panda", name: "熊貓", img: "equip/pet_panda.webp", acc_img: "equip/acc_bamboo.webp", acc_name: "竹子", hp: 50 },
+      { id: "pet_cat", name: "小貓", img: "equip/pet_cat.webp", acc_img: "equip/acc_yarn.webp", acc_name: "毛線球", hp: 20, desc: "黏人又愛玩的小貓，最愛追著毛線球跑。" },
+      { id: "pet_bunny", name: "兔子", img: "equip/pet_bunny.webp", acc_img: "equip/acc_carrot.webp", acc_name: "紅蘿蔔", hp: 25, desc: "蹦蹦跳跳的小兔子，最愛啃脆甜的紅蘿蔔。" },
+      { id: "pet_puppy", name: "小狗", img: "equip/pet_puppy.webp", acc_img: "equip/acc_collar.webp", acc_name: "項圈", hp: 30, desc: "忠心的小狗夥伴，戴上項圈陪你到處冒險。" },
+      { id: "pet_penguin", name: "企鵝", img: "equip/pet_penguin.webp", acc_img: "equip/acc_fish.webp", acc_name: "小魚", hp: 35, desc: "搖搖擺擺的小企鵝，最愛吃新鮮的小魚。" },
+      { id: "pet_panda", name: "熊貓", img: "equip/pet_panda.webp", acc_img: "equip/acc_bamboo.webp", acc_name: "竹子", hp: 50, desc: "圓滾滾的熊貓，抱著竹子的模樣超療癒。" },
     ] },
   };
   // 角色三圍（角色系統）：初始攻5/防5/血100 + 裝備加成
@@ -2560,6 +2560,33 @@
     pop.addEventListener("click", (e) => { if (e.target === pop) close(); });
     pop.querySelector(".dex-pop-x").addEventListener("click", close);
   }
+  // 裝備介紹彈窗（跟圖鑑卡 dhShowCardPop 同款 dex-pop 樣式）：圖+名+介紹+加成+「裝備」鈕
+  function dhShowEquipPop(ov, cat, it) {
+    let pop = ov.querySelector(".dex-pop"); if (pop) pop.remove();
+    const equipped = getEquip()[cat] === it.id;
+    const eff = (cat === "weapon") ? ("⚔️ 攻擊力 +" + (it.atk || 0)) : ("❤️ 血量 +" + (it.hp || 0));
+    const acc = it.acc_name ? `<div class="dex-pop-d" style="margin-top:6px;color:#8a6a3a">🎀 隨身配件：${aoEsc(it.acc_name)}</div>` : "";
+    pop = document.createElement("div"); pop.className = "dex-pop";
+    pop.innerHTML = `<div class="dex-pop-card">
+        <button class="dex-pop-x" aria-label="關閉">×</button>
+        <div class="dex-pop-ic got"><img src="${it.img}?v=3" alt="" draggable="false"></div>
+        <div class="dex-pop-nm">${aoEsc(it.name)}</div>
+        <div class="dex-pop-d">${aoEsc(it.desc || "")}</div>
+        ${acc}
+        <div style="font-weight:800;color:#c0392b;font-size:15px;margin:10px 0 2px">${eff}</div>
+        <button class="eqp-do"${equipped ? " disabled" : ""} style="margin-top:10px;border:none;border-radius:999px;padding:9px 30px;font-size:15px;font-weight:800;font-family:inherit;cursor:${equipped ? "default" : "pointer"};color:${equipped ? "#999" : "#5a3a10"};background:${equipped ? "#e3e3e3" : "linear-gradient(135deg,#f0a020,#ffc94d)"}">${equipped ? "✔ 已裝備" : "裝備"}</button>
+      </div>`;
+    ov.appendChild(pop);
+    const close = () => pop.remove();
+    pop.addEventListener("click", (e) => { if (e.target === pop) close(); });
+    pop.querySelector(".dex-pop-x").addEventListener("click", close);
+    const doBtn = pop.querySelector(".eqp-do");
+    if (doBtn && !equipped) doBtn.addEventListener("click", () => {
+      setEquip(cat, it.id);
+      if (cat === "body" && window.applyWalkOutfit) window.applyWalkOutfit();
+      close(); dhBubble(ov, "裝備「" + it.name + "」！"); dhRender(ov);
+    });
+  }
   function dhCard(opts) {
     return `<div class="dh-card${opts.sel ? " sel" : ""}${opts.ro ? " ro" : ""}" data-cat="${opts.cat || ""}" data-id="${opts.id || ""}">
         <img src="${opts.img}?v=3" alt="${opts.name}" loading="lazy" draggable="false">
@@ -2586,19 +2613,21 @@
       }));
     } else if (dhTab === "gear") {
       dhBubble(ov, "選頂帽子、看看你的裝備～");
-      box.innerHTML = `<div class="dh-sub">帽子（增加血量 ❤️）</div><div class="dh-grid">` +
-        EQUIP.hat.items.map((it) => dhCard({ cat: "hat", id: it.id, img: it.img, name: it.name, sub: "❤️ +" + it.hp, sel: it.id === s.hat })).join("") + `</div>` +
-        `<div class="dh-sub">武器（增加攻擊 ⚔️）</div><div class="dh-grid">` +
-        EQUIP.weapon.items.map((it) => dhCard({ cat: "weapon", id: it.id, img: it.img, name: it.name, sub: "⚔️ +" + it.atk, sel: true })).join("") + `</div>`;
-      box.querySelectorAll('.dh-card[data-cat="hat"]').forEach((c) => c.addEventListener("click", () => {
-        setEquip("hat", c.dataset.id); dhBubble(ov, "戴上「" + eqItem("hat", c.dataset.id).name + "」！"); dhRender(ov);
+      box.innerHTML = `<div class="dh-sub">帽子</div><div class="dh-grid">` +
+        EQUIP.hat.items.map((it) => dhCard({ cat: "hat", id: it.id, img: it.img, name: it.name, sel: it.id === s.hat })).join("") + `</div>` +
+        `<div class="dh-sub">武器</div><div class="dh-grid">` +
+        EQUIP.weapon.items.map((it) => dhCard({ cat: "weapon", id: it.id, img: it.img, name: it.name, sel: true })).join("") + `</div>`;
+      box.querySelectorAll(".dh-card").forEach((c) => c.addEventListener("click", () => {
+        const cat = c.dataset.cat, it = (EQUIP[cat] && EQUIP[cat].items || []).find((x) => x.id === c.dataset.id);
+        if (it) dhShowEquipPop(ov, cat, it);
       }));
     } else if (dhTab === "pet") {
       dhBubble(ov, "挑一隻夥伴陪你冒險！");
-      box.innerHTML = `<div class="dh-sub">寵物（增加血量 ❤️）</div><div class="dh-grid">` +
-        EQUIP.pet.items.map((it) => dhCard({ id: it.id, img: it.img, name: it.name, sub: "❤️ +" + it.hp + "・" + it.acc_name, sel: it.id === s.pet })).join("") + `</div>`;
+      box.innerHTML = `<div class="dh-sub">寵物</div><div class="dh-grid">` +
+        EQUIP.pet.items.map((it) => dhCard({ cat: "pet", id: it.id, img: it.img, name: it.name, sel: it.id === s.pet })).join("") + `</div>`;
       box.querySelectorAll(".dh-card").forEach((c) => c.addEventListener("click", () => {
-        setEquip("pet", c.dataset.id); dhBubble(ov, "選擇「" + eqItem("pet", c.dataset.id).name + "」當夥伴！"); dhRender(ov);
+        const it = EQUIP.pet.items.find((x) => x.id === c.dataset.id);
+        if (it) dhShowEquipPop(ov, "pet", it);
       }));
     } else if (dhTab === "book") {
       // 圖鑑＝原 EDU 知識卡圖鑑；解鎖狀態用後端 /api/cards/dex 真實 per-account 資料(以 key 對應覆蓋靜態型錄)；無 token/失敗→沿用靜態 un

@@ -888,9 +888,8 @@
         box.querySelectorAll(".ca-accept").forEach((b) => b.addEventListener("click", async function (e) {
           e.stopPropagation(); this.disabled = true; await caMainAction("accept", this.dataset.key); await refresh();
         }));
-        box.querySelectorAll(".ca-fulfill").forEach((b) => b.addEventListener("click", async function (e) {
-          e.stopPropagation(); this.disabled = true; this.textContent = "完成中…";
-          await caFulfillQuest(this.dataset.key); await refresh();
+        box.querySelectorAll(".ca-fulfill").forEach((b) => b.addEventListener("click", function (e) {
+          e.stopPropagation(); caFulfillQuest();
         }));
         box.querySelectorAll(".ca-claim").forEach((b) => b.addEventListener("click", async function (e) {
           e.stopPropagation(); this.disabled = true;
@@ -1012,15 +1011,18 @@
             : ct === "cert_pass" ? "📜 去考英語檢定"
               : ct === "duel_win" ? "🔮 去魔法陣對決" : "";
   }
-  // demo 一鍵達成：後台灌剛好足夠的紀錄，讓這關可領獎（顆星型不走這裡，用去基礎練習）
-  async function caFulfillQuest(quest_key) {
-    const t = demoToken(); if (!t) return { ok: false };
-    try {
-      const r = await fetch(DEMO_API + "/api/demo/fulfill-quest?quest_key=" + encodeURIComponent(quest_key), {
-        method: "POST", headers: { "Authorization": "Bearer " + t },
-      });
-      return await r.json();
-    } catch (e) { return { ok: false, error: "network" }; }
+  // 任務要「真的去玩贏才算」：不再一鍵灌紀錄。按鈕標籤已寫該去哪(禁忌森林/競技場/考試院/英文魔法陣)，
+  // 玩家真打贏／考過→後端自動記錄(boss_defeat / pvp 勝 / ExamRecord / en_duel_win)→回來這關就能領獎。
+  function caFulfillQuest() {
+    let t = document.getElementById("ca-goplay-toast");
+    if (!t) {
+      t = document.createElement("div"); t.id = "ca-goplay-toast";
+      t.style.cssText = "position:fixed;left:50%;top:16%;transform:translateX(-50%);z-index:99999;background:rgba(40,30,16,.95);color:#ffe7a8;font-weight:800;font-size:15px;padding:12px 18px;border-radius:14px;max-width:82%;text-align:center;box-shadow:0 6px 22px rgba(0,0,0,.4);font-family:inherit;line-height:1.55;pointer-events:none;transition:opacity .35s";
+      document.body.appendChild(t);
+    }
+    t.textContent = "這關要真的去玩贏才算喔！關掉面板，照按鈕指示去打贏／考過，完成後回來就能領獎 ✅";
+    t.style.opacity = "1";
+    clearTimeout(t._h); t._h = setTimeout(function () { t.style.opacity = "0"; }, 3400);
   }
   // 已獲成就（主線終獎的稱號/證書），門面顯示用
   let caAwards = null;
@@ -1354,10 +1356,8 @@
         const key = this.closest(".ao-quest").dataset.key;
         await caMainAction("accept", key); await refresh();
       }));
-      box.querySelectorAll(".ca-fulfill").forEach((b) => b.addEventListener("click", async function (e) {
-        e.stopPropagation(); this.disabled = true; this.textContent = "完成中…";
-        const key = this.closest(".ao-quest").dataset.key;
-        await caFulfillQuest(key); await refresh();
+      box.querySelectorAll(".ca-fulfill").forEach((b) => b.addEventListener("click", function (e) {
+        e.stopPropagation(); caFulfillQuest();
       }));
       box.querySelectorAll(".ca-claim").forEach((b) => b.addEventListener("click", async function (e) {
         e.stopPropagation(); this.disabled = true;
@@ -1699,8 +1699,8 @@
       box.querySelectorAll(".ca-accept").forEach((b) => b.addEventListener("click", async function () {
         this.disabled = true; await caMainAction("accept", this.dataset.key); await render();
       }));
-      box.querySelectorAll(".ca-fulfill").forEach((b) => b.addEventListener("click", async function () {
-        this.disabled = true; this.textContent = "完成中…"; await caFulfillQuest(this.dataset.key); await render();
+      box.querySelectorAll(".ca-fulfill").forEach((b) => b.addEventListener("click", function () {
+        caFulfillQuest();
       }));
       box.querySelectorAll(".ca-claim").forEach((b) => b.addEventListener("click", async function () {
         this.disabled = true;

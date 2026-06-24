@@ -920,14 +920,14 @@
 
   // ── 公布欄任務板（派派 6/24）：聚合 主線(進行中) + 每日(未完成) + 閱讀(展示)，村莊風面板，點才開 ──
   const QB_SUBJ = [
-    { key: "chinese", label: "國語", ic: "📖" }, { key: "math", label: "數學", ic: "🔢" },
-    { key: "english", label: "英語", ic: "🔤" }, { key: "science", label: "自然", ic: "🔬" },
-    { key: "social", label: "社會", ic: "🌏" },
+    { key: "chinese", label: "國語" }, { key: "math", label: "數學" },
+    { key: "english", label: "英語" }, { key: "science", label: "自然" },
+    { key: "social", label: "社會" },
   ];
   const QB_READING = [
-    { ic: "📕", title: "閱讀《伊索寓言》", desc: "讀完小故事、學會一個道理", reward: "50 金幣" },
-    { ic: "📗", title: "成語故事館", desc: "認識 5 個成語的由來", reward: "金幣 + 知識卡" },
-    { ic: "📘", title: "唐詩賞析", desc: "讀一首唐詩、體會詩中畫面", reward: "80 金幣" },
+    { title: "閱讀《伊索寓言》", desc: "讀完小故事、學會一個道理", reward: "50 金幣" },
+    { title: "成語故事館", desc: "認識 5 個成語的由來", reward: "金幣 + 知識卡" },
+    { title: "唐詩賞析", desc: "讀一首唐詩、體會詩中畫面", reward: "80 金幣" },
   ];
   async function openQuestBoard(onClose) {
     let m = document.getElementById("qb-overlay"); if (m) m.remove();
@@ -935,7 +935,7 @@
     m.style.cssText = "position:fixed;inset:0;z-index:7000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.55);font-family:sans-serif";
     m.innerHTML = `<div style="position:relative;background:#fff6e2;border:5px solid #8a5a2b;border-radius:20px;max-width:420px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 14px 40px rgba(0,0,0,.5)">
       <div style="padding:14px 16px 6px;flex:none">
-        <div style="font-weight:900;font-size:20px;color:#7a4715;text-align:center">📋 任務公布欄</div>
+        <div style="font-weight:900;font-size:20px;color:#7a4715;text-align:center">任務公布欄</div>
         <div style="font-size:13px;color:#9a7038;text-align:center;margin-top:2px">看看你現在有哪些任務進行中～</div>
       </div>
       <div id="qb-body" style="padding:2px 16px 6px;overflow-y:auto;flex:1"><div style="text-align:center;color:#9a7038;padding:26px">載入中…</div></div>
@@ -949,7 +949,7 @@
     const body = m.querySelector("#qb-body");
 
     const head = (t) => `<div style="font-weight:800;font-size:14px;color:#7a4715;margin:14px 0 4px;border-bottom:2px solid #e7cfa3;padding-bottom:4px">${t}</div>`;
-    const card = (ic, title, sub, badge) => `<div style="display:flex;align-items:center;gap:10px;background:#fffdf6;border:1px solid #e7cfa3;border-radius:12px;padding:9px 11px;margin:6px 0"><div style="font-size:22px;flex:none">${ic}</div><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:14px;color:#5a3a1a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${title}</div>${sub ? `<div style="font-size:12px;color:#9a7038;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sub}</div>` : ""}</div>${badge || ""}</div>`;
+    const card = (ic, title, sub, badge) => `<div style="display:flex;align-items:center;gap:10px;background:#fffdf6;border:1px solid #e7cfa3;border-radius:12px;padding:9px 11px;margin:6px 0">${ic ? `<div style="font-size:22px;flex:none">${ic}</div>` : ""}<div style="flex:1;min-width:0"><div style="font-weight:700;font-size:14px;color:#5a3a1a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${title}</div>${sub ? `<div style="font-size:12px;color:#9a7038;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sub}</div>` : ""}</div>${badge || ""}</div>`;
     const empty = (t) => `<div style="text-align:center;color:#b69a6e;font-size:13px;padding:6px 0 2px">${t}</div>`;
     const pill = (bg, col, txt) => `<span style="flex:none;background:${bg};color:${col};font-size:11px;font-weight:800;border-radius:999px;padding:3px 9px">${txt}</span>`;
     const actBtn = (uq, txt) => `<button class="qb-act" data-uq="${uq}" style="flex:none;background:#34a853;color:#fff;border:none;border-radius:999px;padding:5px 13px;font-size:12px;font-weight:800;cursor:pointer">${txt}</button>`;
@@ -982,7 +982,7 @@
         });
         const d = await r.json();
         if (d && d.ok) {
-          qbToast("✅ 完成！" + (d.reward_coins ? "＋" + d.reward_coins + " 金幣" : "") + (d.extra_msg || ""));
+          qbToast("完成！" + (d.reward_coins ? "＋" + d.reward_coins + " 金幣" : "") + (d.extra_msg || ""));
           loadBoard();
         } else {
           qbToast(d && d.error === "progress_not_met" ? "還沒達成喔～繼續加油！" : "領取失敗，再試一次");
@@ -1003,7 +1003,7 @@
             .then((r) => r.ok ? r.json() : null).then((d) => ({ s, qs: (d && d.quests) || [] })).catch(() => ({ s, qs: [] }))));
         const a = [];
         res.forEach(({ s, qs }) => qs.forEach((q) => { if (q.status === "active") a.push({ s, q }); }));
-        mainHtml = a.length ? a.map(({ s, q }) => card(s.ic, esc(q.title || "任務"),
+        mainHtml = a.length ? a.map(({ s, q }) => card("", esc(q.title || "任務"),
           s.label + "學院" + (q.giver_name ? "·" + esc(q.giver_name) : ""),
           q.can_claim ? pill("#34a853", "#fff", "可領獎") : `<span style="flex:none;color:#c08a3a;font-size:12px;font-weight:700">進行中</span>`)).join("")
           : empty("目前沒有進行中的主線任務");
@@ -1016,14 +1016,14 @@
           const d = await fetch(DEMO_API + "/api/quests/daily", { headers: { Authorization: "Bearer " + t } }).then((r) => r.ok ? r.json() : null);
           // deliver(送禮)型在 demo 沒有「生活區交付」介面、玩家無法完成 → 不列進公布欄，免得顯示乾瞪眼的進度數字
           const list = ((d && d.quests) || []).filter((q) => q.status !== "completed" && q.task_type !== "deliver");
-          dailyHtml = list.length ? list.map((q) => card(esc(q.emoji || "📅"), esc(q.title || "每日任務"), esc(q.desc || ""), dailyAction(q))).join("")
-            : empty("可領取的每日任務都完成了！🎉");
+          dailyHtml = list.length ? list.map((q) => card("", esc(q.title || "每日任務"), esc(q.desc || ""), dailyAction(q))).join("")
+            : empty("可領取的每日任務都完成了！");
         } catch (e) { dailyHtml = empty("每日任務載入失敗"); }
       }
       // 閱讀(展示，無真實進度)
-      const readHtml = QB_READING.map((q) => card(q.ic, q.title, q.desc + "　🎁 " + q.reward, pill("#e7cfa3", "#7a4715", "展示"))).join("");
+      const readHtml = QB_READING.map((q) => card("", q.title, q.desc + "　獎勵 " + q.reward, pill("#e7cfa3", "#7a4715", "展示"))).join("");
 
-      body.innerHTML = head("📜 主線任務（進行中）") + mainHtml + head("📅 每日任務") + dailyHtml + head("📖 閱讀任務") + readHtml;
+      body.innerHTML = head("主線任務（進行中）") + mainHtml + head("每日任務") + dailyHtml + head("閱讀任務") + readHtml;
       body.querySelectorAll(".qb-act").forEach((b) => b.addEventListener("click", () => claimDaily(b.dataset.uq, b)));
     }
     loadBoard();

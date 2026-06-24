@@ -1014,7 +1014,8 @@
       else {
         try {
           const d = await fetch(DEMO_API + "/api/quests/daily", { headers: { Authorization: "Bearer " + t } }).then((r) => r.ok ? r.json() : null);
-          const list = ((d && d.quests) || []).filter((q) => q.status !== "completed");
+          // deliver(送禮)型在 demo 沒有「生活區交付」介面、玩家無法完成 → 不列進公布欄，免得顯示乾瞪眼的進度數字
+          const list = ((d && d.quests) || []).filter((q) => q.status !== "completed" && q.task_type !== "deliver");
           dailyHtml = list.length ? list.map((q) => card(esc(q.emoji || "📅"), esc(q.title || "每日任務"), esc(q.desc || ""), dailyAction(q))).join("")
             : empty("今天的每日任務都完成了！🎉");
         } catch (e) { dailyHtml = empty("每日任務載入失敗"); }

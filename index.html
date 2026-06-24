@@ -134,24 +134,54 @@
   // 偵測 App 內建瀏覽器（Google 政策禁止在 webview 內登入 → 一定空白）
   function inAppBrowser() {
     var ua = navigator.userAgent || "";
-    return /\bLine\//i.test(ua) || /FBAN|FBAV|FB_IAB|Instagram|Messenger/i.test(ua) ||
-           /\bTelegram\b/i.test(ua) || /; wv\)/.test(ua);   // 含 Android WebView
+    // ① 明確的 App webview 標記
+    if (/\bLine\//i.test(ua)) return true;
+    if (/FBAN|FBAV|FB_IAB|Instagram|Messenger|MicroMessenger|TikTok|musical_ly|BytedanceWebview|Snapchat|Twitter/i.test(ua)) return true;
+    if (/\bTelegram\b/i.test(ua)) return true;
+    if (/; wv\)/.test(ua)) return true;   // Android WebView
+    // ② iOS 的 App 內建瀏覽器(WKWebView)常「沒有」app 標記、也沒有 'wv'（iOS 的 LINE/Telegram 多屬此類）。
+    //    真 Safari 一定同時有 'Version/…' 和 'Safari'；Chrome/Firefox/Edge/Opera/DDG iOS 有各自標記。
+    //    兩者都不符 → 判定為 App 內建瀏覽器。
+    if (/iPhone|iPad|iPod/i.test(ua)) {
+      var realSafari = /Version\/[\d.]+.*Safari/i.test(ua);
+      var knownBrowser = /CriOS|FxiOS|EdgiOS|OPiOS|Mercury|DuckDuckGo/i.test(ua);
+      if (!realSafari && !knownBrowser) return true;
+    }
+    return false;
   }
   function isLine() { return /\bLine\//i.test(navigator.userAgent || ""); }
 
+  function fallbackCopy(text) {
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = text; ta.style.position = "fixed"; ta.style.top = "-1000px"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      var ok = document.execCommand("copy"); document.body.removeChild(ta);
+      return ok;
+    } catch (e) { return false; }
+  }
   function setupInAppNotice() {
     document.getElementById("g-signin").style.display = "none";
-    var note = document.getElementById("inapp-note");
-    note.style.display = "block";
-    document.getElementById("open-ext").addEventListener("click", function () {
-      if (isLine()) {
-        // LINE：加 openExternalBrowser=1 會跳到手機系統瀏覽器
+    document.getElementById("g-fallback").style.display = "none";
+    document.getElementById("inapp-note").style.display = "block";
+    var btn = document.getElementById("open-ext");
+    if (isLine()) {
+      // LINE：加 openExternalBrowser=1 會跳到手機系統瀏覽器
+      btn.addEventListener("click", function () {
+        location.href = location.origin + location.pathname + "?openExternalBrowser=1";
+      });
+    } else {
+      // Telegram 等沒有「強制外開」參數 → 複製連結讓使用者貼到 Safari/Chrome 開
+      btn.textContent = "📋 複製遊戲連結";
+      btn.addEventListener("click", function () {
         var u = location.origin + location.pathname;
-        location.href = u + "?openExternalBrowser=1";
-      } else {
-        showToast("請點右上角「⋯」選單 →「用 Safari / 瀏覽器開啟」，才能用 Google 登入");
-      }
-    });
+        var done = function () { showToast("連結已複製！打開 Safari / Chrome 貼上開啟，就能用 Google 登入"); };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(u).then(done, function () { if (fallbackCopy(u)) done(); else showToast("請點右上角選單 →「用瀏覽器開啟」"); });
+        } else if (fallbackCopy(u)) { done(); }
+        else { showToast("請點右上角選單 →「用瀏覽器開啟」，才能用 Google 登入"); }
+      });
+    }
   }
 
   // 等 GIS 載入後初始化；client id 沒填好就用 fallback 鈕(即將推出)

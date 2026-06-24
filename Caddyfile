@@ -46,8 +46,9 @@
 
     # HTML entry pages（含內嵌 JS）每次重整都拿新版，避免黏舊 logic
     # JSON 配置（編輯器存的） 也要 no-cache，否則編輯器拿舊 frame size
+    # 「/」是登入頁(根 index.html)，原本只比對 *.html 沒涵蓋到 → 會被預設 max-age=86400 黏一天，登入頁改了不生效。
     @htmlAndJson {
-        path *.html *.json
+        path / *.html *.json
     }
     header @htmlAndJson >Cache-Control "no-cache, must-revalidate"
 

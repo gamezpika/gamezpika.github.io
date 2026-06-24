@@ -1362,12 +1362,13 @@ class ExploreScene extends Phaser.Scene {
       (this._nearShop.type === "open_shop" && (
         this._nearShop.npc === true
         || this._nearShop.category === "npc"
+        || this._nearShop.shop_id === "taxi"   // 公車站牌（派派 6/24）：走近不自動開，顯示按鈕、點才開
         || (this._nearShop.shop_id && String(this._nearShop.shop_id).indexOf("arcade:") === 0)))
       // 對話型人物（open_modal + category npc，例：競技場裁判/勇士）也要按鈕才開（派派 6/12）；
       // 走動村民/動物（npc:true 無 category）維持走近直接開，不在此列
       || (this._nearShop.type === "open_modal" && this._nearShop.category === "npc")));
     if (isManual && !this.modalOpen && !this._transitioning) {
-      this._showEnter(this._nearShop.label || "對話");
+      this._showEnter(this._nearShop.shop_id === "taxi" ? "搭公車" : (this._nearShop.label || "對話"));
     } else {
       this._hideEnter();   // 進入按鈕退役（派派 6/11：走近建築直接開）
     }

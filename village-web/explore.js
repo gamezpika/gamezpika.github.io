@@ -1089,7 +1089,7 @@ class ExploreScene extends Phaser.Scene {
 
   // 有任何會擋操作的 DOM 面板開著嗎？（含牧場面板：它用 style.display 不是 .open class）
   _anyPanelOpen() {
-    if (document.querySelector("#ca-overlay.open,#ao-overlay.open,#jc-overlay.open,#shop-overlay.open,#eq-overlay.open,#dh-overlay.open,#en-overlay.open,#info-modal.open,#taxi-overlay.open,#tower-overlay.open,#speed-overlay.open")) return true;
+    if (document.querySelector("#ca-overlay.open,#ao-overlay.open,#jc-overlay.open,#shop-overlay.open,#eq-overlay.open,#dh-overlay.open,#en-overlay.open,#info-modal.open,#taxi-overlay.open,#qb-overlay.open,#tower-overlay.open,#speed-overlay.open")) return true;
     // 牧場(ranch)與種田(crop)布告欄都用 style.display 開關（非 .open class）→ 各別認出來，
     // 否則看門狗在面板開著時 _anyPanelOpen=false 會誤判卡死、亂動 modalOpen（種田曾漏列）
     const r = document.getElementById("ranch-overlay");
@@ -1362,13 +1362,14 @@ class ExploreScene extends Phaser.Scene {
       (this._nearShop.type === "open_shop" && (
         this._nearShop.npc === true
         || this._nearShop.category === "npc"
-        || this._nearShop.shop_id === "taxi"   // 公車站牌（派派 6/24）：走近不自動開，顯示按鈕、點才開
+        || this._nearShop.shop_id === "taxi"        // 公車站牌（派派 6/24）：走近不自動開，顯示按鈕、點才開
+        || this._nearShop.shop_id === "questboard"  // 公布欄任務板（派派 6/24）：同上，點才開
         || (this._nearShop.shop_id && String(this._nearShop.shop_id).indexOf("arcade:") === 0)))
       // 對話型人物（open_modal + category npc，例：競技場裁判/勇士）也要按鈕才開（派派 6/12）；
       // 走動村民/動物（npc:true 無 category）維持走近直接開，不在此列
       || (this._nearShop.type === "open_modal" && this._nearShop.category === "npc")));
     if (isManual && !this.modalOpen && !this._transitioning) {
-      this._showEnter(this._nearShop.shop_id === "taxi" ? "搭公車" : (this._nearShop.label || "對話"));
+      this._showEnter(this._nearShop.shop_id === "taxi" ? "搭公車" : this._nearShop.shop_id === "questboard" ? "看任務" : (this._nearShop.label || "對話"));
     } else {
       this._hideEnter();   // 進入按鈕退役（派派 6/11：走近建築直接開）
     }

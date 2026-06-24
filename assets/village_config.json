@@ -1388,9 +1388,9 @@
           "y_max": 0.594718565636002
         },
         "interaction": {
-          "type": "open_modal",
+          "type": "open_shop",
+          "shop_id": "questboard",
           "label": "公布欄",
-          "body": "村莊公告欄～",
           "radius": 110,
           "anchor": {
             "x": 0.654737341228055,

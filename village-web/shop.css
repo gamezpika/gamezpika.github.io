@@ -709,6 +709,15 @@
   opacity: 0; pointer-events: none; transition: opacity 0.28s ease;
 }
 #map-fade.show { opacity: 1; pointer-events: auto; }
+/* 黑幕上的「載入中…」提示：只有黑幕停留超過 0.8 秒(=真的在載/卡住)才淡入，
+   一般瞬間換圖不會閃出來。讓玩家知道是在載入、不是當機。 */
+#map-fade .mf-hint {
+  position: absolute; left: 0; right: 0; top: 56%;
+  text-align: center; color: #cdbb95; opacity: 0;
+  font: 600 15px/1.5 -apple-system, "PingFang TC", sans-serif;
+}
+#map-fade.show .mf-hint { animation: mfHintIn .4s ease .8s forwards; }
+@keyframes mfHintIn { to { opacity: .85; } }
 
 /* ───── 商店街新增：橫幅 / 收購 / 閱讀任務 ───── */
 .shop-banner {

@@ -57,7 +57,7 @@
     will-change: transform;
   }
 </style>
-<link rel="stylesheet" href="shop.css?v=56">
+<link rel="stylesheet" href="shop.css?v=57">
 </head>
 <body>
 <div class="hint">左下搖桿 或 WASD 移動 / 滾輪縮放 / 雙指 pinch 縮放</div>
@@ -68,7 +68,7 @@
 <button id="enter-shop">進入</button>
 <button id="enter-portal">前往</button>
 <div id="joystick"><div id="joy-thumb"></div></div>
-<div id="map-fade"></div>
+<div id="map-fade"><div class="mf-hint">載入中…</div></div>
 <script>
   // 攔截頁面層級的 touchmove：擋掉手勢被內建瀏覽器當頁面捲動 → 工具列展開/收合害遊戲視窗跳。
   // 規則：單指且起點落在真的可捲動元素(商店面板/題庫清單等 overflow-y:auto)內、且該容器在手勢方向還能捲 → 放行；
@@ -110,7 +110,7 @@
 <script src="play_limit.js?v=5"></script>
 <!-- 多人整合：預設打開（多人在線為主），裸網址即多人；?mp=0 才退回單機 demo -->
 <script>if(new URLSearchParams(location.search).get("mp")!=="0"){document.write('<script src="colyseus.bundle.js"><\/script><script src="mp.js?v=36"><\/script>');}</script>
-<script src="explore.js?v=143"></script>
+<script src="explore.js?v=144"></script>
 <!-- 活躍紀錄：進遊戲記一筆「開遊戲」+每5分鐘心跳，給後台 DAU/使用時長/留存用(後端 /api/activity/ping 60秒節流) -->
 <script>
 (function(){

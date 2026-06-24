@@ -4,6 +4,9 @@
 
 const REGISTRY_URL = "../assets/projects_registry.json";
 const DPR = Math.max(1, window.devicePixelRatio || 1);
+// 換地圖載入看門狗：超過這秒數場景還沒建好(網路卡死/某張圖 hang 住 / config JSON 載失敗)，
+// 先靜默重試一次；再卡就跳「重試/回村莊」，杜絕永久黑屏 → 玩家被迫重整 → 被內建瀏覽器踢回登入頁。
+const LOAD_WATCHDOG_MS = 16000;
 // 草/花卉等地上小植物：可踩過去、不建碰撞（現有已放置的也一起生效）
 const WALKABLE_DECOR = new Set(["deco_grass.webp", "deco_flower.webp", "deco_flower_v2.webp"]);
 
@@ -85,6 +88,10 @@ class ExploreScene extends Phaser.Scene {
       if (m) this.spawnOverride = { x: +m[1], y: +m[2] };
     }
     this.facingOverride = (data && data.facing) || null;
+    this._retryCount = (data && data._retry) || 0;   // 看門狗靜默重試的次數（>=1 再卡就改跳重試 UI）
+    // 換圖載入看門狗復位：scene.restart 沿用同一個 scene instance，旗標/計時器要在 init 清乾淨
+    this._built = false;
+    this._clearLoadWatchdog();
     this._transitioning = false;
     // 換裝狀態：restart 不會重建 scene instance，旗標要在這裡復位；
     // 世代+1 讓「換裝載到一半就走 portal」的舊 loader 回呼直接作廢
@@ -128,6 +135,7 @@ class ExploreScene extends Phaser.Scene {
 
   // Stage 1：依 mapId 從 registry 找到 config 路徑，載入該地圖的 config
   create() {
+    this._armLoadWatchdog();   // 整段載入(config JSON + 所有圖)的逾時保險，建好場景才解除
     let configPath = "assets/" + this.mapId + "_config.json";  // fallback
     const reg = this.cache.json.get("registry");
     if (reg && Array.isArray(reg.projects)) {
@@ -147,7 +155,9 @@ class ExploreScene extends Phaser.Scene {
 
   // Stage 2：讀 config → 載入該地圖所有 asset（已 cache 的跳過）→ 建場景
   _loadAssets(cfgKey) {
-    const config = this.cache.json.get(cfgKey).map_config;
+    const cjson = this.cache.json.get(cfgKey);
+    if (!cjson || !cjson.map_config) return;   // config JSON 載失敗/逾時 → 不硬解析(會丟 TypeError 卡死)，留給看門狗重試
+    const config = cjson.map_config;
     this.config = config;
     const dim = config.dimensions;
     this.IMG_W = dim.image_width;
@@ -665,6 +675,10 @@ class ExploreScene extends Phaser.Scene {
 
     // 11. 轉場淡入：用 DOM 黑幕（跨 scene.restart 穩定，蓋住換圖的載入閃爍）
     this._transitioning = false;
+    // 場景建好了 → 解除載入看門狗、清掉可能還掛著的逾時提示
+    this._built = true;
+    this._clearLoadWatchdog();
+    const _stuck = document.getElementById("__load-stuck"); if (_stuck) _stuck.remove();
     const fade = document.getElementById("map-fade");
     if (fade) this.time.delayedCall(30, () => fade.classList.remove("show"));
 
@@ -834,6 +848,64 @@ class ExploreScene extends Phaser.Scene {
     }).setOrigin(0.5).setDepth(99999);
     this.tweens.add({ targets: t, y: t.y - 26, alpha: 0, delay: 1400, duration: 700,
                       onComplete: () => t.destroy() });
+  }
+
+  _clearLoadWatchdog() {
+    if (this._loadWatchdogTimer) { clearInterval(this._loadWatchdogTimer); this._loadWatchdogTimer = null; }
+    if (this._onLoadActivity && this.load) {
+      this.load.off("fileprogress", this._onLoadActivity);
+      this.load.off("progress", this._onLoadActivity);
+      this.load.off("filecomplete", this._onLoadActivity);
+    }
+  }
+
+  // 換圖載入看門狗：用 window 計時器(不靠 Phaser 場景時鐘，載入卡死時也照樣會響)。
+  // 「卡死」= 連續 LOAD_WATCHDOG_MS 完全沒有載入活動(沒位元進度、沒檔案完成)，而非單純載很久——
+  // 慢網路只要還在下載就一直刷新活動時間，不會被誤殺。真的卡住 → 先靜默重試一次，再卡才跳逾時 UI。
+  _armLoadWatchdog() {
+    this._clearLoadWatchdog();
+    this._lastLoadActivity = Date.now();
+    this._onLoadActivity = () => { this._lastLoadActivity = Date.now(); };   // 位元進度/檔案完成都算「有在動」
+    this.load.on("fileprogress", this._onLoadActivity);
+    this.load.on("progress", this._onLoadActivity);
+    this.load.on("filecomplete", this._onLoadActivity);
+    this._loadWatchdogTimer = setInterval(() => {
+      if (this._built) { this._clearLoadWatchdog(); return; }
+      if (Date.now() - (this._lastLoadActivity || 0) < LOAD_WATCHDOG_MS) return;   // 還有進展 → 不算卡死
+      this._clearLoadWatchdog();
+      if ((this._retryCount || 0) < 1) {
+        // 靜默重試一次：同一張圖、同落點重來（多半是暫時性網路卡頓，重抓就好）
+        try { this.scene.restart({ mapId: this.mapId, spawn: this.spawnOverride, facing: this.facingOverride, _retry: (this._retryCount || 0) + 1 }); }
+        catch (e) { this._onLoadStuck(); }
+      } else {
+        this._onLoadStuck();
+      }
+    }, 2000);
+  }
+
+  // 載入持續失敗 → 收黑幕、跳明確的「重試 / 回村莊」，杜絕永久黑屏害玩家以為當機去重整(會被踢回登入)。
+  _onLoadStuck() {
+    const fade = document.getElementById("map-fade");
+    if (fade) fade.classList.remove("show");
+    if (document.getElementById("__load-stuck")) return;   // 防重複
+    const ov = document.createElement("div");
+    ov.id = "__load-stuck";
+    ov.style.cssText = "position:fixed;inset:0;z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:#1a2412;color:#fff7e6;font-family:-apple-system,'PingFang TC',sans-serif;text-align:center;padding:24px";
+    ov.innerHTML = '<div style="font-size:19px;font-weight:800">地圖載入逾時</div>'
+      + '<div style="font-size:14px;color:#cdbb95;line-height:1.7;max-width:300px">網路好像不太穩，地圖沒載完。可以重試，或先回村莊。</div>'
+      + '<div style="display:flex;gap:12px;margin-top:6px">'
+      + '<button id="__ls-retry" style="border:none;border-radius:12px;padding:11px 24px;background:#34a853;color:#fff;font-weight:800;font-size:15px">重試</button>'
+      + '<button id="__ls-home" style="border:none;border-radius:12px;padding:11px 24px;background:#b5712f;color:#fff7e6;font-weight:800;font-size:15px">回村莊</button>'
+      + '</div>';
+    document.body.appendChild(ov);
+    const go = (mapId) => {
+      const e = document.getElementById("__load-stuck"); if (e) e.remove();
+      if (fade) fade.classList.add("show");
+      try { this.scene.restart({ mapId: mapId, spawn: mapId === this.mapId ? this.spawnOverride : null, facing: mapId === this.mapId ? this.facingOverride : null, _retry: 0 }); }
+      catch (err) { location.href = "index.html?map=" + mapId; }   // scene 真的壞掉才退而整頁重載
+    };
+    ov.querySelector("#__ls-retry").onclick = () => go(this.mapId);
+    ov.querySelector("#__ls-home").onclick = () => go("village");
   }
 
   _enterPortal(portal) {
@@ -1723,6 +1795,8 @@ const game = new Phaser.Game({
     height: window.innerHeight * DPR,
   },
   input: { activePointers: 3 },  // 允許多指輸入給 pinch zoom 用
+  // 不設 loader.timeout：XHR timeout 算「總時長」不是「停滯」，會誤砍慢網路上還在下載的大圖→場景帶缺圖建好(黑底)。
+  // 改全交給「進度感知看門狗」：連續無進度才判卡死(會重試/跳 UI)，慢但有在下載的就放它載完。
   physics: { default: "arcade", arcade: { gravity: { y: 0 }, debug: false } },
   plugins: {
     global: [

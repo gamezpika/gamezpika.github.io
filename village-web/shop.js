@@ -1101,9 +1101,18 @@
     caRenderPractice(ov);
   }
 
-  // 出版社 → 版本標籤（禁忌森林：先選版本再選年級章節）
-  const CA_PUB_LABEL = { kanghsuan: "康軒 A版", hanlin: "翰林 B版", nani: "南一", ministry: "部編", generic: "其他" };
+  // 出版社 → 版本標籤（禁忌森林：先選版本再選年級章節）。派派：拿掉出版社字眼、只留 A/B 版。
+  const CA_PUB_LABEL = { kanghsuan: "A版", hanlin: "B版", nani: "南一", ministry: "部編", generic: "其他" };
   const CA_PUB_ORDER = ["kanghsuan", "hanlin", "nani", "ministry", "generic"];
+
+  // 章節顯示名：拿掉開頭「G4」年級前綴 + 「第11課/第三章/第N單元/第N節」章節編號（派派要求）。
+  function caChapName(name) {
+    const s = String(name || "")
+      .replace(/^\s*G\d+\s*/i, "")
+      .replace(/第[\d一二三四五六七八九十百]+(課|章|節|單元)\s*/g, "")
+      .trim();
+    return s || String(name || "");
+  }
 
   // 渲染：(禁忌森林) 版本 tabs → 年級 tabs → 該年級章節清單(依學期小標分段)
   function caRenderPractice(ov) {
@@ -1135,10 +1144,11 @@
     sel.forEach((c) => {
       if (c._vol && c._vol !== lastVol) { list += `<div class="ca-navsec" style="font-size:13px;">${aoEsc(c._vol)}</div>`; lastVol = c._vol; }
       const right = `<span style="white-space:nowrap;font-size:13px;">${caStars(c.stars)}</span>`;
+      const nm = caChapName(c.name);
       if (c.unlocked) {
-        list += `<button class="jc-act ca-pick" data-id="${c.id}" data-name="${aoEsc(c.name)}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;white-space:nowrap;margin:4px 0;padding:10px 14px;"><span style="overflow:hidden;text-overflow:ellipsis;">${aoEsc(c.name)}</span>${right}</button>`;
+        list += `<button class="jc-act ca-pick" data-id="${c.id}" data-name="${aoEsc(nm)}" style="display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;white-space:nowrap;margin:4px 0;padding:10px 14px;"><span style="overflow:hidden;text-overflow:ellipsis;">${aoEsc(nm)}</span>${right}</button>`;
       } else {
-        list += `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;white-space:nowrap;margin:4px 0;padding:10px 14px;opacity:.45;font-size:14px;">🔒 ${aoEsc(c.name)} ${right}</div>`;
+        list += `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;white-space:nowrap;margin:4px 0;padding:10px 14px;opacity:.45;font-size:14px;">🔒 ${aoEsc(nm)} ${right}</div>`;
       }
     });
 

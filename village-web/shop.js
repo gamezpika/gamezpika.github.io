@@ -933,7 +933,7 @@
     let m = document.getElementById("qb-overlay"); if (m) m.remove();
     m = document.createElement("div"); m.id = "qb-overlay"; m.className = "open";   // .open：給 explore._anyPanelOpen 偵測到（免自癒誤清 modalOpen）
     m.style.cssText = "position:fixed;inset:0;z-index:7000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.55);font-family:sans-serif";
-    m.innerHTML = `<div style="background:#fff6e2;border:5px solid #8a5a2b;border-radius:20px;max-width:420px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 14px 40px rgba(0,0,0,.5)">
+    m.innerHTML = `<div style="position:relative;background:#fff6e2;border:5px solid #8a5a2b;border-radius:20px;max-width:420px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 14px 40px rgba(0,0,0,.5)">
       <div style="padding:14px 16px 6px;flex:none">
         <div style="font-weight:900;font-size:20px;color:#7a4715;text-align:center">📋 任務公布欄</div>
         <div style="font-size:13px;color:#9a7038;text-align:center;margin-top:2px">看看你現在有哪些任務進行中～</div>
@@ -942,49 +942,90 @@
       <div style="padding:10px 16px 14px;flex:none"><button id="qb-close" style="width:100%;border:none;border-radius:12px;padding:11px;background:#b5712f;color:#fff7e6;font-weight:800;font-size:15px">關閉</button></div>
     </div>`;
     document.body.appendChild(m);
+    const panel = m.firstElementChild;
     const close = () => { if (m.parentNode) m.remove(); if (onClose) onClose(); };
     m.addEventListener("pointerdown", (e) => { if (e.target === m) close(); });
     m.querySelector("#qb-close").addEventListener("click", close);
+    const body = m.querySelector("#qb-body");
 
     const head = (t) => `<div style="font-weight:800;font-size:14px;color:#7a4715;margin:14px 0 4px;border-bottom:2px solid #e7cfa3;padding-bottom:4px">${t}</div>`;
     const card = (ic, title, sub, badge) => `<div style="display:flex;align-items:center;gap:10px;background:#fffdf6;border:1px solid #e7cfa3;border-radius:12px;padding:9px 11px;margin:6px 0"><div style="font-size:22px;flex:none">${ic}</div><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:14px;color:#5a3a1a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${title}</div>${sub ? `<div style="font-size:12px;color:#9a7038;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${sub}</div>` : ""}</div>${badge || ""}</div>`;
     const empty = (t) => `<div style="text-align:center;color:#b69a6e;font-size:13px;padding:6px 0 2px">${t}</div>`;
     const pill = (bg, col, txt) => `<span style="flex:none;background:${bg};color:${col};font-size:11px;font-weight:800;border-radius:999px;padding:3px 9px">${txt}</span>`;
+    const actBtn = (uq, txt) => `<button class="qb-act" data-uq="${uq}" style="flex:none;background:#34a853;color:#fff;border:none;border-radius:999px;padding:5px 13px;font-size:12px;font-weight:800;cursor:pointer">${txt}</button>`;
 
-    const t = demoToken();
-    // 主線(進行中)：抓五大學院鏈，取 status=active
-    let mainHtml;
-    if (!t) mainHtml = empty("登入後才看得到主線任務");
-    else {
-      const res = await Promise.all(QB_SUBJ.map((s) =>
-        fetch(DEMO_API + "/api/main-quests?chain=" + s.key + "_main", { headers: { Authorization: "Bearer " + t } })
-          .then((r) => r.ok ? r.json() : null).then((d) => ({ s, qs: (d && d.quests) || [] })).catch(() => ({ s, qs: [] }))));
-      const act = [];
-      res.forEach(({ s, qs }) => qs.forEach((q) => { if (q.status === "active") act.push({ s, q }); }));
-      mainHtml = act.length ? act.map(({ s, q }) => card(s.ic, esc(q.title || "任務"),
-        s.label + "學院" + (q.giver_name ? "·" + esc(q.giver_name) : ""),
-        q.can_claim ? pill("#34a853", "#fff", "可領獎") : `<span style="flex:none;color:#c08a3a;font-size:12px;font-weight:700">進行中</span>`)).join("")
-        : empty("目前沒有進行中的主線任務");
+    function qbToast(msg) {
+      const el = document.createElement("div");
+      el.textContent = msg;
+      el.style.cssText = "position:absolute;left:50%;top:10px;transform:translateX(-50%);background:rgba(40,30,16,.95);color:#ffe7a8;font-weight:800;font-size:14px;padding:8px 16px;border-radius:12px;z-index:5;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.35);max-width:90%;text-align:center";
+      panel.appendChild(el);
+      setTimeout(() => { if (el.parentNode) el.remove(); }, 2400);
     }
-    // 每日(未完成)
-    let dailyHtml;
-    if (!t) dailyHtml = empty("登入後才看得到每日任務");
-    else {
+
+    // 每日任務的動作鈕：簽到/開寶箱=點了就完成；其餘達標才出「領取」、沒達標顯示進度
+    function dailyAction(q) {
+      const tt = q.task_type, tg = Number(q.target || q.needs_count || 0) || 0, pr = Number(q.progress || 0) || 0, uq = Number(q.user_quest_id);
+      if (!Number.isFinite(uq) || uq <= 0) return tg ? `<span style="flex:none;color:#c08a3a;font-size:12px;font-weight:700">${pr}/${tg}</span>` : "";   // uq 強制數字，無效不出鈕（防注入）
+      if (tt === "signin") return actBtn(uq, "簽到");
+      if (tt === "treasure") return actBtn(uq, "開寶箱");
+      if (tg > 0 && pr >= tg) return actBtn(uq, "領取");
+      return `<span style="flex:none;color:#c08a3a;font-size:12px;font-weight:700">${pr}/${tg}</span>`;
+    }
+
+    async function claimDaily(uq, btn) {
+      const t = demoToken(); if (!t || !uq) return;
+      const old = btn.textContent; btn.disabled = true; btn.style.opacity = ".6"; btn.textContent = "…";
       try {
-        const d = await fetch(DEMO_API + "/api/quests/daily", { headers: { Authorization: "Bearer " + t } }).then((r) => r.ok ? r.json() : null);
-        const list = ((d && d.quests) || []).filter((q) => q.status !== "completed");
-        dailyHtml = list.length ? list.map((q) => {
-          const tg = Number(q.target || q.needs_count || 0) || 0, pr = Number(q.progress || 0) || 0;   // 強制數字防注入
-          return card(esc(q.emoji || "📅"), esc(q.title || "每日任務"), esc(q.desc || ""),
-            tg ? `<span style="flex:none;color:#c08a3a;font-size:12px;font-weight:700">${pr}/${tg}</span>` : "");
-        }).join("") : empty("今天的每日任務都完成了！🎉");
-      } catch (e) { dailyHtml = empty("每日任務載入失敗"); }
+        const r = await fetch(DEMO_API + "/api/quests/complete", {
+          method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + t },
+          body: JSON.stringify({ user_quest_id: Number(uq) }),
+        });
+        const d = await r.json();
+        if (d && d.ok) {
+          qbToast("✅ 完成！" + (d.reward_coins ? "＋" + d.reward_coins + " 金幣" : "") + (d.extra_msg || ""));
+          loadBoard();
+        } else {
+          qbToast(d && d.error === "progress_not_met" ? "還沒達成喔～繼續加油！" : "領取失敗，再試一次");
+          btn.disabled = false; btn.style.opacity = "1"; btn.textContent = old;
+        }
+      } catch (e) { qbToast("領取失敗，再試一次"); btn.disabled = false; btn.style.opacity = "1"; btn.textContent = old; }
     }
-    // 閱讀(展示，無真實進度)
-    const readHtml = QB_READING.map((q) => card(q.ic, q.title, q.desc + "　🎁 " + q.reward, pill("#e7cfa3", "#7a4715", "展示"))).join("");
 
-    const body = m.querySelector("#qb-body");
-    if (body) body.innerHTML = head("📜 主線任務（進行中）") + mainHtml + head("📅 每日任務") + dailyHtml + head("📖 閱讀任務") + readHtml;
+    async function loadBoard() {
+      body.innerHTML = `<div style="text-align:center;color:#9a7038;padding:26px">載入中…</div>`;
+      const t = demoToken();
+      // 主線(進行中)：抓五大學院鏈，取 status=active
+      let mainHtml;
+      if (!t) mainHtml = empty("登入後才看得到主線任務");
+      else {
+        const res = await Promise.all(QB_SUBJ.map((s) =>
+          fetch(DEMO_API + "/api/main-quests?chain=" + s.key + "_main", { headers: { Authorization: "Bearer " + t } })
+            .then((r) => r.ok ? r.json() : null).then((d) => ({ s, qs: (d && d.quests) || [] })).catch(() => ({ s, qs: [] }))));
+        const a = [];
+        res.forEach(({ s, qs }) => qs.forEach((q) => { if (q.status === "active") a.push({ s, q }); }));
+        mainHtml = a.length ? a.map(({ s, q }) => card(s.ic, esc(q.title || "任務"),
+          s.label + "學院" + (q.giver_name ? "·" + esc(q.giver_name) : ""),
+          q.can_claim ? pill("#34a853", "#fff", "可領獎") : `<span style="flex:none;color:#c08a3a;font-size:12px;font-weight:700">進行中</span>`)).join("")
+          : empty("目前沒有進行中的主線任務");
+      }
+      // 每日(未完成)：可領的給按鈕
+      let dailyHtml;
+      if (!t) dailyHtml = empty("登入後才看得到每日任務");
+      else {
+        try {
+          const d = await fetch(DEMO_API + "/api/quests/daily", { headers: { Authorization: "Bearer " + t } }).then((r) => r.ok ? r.json() : null);
+          const list = ((d && d.quests) || []).filter((q) => q.status !== "completed");
+          dailyHtml = list.length ? list.map((q) => card(esc(q.emoji || "📅"), esc(q.title || "每日任務"), esc(q.desc || ""), dailyAction(q))).join("")
+            : empty("今天的每日任務都完成了！🎉");
+        } catch (e) { dailyHtml = empty("每日任務載入失敗"); }
+      }
+      // 閱讀(展示，無真實進度)
+      const readHtml = QB_READING.map((q) => card(q.ic, q.title, q.desc + "　🎁 " + q.reward, pill("#e7cfa3", "#7a4715", "展示"))).join("");
+
+      body.innerHTML = head("📜 主線任務（進行中）") + mainHtml + head("📅 每日任務") + dailyHtml + head("📖 閱讀任務") + readHtml;
+      body.querySelectorAll(".qb-act").forEach((b) => b.addEventListener("click", () => claimDaily(b.dataset.uq, b)));
+    }
+    loadBoard();
   }
 
   let caMainAPI = null; // { seq: quest } 快取

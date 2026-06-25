@@ -34,6 +34,21 @@ Google ───▶ │  eduarena-skill-demo         │   COEP/COOP headers
 - 前端正式網址：`https://eduarena-skill-demo-production.up.railway.app`
 - 另有一個**舊正式站** `web-production-48b09`（48b09），只剩「舊題目圖圖床」還在用（Caddyfile 的 failover），其他都已搬到上面兩個。
 
+### Railway 專案全貌（交接時要一起搬，不是只有一個專案）
+
+目前都掛在**個人帳號（沒有 team）**。一個完整的 demo 其實橫跨多個 Railway 專案：
+
+| Railway 專案 | 裡面的 service | 交接 |
+|---|---|---|
+| **eduarena-skill-demo** | `eduarena-skill-demo`(前端 Caddy)、`eduarena-tutoring`(後端 API)、**`Postgres`(資料庫)**、`eduarena-demo-bot`(TG bot 停用)。volume：題目圖 + DB 資料 | ✅ 必交（核心） |
+| **eduarena-colyseus** | `colyseus`(多人連線 server)。村莊**預設開多人**，不交多人會掛 | ✅ 必交 |
+| **eduarena-tutoring**(舊) | `web`(48b09 舊正式站)+ 舊 Postgres | ⚠️ 幾乎廢，只剩舊題目圖；可日後收掉 |
+
+**Railway 怎麼交給公司**（公司端免費註冊 Railway 帳號／開 Team 即可）：
+- **完整交付**＝把上面專案 **Transfer** 到公司的 Team（專案 → Settings → Transfer project）。連 service／環境變數／Postgres 資料／volume／網址一起搬，資料不掉。轉完帳單算公司的；公司要接 GitHub App 授權 `Zumii-ai` repos、加付款方式。
+- **只多一個工程師幫忙**＝把專案放進 Team，**邀請成員**即可，擁有權／帳單仍在原帳號。
+- ⚠️ 轉移後若 `eduarena-tutoring-production.up.railway.app` 網址改變 → 前端連不到後端 → 改 [`config.js`](config.js)（+ Caddyfile 圖代理 host）即可全站改指，見 §6。
+
 ---
 
 ## 2. 後端環境變數（在 Railway → eduarena-tutoring → Variables）
@@ -133,3 +148,44 @@ API base 已收斂到 **[`config.js`](config.js)（單一覆蓋點）**——改
 - **下次推一個真 commit 時，去 Railway 確認有自動 build** ＝ 自動部署沒斷的最終證明。
   若沒自動觸發：Railway → service → Settings → Source，重連 `Zumii-ai/eduarena-tutoring`（組織要裝 Railway 的 GitHub App 並授權這個 repo）。
 - 把接手工程師加進 `Zumii-ai` 組織 + 兩個 repo + Railway 專案。
+
+---
+
+## 10. 新同事 Day 1（要開始接手該做什麼）
+
+### A. 先拿到存取權（要管理員幫忙開）
+
+- [ ] **GitHub**：加進 `Zumii-ai` 組織 + 兩個 repo（`eduarena-skill-demo` 前端、`eduarena-tutoring` 後端）。
+- [ ] **Railway**：邀請進專案（至少 `eduarena-skill-demo` + `eduarena-colyseus`）。
+- [ ] **後端 `.env`**：走私下管道拿一份（gitignore 沒進 git）。含 `DATABASE_URL`、`JWT_SECRET`、`LINE_*`、`GEMINI_API_KEY` 等，見 §2。
+- [ ] （視需要）LINE Developers console、Google OAuth client、Gemini 帳單的存取。
+
+### B. 本機跑起來
+
+```bash
+# 前端（純靜態，無 build）
+git clone git@github.com:Zumii-ai/eduarena-skill-demo.git
+cd eduarena-skill-demo && python3 -m http.server 8799
+# 開 http://localhost:8799/village-web/index.html?mp=0
+#   想連本機後端就加 &api=http://localhost:8000
+
+# 後端（FastAPI，Python 3.11）
+git clone git@github.com:Zumii-ai/eduarena-tutoring.git
+cd eduarena-tutoring && pip install -r requirements.txt
+# 放好 .env（DATABASE_URL 可先指線上公開 DB 或自架 local pg）
+uvicorn core.main:app --reload
+```
+
+### C. 開工前一定要先讀／知道
+
+- [ ] 讀完這份 HANDOVER + README。
+- [ ] **改 JS/CSS 要手動 bump `?v=`**（§7）—— 最容易忘、忘了玩家吃舊檔。
+- [ ] **DB schema 不是 alembic**，是 `create_all` + `core/database.py` 手寫 `ALTER IF NOT EXISTS`（§7）。
+- [ ] **部署 = `git push` 到 main → Railway 自動部署**，沒有 CI 把關 → 推前自己手動驗。
+- [ ] **後端有 in-memory 答題 session** → 有玩家在線時別亂重部署（會清掉）（§7）。
+- [ ] **沒有自動化測試**：改完手動走完「登入→建角色→進村→答題→換地圖」。
+
+### D. 建議的第一個練習任務
+
+挑一個無害的小改動（例如改個文案）→ push → **去 Railway 看有沒有自動 build 出來** → 線上驗。
+一次走完就摸清整條「改 → 推 → 部署 → 驗」的循環，也順便確認轉移後自動部署沒斷（§9）。

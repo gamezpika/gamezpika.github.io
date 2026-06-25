@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="/no-zoom.js?v=2"></script>
+<script src="config.js?v=1"></script>
 <meta name="theme-color" content="#16213E">
 <title>小智學園 · 新手任務</title>
 <style>
@@ -386,7 +387,7 @@ let PLAYER = { name:'', gender:'', grade:'' };
 function next(){ stage++; run(); }
 
 // ── Demo 後台：建角色（pptx 第5-6頁的輸入姓名/性別/年級＝真的建一個 demo 玩家）──
-const DEMO_API = "https://eduarena-tutoring-production.up.railway.app";
+const DEMO_API = window.EDU_API || "https://eduarena-tutoring-production.up.railway.app";
 async function createDemoAccount(name, genderLabel, grade){
   try{
     const j = (r)=>r.json();

@@ -10,7 +10,7 @@
   "use strict";
   if (new URLSearchParams(location.search).get("nolimit") === "1") return;   // 展示豁免
 
-  var API = "https://eduarena-tutoring-production.up.railway.app";
+  var API = window.EDU_API || "https://eduarena-tutoring-production.up.railway.app";
   var TICK_MS = 30000;          // 每 30 秒 heartbeat + 查 status
   var token = function () { try { return localStorage.getItem("eduarena_demo_token") || ""; } catch (e) { return ""; } };
 

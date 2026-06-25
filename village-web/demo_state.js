@@ -5,7 +5,7 @@
 // 目的：綁帳號 + 跨裝置 + 後台改得到。機制：進村莊 hydrate（後端→localStorage），寫入時 write-through（debounce）。
 // 訪客（沒 token）不同步，維持純本地。
 (function () {
-  var API = "https://eduarena-tutoring-production.up.railway.app";
+  var API = window.EDU_API || "https://eduarena-tutoring-production.up.railway.app";
   var GLOBAL_KEYS = ["village_job", "village_mastery"];
   var NS_KEYS = ["village_equip", "village_outfits_owned", "campus_crops", "campus_harvest", "campus_livestock"];
   var ALL_KEYS = GLOBAL_KEYS.concat(NS_KEYS);

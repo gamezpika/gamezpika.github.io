@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <script src="/no-zoom.js?v=2"></script>
+<script src="config.js?v=1"></script>
 <meta name="theme-color" content="#2a3e1f">
 <title>小智學園 — 選擇小朋友</title>
 <style>
@@ -64,7 +65,7 @@
 </div>
 <div class="toast" id="toast"></div>
 <script>
-  var DEMO_API = "https://eduarena-tutoring-production.up.railway.app";
+  var DEMO_API = window.EDU_API || "https://eduarena-tutoring-production.up.railway.app";
   var toast = document.getElementById("toast"), tT;
   function showToast(m){ toast.textContent=m; toast.classList.add("show"); clearTimeout(tT); tT=setTimeout(function(){toast.classList.remove("show");},2200); }
   function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];}); }

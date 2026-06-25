@@ -1,63 +1,70 @@
-# EduArena 地圖技術 Demo
+# 小智學園 EduArena — Demo（遊戲化國小家教）
 
-EduArena 海洋地圖純前端技術展示站。
+國小生「遊戲化學習」demo：孩子用 LINE / Google 登入，進到一個 2.5D 村莊世界（Phaser），
+在地圖上走動、進各學院答題、打王、競技、種田養成。答題接真後端、給金幣、記進度。
 
-**展示技術**：
-- DOGTOR 風 3D 透視縮放海洋地圖
-- 慣性視差（前景/中景/背景三層）
-- 手寫彈簧物理引擎（stiffness 50 / damping 20 / mass 1）
-- 「消失點釘背景天際線」深度模型
-- 拖曳手感 + 焦點放大可點
+> ⚠️ **這份 README 是給工程師快速上手用的。要交接 / 換人接手請先看 [HANDOVER.md](HANDOVER.md)**
+> （架構、環境變數、部署、機密、地雷、待辦、repo 轉移步驟全在那）。
 
-## 看 Demo
+---
 
-線上：<https://gamezpika.github.io/eduarena-skill-demo/>
+## 這個 repo 是什麼
 
-## 本地跑
+**前端靜態站**（純 HTML/JS/CSS，無 build step，Phaser 走 CDN）。由 Railway 上的 Caddy 服務。
+後端是另一個 repo（FastAPI，見 HANDOVER.md），這個 repo 只負責畫面與呼叫後端 API。
+
+## 玩家流程（進入點）
+
+```
+index.html (Google/LINE 登入)
+   → select.html (選/建小朋友)
+   → onboarding.html (新手開場，可建角色)
+   → village-web/index.html (Phaser 村莊主場景) ← 遊戲本體
+```
+
+地圖切換、答題面板、商店、任務、種田等都在 `village-web/` 裡。
+獨立小遊戲（打地鼠、拼字、boss 戰、PVP 等）是各自的 `*.html`，靠 `arcade/shim.js` 接後端。
+
+## 本機跑
 
 ```bash
 cd eduarena-skill-demo
-python3 -m http.server 8000
-# 瀏覽器開 http://localhost:8000
+python3 -m http.server 8799
+# 瀏覽器開 http://localhost:8799/village-web/index.html?mp=0
+#   ?mp=0  = 單機模式（不連多人 colyseus）
+#   ?api=http://localhost:8000  = 後端指到本機（預設指線上，見 config.js）
+#   ?dbg=1 = 顯示卡死診斷 HUD
 ```
 
-## 檔案結構
+靜態檔直接服務，存檔重整即見效。**但改了 JS/CSS 要手動 bump `?v=`**（見下）。
+
+## 重要目錄
 
 ```
-.
-├── index.html                  ← 入口頁
-├── static/
-│   ├── css/
-│   │   ├── starmap.css         ← 海洋地圖樣式（與 EduArena 同源）
-│   │   └── demo.css            ← Demo 站 baseline 樣式 + 彈窗
-│   └── js/
-│       ├── starmap.js          ← 海洋地圖物理引擎（與 EduArena 同源）
-│       └── mock-eduapi.js      ← 假裝 EduArena 後端 + 點島彈窗
-└── assets/images/              ← 海洋圖 + 5 島 + 圖標
+config.js               ← 後端 API 位址「單一覆蓋點」（換後端改這裡）
+index.html              ← Google/LINE 登入落地頁
+select.html             ← 選小朋友
+onboarding.html         ← 新手開場 + 建角色
+village-web/            ← 村莊遊戲本體（Phaser）
+  index.html            ← 場景進入點 + 載入所有 village 腳本（cache 版本號在這）
+  explore.js            ← Phaser 場景：地圖載入、走動、傳送門、互動
+  shop.js               ← 所有面板：學院答題/商店/任務/公布欄/裝備/角色…
+  demo_state.js         ← 生活區狀態（種田/裝備/造型）接後端、跨裝置同步
+  farm.js / crop.js     ← 種田牧場
+  play_limit.js         ← 防沉迷強制休息
+  mp.js                 ← 多人（colyseus）
+assets/                 ← 地圖 config（JSON，map-editor 產出）+ 圖
+arcade/                 ← 獨立小遊戲共用墊片
+Caddyfile               ← 靜態服務設定（COEP、題目圖反向代理）
 ```
 
-## 回收到 EduArena Production
+## 改版號（cache-bust，務必記得）
 
-`starmap.js` / `starmap.css` 跟 EduArena 同源，未來在 demo 站調好的手感要搬回去：
+改了任何 JS/CSS，要去**引用它的 HTML 把 `?v=N` 加一**，否則玩家還是吃舊檔。
+village 腳本的版本號集中在 [`village-web/index.html`](village-web/index.html)。
+詳見 [HANDOVER.md](HANDOVER.md) 的「地雷」一節。
 
-```bash
-# 在 EduArena repo 執行
-cp ../eduarena-skill-demo/static/css/starmap.css static/css/
-cp ../eduarena-skill-demo/static/js/starmap.js static/js/
-cp ../eduarena-skill-demo/assets/images/*.png assets/images/
+## 部署
 
-# 把 assets 路徑從相對 (assets/) 改回絕對 (/assets/)
-sed -i 's|"assets/|"/assets/|g; s|'\''assets/|'\''/assets/|g' static/js/starmap.js
-sed -i 's|url("assets/|url("/assets/|g' static/css/starmap.css
-
-# 確認後 commit
-git add static/css/starmap.css static/js/starmap.js assets/images/
-git commit -m "feat(map): 海洋地圖（從 demo 站回收）"
-git push
-```
-
-**不要搬**：`mock-eduapi.js` / `demo.css` / `index.html`（這三個是 demo 站專用）。
-
-## 來源
-
-從 EduArena tag `exp/ocean-white-0517`（commit `5d928c2`）萃取。
+`git push` 到 `main` → Railway 自動部署。前端、後端各一個 Railway service，都吃自己的 repo。
+驗證方式、service 名稱、env 變數 → [HANDOVER.md](HANDOVER.md)。

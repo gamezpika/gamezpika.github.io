@@ -15,7 +15,7 @@ function _qParam(name) {
 }
 
 // 任務 NPC 驚嘆號/問號：狀態跟後端任務系統走（不再用 shop_id 前綴硬判）
-const QUEST_DEMO_API = "https://eduarena-tutoring-production.up.railway.app";
+const QUEST_DEMO_API = window.EDU_API || "https://eduarena-tutoring-production.up.railway.app";
 // 學院室內地圖 → 科目；只有這些地圖的 NPC（且 id 在該科 academy.json）才掛符號
 function _questSubjectOf(mapId) {
   const m = /^(chinese|math|science|social|english)_interior$/.exec(mapId || "");

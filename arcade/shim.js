@@ -3,6 +3,7 @@
 (function () {
     // 本機測試可用 ?api=http://localhost:8000 指到本機後端
     const API = new URLSearchParams(location.search).get("api")
+        || window.EDU_API
         || "https://eduarena-tutoring-production.up.railway.app";
     window.ARCADE_API = API;
 

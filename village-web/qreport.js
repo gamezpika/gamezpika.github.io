@@ -6,6 +6,7 @@
   if (window.QReport) return;   // 防重複載入
 
   var API = (typeof window.DEMO_API === "string" && window.DEMO_API) ||
+            window.EDU_API ||
             "https://eduarena-tutoring-production.up.railway.app";
   var REASONS = ["題目錯誤", "答案怪怪的", "圖片看不到", "選項重複", "看不懂題目", "其他"];
   var sending = false;

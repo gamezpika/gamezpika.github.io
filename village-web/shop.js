@@ -915,7 +915,7 @@
   }
 
   /* ── Demo 真後台：主線任務（孔丘那條鏈）改讀真 API；沒通行證就退回舊假版 ── */
-  const DEMO_API = "https://eduarena-tutoring-production.up.railway.app";
+  const DEMO_API = window.EDU_API || "https://eduarena-tutoring-production.up.railway.app";
   function demoToken() { try { return localStorage.getItem("eduarena_demo_token") || ""; } catch (e) { return ""; } }
 
   // ── 公布欄任務板（派派 6/24）：聚合 主線(進行中) + 每日(未完成) + 閱讀(展示)，村莊風面板，點才開 ──

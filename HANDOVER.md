@@ -27,7 +27,7 @@ Google ───▶ │  eduarena-skill-demo         │   COEP/COOP headers
 | 元件 | repo | Railway |
 |---|---|---|
 | 前端 | `Zumii-ai/eduarena-skill-demo`（組織，OK） | project **eduarena-skill-demo** / service **eduarena-skill-demo**（Caddy 靜態） |
-| 後端 | `gamezpika/eduarena-tutoring`（⚠️個人帳號，**要轉進組織**，見 §9） | 同 project / service **eduarena-tutoring**（`uvicorn core.main:app`，Python 3.11.11；另有 `worker: python bot.py` TG bot，目前停用） |
+| 後端 | `Zumii-ai/eduarena-tutoring`（已轉入組織 2026-06；Railway source 已指向新 repo） | 同 project / service **eduarena-tutoring**（`uvicorn core.main:app`，Python 3.11.11；另有 `worker: python bot.py` TG bot，目前停用） |
 | DB | （後端 repo 內 models） | 同 project 的 PostgreSQL；schema 不是 alembic，見 §7 |
 
 - 後端正式網址：`https://eduarena-tutoring-production.up.railway.app`
@@ -121,16 +121,15 @@ API base 已收斂到 **[`config.js`](config.js)（單一覆蓋點）**——改
 
 ---
 
-## 9. 把後端 repo 轉進組織（gamezpika → Zumii-ai）
+## 9. 後端 repo 轉組織（已完成 2026-06）
 
-後端 `eduarena-tutoring` 在個人帳號，要交接應轉進公司組織（前端已在組織）。GitHub 網頁操作（我做不了，需要你點）：
+後端已從 `gamezpika/eduarena-tutoring` 轉入 `Zumii-ai/eduarena-tutoring`（前後端都在組織了）。已處理：
 
-1. GitHub 開 `gamezpika/eduarena-tutoring` → **Settings** → 最下面 **Danger Zone** → **Transfer ownership**。
-2. 新擁有者填 `Zumii-ai`，打字確認 repo 名。需要你對 `Zumii-ai` 組織有建 repo 權限。
-3. 轉移後：
-   - **Railway**：該 service 的 GitHub 連結要重新指向 `Zumii-ai/eduarena-tutoring`（Railway → service → Settings → Source，reconnect）。
-   - 本機 remote：`git remote set-url origin git@github.com:Zumii-ai/eduarena-tutoring.git`。
-   - 確認 Deploy 還會自動觸發（push 一個小 commit 驗證）。
-4. 把接手工程師加進 `Zumii-ai` 組織 + 兩個 repo + Railway 專案。
+- ✅ Railway 後端 service 的 repo trigger 已指向 `Zumii-ai/eduarena-tutoring`（branch `main`）。
+- ✅ 本機 remote 已更新（`git remote set-url origin git@github.com:Zumii-ai/eduarena-tutoring.git`）。
+- ✅ 舊網址 `gamezpika/eduarena-tutoring` GitHub 仍會自動轉址（舊連結不會壞）。
 
-> 轉移本身不會動到程式或部署，但 **Railway 的 source 連結要手動重接**，否則之後 push 不會自動部署。
+**還要確認的（接手前驗一次）**：
+- **下次推一個真 commit 時，去 Railway 確認有自動 build** ＝ 自動部署沒斷的最終證明。
+  若沒自動觸發：Railway → service → Settings → Source，重連 `Zumii-ai/eduarena-tutoring`（組織要裝 Railway 的 GitHub App 並授權這個 repo）。
+- 把接手工程師加進 `Zumii-ai` 組織 + 兩個 repo + Railway 專案。

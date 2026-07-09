@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>老師登入 · 班級 PK</title>
+<script src="https://accounts.google.com/gsi/client" async></script>
+<script src="../config.js"></script>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+    background: linear-gradient(135deg, #1a2540 0%, #2d3f6e 50%, #4b5d90 100%);
+    color:#fff; padding:20px;
+  }
+  .card {
+    background: rgba(20,30,55,0.85); backdrop-filter: blur(12px);
+    border: 1px solid rgba(140,170,220,0.3);
+    border-radius:20px; padding:40px 32px; max-width:400px; width:100%;
+    box-shadow:0 20px 60px rgba(0,0,0,.4);
+    text-align:center;
+  }
+  .logo { font-size:48px; margin-bottom:10px; }
+  h1 { font-size:22px; margin-bottom:6px; letter-spacing:1px; }
+  .sub { font-size:13px; color:#a8b8d8; margin-bottom:28px; line-height:1.6; }
+  .google-btn { display:flex; justify-content:center; margin:20px 0; }
+  .fallback {
+    display:none; margin-top:16px; padding:14px 20px;
+    background:#fff; color:#333; border:none; border-radius:24px;
+    font-size:15px; font-weight:600; cursor:pointer; width:100%;
+  }
+  .foot { margin-top:24px; font-size:11px; color:#7f8fb0; }
+  .toast {
+    position:fixed; bottom:40px; left:50%; transform:translateX(-50%);
+    background:rgba(20,20,20,.9); color:#fff; padding:12px 20px;
+    border-radius:20px; font-size:14px; opacity:0; transition:opacity .3s;
+    pointer-events:none; max-width:80vw;
+  }
+  .toast.show { opacity:1; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">🎓</div>
+  <h1>班級 PK 老師後台</h1>
+  <div class="sub">小智學園 · 補習班班級即時對戰<br>用 Google 帳號登入即可開始</div>
+
+  <div class="google-btn" id="g-signin"></div>
+  <button class="fallback" id="g-fallback" onclick="showToast('Google 登入未就緒，請重新整理')">Google 登入未就緒</button>
+
+  <div class="foot">開發階段：任何 Google 帳號皆可</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  var GOOGLE_CLIENT_ID = "978002960103-ca65annj4hp40f92eo84hsgqhhlra5na.apps.googleusercontent.com";
+  var API = window.EDU_API || "https://eduarena-tutoring-production.up.railway.app";
+
+  var toast = document.getElementById("toast"), tT;
+  function showToast(msg) {
+    toast.textContent = msg; toast.classList.add("show"); clearTimeout(tT);
+    tT = setTimeout(function(){ toast.classList.remove("show"); }, 2400);
+  }
+
+  async function onGoogleCredential(resp) {
+    if (!resp || !resp.credential) { showToast("Google 沒回傳憑證"); return; }
+    try {
+      var r = await fetch(API + "/api/teacher/google_login", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ credential: resp.credential })
+      });
+      var d = await r.json();
+      if (!r.ok) { showToast("登入失敗：" + (d.detail || r.status)); return; }
+      localStorage.setItem("eduarena_teacher_token", d.token);
+      localStorage.setItem("eduarena_teacher", JSON.stringify(d.teacher));
+      location.href = "dashboard.html";
+    } catch (e) {
+      showToast("連線失敗：" + e.message);
+    }
+  }
+
+  function initGoogle() {
+    var ready = window.google && google.accounts && google.accounts.id;
+    if (!ready) {
+      document.getElementById("g-fallback").style.display = "block";
+      return;
+    }
+    google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: onGoogleCredential });
+    google.accounts.id.renderButton(document.getElementById("g-signin"),
+      { type:"standard", theme:"filled_blue", size:"large", text:"signin_with", shape:"pill", locale:"zh_TW", width:280 });
+  }
+
+  (function waitGIS(n){
+    if (window.google && google.accounts && google.accounts.id) return initGoogle();
+    if (n <= 0) return initGoogle();
+    setTimeout(function(){ waitGIS(n-1); }, 200);
+  })(20);
+
+  // 已登入 → 直接進 dashboard
+  if (localStorage.getItem("eduarena_teacher_token")) {
+    location.href = "dashboard.html";
+  }
+</script>
+
+</body>
+</html>

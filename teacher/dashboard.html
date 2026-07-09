@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>老師後台 · 班級 PK</title>
+<script src="../config.js"></script>
+<script src="common.js"></script>
+<link rel="stylesheet" href="common.css">
+<style>
+  .row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
+  .list-item {
+    display:grid; grid-template-columns: 1fr auto; gap:12px; align-items:center;
+    padding:16px; border:1px solid rgba(140,170,220,.15); border-radius:12px;
+    background:rgba(10,15,32,.4); margin-bottom:10px;
+    transition: border-color .15s, background .15s;
+  }
+  .list-item:hover { border-color:#6e8fd0; background:rgba(30,50,90,.4); }
+  .list-item .code { font-family:'SF Mono','Menlo',monospace; font-size:20px; font-weight:700; color:#ffd54d; letter-spacing:2px; }
+  .list-item .meta { font-size:12px; color:#a8b8d8; margin-top:4px; }
+  .list-item .actions { display:flex; gap:8px; align-items:center; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="logo">🎓</span> 班級 PK 後台</div>
+  <div class="me">
+    <span id="me-name">—</span>
+    <button onclick="T.logout()">登出</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div>
+      <div class="page-title">我的班級 PK</div>
+      <div class="page-sub">建立錦標賽 → 學生用 code 加入 → 開賽 → 監控</div>
+    </div>
+    <a href="create.html" class="btn primary">＋ 新增 PK</a>
+  </div>
+
+  <div id="list"></div>
+</div>
+
+<script>
+  if (T.requireLogin()) init();
+
+  async function init(){
+    var me = T.teacher();
+    if (me) document.getElementById("me-name").textContent = me.display_name || me.email || "老師";
+    try {
+      var d = await T.api("/api/teacher/classroom/mine");
+      render(d.tournaments || []);
+    } catch (e) {
+      T.toast("讀取失敗：" + e.message);
+    }
+  }
+
+  function render(list){
+    var el = document.getElementById("list");
+    if (!list.length){
+      el.innerHTML = '<div class="empty"><div class="icon">📚</div>還沒建過班級 PK，點右上「新增 PK」開始</div>';
+      return;
+    }
+    el.innerHTML = list.map(function(t){
+      var stateTag = '<span class="tag ' + esc(t.state) + '">' + stateLabel(t.state) + '</span>';
+      var created = t.created_at ? new Date(t.created_at).toLocaleString("zh-TW", {hour12:false}) : "";
+      var actionBtn = t.state === "finished" || t.state === "cancelled"
+        ? '<a href="live.html?id=' + t.id + '" class="btn ghost small">回顧</a>'
+        : '<a href="live.html?id=' + t.id + '" class="btn primary small">進入</a>';
+      return '<div class="list-item">'
+        + '<div>'
+          + '<div class="code">' + esc(t.code) + ' ' + stateTag + '</div>'
+          + '<div class="meta">'
+            + '年級 G' + t.grade + ' · ' + esc(t.subject_key) + ' · 每場 ' + t.questions_per_match + ' 題'
+            + (created ? ' · 建於 ' + created : '')
+          + '</div>'
+        + '</div>'
+        + '<div class="actions">' + actionBtn + '</div>'
+      + '</div>';
+    }).join("");
+  }
+
+  function stateLabel(s){
+    return ({ waiting:"招募中", live:"進行中", finished:"已結束", cancelled:"取消" })[s] || s;
+  }
+  function esc(s){
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+</script>
+
+</body>
+</html>

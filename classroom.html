@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<script src="/no-zoom.js?v=2"></script>
+<title>班級 PK · 加入</title>
+<script src="config.js"></script>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body {
+    min-height:100vh;
+    font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+    background: linear-gradient(180deg, #12182b 0%, #1c2545 60%, #232f56 100%);
+    color:#e6ecf7;
+  }
+  body { display:flex; flex-direction:column; align-items:center; padding:24px 20px 60px; }
+
+  .brand { display:flex; align-items:center; gap:8px; margin:12px 0 20px; }
+  .brand .logo { font-size:36px; }
+  .brand .title { font-size:20px; font-weight:700; letter-spacing:1px; }
+
+  .card {
+    background:rgba(30,40,70,.7); border:1px solid rgba(140,170,220,.2);
+    border-radius:20px; padding:28px; width:100%; max-width:420px;
+    box-shadow:0 12px 40px rgba(0,0,0,.35); margin-bottom:16px;
+  }
+  h2 { font-size:17px; margin-bottom:14px; color:#c7d5f0; }
+
+  .code-input {
+    width:100%; padding:16px; text-align:center;
+    font-family:'SF Mono','Menlo',monospace; font-size:26px; font-weight:800;
+    letter-spacing:6px; text-transform:uppercase;
+    background:rgba(10,15,32,.6); color:#ffd54d;
+    border:2px solid rgba(140,170,220,.3); border-radius:12px;
+    outline:none;
+  }
+  .code-input:focus { border-color:#6e8fd0; box-shadow:0 0 0 3px rgba(110,143,208,.2); }
+
+  .name-input {
+    width:100%; padding:12px 16px; margin-top:12px;
+    background:rgba(10,15,32,.6); color:#fff; font-size:14px;
+    border:1px solid rgba(140,170,220,.25); border-radius:10px; outline:none;
+  }
+
+  .btn {
+    display:block; width:100%; padding:14px; margin-top:16px;
+    background:linear-gradient(135deg, #4a7dd4, #6e5bd4);
+    color:#fff; border:none; border-radius:24px;
+    font-size:16px; font-weight:700; letter-spacing:1px; cursor:pointer;
+  }
+  .btn:disabled { opacity:.45; cursor:not-allowed; }
+  .btn.ghost { background:transparent; border:1px solid rgba(180,200,240,.3); color:#c7d5f0; }
+
+  .status-box { text-align:center; }
+  .status-icon { font-size:64px; margin-bottom:12px; }
+  .status-msg { font-size:18px; font-weight:600; margin-bottom:6px; }
+  .status-sub { font-size:13px; color:#a8b8d8; margin-bottom:20px; }
+
+  .tag {
+    display:inline-block; padding:4px 12px; border-radius:14px;
+    font-size:12px; font-weight:600;
+  }
+  .tag.waiting  { background:rgba(255,200,80,.18); color:#ffd680; }
+  .tag.playing  { background:rgba(80,180,255,.18); color:#8ecfff; }
+  .tag.eliminated { background:rgba(180,80,80,.18); color:#ff9090; }
+  .tag.champion { background:linear-gradient(135deg,#ffb44a,#ff8940); color:#fff; }
+
+  .stats-row { display:flex; justify-content:space-around; margin-top:16px; padding:12px; background:rgba(10,15,32,.4); border-radius:10px; }
+  .stat { text-align:center; }
+  .stat .num { font-size:22px; font-weight:800; color:#ffd54d; }
+  .stat .lbl { font-size:11px; color:#a8b8d8; margin-top:2px; letter-spacing:1px; }
+
+  .toast {
+    position:fixed; bottom:40px; left:50%; transform:translateX(-50%);
+    background:rgba(20,20,20,.92); color:#fff; padding:12px 22px;
+    border-radius:22px; font-size:14px; opacity:0; transition:opacity .3s;
+    pointer-events:none; max-width:82vw; z-index:9999;
+  }
+  .toast.show { opacity:1; }
+
+  .spinner {
+    display:inline-block; width:20px; height:20px;
+    border:3px solid rgba(180,200,240,.2); border-top-color:#8ecfff;
+    border-radius:50%; animation:spin .8s linear infinite;
+    vertical-align:middle; margin-right:8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="brand">
+  <span class="logo">🏫</span>
+  <span class="title">班級 PK</span>
+</div>
+
+<div id="root"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  var API = window.EDU_API || "https://eduarena-tutoring-production.up.railway.app";
+  var TIMER = null;
+
+  function tokenGet(){ return localStorage.getItem("eduarena_demo_token") || ""; }
+  function nameGet(){ return localStorage.getItem("eduarena_kid_name") || ""; }
+  function toast(msg){
+    var el = document.getElementById("toast");
+    el.textContent = msg; el.classList.add("show");
+    clearTimeout(el._t); el._t = setTimeout(function(){ el.classList.remove("show"); }, 2400);
+  }
+  function esc(s){
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  async function api(path, opts){
+    opts = opts || {};
+    var headers = Object.assign({"Content-Type":"application/json"}, opts.headers || {});
+    var t = tokenGet();
+    if (t) headers["Authorization"] = "Bearer " + t;
+    var r = await fetch(API + path, Object.assign({}, opts, { headers: headers }));
+    var body = null; try { body = await r.json(); } catch(e){}
+    if (!r.ok) {
+      var err = new Error((body && body.detail) || ("HTTP " + r.status));
+      err.status = r.status; throw err;
+    }
+    return body;
+  }
+
+  async function ensureGuestToken(name){
+    if (tokenGet()) return tokenGet();
+    var uid = "kid_" + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36);
+    var j = function(r){ return r.json(); };
+    await fetch(API + "/api/auth", { method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ type:"web", userId: uid, name: name }) }).then(j);
+    var ch = await fetch(API + "/api/auth/child/create", { method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ platform:"web", platform_user_id: uid, child_name: name, grade: 3, semester: 1 }) }).then(j);
+    var cid = ch && ch.child && ch.child.id;
+    if (cid) {
+      var sel = await fetch(API + "/api/auth/child/select", { method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ platform:"web", platform_user_id: uid, child_id: cid }) }).then(j);
+      if (sel && sel.token) {
+        localStorage.setItem("eduarena_demo_token", sel.token);
+        localStorage.setItem("eduarena_demo_uid", uid);
+        localStorage.setItem("eduarena_kid_name", name);
+        return sel.token;
+      }
+    }
+    throw new Error("建立訪客帳號失敗");
+  }
+
+  // ── Views ──────────────────────────────────────
+
+  function viewJoin(){
+    var savedName = nameGet();
+    var code = new URLSearchParams(location.search).get("code") || "";
+    document.getElementById("root").innerHTML = ''
+      + '<div class="card">'
+        + '<h2>輸入老師給的 code</h2>'
+        + '<input type="text" class="code-input" id="in-code" maxlength="12" placeholder="ABC123" value="' + esc(code) + '">'
+        + '<input type="text" class="name-input" id="in-name" maxlength="12" placeholder="你的暱稱（顯示給同學看）" value="' + esc(savedName) + '">'
+        + '<button class="btn" id="btn-join" onclick="doJoin()">加入 PK</button>'
+      + '</div>';
+    document.getElementById("in-code").focus();
+  }
+
+  async function doJoin(){
+    var code = (document.getElementById("in-code").value || "").trim().toUpperCase();
+    var name = (document.getElementById("in-name").value || "").trim() || "小同學";
+    if (!code) { toast("請輸入 code"); return; }
+    var btn = document.getElementById("btn-join");
+    btn.disabled = true;
+    try {
+      await ensureGuestToken(name);
+      var d = await api("/api/classroom/join", { method:"POST", body: JSON.stringify({ code: code }) });
+      toast("加入成功！");
+      startPolling();
+    } catch (e) {
+      toast("加入失敗：" + e.message);
+      btn.disabled = false;
+    }
+  }
+
+  function viewState(d){
+    var t = d.tournament, p = d.participant;
+    var m = d.current_match;
+
+    // playing → 跳去答題頁
+    if (p.state === "playing" && m) {
+      location.href = "classroom-play.html?sid=" + m.session_id + "&mno=" + m.match_no + "&code=" + encodeURIComponent(t.code);
+      return;
+    }
+
+    var iconMap = { waiting_match:"⏳", eliminated:"💀", champion:"👑" };
+    var msgMap = {
+      waiting_match: t.state === "waiting" ? "等老師開賽…" : "等下一場配對…",
+      eliminated: "已淘汰",
+      champion: "冠軍！"
+    };
+    var subMap = {
+      waiting_match: t.state === "waiting" ? "老師按開賽後會自動配對" : "上一場結束了，等下一輪對手",
+      eliminated: "這場輸了，但下次還有機會～",
+      champion: "打敗所有對手，你就是本場王者！"
+    };
+
+    var leaveBtn = p.state === "waiting_match" && t.state === "waiting"
+      ? '<button class="btn ghost" onclick="doLeave()">主動退出</button>' : '';
+    var backBtn = (p.state === "eliminated" || p.state === "champion")
+      ? '<button class="btn ghost" onclick="reset()">回到首頁</button>' : '';
+
+    document.getElementById("root").innerHTML = ''
+      + '<div class="card status-box">'
+        + '<div class="status-icon">' + iconMap[p.state] + '</div>'
+        + '<div class="status-msg">' + esc(msgMap[p.state]) + '</div>'
+        + '<div class="status-sub">' + esc(subMap[p.state]) + '</div>'
+        + '<span class="tag ' + esc(p.state) + '">' + esc(stateLabel(p.state)) + '</span>'
+
+        + '<div class="stats-row">'
+          + '<div class="stat"><div class="num">' + p.wins + '</div><div class="lbl">勝場</div></div>'
+          + '<div class="stat"><div class="num">' + p.losses + '</div><div class="lbl">負場</div></div>'
+          + '<div class="stat"><div class="num">' + t.questions_per_match + '</div><div class="lbl">每場題數</div></div>'
+        + '</div>'
+
+        + '<div style="margin-top:14px;font-size:12px;color:#7f8fb0;">'
+          + '<span class="spinner"></span>' + esc(p.display_name) + ' · CODE ' + esc(t.code)
+        + '</div>'
+
+        + leaveBtn + backBtn
+      + '</div>';
+  }
+
+  function stateLabel(s){
+    return ({ waiting_match:"待配對", playing:"對戰中", eliminated:"淘汰", champion:"冠軍" })[s] || s;
+  }
+
+  async function doLeave(){
+    if (!confirm("確定要離開這場 PK？")) return;
+    try {
+      await api("/api/classroom/leave", { method:"POST" });
+      toast("已離開");
+      reset();
+    } catch (e) { toast("失敗：" + e.message); }
+  }
+
+  function reset(){
+    if (TIMER) { clearInterval(TIMER); TIMER = null; }
+    // 保留 token/name，只重置 UI
+    viewJoin();
+  }
+
+  function startPolling(){
+    poll();
+    if (TIMER) clearInterval(TIMER);
+    TIMER = setInterval(poll, 2500);
+  }
+
+  async function poll(){
+    try {
+      var d = await api("/api/classroom/state");
+      if (!d.in_tournament) {
+        if (TIMER) { clearInterval(TIMER); TIMER = null; }
+        viewJoin();
+        return;
+      }
+      viewState(d);
+    } catch (e) {
+      // 401 → 清 token 重登
+      if (e.status === 401) {
+        localStorage.removeItem("eduarena_demo_token");
+        reset();
+        return;
+      }
+      console.warn("[poll]", e);
+    }
+  }
+
+  // Init：有 token → 直接輪詢看看是不是已在賽中
+  if (tokenGet()) startPolling();
+  else viewJoin();
+
+  window.doJoin = doJoin;
+  window.doLeave = doLeave;
+  window.reset = reset;
+</script>
+
+</body>
+</html>

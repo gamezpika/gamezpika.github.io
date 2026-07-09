@@ -1,0 +1,94 @@
+/* teacher/common.css — 老師後台共用樣式 */
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body {
+  min-height:100vh;
+  font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  background: linear-gradient(180deg, #12182b 0%, #1c2545 60%, #232f56 100%);
+  color:#e6ecf7;
+}
+body { padding:0 0 60px; }
+
+.topbar {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 20px; background:rgba(10,15,32,.75); backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(140,170,220,.12); position:sticky; top:0; z-index:10;
+}
+.topbar .brand { font-size:16px; font-weight:700; letter-spacing:1px; display:flex; align-items:center; gap:8px; }
+.topbar .brand .logo { font-size:22px; }
+.topbar .me { font-size:13px; color:#a8b8d8; display:flex; align-items:center; gap:12px; }
+.topbar .me button {
+  background:transparent; border:1px solid rgba(180,200,240,.25); color:#a8b8d8;
+  padding:6px 12px; border-radius:14px; font-size:12px; cursor:pointer;
+}
+.topbar .me button:hover { background:rgba(180,200,240,.1); color:#fff; }
+
+.container { max-width:920px; margin:0 auto; padding:24px 20px; }
+
+.page-title { font-size:22px; font-weight:700; margin-bottom:6px; letter-spacing:1px; }
+.page-sub { font-size:13px; color:#a8b8d8; margin-bottom:24px; }
+
+.card {
+  background:rgba(30,40,70,.6); border:1px solid rgba(140,170,220,.15);
+  border-radius:16px; padding:20px; margin-bottom:16px;
+  box-shadow:0 6px 24px rgba(0,0,0,.25);
+}
+.card h3 { font-size:15px; margin-bottom:12px; color:#c7d5f0; }
+
+.btn {
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  padding:11px 22px; border:none; border-radius:24px; cursor:pointer;
+  font-size:14px; font-weight:600; letter-spacing:.5px;
+  transition:transform .15s, box-shadow .15s, background .15s;
+}
+.btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(0,0,0,.3); }
+.btn:active { transform:translateY(0); }
+.btn.primary { background:linear-gradient(135deg, #4a7dd4 0%, #6e5bd4 100%); color:#fff; }
+.btn.ghost { background:transparent; color:#c7d5f0; border:1px solid rgba(180,200,240,.3); }
+.btn.danger { background:linear-gradient(135deg, #d24a4a 0%, #b03636 100%); color:#fff; }
+.btn.success { background:linear-gradient(135deg, #3fbf6e 0%, #299d55 100%); color:#fff; }
+.btn.small { padding:6px 14px; font-size:12px; }
+.btn:disabled { opacity:.45; cursor:not-allowed; transform:none; box-shadow:none; }
+
+label { display:block; font-size:13px; color:#c7d5f0; margin-bottom:6px; font-weight:600; }
+input[type=text], input[type=number], select, textarea {
+  width:100%; padding:10px 14px; border-radius:10px;
+  background:rgba(10,15,32,.5); border:1px solid rgba(140,170,220,.25);
+  color:#fff; font-size:14px; font-family:inherit;
+}
+input:focus, select:focus, textarea:focus {
+  outline:none; border-color:#6e8fd0; box-shadow:0 0 0 3px rgba(110,143,208,.2);
+}
+
+.field { margin-bottom:16px; }
+.hint { font-size:11px; color:#7f8fb0; margin-top:4px; }
+
+.pill-group { display:flex; flex-wrap:wrap; gap:8px; }
+.pill {
+  padding:8px 16px; border:1px solid rgba(180,200,240,.25); border-radius:20px;
+  background:rgba(10,15,32,.4); font-size:13px; cursor:pointer; color:#c7d5f0;
+  transition:all .15s;
+}
+.pill:hover { border-color:#6e8fd0; }
+.pill.selected { background:linear-gradient(135deg, #4a7dd4, #6e5bd4); color:#fff; border-color:transparent; }
+
+.grid { display:grid; gap:12px; }
+.grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 640px) {
+  .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; }
+}
+
+.tag {
+  display:inline-block; padding:3px 10px; border-radius:12px;
+  font-size:11px; font-weight:600; letter-spacing:.5px;
+}
+.tag.waiting  { background:rgba(255,200,80,.18); color:#ffd680; }
+.tag.live     { background:rgba(80,220,140,.18); color:#7fe6a8; }
+.tag.finished { background:rgba(140,170,220,.15); color:#a8b8d8; }
+.tag.cancelled { background:rgba(200,80,80,.15); color:#ff9090; }
+.tag.playing  { background:rgba(80,180,255,.18); color:#8ecfff; }
+.tag.eliminated { background:rgba(140,140,140,.15); color:#a0a0a0; }
+.tag.champion { background:linear-gradient(135deg,#ffb44a,#ff8940); color:#fff; }
+
+.empty { text-align:center; padding:40px 20px; color:#7f8fb0; }
+.empty .icon { font-size:48px; margin-bottom:12px; }

@@ -1,0 +1,25 @@
+project: auto-detected
+mode: spec-driven
+updated_at: auto
+
+dimensions:
+  product_dimension:
+    target: "must-have flows usable end-to-end"
+    metric: "core_flow_pass_rate"
+    gate: ">= 0.9"
+    evidence_command: "bash tests/e2e.sh"
+  quality_dimension:
+    target: "no blocker bugs"
+    metric: "critical_bug_count"
+    gate: "== 0"
+    evidence_command: "pytest -q"
+  performance_dimension:
+    target: "stable performance"
+    metric: "p95_latency_or_fps"
+    gate: "define per project"
+    evidence_command: "bash scripts/benchmark.sh"
+  delivery_dimension:
+    target: "deployable build"
+    metric: "release_gate"
+    gate: "PASS"
+    evidence_command: "bash scripts/release_check.sh"

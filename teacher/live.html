@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>班級 PK 監控</title>
+<script src="../config.js"></script>
+<script src="common.js"></script>
+<link rel="stylesheet" href="common.css">
+<style>
+  .code-hero {
+    display:grid; grid-template-columns: auto 1fr auto; gap:16px; align-items:center;
+    padding:20px 24px;
+    background: linear-gradient(135deg, rgba(74,125,212,.28), rgba(110,91,212,.28));
+    border:1px solid rgba(140,170,220,.35); border-radius:16px;
+    margin-bottom:16px;
+  }
+  .code-hero .code {
+    font-family:'SF Mono','Menlo',monospace; font-size:44px; font-weight:800;
+    letter-spacing:6px; color:#ffd54d; text-shadow:0 0 20px rgba(255,213,77,.4);
+  }
+  .code-hero .info { font-size:12px; color:#c7d5f0; margin-top:4px; }
+  .code-hero .actions { display:flex; gap:8px; }
+
+  .grid-2col { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  @media (max-width: 720px) { .grid-2col { grid-template-columns: 1fr; } }
+
+  .plist { display:flex; flex-direction:column; gap:6px; }
+  .prow {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 12px; background:rgba(10,15,32,.4);
+    border:1px solid rgba(140,170,220,.12); border-radius:8px; font-size:13px;
+  }
+  .prow .name { display:flex; align-items:center; gap:8px; }
+  .prow .stats { color:#a8b8d8; font-size:12px; }
+  .ai-badge { font-size:10px; padding:2px 6px; border-radius:6px; background:rgba(180,120,255,.15); color:#c9a6ff; }
+
+  .mlist { display:flex; flex-direction:column; gap:8px; }
+  .mrow {
+    padding:12px; background:rgba(10,15,32,.4);
+    border:1px solid rgba(140,170,220,.12); border-radius:10px;
+  }
+  .mrow .head { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+  .mrow .head .no { font-weight:700; font-size:13px; color:#c7d5f0; }
+  .mrow .vs { font-size:13px; }
+  .mrow .vs strong { color:#ffd54d; }
+
+  .champion {
+    text-align:center; padding:32px 20px;
+    background: linear-gradient(135deg, rgba(255,180,74,.2), rgba(255,137,64,.2));
+    border:2px solid rgba(255,180,74,.5); border-radius:16px;
+  }
+  .champion .crown { font-size:56px; margin-bottom:8px; }
+  .champion .name { font-size:22px; font-weight:800; color:#ffd54d; margin-bottom:4px; }
+  .champion .stats { font-size:13px; color:#c7d5f0; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="logo">🎓</span> 班級 PK 監控</div>
+  <div class="me">
+    <a href="dashboard.html" class="btn ghost small">← 返回列表</a>
+    <button onclick="T.logout()">登出</button>
+  </div>
+</div>
+
+<div class="container">
+  <div id="root">載入中…</div>
+</div>
+
+<script>
+  if (!T.requireLogin()) throw 0;
+
+  var TID = new URLSearchParams(location.search).get("id");
+  if (!TID) { document.getElementById("root").innerHTML = "缺少 id 參數"; throw 0; }
+
+  var TIMER = null;
+
+  refresh();
+  TIMER = setInterval(refresh, 3000);
+
+  async function refresh(){
+    try {
+      var d = await T.api("/api/teacher/classroom/" + TID + "/state");
+      render(d);
+    } catch (e) {
+      document.getElementById("root").innerHTML = '<div class="empty">讀取失敗：' + esc(e.message) + '</div>';
+    }
+  }
+
+  function render(t){
+    var champBlock = t.champion ? championHtml(t.champion) : "";
+    var startBtn = t.state === "waiting"
+      ? '<button class="btn success" onclick="startTournament()">🚀 開賽</button>' : "";
+    var cancelBtn = (t.state === "waiting" || t.state === "live")
+      ? '<button class="btn danger small" onclick="cancelTournament()">取消</button>' : "";
+
+    var html = ''
+      + '<div class="code-hero">'
+        + '<div>'
+          + '<div style="font-size:11px;color:#a8b8d8;letter-spacing:2px;margin-bottom:4px;">加入 CODE</div>'
+          + '<div class="code">' + esc(t.code) + '</div>'
+          + '<div class="info">學生打開 classroom.html 輸入這個 code 加入</div>'
+        + '</div>'
+        + '<div>'
+          + '<div style="font-size:20px;font-weight:700;margin-bottom:6px;">'
+            + '<span class="tag ' + esc(t.state) + '">' + stateLabel(t.state) + '</span>'
+            + ' <span style="color:#c7d5f0;font-size:14px;font-weight:500;margin-left:8px;">'
+            + t.participants.length + ' / ' + t.max_players + ' 人</span>'
+          + '</div>'
+          + '<div style="font-size:12px;color:#a8b8d8;">'
+            + 'G' + t.grade + ' · ' + esc(t.subject_key) + ' · 每場 ' + t.questions_per_match + ' 題'
+            + ' · ' + (t.count_toward_leaderboard ? "🏆 計排行" : "🎯 純練習")
+          + '</div>'
+        + '</div>'
+        + '<div class="actions">'
+          + startBtn
+          + '<button class="btn ghost small" onclick="copyCode(\'' + esc(t.code) + '\')">複製</button>'
+          + cancelBtn
+        + '</div>'
+      + '</div>'
+
+      + champBlock
+
+      + '<div class="grid-2col">'
+        + '<div class="card">'
+          + '<h3>👥 參與者（' + t.participants.length + '）</h3>'
+          + participantsHtml(t.participants)
+        + '</div>'
+        + '<div class="card">'
+          + '<h3>⚔ 賽事流水（' + t.matches.length + '）</h3>'
+          + matchesHtml(t.matches, t.participants)
+        + '</div>'
+      + '</div>';
+
+    document.getElementById("root").innerHTML = html;
+
+    if (t.state === "finished" || t.state === "cancelled") {
+      if (TIMER) { clearInterval(TIMER); TIMER = null; }
+    }
+  }
+
+  function championHtml(c){
+    return '<div class="champion">'
+      + '<div class="crown">👑</div>'
+      + '<div class="name">' + esc(c.display_name) + '</div>'
+      + '<div class="stats">冠軍 · 勝場 ' + c.wins + (c.is_ai ? ' · AI 挑戰者' : '') + '</div>'
+    + '</div>';
+  }
+
+  function participantsHtml(list){
+    if (!list.length) return '<div class="empty" style="padding:20px;">尚無參與者，把 code 分享給學生</div>';
+    return '<div class="plist">' + list.map(function(p){
+      var ai = p.is_ai ? '<span class="ai-badge">AI</span>' : '';
+      return '<div class="prow">'
+        + '<div class="name">' + esc(p.display_name) + ' ' + ai
+          + ' <span class="tag ' + esc(p.state) + '" style="margin-left:6px;">' + participantStateLabel(p.state) + '</span>'
+        + '</div>'
+        + '<div class="stats">' + p.wins + ' 勝 / ' + p.losses + ' 負</div>'
+      + '</div>';
+    }).join("") + '</div>';
+  }
+
+  function matchesHtml(list, participants){
+    if (!list.length) return '<div class="empty" style="padding:20px;">尚未開賽</div>';
+    var byId = {};
+    participants.forEach(function(p){ byId[p.id] = p; });
+    return '<div class="mlist">' + list.map(function(m){
+      var pa = byId[m.participant_a_id], pb = byId[m.participant_b_id];
+      var na = pa ? pa.display_name : "?", nb = pb ? pb.display_name : "?";
+      var winName = m.winner_participant_id && byId[m.winner_participant_id]
+        ? byId[m.winner_participant_id].display_name : null;
+      return '<div class="mrow">'
+        + '<div class="head">'
+          + '<span class="no">M' + m.match_no + '</span>'
+          + '<span class="tag ' + esc(m.state) + '">' + matchStateLabel(m.state) + '</span>'
+        + '</div>'
+        + '<div class="vs">'
+          + (winName === na ? '<strong>' + esc(na) + '</strong>' : esc(na))
+          + ' ⚔ '
+          + (winName === nb ? '<strong>' + esc(nb) + '</strong>' : esc(nb))
+          + (winName ? ' · 勝：<strong>' + esc(winName) + '</strong>' : '')
+        + '</div>'
+      + '</div>';
+    }).join("") + '</div>';
+  }
+
+  async function startTournament(){
+    if (!confirm("開始這場班級 PK？（不足人數會由 AI 補位）")) return;
+    try {
+      var d = await T.api("/api/teacher/classroom/" + TID + "/start", { method:"POST" });
+      T.toast("開賽成功！");
+      refresh();
+    } catch (e) { T.toast("開賽失敗：" + e.message); }
+  }
+  async function cancelTournament(){
+    if (!confirm("取消這場？取消後不可恢復")) return;
+    try {
+      await T.api("/api/teacher/classroom/" + TID + "/cancel", { method:"POST" });
+      T.toast("已取消");
+      refresh();
+    } catch (e) { T.toast("取消失敗：" + e.message); }
+  }
+  function copyCode(code){
+    if (navigator.clipboard) navigator.clipboard.writeText(code).then(
+      function(){ T.toast("已複製：" + code); },
+      function(){ T.toast("複製失敗"); }
+    );
+    else T.toast(code);
+  }
+
+  function stateLabel(s){ return ({ waiting:"招募中", live:"進行中", finished:"已結束", cancelled:"取消" })[s] || s; }
+  function participantStateLabel(s){ return ({ waiting_match:"待配對", playing:"對戰中", eliminated:"淘汰", champion:"冠軍" })[s] || s; }
+  function matchStateLabel(s){ return ({ playing:"進行中", finished:"完賽" })[s] || s; }
+  function esc(s){
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  window.startTournament = startTournament;
+  window.cancelTournament = cancelTournament;
+  window.copyCode = copyCode;
+</script>
+
+</body>
+</html>

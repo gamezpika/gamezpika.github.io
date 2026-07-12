@@ -187,9 +187,9 @@
     var t = d.tournament, p = d.participant;
     var m = d.current_match;
 
-    // playing → 跳去答題頁
+    // playing → 跳去 PVP 對戰畫面（復用原本 OK 的完整 UI：倒數/arena/動畫/結算）
     if (p.state === "playing" && m) {
-      location.href = "classroom-play.html?sid=" + m.session_id + "&mno=" + m.match_no + "&code=" + encodeURIComponent(t.code);
+      location.href = "pvp-demo2.html?session=" + encodeURIComponent(m.session_id) + "&back_url=classroom.html";
       return;
     }
 

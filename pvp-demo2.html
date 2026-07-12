@@ -1912,8 +1912,14 @@ async function enterExistingSession() {
 }
 
 // 回三卡選擇頁（arcade-pvp），保留返回村莊參數
+// 帶 ?back_url=<page>.html 時（例如班級 PK），優先回該頁而不是三卡選擇頁
 function backToPicker() {
     const qp = new URLSearchParams(location.search);
+    const backUrl = (qp.get("back_url") || "").trim();
+    if (/^[a-z0-9_\-]+\.html$/i.test(backUrl)) {
+        location.href = backUrl;
+        return;
+    }
     const p = new URLSearchParams();
     const bm = qp.get("back_map"); if (bm) p.set("back_map", bm);
     const bs = qp.get("back_spawn"); if (bs) p.set("back_spawn", bs);
@@ -2322,10 +2328,15 @@ function endGamePvp(outcome, myScore, oppScore, coins) {
     }, outcome === "win" ? 1600 : 1000);
 }
 
-// 返回：從地圖(?back_map/?map)進來回該地圖原位；獨立測試回首頁
+// 返回：優先 ?back_url=<page>.html（班級 PK 用）；否則從地圖(?back_map/?map)進來回該地圖；獨立測試回首頁
 function arenaExit() {
     stopMatchPoll(); stopGameLoop(); stopRoomPoll();
     const qp = new URLSearchParams(location.search);
+    const backUrl = (qp.get("back_url") || "").trim();
+    if (/^[a-z0-9_\-]+\.html$/i.test(backUrl)) {
+        location.href = backUrl;
+        return;
+    }
     const map = /^[a-z0-9_]+$/.test(qp.get("back_map") || "") ? qp.get("back_map")
         : (/^[a-z0-9_]+$/.test(qp.get("map") || "") ? qp.get("map") : "");
     const bs = qp.get("back_spawn") || "";

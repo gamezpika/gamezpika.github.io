@@ -1,0 +1,178 @@
+{
+  "generated_at": "2026-08-12T02:58:38.099079+00:00",
+  "commit": "baf7552",
+  "data_sources": [
+    "codebase_scan",
+    "compute"
+  ],
+  "benchmarks": {
+    "A_prodigy_math_subscription_flow": {
+      "label": "Prodigy Math 金流/訂閱閘流程一致度",
+      "threshold": 0.8,
+      "score": 0,
+      "pass": false,
+      "checks": {
+        "parent_subscription_page": {
+          "pass": false,
+          "weight": 0.25,
+          "evidence": [],
+          "note": "家長訂閱 HTML 頁面（含 ECPay/LINE Pay 字樣）"
+        },
+        "payment_form_trigger": {
+          "pass": false,
+          "weight": 0.25,
+          "evidence": [],
+          "note": "ECPay/LINE Pay API endpoint 呼叫"
+        },
+        "webhook_handler": {
+          "pass": false,
+          "weight": 0.25,
+          "evidence": [],
+          "note": "金流 Webhook endpoint（ECPay/LINE Pay，非 bot messaging）"
+        },
+        "entitlement_state": {
+          "pass": false,
+          "weight": 0.15,
+          "evidence": [],
+          "note": "訂閱狀態管理（entitlement/subscription_status）"
+        },
+        "webhook_tests": {
+          "pass": false,
+          "weight": 0.1,
+          "evidence": [],
+          "note": "Webhook 測試檔（tests/ 目錄）"
+        }
+      }
+    },
+    "B_junyiacademy_ecpay_webhook": {
+      "label": "均一教育平台 ECPay webhook 端對端",
+      "threshold": 0.7,
+      "score": 0,
+      "pass": false,
+      "checks": {
+        "ecpay_event_handling": {
+          "pass": false,
+          "weight": 0.3,
+          "evidence": [],
+          "note": "ECPay RtnCode/TradeNo 等欄位處理"
+        },
+        "linepay_event_handling": {
+          "pass": false,
+          "weight": 0.2,
+          "evidence": [],
+          "note": "LINE Pay 交易 ID 欄位處理"
+        },
+        "db_entitlement_transitions": {
+          "pass": false,
+          "weight": 0.25,
+          "evidence": [],
+          "note": "DB 訂閱狀態轉換 SQL"
+        },
+        "webhook_meaningful_tests": {
+          "pass": false,
+          "weight": 0.25,
+          "evidence": [],
+          "note": "Mock ECPay/LINE Pay payload 測試"
+        }
+      }
+    },
+    "C_nintendo_time_lock": {
+      "label": "任天堂 Switch 家長監控 時間鎖行為一致度",
+      "threshold": 0.6,
+      "score": 0.85,
+      "pass": true,
+      "checks": {
+        "play_limit_exists": {
+          "pass": true,
+          "weight": 0.1,
+          "evidence": [
+            "village-web/play_limit.js"
+          ],
+          "note": "play_limit.js 存在"
+        },
+        "real_heartbeat_api": {
+          "pass": true,
+          "weight": 0.15,
+          "evidence": [
+            "POST /api/play/heartbeat"
+          ],
+          "note": "每 30 秒 POST /api/play/heartbeat"
+        },
+        "real_status_api": {
+          "pass": true,
+          "weight": 0.1,
+          "evidence": [
+            "/api/play/status"
+          ],
+          "note": "查 /api/play/status（locked/resting）"
+        },
+        "lock_screen_ui": {
+          "pass": true,
+          "weight": 0.15,
+          "evidence": [
+            "showLock()"
+          ],
+          "note": "超限鎖屏 UI"
+        },
+        "rest_countdown_ui": {
+          "pass": true,
+          "weight": 0.15,
+          "evidence": [
+            "showRest(sec)"
+          ],
+          "note": "強制休息倒數 UI"
+        },
+        "hud_remaining_badge": {
+          "pass": true,
+          "weight": 0.1,
+          "evidence": [
+            "#pl-remain HUD badge"
+          ],
+          "note": "右上角剩餘時間 HUD"
+        },
+        "low_time_warning": {
+          "pass": true,
+          "weight": 0.05,
+          "evidence": [
+            "minLeft <= 5 → 紅色 HUD"
+          ],
+          "note": "剩 5 分鐘以下變紅警告"
+        },
+        "demo_bypass": {
+          "pass": true,
+          "weight": 0.05,
+          "evidence": [
+            "?nolimit=1 展示豁免"
+          ],
+          "note": "展示豁免 ?nolimit=1"
+        },
+        "meaningful_tests": {
+          "pass": false,
+          "weight": 0.15,
+          "evidence": [
+            "meaningful assert count: 0"
+          ],
+          "note": "有意義的時間鎖測試（≥ 3 assert）"
+        }
+      }
+    }
+  },
+  "summary": {
+    "all_pass": false,
+    "A": {
+      "score": 0,
+      "threshold": 0.8,
+      "pass": false
+    },
+    "B": {
+      "score": 0,
+      "threshold": 0.7,
+      "pass": false
+    },
+    "C": {
+      "score": 0.85,
+      "threshold": 0.6,
+      "pass": true
+    }
+  }
+}
